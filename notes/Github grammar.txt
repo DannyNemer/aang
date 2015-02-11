@@ -1,0 +1,32 @@
+Perhaps have "github" leading before entity types that apply to many ('followers'), but not those specific to GitHub (repositories)
+
+Github:
+people I follow
+users I follow
+people I followed
+Github people I followed
+people I follow on Github
+people I am following
+people I have been following
+people I did follow
+people followed by me
+people that have been following by me
+people that have been followed by me
+people I'm following
+people that I follow
+people who I follow
+people whom I follow
+people being followed by me
+people that are being followed by me
+people who are being followed by me
+people who I am following
+people I have followed
+
+people {user} follows
+my repos
+my public repos
+{user}'s repos
+repos I starred
+
+if you typed:
+people I follow: should it then show you all of your services?

@@ -1,16 +1,15 @@
 always design grammar before building
-make a list of every query to support
+- make a list of every query to support
 
+Start with Github for simiplicity and fun as you design the grammar.
 
 dropbox and email are both necessary for enterprise software
 start with dropbox: dropbox can easily download index and load into elastic search
 - eventually will need full text search of dropbox
-
 
 I also want to do Twitter for my own use, but each will be converted into an API request
 - and some searches will be rejected because not possible
 - maybe not, how complicated can the intersections become? 4 at most?
 - - but you are limited to 1000 per search, so after doing an intersection you might need to go back and get more
 
-
-start with only a few queries, and slowly and carefully evolve
+Make an entirely functional, optimized, and commented system, with edits (insertion, deletion, transposistion, substitution), display text generation, semantic function, parsing, disambiguation, etc. for only a few queries (10?). Will increase complexity over time.

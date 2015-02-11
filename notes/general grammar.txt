@@ -1,0 +1,6 @@
+do not do [t:] or [b:] rules. that comes in optomization after. instead, name every rule
+
+some term syms, like [have] have multiple term rules, but other instances of same term rule ('have') contain only one sym with not substitutes in the grammar. Only difference is here, the sustitutes will incur the 0.55 substitution cost penalty.
+
+will not seperately classify terminals and nonterminals
+will not save property to name of start symbol
