@@ -4,3 +4,14 @@ some term syms, like [have] have multiple term rules, but other instances of sam
 
 will not seperately classify terminals and nonterminals
 will not save property to name of start symbol
+
+term syms with angled brackets have a special property: <empty> <string> <int:1-32>, need to determine how to build
+
+No [blank] sym. Just a term sym to blankTerm
+
+Does it make sense for terminal rules to have their syms stored as arrays? even in the trees they are just symbols? and we need to indicate it is a terminal rule (and thus not to keep looking?)
+
+Need for seperate term rule functions:
+no two syms with strings
+'accepted'
+'RegExp' in terms

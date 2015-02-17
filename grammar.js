@@ -24,21 +24,28 @@ var ruleOptsDef = {
 // Add a new rule to the grammar
 exports.Symbol.prototype.addRule = function (opts) {
 	if (util.illFormedOpts(opts, ruleOptsDef)) {
-		throw 'ill-formed rules'
+		throw 'ill-formed rule'
 	}
 
 	if (!opts.hasOwnProperty('RHS')) {
 		console.log('rule missing RHS:', opts)
-		throw 'ill-formed rules'
+		throw 'ill-formed rule'
 	}
 
 	if (opts.RHS.length > 2) {
-		console.log('rules\' RHS can only have 1 or 2 symbols:', opts)
-		throw 'ill-formed rules'
+		console.log('rules\' RHS can only have 1 or 2 symbols:', this.name, '->', opts.RHS)
+		throw 'ill-formed rule'
+	}
+
+	if (opts.RHS.length === 2 && opts.RHS.every(function (s) { return typeof s === 'string' })) {
+		console.log('rules cannot have 2 term symbols:', this.name, '->', opts.RHS)
+		throw 'ill-formed rule'
 	}
 
 	var newRule = {
-		RHS: opts.RHS.map(function (RHSSymbol) { return RHSSymbol.name }),
+		RHS: opts.RHS.map(function (RHSSymbol) {
+			return RHSSymbol instanceof exports.Symbol ? RHSSymbol.name : RHSSymbol
+		}),
 		cost: this.calcCost()
 	}
 
@@ -62,5 +69,9 @@ exports.Symbol.prototype.ruleExists = function (newRule) {
 // Could have a cost penalty, especially for term rules, but need a mechanism for choose determining this cost
 exports.Symbol.prototype.calcCost = function (costPenalty) {
 	// Cost of rules for each sym are incremented by 1e-7
-	return this.rules.length & 1e-7
+	return this.rules.length * 1e-7
+}
+
+exports.printGrammar = function () {
+	util.log(grammar)
 }

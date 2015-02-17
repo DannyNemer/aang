@@ -4,9 +4,13 @@ Github:
 people I follow
 users I follow
 people I followed
-Github people I followed
-people I follow on Github
+Facebook people I followed
+people I follow on Facebook
+people I following on Facebook
 people I am following
+people I be following
+people I is following
+people I were following
 people I have been following
 people I did follow
 people followed by me
@@ -15,6 +19,7 @@ people that have been followed by me
 people I'm following
 people that I follow
 people who I follow
+people who I followed
 people whom I follow
 people being followed by me
 people that are being followed by me
