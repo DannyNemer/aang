@@ -119,8 +119,10 @@ exports.log = function () {
 
 // Write obj to JSON file at filepath
 exports.writeJSONFile = function (filepath, obj) {
-	fs.writeFileSync(filepath + '.json', JSON.stringify(obj, function (key, val) {
+	fs.writeFileSync(filepath, JSON.stringify(obj, function (key, val) {
 		// Convert RegExp to strings for JSON.stringify()
 		return val instanceof RegExp ? val.source : val
 	}, '\t'))
+
+	console.log('File saved:', fs.realpathSync(filepath))
 }

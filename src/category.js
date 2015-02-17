@@ -1,6 +1,6 @@
 var g = require('./grammar')
 
-var stopwords = require('./stopWords')
+var stopwords = require('./grammar/stopWords')
 
 // Create the rules every category has
 module.exports = function Category(catName) {

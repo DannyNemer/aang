@@ -1,4 +1,4 @@
-var g = require('./grammar')
+var g = require('../grammar')
 
 // (people) I (follow)
 this.plain = new g.Symbol(1, 'sg')

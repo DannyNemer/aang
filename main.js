@@ -1,5 +1,5 @@
-var g = require('./grammar')
+var g = require('./src/grammar')
 
-require('./user')
+require('./src/grammar/user')
 
 g.writeGrammarToFile('grammar')

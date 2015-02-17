@@ -1,6 +1,6 @@
-var g = require('./grammar')
+var g = require('../grammar')
+var Category = require('../category')
 
-var Category = require('./category')
 var stopwords = require('./stopWords')
 var oneSg = require('./oneSg')
 
