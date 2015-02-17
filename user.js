@@ -31,6 +31,11 @@ user.head.addRule({ RHS: [ github, peopleTerm ] })
 var nomUsers = new g.Symbol('nom', 'users')
 nomUsers.addRule({ RHS: [ oneSg.plain ] })
 
+// var userObjFilter = new g.Symbol('user', 'obj', 'filter')
+// userObjFilter.addRule({ RHS: [ nomUsers ] })
+
+genSymPlus('user', 'obj', 'filter')
+
 
 // FOLLOW:
 var follow = new g.Symbol('follow')
@@ -38,3 +43,16 @@ follow.addRule({ RHS: [ 'follow' ]})
 
 var stopwordFollow = new g.Symbol('stopword', 'follow')
 stopwordFollow.addRule({ RHS: [ stopwords.preVerbStopwords, follow ] })
+
+
+// Takes strings are arguments, to be concatenated as Symbol's name
+function genSymPlus() {
+	// Create new Symbol, based passed argument for name to g.Symbol
+	var sym = new (Function.prototype.bind.apply(g.Symbol, arguments))
+
+	arguments[Object.keys(arguments).length - 1] += '+'
+	var symPlus = new (Function.prototype.bind.apply(g.Symbol, arguments))
+	symPlus.addRule({ RHS: [ sym ]})
+
+	return sym
+}
