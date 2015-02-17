@@ -72,6 +72,7 @@ exports.Symbol.prototype.calcCost = function (costPenalty) {
 	return this.rules.length * 1e-7
 }
 
-exports.printGrammar = function () {
-	util.log(grammar)
+// Write grammar to 'filepath'
+exports.writeGrammarToFile = function (filepath) {
+	util.writeJSONFile(filepath, grammar)
 }

@@ -1,5 +1,7 @@
 // Project-agnostic utility functions
 
+var fs = require('fs')
+
 /*
 Checks if an object 'passedOpts' matches the definition 'optsDef' of accepted Object properties and types
 Used for debugging and simulating type checking
@@ -113,4 +115,12 @@ exports.log = function () {
 	})
 
 	console.log() // Print trailing blank line
+}
+
+// Write obj to JSON file at filepath
+exports.writeJSONFile = function (filepath, obj) {
+	fs.writeFileSync(filepath + '.json', JSON.stringify(obj, function (key, val) {
+		// Convert RegExp to strings for JSON.stringify()
+		return val instanceof RegExp ? val.source : val
+	}, '\t'))
 }

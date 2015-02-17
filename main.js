@@ -2,4 +2,4 @@ var g = require('./grammar')
 
 require('./user')
 
-g.printGrammar()
+g.writeGrammarToFile('grammar')
