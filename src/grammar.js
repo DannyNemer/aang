@@ -73,6 +73,31 @@ exports.Symbol.prototype.calcCost = function (costPenalty) {
 	return this.rules.length * 1e-7
 }
 
+
+// Print the total count of rules in the grammar
+// Print change if 'oldGrammarPath' passed
+exports.printRuleCount = function (oldGrammarPath) {
+	var fs = require('fs')
+
+	var newRuleCount = ruleCount(grammar)
+
+	if (fs.existsSync(oldGrammarPath)) {
+		var oldRuleCount = ruleCount(require(fs.realpathSync(oldGrammarPath)))
+		if (oldRuleCount !== newRuleCount) {
+			console.log('Rules:', oldRuleCount, '->', newRuleCount)
+			return
+		}
+	}
+
+	console.log('Rules:', newRuleCount)
+}
+
+function ruleCount(grammar) {
+	return Object.keys(grammar).reduce(function (prev, cur) {
+		return prev + grammar[cur].length
+	}, 0)
+}
+
 // Write grammar to 'filepath'
 exports.writeGrammarToFile = function (filepath) {
 	util.writeJSONFile(filepath, grammar)
