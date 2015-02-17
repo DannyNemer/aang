@@ -22,37 +22,26 @@ var github = new g.Symbol('github')
 github.addRule({ RHS: [ stopwords.emptyTermSym ] })
 github.addRule({ RHS: [ 'GitHub' ] }) // both accepted, though FB doesn't
 
+// Github users (I follow)
 user.head.addRule({ RHS: [ github, peopleTerm ] })
 
-
-// Next: make function for [sym+] rules
-// put in same module as Category
-
+// (people) I (follow)
 var nomUsers = new g.Symbol('nom', 'users')
 nomUsers.addRule({ RHS: [ oneSg.plain ] })
 
-// var userObjFilter = new g.Symbol('user', 'obj', 'filter')
-// userObjFilter.addRule({ RHS: [ nomUsers ] })
+// (people) I (follow)
+var userObjFilter = new g.Symbol(user.name, 'obj', 'filter')
+userObjFilter.addRule({ RHS: [ nomUsers ] })
 
-genSymPlus('user', 'obj', 'filter')
+var userObjFilterPlus = new g.Symbol(user.name, 'obj', 'filter+')
+userObjFilterPlus.addRule({ RHS: [ userObjFilter ] })
 
+user.rhsExt.addRule({ RHS: [ userObjFilterPlus ] })
 
 // FOLLOW:
 var follow = new g.Symbol('follow')
 follow.addRule({ RHS: [ 'follow' ]})
 
+// (people I) follow
 var stopwordFollow = new g.Symbol('stopword', 'follow')
 stopwordFollow.addRule({ RHS: [ stopwords.preVerbStopwords, follow ] })
-
-
-// Takes strings are arguments, to be concatenated as Symbol's name
-function genSymPlus() {
-	// Create new Symbol, based passed argument for name to g.Symbol
-	var sym = new (Function.prototype.bind.apply(g.Symbol, arguments))
-
-	arguments[Object.keys(arguments).length - 1] += '+'
-	var symPlus = new (Function.prototype.bind.apply(g.Symbol, arguments))
-	symPlus.addRule({ RHS: [ sym ]})
-
-	return sym
-}

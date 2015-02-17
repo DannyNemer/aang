@@ -4,6 +4,8 @@ var stopwords = require('./stopWords')
 
 // Create the rules every category has
 module.exports = function Category(catName) {
+	this.name = catName
+
 	this.lhs = new g.Symbol(catName, 'lhs')
 	this.lhs.addRule({ RHS: [ stopwords.emptyTermSym ] })
 

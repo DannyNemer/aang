@@ -12,6 +12,13 @@ No [blank] sym. Just a term sym to blankTerm
 Does it make sense for terminal rules to have their syms stored as arrays? even in the trees they are just symbols? and we need to indicate it is a terminal rule (and thus not to keep looking?)
 
 Need for seperate term rule functions:
-no two syms with strings
+no two syms with strings - no Array for RHS
 'accepted'
 'RegExp' in terms
+- strange that we are assigning these properties (gram props) to the rule, when it is really the Sym
+perhaps make a TermSymbol obj?
+
+
+Should I remove the blank terms, or not, like they reverted.
+They could still have the edit grammar, just adding those rules back at the end (instead of just taking display text)
+Faster to remove them and not add them back

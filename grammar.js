@@ -3,9 +3,10 @@ var util = require('./util')
 var grammar = {}
 
 // Constructor for nonterminal symbols
-exports.Symbol = function (name) {
+// Takes strings are arguments, to be concatenated as Symbol's name
+exports.Symbol = function () {
 	// Symbol names will be removed from production to conserve memory
-	this.name = '[' + name + ']'
+	this.name = '[' + Array.prototype.slice.call(arguments).join('-') + ']'
 
 	if (grammar.hasOwnProperty(this.name)) {
 		console.log('duplicate Symbol:', this.name)
