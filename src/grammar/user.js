@@ -3,6 +3,7 @@ var Category = require('../category')
 
 var stopwords = require('./stopWords')
 var oneSg = require('./oneSg')
+var prep = require('./prepositions')
 
 
 var user = new Category('user')
@@ -41,7 +42,32 @@ user.rhsExt.addRule({ RHS: [ userObjFilterPlus ] })
 // FOLLOW:
 var follow = new g.Symbol('follow')
 follow.addRule({ RHS: [ 'follow' ]})
+follow.addRule({ RHS: [ 'followed' ]})
 
 // (people I) follow
 var stopwordFollow = new g.Symbol('stopword', 'follow')
 stopwordFollow.addRule({ RHS: [ stopwords.preVerbStopwords, follow ] })
+
+
+// (people followed by) me
+var objUser = new g.Symbol('obj', 'user')
+objUser.addRule({ RHS: [ oneSg.plain ] })
+
+var objUsers = new g.Symbol('obj', 'users')
+objUsers.addRule({ RHS: [ objUser ]})
+
+var objUsersPlus = new g.Symbol('obj', 'users+')
+objUsersPlus.addRule({ RHS: [ objUsers ]})
+
+// (people followed) by me
+var byObjUsers = new g.Symbol('by', 'obj', 'users')
+byObjUsers.addRule({ RHS: [ prep.agent, objUsersPlus ]})
+
+// (people) followed by me
+var userPassive = new g.Symbol(user.name, 'passive')
+userPassive.addRule({ RHS: [ follow, byObjUsers ] })
+
+var userPassivePlus = new g.Symbol(user.name, 'passive+')
+userPassivePlus.addRule({ RHS: [ userPassive ] })
+
+user.reducedNoTense.addRule({ RHS: [ userPassivePlus ]})
