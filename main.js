@@ -3,16 +3,14 @@ var g = require('./src/grammar')
 require('./src/grammar/user')
 
 var grammarPath = './grammar.json'
+g.createEditRules()
 g.printRuleCount(grammarPath)
 g.writeGrammarToFile(grammarPath)
 
 
 /*
 TODO:
-1) Move aang to seperate project
-		- Transfer git
-		- Rewrite commit statements: short, imperative, capitalized first letter
-2) Make grammar with blank rules removed
+- Clean up creatEditRules.js: comments, combine producers, organize in functions (don't over optimize)
 
 Do the absolute minimum, then build up
 - Any additional complexity will rely on same foundation - foolish to try to capture multiple things at once

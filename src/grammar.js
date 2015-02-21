@@ -112,3 +112,7 @@ function ruleCount(grammar) {
 exports.writeGrammarToFile = function (filepath) {
 	util.writeJSONFile(filepath, grammar)
 }
+
+exports.createEditRules = function () {
+	require('./createEditRules')(grammar)
+}

@@ -88,6 +88,8 @@ exports.isType = function (obj, propTypeFunc) {
 
 // Returns true if arrays a and b are of the same length and same shallow-level contents
 exports.arraysMatch = function (a, b) {
+	if (!a || !b) throw 'undefined passed as array'
+
 	var i = a.length
 
 	if (i !== b.length) return false

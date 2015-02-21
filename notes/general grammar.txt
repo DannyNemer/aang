@@ -2,12 +2,7 @@ do not do [t:] or [b:] rules. that comes in optomization after. instead, name ev
 
 some term syms, like [have] have multiple term rules, but other instances of same term rule ('have') contain only one sym with not substitutes in the grammar. Only difference is here, the sustitutes will incur the 0.55 substitution cost penalty.
 
-will not seperately classify terminals and nonterminals
-will not save property to name of start symbol
-
 term syms with angled brackets have a special property: <empty> <string> <int:1-32>, need to determine how to build
-
-No [blank] sym. Just a term sym to blankTerm
 
 Does it make sense for terminal rules to have their syms stored as arrays? even in the trees they are just symbols? and we need to indicate it is a terminal rule (and thus not to keep looking?)
 
@@ -17,8 +12,3 @@ no two syms with strings - no Array for RHS
 'RegExp' in terms
 - strange that we are assigning these properties (gram props) to the rule, when it is really the Sym
 perhaps make a TermSymbol obj?
-
-
-Should I remove the blank terms, or not, like they reverted.
-They could still have the edit grammar, just adding those rules back at the end (instead of just taking display text)
-Faster to remove them and not add them back
