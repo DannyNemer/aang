@@ -1,6 +1,6 @@
 // Add edit-rules
 
-var util = require('./util')
+var util = require('../util')
 
 
 module.exports = function (grammar) {

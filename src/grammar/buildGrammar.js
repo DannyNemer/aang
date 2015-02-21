@@ -1,8 +1,8 @@
-var g = require('./src/grammar')
+var g = require('./grammar')
 
-require('./src/grammar/user')
+require('./rules/user')
 
-var grammarPath = './grammar.json'
+var grammarPath = '../../grammar.json'
 g.createEditRules()
 g.printRuleCount(grammarPath)
 g.writeGrammarToFile(grammarPath)
