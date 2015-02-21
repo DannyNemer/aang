@@ -1,15 +1,23 @@
 // Add edit-rules
 
 var util = require('./util')
-var emptyTermSym = require('./grammar').emptyTermSym
 
-var emptyTermRules
 
 module.exports = function (grammar) {
 	// Symbols that produce the empty-string
-	emptyProds = {}
+	var emptyProds = {}
 
-	// Find all terminal rules producing empty strings
+	findTermRulesProducingEmptyStrings(grammar, emptyProds)
+
+	findNontermRulesProducingEmptyStrings(grammar, emptyProds)
+
+	createsRulesFromEmptyStrings(grammar, emptyProds)
+}
+
+// Find all terminal rules producing empty strings
+function findTermRulesProducingEmptyStrings(grammar, emptyProds) {
+	var emptyTermSym = require('./grammar').emptyTermSym
+
 	Object.keys(grammar).forEach(function (nontermSym) {
 		grammar[nontermSym].forEach(function (rule) {
 			// The empty-string can only be in rules with 1 sym
@@ -23,13 +31,17 @@ module.exports = function (grammar) {
 			}
 		})
 	})
+}
 
-	var emptyProdsAdded = true
-	while (emptyProdsAdded) { // Loop until no longer finding new empty-string production
+// Find sequences of syms that produce empty-strings
+function findNontermRulesProducingEmptyStrings(grammar, emptyProds) {
+	var emptyProdsAdded
+
+	do { // Loop until no longer finding new empty-string productions
 		emptyProdsAdded = false
 		Object.keys(grammar).forEach(function (nontermSym) {
 			grammar[nontermSym].forEach(function (rule) {
-				if (RHSProducesEmptyString(rule.RHS)) {
+				if (RHSProducesEmptyString(emptyProds, rule.RHS)) {
 					var newEmptyProd = rule.RHS.map(function (sym) {
 						var emptyProd = emptyProds[sym]
 
@@ -56,9 +68,18 @@ module.exports = function (grammar) {
 				}
 			})
 		})
-	}
+	} while (emptyProdsAdded)
+}
 
-	// Add new rules from empty-string productions to grammar
+// Every sym in production is empty-string or sym that produces empty-string
+function RHSProducesEmptyString(emptyProds, RHS) {
+	return RHS.every(function (sym) {
+		return emptyProds.hasOwnProperty(sym)
+	})
+}
+
+// Add new rules from empty-string productions to grammar
+function createsRulesFromEmptyStrings(grammar, emptyProds) {
 	Object.keys(grammar).forEach(function (nontermSym) {
 		grammar[nontermSym].forEach(function (rule, ruleIdx, symRules) {
 			var RHS = rule.RHS
@@ -82,13 +103,6 @@ module.exports = function (grammar) {
 				})
 			}
 		})
-	})
-}
-
-// Every sym in production is empty-string or sym that produces empty-string
-function RHSProducesEmptyString(RHS) {
-	return RHS.every(function (sym) {
-		return emptyProds.hasOwnProperty(sym)
 	})
 }
 
