@@ -1,13 +1,11 @@
 var g = require('./grammar')
 
-var stopwords = require('./grammar/stopWords')
-
 // Create the rules every category has
 module.exports = function Category(catName) {
 	this.name = catName
 
 	var lhs = new g.Symbol(catName, 'lhs')
-	lhs.addRule({ RHS: [ stopwords.emptyTermSym ] })
+	lhs.addRule({ RHS: [ g.emptyTermSym ] })
 
 	// people (I follow); people (followed by me)
 	this.head = new g.Symbol(catName, 'head')

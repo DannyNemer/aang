@@ -20,7 +20,7 @@ peopleTerm.addRule({ RHS: [ 'people' ]})
 peopleTerm.addRule({ RHS: [ 'users' ]})
 
 var github = new g.Symbol('github')
-github.addRule({ RHS: [ stopwords.emptyTermSym ] })
+github.addRule({ RHS: [ g.emptyTermSym ] })
 github.addRule({ RHS: [ 'GitHub' ] }) // both accepted, though FB doesn't
 
 // Github users (I follow)

@@ -2,6 +2,9 @@ var util = require('./util')
 
 var grammar = {}
 
+// Empty-string
+exports.emptyTermSym = '<empty>'
+
 // Constructor for nonterminal symbols
 // Takes strings are arguments, to be concatenated as Symbol's name
 exports.Symbol = function () {
@@ -38,9 +41,16 @@ exports.Symbol.prototype.addRule = function (opts) {
 		throw 'ill-formed rule'
 	}
 
-	if (opts.RHS.length === 2 && opts.RHS.every(function (s) { return typeof s === 'string' })) {
-		console.log('rules cannot have 2 term symbols:', this.name, '->', opts.RHS)
-		throw 'ill-formed rule'
+	if (opts.RHS.length === 2) {
+		if (opts.RHS.every(function (s) { return typeof s === 'string' })) {
+			console.log('rules cannot have 2 term symbols:', this.name, '->', opts.RHS)
+			throw 'ill-formed rule'
+		}
+
+		if (opts.RHS.indexOf(exports.emptyTermSym) !== -1) {
+			console.log('nonterminal rules cannot contain an empty-string:', this.name, '->', opts.RHS)
+			throw 'ill-formed rule'
+		}
 	}
 
 	var newRule = {
