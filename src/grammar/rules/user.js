@@ -16,12 +16,12 @@ start.addRule({ RHS: [ users ]})
 
 
 var peopleTerm = new g.Symbol('people', 'term')
-peopleTerm.addRule({ RHS: [ 'people' ]})
-peopleTerm.addRule({ RHS: [ 'users' ]})
+peopleTerm.addRule({ terminal: true, RHS: 'people' })
+peopleTerm.addRule({ terminal: true, RHS: 'users' })
 
 var github = new g.Symbol('github')
-github.addRule({ RHS: [ g.emptyTermSym ] })
-github.addRule({ RHS: [ 'GitHub' ] }) // both accepted, though FB doesn't
+github.addRule({ terminal: true, RHS: g.emptyTermSym })
+github.addRule({ terminal: true, RHS: 'GitHub' }) // both accepted, though FB doesn't
 
 // Github users (I follow)
 user.head.addRule({ RHS: [ github, peopleTerm ] })
@@ -32,10 +32,10 @@ nomUsers.addRule({ RHS: [ oneSg.plain ] })
 
 // FOLLOW:
 var follow = new g.Symbol('follow')
-follow.addRule({ RHS: [ 'follow' ]})
-follow.addRule({ RHS: [ 'followed' ]})
-follow.addRule({ RHS: [ 'am|is|are|were|was|be following' ]}) // rejected
-follow.addRule({ RHS: [ 'have followed' ]}) // rejected
+follow.addRule({ terminal: true, RHS: 'follow' })
+follow.addRule({ terminal: true, RHS: 'followed' })
+follow.addRule({ terminal: true, RHS: 'am|is|are|were|was|be following' }) // rejected
+follow.addRule({ terminal: true, RHS: 'have followed' }) // rejected
 
 // (people I) follow
 var stopwordFollow = new g.Symbol('stopword', 'follow')

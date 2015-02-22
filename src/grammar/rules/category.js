@@ -7,7 +7,7 @@ module.exports = function Category(catName) {
 	this.name = catName
 
 	var lhs = new g.Symbol(catName, 'lhs')
-	lhs.addRule({ RHS: [ g.emptyTermSym ] })
+	lhs.addRule({ terminal: true, RHS: g.emptyTermSym })
 
 	var lhsHead = new g.Symbol(catName, 'lhs', catName, 'head')
 	// people (I follow); people (followed by me)
@@ -21,7 +21,7 @@ module.exports = function Category(catName) {
 	passivePlus.addRule({ RHS: [ this.passive ] })
 
 	var reducedNoTense = new g.Symbol(catName, 'reduced', 'no', 'tense')
-	// (people) followed by me
+	// (people) followed by me; (people who are) followed by me
 	reducedNoTense.addRule({ RHS: [ passivePlus ]})
 
 	var reduced = new g.Symbol(catName, 'reduced')
@@ -40,6 +40,7 @@ module.exports = function Category(catName) {
 
 
 	var rhs = new g.Symbol(catName, 'rhs')
+	rhs.addRule({ terminal: true, RHS: g.emptyTermSym })
 	// (people) followed by me
 	rhs.addRule({ RHS: [ reduced ] })
 	// (people) I follow

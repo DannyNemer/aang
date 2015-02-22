@@ -20,45 +20,17 @@ exports.Symbol = function () {
 	this.rules = grammar[this.name] = []
 }
 
-// Definition of accepted options for a rule
-var ruleOptsDef = {
-	RHS: Array // add check for Array contents (string or Symbol), size, duplicates
-}
 
 // Add a new rule to the grammar
 exports.Symbol.prototype.addRule = function (opts) {
-	if (util.illFormedOpts(opts, ruleOptsDef)) {
-		throw 'ill-formed rule'
-	}
-
 	if (!opts.hasOwnProperty('RHS')) {
 		console.log('rule missing RHS:', opts)
 		throw 'ill-formed rule'
 	}
 
-	if (opts.RHS.length > 2) {
-		console.log('rules\' RHS can only have 1 or 2 symbols:', this.name, '->', opts.RHS)
-		throw 'ill-formed rule'
-	}
+	var newRule = opts.terminal ? createTermRule(opts) : createNontermRule(opts, this.name)
 
-	if (opts.RHS.length === 2) {
-		if (opts.RHS.every(function (s) { return typeof s === 'string' })) {
-			console.log('rules cannot have 2 term symbols:', this.name, '->', opts.RHS)
-			throw 'ill-formed rule'
-		}
-
-		if (opts.RHS.indexOf(exports.emptyTermSym) !== -1) {
-			console.log('nonterminal rules cannot contain an empty-string:', this.name, '->', opts.RHS)
-			throw 'ill-formed rule'
-		}
-	}
-
-	var newRule = {
-		RHS: opts.RHS.map(function (RHSSymbol) {
-			return RHSSymbol instanceof exports.Symbol ? RHSSymbol.name : RHSSymbol
-		}),
-		cost: this.calcCost()
-	}
+	newRule.cost = this.calcCost()
 
 	if (this.ruleExists(newRule)) {
 		console.log('duplicate rule:', this.name, '->', newRule.RHS)
@@ -68,6 +40,63 @@ exports.Symbol.prototype.addRule = function (opts) {
 
 	this.rules.push(newRule)
 }
+
+// Definition of accepted options for a terminal rule
+var termRuleOptsDef = {
+	terminal: Boolean,
+	RHS: String,
+	insertionCost: Number
+}
+
+// Initialize a new terminal rule from past opts
+function createTermRule(opts) {
+	if (util.illFormedOpts(opts, termRuleOptsDef)) {
+		throw 'ill-formed terminal rule'
+	}
+
+	var newRule = {
+		RHS: [ opts.RHS ],
+		terminal: true
+	}
+
+	if (opts.hasOwnProperty('insertionCost')) {
+		newRule.insertionCost = opts.insertionCost
+	}
+
+	return newRule
+}
+
+// Definition of accepted options for a nonterminal rule
+var nontermRuleOptsDef = {
+	terminal: Boolean,
+	RHS: Array
+}
+
+// Initialize a new nonterminal rule from past opts
+function createNontermRule(opts, name) {
+	if (util.illFormedOpts(opts, nontermRuleOptsDef)) {
+		throw 'ill-formed nonterminal rule'
+	}
+
+	if (opts.RHS.length > 2) {
+		console.log('rules can only have 1 or 2 RHS symbols:', name, '->', opts.RHS)
+		console.log(util.getLine())
+		throw 'ill-formed rule'
+	}
+
+	return {
+		RHS: opts.RHS.map(function (RHSSymbol) {
+			if (!(RHSSymbol instanceof exports.Symbol)) {
+				console.log('RHS of nonterminal rules must be Symbols:', name, '->', opts.RHS)
+				console.log(util.getLine())
+				throw 'ill-formed rule'
+			}
+
+			return RHSSymbol.name
+		})
+	}
+}
+
 
 // Returns true if newRule already exists
 exports.Symbol.prototype.ruleExists = function (newRule) {
