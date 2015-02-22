@@ -11,7 +11,7 @@ function StateTable(grammar, startSymName) {
 
 		grammar[nontermSymName].forEach(function (rule) {
 			var RHSBuf = rule.RHS.map(function (RHSSymName) {
-				return this.lookUp(RHSSymName, !grammar.hasOwnProperty(RHSSymName))
+				return this.lookUp(RHSSymName, rule.terminal)
 			}, this)
 
 			this.insertRule(LHSSym, RHSBuf, rule.cost)
@@ -22,19 +22,21 @@ function StateTable(grammar, startSymName) {
 	this.generate(grammar, startSymName)
 }
 
-StateTable.prototype.lookUp = function (symName, isTerminal) {
-	isTerminal = !!isTerminal // isTerminal is undefined -> false
+StateTable.prototype.lookUp = function (symName, terminal) {
 	var sym = this.symbolTable[symName]
 
-	if (sym && sym.isTerminal === isTerminal && sym.name === symName) {
+	if (sym && sym.terminal === terminal && sym.name === symName) {
 		return sym
 	}
 
 	sym = this.symbolTable[symName] = {
 		name: symName,
 		index: Object.keys(this.symbolTable).length,
-		rules: [], // not needed for literals
-		isTerminal: isTerminal
+		rules: [] // not needed for literals
+	}
+
+	if (terminal) {
+		sym.terminal = terminal
 	}
 
 	return sym
@@ -81,7 +83,7 @@ StateTable.prototype.generate = function (grammar, startSymName) {
 	for (var s = 0; s < listTable.length; ++s) {
 		var ruleBuf = listTable[s]
 		var XTable = []
-		var newState = {}
+		var newState = { termShifts: [], nontermShifts: [] }
 
 		for (var r = 0; r < ruleBuf.length; ++r) {
 			var rule = ruleBuf[r]
@@ -124,11 +126,17 @@ StateTable.prototype.generate = function (grammar, startSymName) {
 			}
 		})
 
-		newState.shifts = XTable.map(function (items) {
-			return {
+		XTable.forEach(function (items) {
+			var shift = {
 				sym: items.sym,
 				stateIdx: this.addState(listTable, items.rules)
 			}
+
+			var terminal = shift.sym.rules.some(function (rule) { return rule.syms[0].terminal })
+			var nonterminal = shift.sym.rules.some(function (rule) { return !rule.syms[0].terminal })
+
+			if (terminal) newState.termShifts.push(shift)
+			if (nonterminal) newState.nontermShifts.push(shift)
 		}, this)
 
 		this.states.push(newState)
@@ -199,7 +207,11 @@ StateTable.prototype.print = function () {
 			console.log(toPrint + ']')
 		})
 
-		state.shifts.forEach(function (shift) {
+		state.nontermShifts.forEach(function (shift) {
+			console.log('\t' + shift.sym.name + ' => ' +  shift.stateIdx)
+		})
+
+		state.termShifts.forEach(function (shift) {
 			console.log('\t' + shift.sym.name + ' => ' +  shift.stateIdx)
 		})
 	})

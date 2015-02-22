@@ -44,11 +44,13 @@ exports.parse = function (query, stateTable) {
 		}
 
 		else {
+			var parserEndIdx = parser.inputTermMatch ? parser.inputTermMatch.end : 0
+
 			for (var vertTab = parser.vertTab, v = vertTab.length; v-- > 0;) {
 				var vertex = vertTab[v]
 
 				// used to have seperate termshifts
-				for (var shifts = vertex.state.shifts, s = shifts.length; s-- > 0;) {
+				for (var shifts = vertex.state.termShifts, s = shifts.length; s-- > 0;) {
 					var shift = shifts[s],
 							termSymName = shift.sym.name,
 							inputTermMatches = matchedTermSymbols[termSymName]
@@ -56,14 +58,13 @@ exports.parse = function (query, stateTable) {
 					if (inputTermMatches) {
 						for (var t = inputTermMatches.length; t-- > 0;) {
 							var inputTermMatch = inputTermMatches[t]
-							if ((parser.end || 0) === inputTermMatch.start) {
+							if (parserEndIdx === inputTermMatch.start) {
 								var newParser = new Parser(stateTable.states)
 
 								var termSym = stateTable.symbolTable[termSymName]
 								newParser.shift(shift, vertex, termSym, inputTermMatch.cost, inputTermMatch)
 
 								newParser.cost = newParser.vertTab[0].cost
-								newParser.end = inputTermMatch.end
 
 								heap.push(newParser)
 							}

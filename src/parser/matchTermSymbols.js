@@ -2,34 +2,32 @@ var grammar = require('../../grammar.json')
 
 Object.keys(grammar).forEach(function (nontermSym) {
 	grammar[nontermSym].forEach(function (rule) {
-		var re = null
-		rule.RHS.forEach(function (termSym) {
-			if (!/[\[{<]/.test(termSym)) {
-				if (termSym.indexOf(' ') !== -1) {
-					re = termSym.split(' ').map(function (group) {
-						var barIdx = group.indexOf('|')
+		if (rule.terminal) {
+			var termSym = rule.RHS[0]
 
-						if (barIdx === 0) { // optional
-							group = '(' + group.substr(1) + ')?'
-						} else if (barIdx !== -1) {
-							group = '(' + group + ')'
-						}
+			if (termSym.indexOf(' ') !== -1) {
+				re = termSym.split(' ').map(function (group) {
+					var barIdx = group.indexOf('|')
 
-						return group
-					}).join(' ?\\b') // could be simplified to not alway use ' ?\b', to speed up
-				} else {
-					re = termSym.indexOf('|') === -1 ? termSym : '(' + termSym + ')'
-				}
+					if (barIdx === 0) { // optional
+						group = '(' + group.substr(1) + ')?'
+					} else if (barIdx !== -1) {
+						group = '(' + group + ')'
+					}
+
+					return group
+				}).join(' ?\\b') // could be simplified to not alway use ' ?\b', to speed up
+			} else {
+				re = /\|/.test(termSym) ? '(' + termSym + ')' : termSym
 			}
-		})
 
-		if (re) {
 			rule.regExp = new RegExp('^' + re + '$','i')
 		}
 	})
 })
 
 module.exports = function matchTermSymbols(query) {
+
 	var tokens = query.split(' '),
 			tokensLen = tokens.length,
 			matchedTermSymbols = {}
@@ -42,7 +40,7 @@ module.exports = function matchTermSymbols(query) {
 
 			Object.keys(grammar).forEach(function (nontermSym) {
 				grammar[nontermSym].some(function (rule) {
-					if (rule.hasOwnProperty('regExp')) {
+					if (rule.terminal) {
 						if (rule.regExp.test(nGram)) {
 							var match = {
 								start: i,

@@ -183,7 +183,7 @@ Parser.prototype.reduce = function () {
 				vertex = path.zNode.vertex
 
 		// used to only be nonterm shifts
-		for (var shifts = vertex.state.shifts, s = shifts.length; s-- > 0;) {
+		for (var shifts = vertex.state.nontermShifts, s = shifts.length; s-- > 0;) {
 			var shift = shifts[s]
 
 			if (shift.sym === nodeSym) {
