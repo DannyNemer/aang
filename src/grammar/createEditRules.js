@@ -1,5 +1,4 @@
 // Add edit-rules
-// TODO: remove '<empty>' rules from grammar as never matched
 
 var util = require('../util')
 
@@ -20,7 +19,7 @@ function findTermRulesProducingEmptyStrings(grammar, emptyProds) {
 	var emptyTermSym = require('./grammar').emptyTermSym
 
 	Object.keys(grammar).forEach(function (nontermSym) {
-		grammar[nontermSym].forEach(function (rule) {
+		grammar[nontermSym].forEach(function (rule, ruleIdx, rules) {
 			if (rule.terminal && rule.RHS[0] === emptyTermSym) {
 
 				// Each nontermSym can have up to 1 empty sym (because no duplicates)
@@ -28,6 +27,9 @@ function findTermRulesProducingEmptyStrings(grammar, emptyProds) {
 					cost: rule.cost,
 					insertedSyms: [ { symbol: emptyTermSym } ]
 				}
+
+				// Remove empty-string term syms from grammar
+				rules.splice(ruleIdx, 1)
 			}
 		})
 	})
