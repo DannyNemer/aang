@@ -33,9 +33,7 @@ exports.Symbol.prototype.addRule = function (opts) {
 	newRule.cost = this.calcCost()
 
 	if (this.ruleExists(newRule)) {
-		console.log('duplicate rule:', this.name, '->', newRule.RHS)
-		console.log(util.getLine())
-		throw 'duplicate rule'
+		this.ruleErr('duplicate rule', newRule.RHS)
 	}
 
 	this.rules.push(newRule)
@@ -79,17 +77,13 @@ function createNontermRule(opts, name) {
 	}
 
 	if (opts.RHS.length > 2) {
-		console.log('rules can only have 1 or 2 RHS symbols:', name, '->', opts.RHS)
-		console.log(util.getLine())
-		throw 'ill-formed rule'
+		this.ruleErr('rules can only have 1 or 2 RHS symbols', opts.RHS)
 	}
 
 	return {
 		RHS: opts.RHS.map(function (RHSSymbol) {
 			if (!(RHSSymbol instanceof exports.Symbol)) {
-				console.log('RHS of nonterminal rules must be Symbols:', name, '->', opts.RHS)
-				console.log(util.getLine())
-				throw 'ill-formed rule'
+				this.ruleErr('RHS of nonterminal rules must be Symbols', opts.RHS)
 			}
 
 			return RHSSymbol.name
@@ -110,6 +104,17 @@ exports.Symbol.prototype.ruleExists = function (newRule) {
 exports.Symbol.prototype.calcCost = function (costPenalty) {
 	// Cost of rules for each sym are incremented by 1e-7
 	return this.rules.length * 1e-7
+}
+
+exports.Symbol.prototype.ruleErr = function (errMessage, RHS) {
+	RHS = RHS.map(function (sym) {
+		return sym instanceof exports.Symbol ? sym.name : sym
+	})
+
+	console.log(util.getLine())
+	console.log(errMessage + ':')
+	console.log('\t' + this.name, '->', RHS)
+	throw 'ill-formed rule'
 }
 
 
