@@ -1,6 +1,6 @@
 var g = require('../grammar')
-var Category = require('../category')
 
+var Category = require('./category')
 var stopwords = require('./stopWords')
 var oneSg = require('./oneSg')
 var prep = require('./prepositions')
@@ -30,23 +30,19 @@ user.head.addRule({ RHS: [ github, peopleTerm ] })
 var nomUsers = new g.Symbol('nom', 'users')
 nomUsers.addRule({ RHS: [ oneSg.plain ] })
 
-// (people) I (follow)
-var userObjFilter = new g.Symbol(user.name, 'obj', 'filter')
-userObjFilter.addRule({ RHS: [ nomUsers ] })
-
-var userObjFilterPlus = new g.Symbol(user.name, 'obj', 'filter+')
-userObjFilterPlus.addRule({ RHS: [ userObjFilter ] })
-
-user.rhsExt.addRule({ RHS: [ userObjFilterPlus ] })
-
 // FOLLOW:
 var follow = new g.Symbol('follow')
 follow.addRule({ RHS: [ 'follow' ]})
 follow.addRule({ RHS: [ 'followed' ]})
+follow.addRule({ RHS: [ 'am|is|are|were|was|be following' ]}) // rejected
+follow.addRule({ RHS: [ 'have followed' ]}) // rejected
 
 // (people I) follow
 var stopwordFollow = new g.Symbol('stopword', 'follow')
 stopwordFollow.addRule({ RHS: [ stopwords.preVerbStopwords, follow ] })
+
+// (people) I follow
+user.objFilter.addRule({ RHS: [ nomUsers, stopwordFollow ] })
 
 
 // (people followed by) me
@@ -64,10 +60,4 @@ var byObjUsers = new g.Symbol('by', 'obj', 'users')
 byObjUsers.addRule({ RHS: [ prep.agent, objUsersPlus ]})
 
 // (people) followed by me
-var userPassive = new g.Symbol(user.name, 'passive')
-userPassive.addRule({ RHS: [ follow, byObjUsers ] })
-
-var userPassivePlus = new g.Symbol(user.name, 'passive+')
-userPassivePlus.addRule({ RHS: [ userPassive ] })
-
-user.reducedNoTense.addRule({ RHS: [ userPassivePlus ]})
+user.passive.addRule({ RHS: [ follow, byObjUsers ] })
