@@ -28,7 +28,7 @@ exports.Symbol.prototype.addRule = function (opts) {
 		throw 'ill-formed rule'
 	}
 
-	var newRule = opts.terminal ? createTermRule(opts) : createNontermRule(opts, this.name)
+	var newRule = opts.terminal ? this.newTermRule(opts) : this.newNontermRule(opts)
 
 	newRule.cost = this.calcCost()
 
@@ -47,7 +47,7 @@ var termRuleOptsDef = {
 }
 
 // Initialize a new terminal rule from past opts
-function createTermRule(opts) {
+exports.Symbol.prototype.newTermRule = function (opts) {
 	if (util.illFormedOpts(opts, termRuleOptsDef)) {
 		throw 'ill-formed terminal rule'
 	}
@@ -67,11 +67,12 @@ function createTermRule(opts) {
 // Definition of accepted options for a nonterminal rule
 var nontermRuleOptsDef = {
 	terminal: Boolean,
-	RHS: Array
+	RHS: Array,
+	transpositionCost: Number
 }
 
 // Initialize a new nonterminal rule from past opts
-function createNontermRule(opts, name) {
+exports.Symbol.prototype.newNontermRule = function (opts) {
 	if (util.illFormedOpts(opts, nontermRuleOptsDef)) {
 		throw 'ill-formed nonterminal rule'
 	}
@@ -80,7 +81,7 @@ function createNontermRule(opts, name) {
 		this.ruleErr('rules can only have 1 or 2 RHS symbols', opts.RHS)
 	}
 
-	return {
+	var newRule = {
 		RHS: opts.RHS.map(function (RHSSymbol) {
 			if (!(RHSSymbol instanceof exports.Symbol)) {
 				this.ruleErr('RHS of nonterminal rules must be Symbols', opts.RHS)
@@ -89,8 +90,17 @@ function createNontermRule(opts, name) {
 			return RHSSymbol.name
 		})
 	}
-}
 
+	if (opts.hasOwnProperty('transpositionCost')) {
+		if (opts.RHS.length !== 2) {
+			this.ruleErr('nonterminal rules with transposition-costs must have 2 RHS symbols', opts.RHS)
+		}
+
+		newRule.transpositionCost = opts.transpositionCost
+	}
+
+	return newRule
+}
 
 // Returns true if newRule already exists
 exports.Symbol.prototype.ruleExists = function (newRule) {

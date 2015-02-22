@@ -12,7 +12,7 @@ module.exports = function Category(catName) {
 	var lhsHead = new g.Symbol(catName, 'lhs', catName, 'head')
 	// people (I follow); people (followed by me)
 	this.head = new g.Symbol(catName, 'head')
-	lhsHead.addRule({ RHS: [ lhs, this.head ] })
+	lhsHead.addRule({ RHS: [ lhs, this.head ], transpositionCost: 1 })
 
 
 	var passivePlus = new g.Symbol(catName, 'passive+')
@@ -49,7 +49,7 @@ module.exports = function Category(catName) {
 
 	var noRelativeBase = new g.Symbol(catName, 'no', 'relative', 'base')
 	// people I follow; people followed by me
-	noRelativeBase.addRule({ RHS: [ lhsHead, rhs ] })
+	noRelativeBase.addRule({ RHS: [ lhsHead, rhs ], transpositionCost: 1 })
 
 
 	var filter = new g.Symbol(catName, 'filter')

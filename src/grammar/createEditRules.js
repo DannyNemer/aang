@@ -12,6 +12,8 @@ module.exports = function (grammar) {
 	findNontermRulesProducingEmptyStrings(grammar, emptyProds)
 
 	createsRulesFromEmptyStrings(grammar, emptyProds)
+
+	createRulesFromTranspositions(grammar)
 }
 
 // Find all terminal rules producing empty strings
@@ -124,24 +126,42 @@ function createsRulesFromEmptyStrings(grammar, emptyProds) {
 	})
 }
 
-// Throw err if empty-string productions produce duplicate rules
+// Add new rules from tranpositions to grammar
+function createRulesFromTranspositions(grammar) {
+	Object.keys(grammar).forEach(function (nontermSym) {
+		grammar[nontermSym].forEach(function (rule, ruleIdx, symRules) {
+			if (rule.hasOwnProperty('transpositionCost')) {
+				var newRule = {
+					RHS: rule.RHS.slice().reverse(),
+					cost: rule.cost + rule.transpositionCost,
+					transposition: true
+				}
+
+				if (!ruleExists(symRules, newRule)) {
+					symRules.push(newRule)
+				}
+			}
+		})
+	})
+}
+
+// Throw err if new rule generated from insertion(s), empty-string(s), or a transposition is a duplicate of an existing rule
 function ruleExists(rules, newRule) {
 	for (var r = rules.length; r-- > 0;) {
 		var existingRule = rules[r]
 
 		if (util.arraysMatch(existingRule.RHS, newRule.RHS)) {
 			if (existingRule.insertedSyms) {
-				console.log('Err: two identical rules produced by empty-strings')
+				console.log('Err: two identical rules produced by insertion(s)')
 			} else {
-				// If a rule produced with empty-string is identical to an original rule, then original should not exist
-				console.log('Err: rule produced with empty-strings identical to original rule')
+				console.log('Err: new rule produced with edits identical to original rule')
 			}
 
 			console.log(existingRule)
 			console.log(newRule)
 			console.log()
 
-			throw 'duplicate rule produced with empty-strings'
+			throw 'duplicate rule produced with edits'
 		}
 	}
 
