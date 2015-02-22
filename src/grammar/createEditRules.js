@@ -20,16 +20,23 @@ function findTermRulesProducingEmptyStrings(grammar, emptyProds) {
 
 	Object.keys(grammar).forEach(function (nontermSym) {
 		grammar[nontermSym].forEach(function (rule, ruleIdx, rules) {
-			if (rule.terminal && rule.RHS[0] === emptyTermSym) {
+			if (rule.terminal) {
+				var termSym = rule.RHS[0]
+				if (termSym === emptyTermSym) {
+					emptyProds[nontermSym] = {
+						cost: rule.cost,
+						insertedSyms: [ { symbol: termSym } ]
+					}
 
-				// Each nontermSym can have up to 1 empty sym (because no duplicates)
-				emptyProds[nontermSym] = {
-					cost: rule.cost,
-					insertedSyms: [ { symbol: emptyTermSym } ]
+					// Remove empty-string term syms from grammar
+					rules.splice(ruleIdx, 1)
+				} else if (rule.hasOwnProperty('insertionCost')) {
+					emptyProds[nontermSym] = {
+						cost: rule.cost + rule.insertionCost,
+						insertedSyms: [ { symbol: termSym } ],
+						text: termSym
+					}
 				}
-
-				// Remove empty-string term syms from grammar
-				rules.splice(ruleIdx, 1)
 			}
 		})
 	})
@@ -49,12 +56,14 @@ function findNontermRulesProducingEmptyStrings(grammar, emptyProds) {
 
 						return {
 							cost: emptyProd.cost,
+							text: emptyProd.text,
 							insertedSyms: [ { symbol: sym, children: emptyProd.insertedSyms } ]
 						}
 					}).reduce(function (A, B) { // Only run for rule with 2 RHS syms
 						// Two empty-strings produced by same rule (e.g., nonterm sym -> two term syms -> <empty>)
 						return {
 							cost: A.cost + B.cost,
+							text: A.text && B.text ? A.text + ' ' + B.text : A.text || B.text,
 							insertedSyms: A.insertedSyms.concat(B.insertedSyms)
 						}
 					})
@@ -64,6 +73,7 @@ function findNontermRulesProducingEmptyStrings(grammar, emptyProds) {
 						emptyProdsAdded = true
 						emptyProds[nontermSym] = {
 							cost: rule.cost + newEmptyProd.cost,
+							text: newEmptyProd.text,
 							insertedSyms: newEmptyProd.insertedSyms
 						}
 					}
@@ -94,8 +104,14 @@ function createsRulesFromEmptyStrings(grammar, emptyProds) {
 
 						var newRule = {
 							RHS: [ otherSym ],
-							cost: emptyProd.cost + rule.cost,
+							cost: rule.cost + emptyProd.cost,
 							insertedSyms: [ { symbol: sym, children: emptyProd.insertedSyms } ],
+						}
+
+						// Empty-strings don't produce text
+						if (emptyProd.text) {
+							newRule.text = emptyProd.text
+							newRule.textIdx = symIdx
 						}
 
 						if (!ruleExists(symRules, newRule)) {

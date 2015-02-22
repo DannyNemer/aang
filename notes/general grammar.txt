@@ -12,3 +12,6 @@ no two syms with strings - no Array for RHS
 'RegExp' in terms
 - strange that we are assigning these properties (gram props) to the rule, when it is really the Sym
 perhaps make a TermSymbol obj?
+
+
+<empty> (I think) always first in nonterms and second in terms (and opts?)

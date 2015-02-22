@@ -16,7 +16,7 @@ start.addRule({ RHS: [ users ]})
 
 
 var peopleTerm = new g.Symbol('people', 'term')
-peopleTerm.addRule({ terminal: true, RHS: 'people' })
+peopleTerm.addRule({ terminal: true, RHS: 'people', insertionCost: 2.5 })
 peopleTerm.addRule({ terminal: true, RHS: 'users' })
 
 var github = new g.Symbol('github')
