@@ -2,7 +2,9 @@ var Parser = require('./parser')
 var BinaryHeap = require('./heap')
 var matchTermSymbols = require('./matchTermSymbols')
 
+// move to parser.js?
 exports.parse = function (query, stateTable) {
+	stateTable.print()
 	var heap = new BinaryHeap()
 	var bestTrees = []
 	var matchedTermSymbols = matchTermSymbols(query)
@@ -54,12 +56,17 @@ exports.parse = function (query, stateTable) {
 					if (inputTermMatches) {
 						for (var t = inputTermMatches.length; t-- > 0;) {
 							var inputTermMatch = inputTermMatches[t]
+							if ((parser.end || 0) === inputTermMatch.start) {
+								var newParser = new Parser(stateTable.states)
 
-							var newParser = new Parser(stateTable.states)
-							newParser.shift(shift, vertex, stateTable.symbolTable[termSymName], inputTermMatch.cost, inputTermMatch)
-							newParser.cost = newParser.vertTab[0].cost
+								var termSym = stateTable.symbolTable[termSymName]
+								newParser.shift(shift, vertex, termSym, inputTermMatch.cost, inputTermMatch)
 
-							heap.push(newParser)
+								newParser.cost = newParser.vertTab[0].cost
+								newParser.end = inputTermMatch.end
+
+								heap.push(newParser)
+							}
 						}
 					}
 				}
@@ -68,5 +75,5 @@ exports.parse = function (query, stateTable) {
 	}
 
 	bestTrees.forEach(parser.printString)
-	// bestTrees.forEach(parser.printTree)
+	bestTrees.forEach(parser.printTree)
 }
