@@ -4,6 +4,7 @@ var Category = require('./category')
 var stopwords = require('./stopWords')
 var oneSg = require('./oneSg')
 var prep = require('./prepositions')
+var poss = require('./poss')
 
 
 var user = new Category('user')
@@ -23,7 +24,7 @@ var github = new g.Symbol('github')
 github.addRule({ terminal: true, RHS: g.emptyTermSym })
 github.addRule({ terminal: true, RHS: 'GitHub' }) // both accepted, though FB doesn't
 
-// Github users (I follow)
+// |Github users (I follow)
 user.head.addRule({ RHS: [ github, peopleTerm ] })
 
 // (people) I (follow)
@@ -36,6 +37,8 @@ follow.addRule({ terminal: true, RHS: 'follow' })
 follow.addRule({ terminal: true, RHS: 'followed' })
 follow.addRule({ terminal: true, RHS: 'am|is|are|were|was|be following' }) // rejected
 follow.addRule({ terminal: true, RHS: 'have followed' }) // rejected
+follow.addRule({ terminal: true, RHS: 'subscribe to' })
+follow.addRule({ terminal: true, RHS: 'subscribed to' }) // rejected
 
 // (people I) follow
 var stopwordFollow = new g.Symbol('stopword', 'follow')
@@ -61,3 +64,23 @@ byObjUsers.addRule({ RHS: [ prep.agent, objUsersPlus ]})
 
 // (people) followed by me
 user.passive.addRule({ RHS: [ follow, byObjUsers ] })
+
+
+// (people who) follow me
+user.subjFilter.addRule({ RHS: [ follow, objUsersPlus ]})
+
+
+
+var followersTerm = new g.Symbol('followers', 'term')
+followersTerm.addRule({ terminal: true, RHS: 'followers' })
+
+// (my) followers
+var userFollowersHead = new g.Symbol(user.name, 'followers', 'head')
+userFollowersHead.addRule({ RHS: [ github, followersTerm ] })
+
+// (my) followers
+var userFollowersPossessible = new g.Symbol(user.name, 'followers', 'possessible')
+userFollowersPossessible.addRule({ RHS: [ user.lhs, userFollowersHead ] })
+
+// my followers
+user.noRelativePossessive.addRule({ RHS: [ poss.determinerOmissible, userFollowersPossessible ] })
