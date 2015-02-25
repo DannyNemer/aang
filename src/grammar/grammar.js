@@ -127,6 +127,18 @@ exports.Symbol.prototype.ruleErr = function (errMessage, RHS) {
 	throw 'ill-formed rule'
 }
 
+// Sort nonterminal symbols alphabetically
+exports.sortGrammar = function () {
+	Object.keys(grammar).sort().forEach(function (symbol) {
+		var rules = grammar[symbol]
+		delete grammar[symbol]
+		grammar[symbol] = rules
+	})
+}
+
+exports.createEditRules = function () {
+	require('./createEditRules')(grammar)
+}
 
 // Print the total count of rules in the grammar
 // Print change if 'oldGrammarPath' passed
@@ -155,8 +167,4 @@ function ruleCount(grammar) {
 // Write grammar to 'filepath'
 exports.writeGrammarToFile = function (filepath) {
 	util.writeJSONFile(filepath, grammar)
-}
-
-exports.createEditRules = function () {
-	require('./createEditRules')(grammar)
 }
