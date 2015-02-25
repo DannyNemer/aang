@@ -4,7 +4,6 @@ var matchTermSymbols = require('./matchTermSymbols')
 
 // move to parser.js?
 exports.parse = function (query, stateTable) {
-	stateTable.print()
 	var heap = new BinaryHeap()
 	var bestTrees = []
 	var matchedTermSymbols = matchTermSymbols(query)
@@ -31,8 +30,8 @@ exports.parse = function (query, stateTable) {
 				parser.cost = startNode.totalCost
 			} else {
 				var cost = 0
-				for (var vertTab = parser.vertTab, v = vertTab.length; v-- > 0;) {
-					var vertex = vertTab[v]
+				for (var vertices = parser.vertices, v = vertices.length; v-- > 0;) {
+					var vertex = vertices[v]
 					if (vertex.cost > cost) cost = vertex.cost
 				}
 				//remove loop
@@ -46,8 +45,8 @@ exports.parse = function (query, stateTable) {
 		else {
 			var parserEndIdx = parser.inputTermMatch ? parser.inputTermMatch.end : 0
 
-			for (var vertTab = parser.vertTab, v = vertTab.length; v-- > 0;) {
-				var vertex = vertTab[v]
+			for (var vertices = parser.vertices, v = vertices.length; v-- > 0;) {
+				var vertex = vertices[v]
 
 				// used to have seperate termshifts
 				for (var shifts = vertex.state.termShifts, s = shifts.length; s-- > 0;) {
@@ -64,7 +63,7 @@ exports.parse = function (query, stateTable) {
 								var termSym = stateTable.symbolTable[termSymName]
 								newParser.shift(shift, vertex, termSym, inputTermMatch.cost, inputTermMatch)
 
-								newParser.cost = newParser.vertTab[0].cost
+								newParser.cost = newParser.vertices[0].cost
 
 								heap.push(newParser)
 							}

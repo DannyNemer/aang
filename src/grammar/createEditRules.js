@@ -1,4 +1,7 @@
-// Add edit-rules
+// Add new rules to grammar based on edit properties in existing rules:
+//   Empty-string - rules that produce empty-strings (i.e., optional)
+//   Insertions - inserting terminal symbols
+//   Transpotion - swapped RHS of nonterminal rules
 
 var util = require('../util')
 

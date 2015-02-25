@@ -2,8 +2,8 @@ module.exports = Parser
 
 function Parser(states) {
 	this.states = states
-	this.vertTab = [{ state: states[0], zNodes: [], cost: 0 }]
-	this.nodeTab = []
+	this.vertices = [{ state: states[0], zNodes: [], cost: 0 }]
+	this.nodes = []
 	this.reds = []
 	this.inputTermMatch = null
 	this.cost = 0
@@ -11,7 +11,7 @@ function Parser(states) {
 }
 
 Parser.prototype.shift = function (shift, oldVertex, nextTerm, nextTermCost, inputTermMatch) {
-	this.vertTab = []
+	this.vertices = []
 	this.inputTermMatch = inputTermMatch || null
 
 	var sub = {
@@ -28,8 +28,8 @@ Parser.prototype.shift = function (shift, oldVertex, nextTerm, nextTermCost, inp
 Parser.prototype.addSub = function (sym, sub, cost) {
 	var size = sub ? sub.size : 1
 
-	for (var nodeTab = this.nodeTab, n = nodeTab.length; n-- > 0;) {
-		var node = nodeTab[n]
+	for (var nodes = this.nodes, n = nodes.length; n-- > 0;) {
+		var node = nodes[n]
 		if (node.sym === sym && node.size === size)
 			if (node.cost === cost)
 				break
@@ -60,7 +60,7 @@ Parser.prototype.addSub = function (sym, sub, cost) {
 			node.end = this.inputTermMatch.end
 		}
 
-		nodeTab.push(node)
+		nodes.push(node)
 	}
 
 	if (sub) {
@@ -95,8 +95,8 @@ Parser.prototype.addSub = function (sym, sub, cost) {
 }
 
 Parser.prototype.addVertex = function (state) {
-	for (var vertTab = this.vertTab, v = vertTab.length; v-- > 0;) {
-		var vertex = vertTab[v]
+	for (var vertices = this.vertices, v = vertices.length; v-- > 0;) {
+		var vertex = vertices[v]
 		if (vertex.state === state)
 			return vertex
 	}
@@ -106,7 +106,7 @@ Parser.prototype.addVertex = function (state) {
 		zNodes: []
 	}
 
-	vertTab.push(vertex)
+	vertices.push(vertex)
 
 	return vertex
 }
@@ -146,9 +146,9 @@ Parser.prototype.addNode = function (node, state, oldVertex) {
 Parser.prototype.reduce = function () {
 	var red = this.reds.shift(),
 			zNode = red.zNode,
-			pathTabIdx = 0
+			pathIdx = 0
 
-	var pathTab = [ {
+	var paths = [ {
 		zNode: zNode,
 		sub: {
 			size: zNode.node.size,
@@ -160,13 +160,13 @@ Parser.prototype.reduce = function () {
 			redCost = red.RHS.cost
 
 	if (red.RHS.oneToTwo) {
-		var path = pathTab[pathTabIdx++],
+		var path = paths[pathIdx++],
 				sub = path.sub
 
 		for (var zNodes = path.zNode.vertex.zNodes, zNodesLen = zNodes.length, z = 0; z < zNodesLen; z++) {
 			zNode = zNodes[z]
 
-			pathTab.push({
+			paths.push({
 				zNode: zNode,
 				sub: {
 					size: zNode.node.size + sub.size,
@@ -177,8 +177,8 @@ Parser.prototype.reduce = function () {
 		}
 	}
 
-	for (var pathTabLen = pathTab.length; pathTabIdx < pathTabLen; ++pathTabIdx) {
-		var path = pathTab[pathTabIdx],
+	for (var pathTabLen = paths.length; pathIdx < pathTabLen; ++pathIdx) {
+		var path = paths[pathIdx],
 				node = this.addSub(nodeSym, path.sub, redCost),
 				vertex = path.zNode.vertex
 

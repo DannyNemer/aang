@@ -1,4 +1,10 @@
 var StateTable = require('./stateTable')
+
+// If node-debug, pause for 1 second to attach debugger
+// Option --debug-brk (or -b) does this, but broken in node v0.12
+// Relies on breakpoints being set in inspector on previous run
+while (/bin/.test(process.argv[0]) && process.uptime() < 1) {}
+
 var grammar = require('../../grammar.json')
 var stateTable = new StateTable(grammar, '[start]')
 
