@@ -1,25 +1,3 @@
-function SHOW_STATES(shifts) {
-	shifts.forEach(function (state, S) {
-		console.log(S + ':')
-
-		if (state.isFinal) console.log('\taccept')
-
-		state.reds.forEach(function (red) {
-			var toPrint = '\t[' + red.LHS.name + ' ->'
-
-			red.RHS.forEach(function (sym) {
-				toPrint += ' ' + sym.name
-			})
-
-			console.log(toPrint + ']')
-		})
-
-		state.shifts.forEach(function (shift) {
-			console.log('\t' + shift.sym.name + ' => ' +  shift.stateIdx)
-		})
-	})
-}
-
 function SHOW_NODE(node) {
 	if (node.sym.isLiteral) {
 		return ' \"' + node.sym.name + '\"'
@@ -28,9 +6,14 @@ function SHOW_NODE(node) {
 	}
 }
 
-function SHOW_FOREST(nodeTab) {
+Parser.prototype.SHOW_FOREST = function () {
 	console.log("\nParse Forest:")
-	nodeTab.forEach(function (node) {
+
+	if (parser.startNode) {
+		console.log('*' + SHOW_NODE(parser.startNode) + '.')
+	}
+
+	this.nodeTab.forEach(function (node) {
 		if (node.sym.isLiteral) return
 
 		var toPrint = SHOW_NODE(node)
@@ -90,169 +73,6 @@ function printGraph(startNode) {
 
 
 
-function lookUp(name, isLiteral) {
-	var sym = symbolTab[name]
-	if (sym && sym.isLiteral === isLiteral && sym.name === name)
-		return sym
-
-	return symbolTab[name] = {
-		name: name,
-		isLiteral: isLiteral,
-		index: LABEL++,
-		rules: []
-	}
-}
-
-function insertRule(sym, symBuf) {
-	for (var i = 0; i < sym.rules.length; i++) {
-		for (var j = 0; symBuf[j] && sym.rules[i][j]; j++) {
-			var diff = symBuf[j].index - sym.rules[i][j].index
-			if (diff) break
-		}
-
-		if (!diff && !sym.rules[i][j]) {
-			if (!symBuf[j]) return
-			else break
-		} else if (diff > 0) {
-			break
-		}
-	}
-
-	sym.rules.splice(i, 0, symBuf.slice())
-}
-
-function grammar(inputGrammar) {
-	symbolTab = {}
-	shifts = []
-	LABEL = 0
-
-	Object.keys(inputGrammar.nonTerminals).forEach(function (leftSymName) {
-		var LHS = lookUp(leftSymName)
-		inputGrammar.nonTerminals[leftSymName].forEach(function (rule) {
-			var symBuf = rule.RHS.map(function (rightSymName) {
-				return lookUp(rightSymName)
-			})
-			insertRule(LHS, symBuf)
-		})
-	})
-
-	Object.keys(inputGrammar.terminals).forEach(function (leftSymName) {
-		var symBuf = [ lookUp(leftSymName) ]
-		inputGrammar.terminals[leftSymName].forEach(function (rule) {
-			insertRule(lookUp(rule.RHS[0], true), symBuf)
-		})
-	})
-
-	return lookUp(inputGrammar.startSymbol)
-}
-
-function compItems(A, B) {
-	var diff = A.LHS ? (B.LHS ? A.LHS.index - B.LHS.index : 1) : (B.LHS ? -1 : 0)
-	if (diff) return diff
-
-	diff = (A.posIdx - A.RHSIdx) - (B.posIdx - B.RHSIdx)
-	if (diff) return diff
-
-	for (var AP = A.RHSIdx, BP = B.RHSIdx; A.RHS[AP] && B.RHS[BP]; AP++, BP++) {
-		diff = A.RHS[AP].index - B.RHS[BP].index
-		if (diff) break
-	}
-
-	return A.RHS[AP] ? (B.RHS[BP] ? diff : 1) : (B.RHS[BP] ? -1 : 0)
-}
-
-function next(state, sym) {
-	for (var S = 0; S < state.shifts.length; S++) {
-		var shift = state.shifts[S]
-		if (shift.sym === sym) return shifts[shift.stateIdx]
-	}
-}
-
-function addState(listTab, list) {
-	for (var S = 0; S < listTab.length; S++) {
-		var oldList = listTab[S]
-		if (oldList.length !== list.length) continue
-
-		var match = oldList.some(function (item, i) {
-			return compItems(item, list[i]) !== 0
-		})
-
-		if (!match) return S
-	}
-
-	return listTab.push(list) - 1
-}
-
-function addItem(items, item) {
-	for (var i = 0; i < items.list.length; i++) {
-		var diff = compItems(items.list[i], item)
-		if (diff === 0) return
-		if (diff > 0) break
-	}
-
-	items.list.splice(i, 0, {
-		LHS: item.LHS,
-		RHS: item.RHS,
-		RHSIdx: item.RHSIdx,
-		pos: item.pos,
-		posIdx: item.posIdx
-	})
-}
-
-function generate(startSym) {
-	var listTab = []
-
-	var startRule = [ startSym ]
-	addState(listTab, [ { RHS: startRule, RHSIdx: 0, pos: startRule, posIdx: 0 } ])
-
-	for (var S = 0; S < listTab.length; S++) {
-		var QBuf = listTab[S].slice(),
-				XTab = [],
-				newState = { reds: [] }
-
-		for (var Q = 0; Q < QBuf.length; Q++) {
-			var item = QBuf[Q]
-			if (!item.pos[item.posIdx]) {
-				if (!item.LHS) newState.isFinal = true
-			} else {
-				var sym = item.pos[item.posIdx++],
-						items = null
-
-				XTab.some(function (X) {
-					if (X.sym === sym)
-						return items = X
-				})
-
-				if (!items) {
-					items = { sym: sym, list: [] }
-					XTab.push(items)
-					sym.rules.forEach(function (rule) {
-						QBuf.push({ LHS: sym, RHS: rule, RHSIdx: 0, pos: rule, posIdx: 0 })
-					})
-				}
-
-				addItem(items, item)
-				item.posIdx--
-			}
-		}
-
-		shifts.push(newState)
-
-		QBuf.forEach(function (item) {
-			if (!item.pos[item.posIdx] && item.LHS) {
-				newState.reds.push({
-					LHS: item.LHS,
-					RHS: item.RHS
-				})
-			}
-		})
-
-		newState.shifts = XTab.map(function (shift) {
-			return { sym: shift.sym, stateIdx: addState(listTab, shift.list) }
-		})
-	}
-}
-
 /* TOMITA PARSER */
 function Parser(query) {
 	var tokens = query.split(' ')
@@ -265,7 +85,7 @@ function Parser(query) {
 	this.reds = []
 	this.redsIdx = 0
 
-	this.addVertex(shifts[0])
+	this.addVertex(stateTable.shifts[0])
 
 	while (true) {
 		/* REDUCE */
@@ -276,7 +96,7 @@ function Parser(query) {
 		this.position++
 		var token = tokens.shift()
 		if (!token) break
-		var word = lookUp(token, true)
+		var word = stateTable.lookUp(token, true)
 
 		if (word.rules.length === 0) {
 			console.log('UNRECOGNIZED WORD!!', token)
@@ -309,8 +129,8 @@ function Parser(query) {
 }
 
 Parser.prototype.addSub = function (sym, sub) {
-	var size = sym.isLiteral ? 1 : (sub ? sub.size : 0),
-			node
+	var size = sym.isLiteral ? 1 : (sub ? sub.size : 0)
+	var node
 
 	for (var N = this.nodeTabIdx; N < this.nodeTab.length; N++) {
 		node = this.nodeTab[N]
@@ -359,12 +179,19 @@ Parser.prototype.addVertex = function (state) {
 	return vertex
 }
 
+function next(state, sym) {
+	for (var S = 0; S < state.shifts.length; S++) {
+		var shift = state.shifts[S]
+		if (shift.sym === sym) return stateTable.shifts[shift.stateIdx]
+	}
+}
+
 Parser.prototype.addNode = function (node, oldVertex) {
 	var state = next(oldVertex.state, node.sym)
 	if (!state) return
 
-	var vertex = this.addVertex(state),
-			zNode
+	var vertex = this.addVertex(state)
+	var zNode
 
 	vertex.list.some(function (subZnode) {
 		if (subZnode.node === node)
@@ -426,10 +253,11 @@ Parser.prototype.reduce = function (red) {
 }
 
 
-generate(grammar(require('../gram0.json')))
-SHOW_STATES(shifts)
+var stateTable = new (require('./StateTable'))(require('../../gram0.json'))
+stateTable.print()
 
-var parser = new Parser('the girl in the park saw a boy with a telescope')
-SHOW_FOREST(parser.nodeTab)
-SHOW_STACK(parser.vertTab, shifts)
+var parser = new Parser('the girl in the park saw a boy with a telescope in the park with a girl with a telescope')
+
+parser.SHOW_FOREST()
+SHOW_STACK(parser.vertTab, stateTable.shifts)
 // if (parser.startNode) printGraph(parser.startNode)
