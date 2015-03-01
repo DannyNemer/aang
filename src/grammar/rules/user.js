@@ -21,7 +21,7 @@ user.head.addRule({ RHS: [ this.github, peopleTerm ] })
 
 var nomUsers = new g.Symbol('nom', 'users')
 // (people) I (follow)
-nomUsers.addRule({ RHS: [ oneSg.plain ] })
+nomUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'nom' })
 // (people) I'm (following) -> (people) I (follow)
 nomUsers.addRule({ RHS: [ oneSg.nom ] })
 
@@ -46,7 +46,7 @@ user.objFilter.addRule({ RHS: [ nomUsers, stopwordFollow ] })
 
 // (people followed by) me
 var objUser = new g.Symbol('obj', 'user')
-objUser.addRule({ RHS: [ oneSg.plain ] })
+objUser.addRule({ RHS: [ oneSg.plain ], gramCase: 'obj' })
 
 var objUsers = new g.Symbol('obj', 'users')
 // (people who follow) me
