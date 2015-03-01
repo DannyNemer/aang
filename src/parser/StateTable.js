@@ -44,7 +44,7 @@ function insertRule(sym, symBuf, cost) {
 	var existingRules = sym.rules
 
 	for (var i = 0; i < existingRules.length; i++) {
-		var existingRuleRHS = existingRules[i].syms
+		var existingRuleRHS = existingRules[i].RHS
 		var diff
 
 		for (var j = 0; symBuf[j] && existingRuleRHS[j]; j++) {
@@ -54,6 +54,7 @@ function insertRule(sym, symBuf, cost) {
 
 		if (diff === 0 && !existingRuleRHS[j]) {
 			if (!symBuf[j]) return
+			// if (!symBuf[j] && cost === existingRules[i].cost) return // Identical RHS
 			else break
 		} else if (diff > 0) {
 			break
@@ -61,7 +62,7 @@ function insertRule(sym, symBuf, cost) {
 	}
 
 	existingRules.splice(i, 0, {
-		syms: symBuf,
+		RHS: symBuf,
 		cost: cost
 	})
 }
@@ -73,15 +74,17 @@ function compItems(A, B) {
 	diff = A.RHSIdx - B.RHSIdx
 	if (diff) return diff
 
-	var ARHSSyms = A.RHS.syms
-	var BRHSSyms = B.RHS.syms
-
-	for (var i = 0; ARHSSyms[i] && BRHSSyms[i]; ++i) {
-		diff = ARHSSyms[i].index - BRHSSyms[i].index
+	for (var i = 0; A.RHS[i] && B.RHS[i]; ++i) {
+		diff = A.RHS[i].index - B.RHS[i].index
 		if (diff) break
 	}
 
-	return ARHSSyms[i] ? (BRHSSyms[i] ? diff : 1) : (BRHSSyms[i] ? -1 : 0)
+	// if (!A.RHS[i] && !B.RHS[i]) {
+	// 	if (A.cost === B.cost) return 0
+	// 	else return 1
+	// }
+
+	return A.RHS[i] ? (B.RHS[i] ? diff : 1) : (B.RHS[i] ? -1 : 0)
 }
 
 function addState(ruleSets, newRuleSet) {
@@ -112,15 +115,16 @@ function addRule(items, rule) {
 	items.list.splice(i, 0, {
 		LHS: rule.LHS,
 		RHS: rule.RHS,
-		RHSIdx: rule.RHSIdx
+		RHSIdx: rule.RHSIdx,
+		cost: rule.cost
 	})
 }
 
 StateTable.prototype.generate = function (startSym) {
 	var ruleSets = []
 
-	var startRule = { syms: [ startSym ] }
-	addState(ruleSets, [ { RHS: startRule, RHSIdx: 0 } ])
+	var startRule = { RHS: [ startSym ], RHSIdx: 0 }
+	addState(ruleSets, [ startRule ])
 
 	for (var S = 0; S < ruleSets.length; S++) {
 		var ruleSet = ruleSets[S].slice()
@@ -130,10 +134,10 @@ StateTable.prototype.generate = function (startSym) {
 		for (var r = 0; r < ruleSet.length; r++) {
 			var rule = ruleSet[r]
 
-			if (!rule.RHS.syms[rule.RHSIdx]) {
+			if (!rule.RHS[rule.RHSIdx]) {
 				if (!rule.LHS) newState.isFinal = true
 			} else {
-				var RHSSym = rule.RHS.syms[rule.RHSIdx]
+				var RHSSym = rule.RHS[rule.RHSIdx]
 				var items = null
 
 				for (var x = XTab.length; x-- > 0;) {
@@ -150,7 +154,7 @@ StateTable.prototype.generate = function (startSym) {
 
 					// RHS rules from grammar
 					RHSSym.rules.forEach(function (rule) {
-						ruleSet.push({ LHS: RHSSym, RHS: rule, RHSIdx: 0 })
+						ruleSet.push({ LHS: RHSSym, RHS: rule.RHS, RHSIdx: 0, cost: rule.cost })
 					})
 				}
 
@@ -163,10 +167,11 @@ StateTable.prototype.generate = function (startSym) {
 		}
 
 		ruleSet.forEach(function (rule) {
-			if (!rule.RHS.syms[rule.RHSIdx] && rule.LHS) {
+			if (!rule.RHS[rule.RHSIdx] && rule.LHS) {
 				newState.reds.push({
 					LHS: rule.LHS,
-					RHS: rule.RHS
+					RHS: rule.RHS,
+					cost: rule.cost
 				})
 			}
 		})
@@ -188,11 +193,11 @@ StateTable.prototype.print = function () {
 		state.reds.forEach(function (red) {
 			var toPrint = '\t[' + red.LHS.name + ' ->'
 
-			red.RHS.syms.forEach(function (sym) {
+			red.RHS.forEach(function (sym) {
 				toPrint += ' ' + sym.name
 			})
 
-			console.log(toPrint + ']')
+			console.log(toPrint + '] ' + red.cost)
 		})
 
 		state.shifts.forEach(function (shift) {

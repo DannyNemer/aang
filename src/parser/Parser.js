@@ -42,7 +42,8 @@ Parser.prototype.parse = function (query) {
 		this.vertTabIdx = this.vertTab.length
 		this.nodeTabIdx = this.nodeTab.length
 		word.rules.forEach(function (rule) {
-			var node = this.addSub(rule.syms[0], sub)
+			var node = this.addSub(rule.RHS[0], sub)
+
 			for (var vertIdx = oldVertTabIdx; vertIdx < this.vertTabIdx; vertIdx++) {
 				this.addNode(node, this.vertTab[vertIdx])
 			}
@@ -52,6 +53,7 @@ Parser.prototype.parse = function (query) {
 	/* ACCEPT */
 	for (var vertIdx = this.vertTabIdx; vertIdx < this.vertTab.length; vertIdx++) {
 		var vertex = this.vertTab[vertIdx]
+
 		if (vertex.state.isFinal) {
 			this.startNode = vertex.list[0].node
 			break
@@ -157,7 +159,7 @@ Parser.prototype.reduce = function (red) {
 		}
 	} ]
 
-	for (var RHSIdx = 1, pathTabIdx = 0; RHSIdx < red.RHS.syms.length; RHSIdx++) {
+	for (var RHSIdx = 1, pathTabIdx = 0; RHSIdx < red.RHS.length; RHSIdx++) {
 		var path = pathTab[pathTabIdx++],
 				sub = path.sub
 
