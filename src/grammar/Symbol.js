@@ -7,8 +7,16 @@ module.exports = Symbol
 // Constructor for nonterminal symbols
 // Concatenates arguments after 0th index as Symbol's name
 function Symbol(grammar) {
+	var symNameChunks = Array.prototype.slice.call(arguments, 1)
+
+	if (symNameChunks.indexOf(undefined) !== -1) {
+		console.log('undefined String in Symbol name:', symNameChunks)
+		console.log(util.getLine())
+		throw 'ill-formed Symbol'
+	}
+
 	// Symbol names will be removed from production to conserve memory
-	this.name = '[' + Array.prototype.slice.call(arguments, 1).join('-') + ']'
+	this.name = '[' + symNameChunks.join('-') + ']'
 
 	if (grammar.hasOwnProperty(this.name)) {
 		console.log('duplicate Symbol:', this.name)
