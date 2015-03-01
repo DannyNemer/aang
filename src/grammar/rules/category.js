@@ -3,48 +3,53 @@ var relativePronouns = require('./relativePronouns')
 var auxVerbs = require('./auxVerbs')
 var stopWords = require('./stopWords')
 
-// Create the rules every category has
-module.exports = function Category(catName) {
-	this.name = catName
+// Start symbol
+var start = new g.Symbol('start')
 
-	this.lhs = new g.Symbol(catName, 'lhs')
+// Create the rules every category has
+// - catName: { sg: String, pl: String }
+module.exports = function Category(catName) {
+	this.nameSg = catName.sg
+	this.namePl = catName.pl
+
+	this.lhs = new g.Symbol(this.nameSg, 'lhs')
 	this.lhs.addRule({ terminal: true, RHS: g.emptyTermSym })
 
-	var lhsHead = new g.Symbol(catName, 'lhs', catName, 'head')
+	var lhsHead = new g.Symbol(this.nameSg, 'lhs', this.nameSg, 'head')
 	// people (I follow); people (followed by me)
-	this.head = new g.Symbol(catName, 'head')
+	this.head = new g.Symbol(this.nameSg, 'head')
 	lhsHead.addRule({ RHS: [ this.lhs, this.head ], transpositionCost: 1 })
 
 
-	var passivePlus = new g.Symbol(catName, 'passive+')
+	var passivePlus = new g.Symbol(this.nameSg, 'passive+')
 	// (people) followed by me
-	this.passive = new g.Symbol(catName, 'passive')
+	this.passive = new g.Symbol(this.nameSg, 'passive')
 	passivePlus.addRule({ RHS: [ this.passive ] })
 
-	var reducedNoTense = new g.Symbol(catName, 'reduced', 'no', 'tense')
+	var reducedNoTense = new g.Symbol(this.nameSg, 'reduced', 'no', 'tense')
 	// (people) followed by me; (people who are) followed by me
 	reducedNoTense.addRule({ RHS: [ passivePlus ]})
 
-	var reduced = new g.Symbol(catName, 'reduced')
+	var reduced = new g.Symbol(this.nameSg, 'reduced')
 	// (people) followed by me
 	reduced.addRule({ RHS: [ reducedNoTense ]})
 
 
 	// (people who) follow me
-	this.subjFilter = new g.Symbol(catName, 'subj', 'filter')
+	this.subjFilter = new g.Symbol(this.nameSg, 'subj', 'filter')
 
 
-	var objFilterPlus = new g.Symbol(catName, 'obj', 'filter+')
+	var objFilterPlus = new g.Symbol(this.nameSg, 'obj', 'filter+')
 	// (people) I follow
-	this.objFilter = new g.Symbol(catName, 'obj', 'filter')
+	this.objFilter = new g.Symbol(this.nameSg, 'obj', 'filter')
 	objFilterPlus.addRule({ RHS: [ this.objFilter ] })
 
-	var rhsExt = new g.Symbol(catName, 'rhs', 'ext')
+	var rhsExt = new g.Symbol(this.nameSg, 'rhs', 'ext')
 	// (people) I follow
 	rhsExt.addRule({ RHS: [ objFilterPlus ] })
 
 
-	var rhs = new g.Symbol(catName, 'rhs')
+	var rhs = new g.Symbol(this.nameSg, 'rhs')
 	rhs.addRule({ terminal: true, RHS: g.emptyTermSym })
 	// (people) followed by me
 	rhs.addRule({ RHS: [ reduced ] })
@@ -54,12 +59,12 @@ module.exports = function Category(catName) {
 	rhs.addRule({ RHS: [ rhs, stopWords.sentenceAdverbial ] })
 
 
-	var noRelativeBase = new g.Symbol(catName, 'no', 'relative', 'base')
+	var noRelativeBase = new g.Symbol(this.nameSg, 'no', 'relative', 'base')
 	// people I follow; people followed by me
 	noRelativeBase.addRule({ RHS: [ lhsHead, rhs ], transpositionCost: 1 })
 
 
-	var filter = new g.Symbol(catName, 'filter')
+	var filter = new g.Symbol(this.nameSg, 'filter')
 	// (people who) follow me
 	filter.addRule({ RHS: [ this.subjFilter ]})
 	// (people who) I follow
@@ -69,32 +74,38 @@ module.exports = function Category(catName) {
 	// (people who) are followed by me
 	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, reducedNoTense ]})
 
-	var bePastReducedNoTense = new g.Symbol('be', 'past', catName, 'reduced', 'no', 'tense')
+	var bePastReducedNoTense = new g.Symbol('be', 'past', this.nameSg, 'reduced', 'no', 'tense')
 	// (people who have) been followed by me; (people who have) been following me
 	bePastReducedNoTense.addRule({ RHS: [ auxVerbs.bePast, reducedNoTense ] })
 	// (people who) have been folllowed by me; (people who) have been following me
 	filter.addRule({ RHS: [ auxVerbs.have, bePastReducedNoTense ] })
 
 
-	var filterPlus = new g.Symbol(catName, 'filter+')
+	var filterPlus = new g.Symbol(this.nameSg, 'filter+')
 	filterPlus.addRule({ RHS: [ filter ] })
 
-	var relativeclause = new g.Symbol(catName, 'relativeclause')
+	var relativeclause = new g.Symbol(this.nameSg, 'relativeclause')
 	// (people) who are followed by me
 	relativeclause.addRule({ RHS: [ relativePronouns.who, filterPlus ]})
 
 
-	var noRelative = new g.Symbol(catName, 'no', 'relative')
+	var noRelative = new g.Symbol(this.nameSg, 'no', 'relative')
 	// people I follow
 	noRelative.addRule({ RHS: [ noRelativeBase ] })
 	// my followers
-	this.noRelativePossessive = new g.Symbol(catName, 'no', 'relative', 'possessive')
+	this.noRelativePossessive = new g.Symbol(this.nameSg, 'no', 'relative', 'possessive')
 	noRelative.addRule({ RHS: [ this.noRelativePossessive, rhs ] })
 
 
-	this.plural = new g.Symbol(catName, 'plural')
+	this.plural = new g.Symbol(this.nameSg, 'plural')
 	// people I follow
 	this.plural.addRule({ RHS: [ noRelative ]})
 	// people who are followed by me
 	this.plural.addRule({ RHS: [ noRelative, relativeclause ]})
+
+
+	var catPl = new g.Symbol(this.namePl)
+	catPl.addRule({ RHS: [ this.plural ] })
+
+	start.addRule({ RHS: [ catPl ]})
 }

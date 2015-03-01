@@ -1,31 +1,23 @@
 var g = require('../grammar')
-
-var Category = require('./category')
+var Category = require('./Category')
 var stopwords = require('./stopWords')
 var oneSg = require('./oneSg')
 var preps = require('./prepositions')
 var poss = require('./poss')
 
 
-var user = new Category('user')
-
-var users = new g.Symbol('users')
-users.addRule({ RHS: [ user.plural ] })
-
-var start = new g.Symbol('start')
-start.addRule({ RHS: [ users ]})
-
+var user = new Category({ sg: 'user', pl: 'users' })
 
 var peopleTerm = new g.Symbol('people', 'term')
 peopleTerm.addRule({ terminal: true, RHS: 'people', insertionCost: 2.5 })
 peopleTerm.addRule({ terminal: true, RHS: 'users' })
 
-var github = new g.Symbol('github')
-github.addRule({ terminal: true, RHS: g.emptyTermSym })
-github.addRule({ terminal: true, RHS: 'GitHub' }) // both accepted, though FB doesn't
+this.github = new g.Symbol('github')
+this.github.addRule({ terminal: true, RHS: g.emptyTermSym })
+this.github.addRule({ terminal: true, RHS: 'GitHub' }) // both accepted, though FB doesn't
 
 // |Github users (I follow)
-user.head.addRule({ RHS: [ github, peopleTerm ] })
+user.head.addRule({ RHS: [ this.github, peopleTerm ] })
 
 var nomUsers = new g.Symbol('nom', 'users')
 // (people) I (follow)
@@ -83,7 +75,7 @@ followersTerm.addRule({ terminal: true, RHS: 'followers' })
 
 // (my) followers
 var userFollowersHead = new g.Symbol(user.name, 'followers', 'head')
-userFollowersHead.addRule({ RHS: [ github, followersTerm ] })
+userFollowersHead.addRule({ RHS: [ this.github, followersTerm ] })
 
 // (my) followers
 var userFollowersPossessible = new g.Symbol(user.name, 'followers', 'possessible')
