@@ -4,20 +4,23 @@ function StateTable(inputGrammar) {
 	this.symbolTab = {}
 	this.shifts = []
 
-	Object.keys(inputGrammar.nonTerminals).forEach(function (leftSymName) {
+	Object.keys(inputGrammar.nonterminals).forEach(function (leftSymName) {
 		var LHS = this.lookUp(leftSymName)
-		inputGrammar.nonTerminals[leftSymName].forEach(function (rule) {
+
+		inputGrammar.nonterminals[leftSymName].forEach(function (rule) {
 			var newRuleRHS = rule.RHS.map(function (rightSymName) {
 				return this.lookUp(rightSymName)
 			}, this)
-			this.insertRule(LHS, newRuleRHS)
+
+			insertRule(LHS, newRuleRHS, rule.cost)
 		}, this)
 	}, this)
 
 	Object.keys(inputGrammar.terminals).forEach(function (leftSymName) {
 		var symBuf = [ this.lookUp(leftSymName) ]
+
 		inputGrammar.terminals[leftSymName].forEach(function (rule) {
-			this.insertRule(this.lookUp(rule.RHS[0], true), symBuf)
+			insertRule(this.lookUp(rule.RHS[0], true), symBuf, rule.cost)
 		}, this)
 	}, this)
 
@@ -37,123 +40,133 @@ StateTable.prototype.lookUp = function (name, isLiteral) {
 	}
 }
 
-StateTable.prototype.insertRule = function (sym, newRuleRHS) {
+function insertRule(sym, symBuf, cost) {
 	var existingRules = sym.rules
 
 	for (var i = 0; i < existingRules.length; i++) {
-		var existingRuleRHS = existingRules[i]
+		var existingRuleRHS = existingRules[i].syms
 		var diff
 
-		for (var j = 0; newRuleRHS[j] && existingRuleRHS[j]; j++) {
-			diff = newRuleRHS[j].index - existingRuleRHS[j].index
+		for (var j = 0; symBuf[j] && existingRuleRHS[j]; j++) {
+			diff = symBuf[j].index - existingRuleRHS[j].index
 			if (diff) break
 		}
 
 		if (diff === 0 && !existingRuleRHS[j]) {
-			if (!newRuleRHS[j]) return
+			if (!symBuf[j]) return
 			else break
 		} else if (diff > 0) {
 			break
 		}
 	}
 
-	existingRules.splice(i, 0, newRuleRHS)
+	existingRules.splice(i, 0, {
+		syms: symBuf,
+		cost: cost
+	})
 }
 
 function compItems(A, B) {
 	var diff = A.LHS ? (B.LHS ? A.LHS.index - B.LHS.index : 1) : (B.LHS ? -1 : 0)
 	if (diff) return diff
 
-	diff = (A.posIdx - A.RHSIdx) - (B.posIdx - B.RHSIdx)
+	diff = A.RHSIdx - B.RHSIdx
 	if (diff) return diff
 
-	for (var AP = A.RHSIdx, BP = B.RHSIdx; A.RHS[AP] && B.RHS[BP]; AP++, BP++) {
-		diff = A.RHS[AP].index - B.RHS[BP].index
+	var ARHSSyms = A.RHS.syms
+	var BRHSSyms = B.RHS.syms
+
+	for (var i = 0; ARHSSyms[i] && BRHSSyms[i]; ++i) {
+		diff = ARHSSyms[i].index - BRHSSyms[i].index
 		if (diff) break
 	}
 
-	return A.RHS[AP] ? (B.RHS[BP] ? diff : 1) : (B.RHS[BP] ? -1 : 0)
+	return ARHSSyms[i] ? (BRHSSyms[i] ? diff : 1) : (BRHSSyms[i] ? -1 : 0)
 }
 
-function addState(ruleSets, list) {
+function addState(ruleSets, newRuleSet) {
 	for (var S = 0; S < ruleSets.length; S++) {
-		var oldList = ruleSets[S]
-		if (oldList.length !== list.length) continue
+		var existingRuleSet = ruleSets[S]
+		if (existingRuleSet.length !== newRuleSet.length) continue
 
-		for (var i = 0; i < oldList.length; ++i) {
-			if (compItems(oldList[i], list[i]) !== 0) break
+		for (var i = 0; i < existingRuleSet.length; ++i) {
+			if (compItems(existingRuleSet[i], newRuleSet[i]) !== 0) break
 		}
 
-		if (i >= oldList.length) {
+		if (i >= existingRuleSet.length) {
 			return S
 		}
 	}
 
-	return ruleSets.push(list) - 1
+	return ruleSets.push(newRuleSet) - 1
 }
 
-function addItem(items, item) {
+function addRule(items, rule) {
 	for (var i = 0; i < items.list.length; i++) {
-		var diff = compItems(items.list[i], item)
+		var diff = compItems(items.list[i], rule)
+
 		if (diff === 0) return
 		if (diff > 0) break
 	}
 
 	items.list.splice(i, 0, {
-		LHS: item.LHS,
-		RHS: item.RHS,
-		RHSIdx: item.RHSIdx,
-		pos: item.pos,
-		posIdx: item.posIdx
+		LHS: rule.LHS,
+		RHS: rule.RHS,
+		RHSIdx: rule.RHSIdx
 	})
 }
 
 StateTable.prototype.generate = function (startSym) {
 	var ruleSets = []
 
-	var startRule = [ startSym ]
-	addState(ruleSets, [ { RHS: startRule, RHSIdx: 0, pos: startRule, posIdx: 0 } ])
+	var startRule = { syms: [ startSym ] }
+	addState(ruleSets, [ { RHS: startRule, RHSIdx: 0 } ])
 
 	for (var S = 0; S < ruleSets.length; S++) {
-		var rules = ruleSets[S].slice()
+		var ruleSet = ruleSets[S].slice()
 		var XTab = []
 		var newState = { reds: [] }
 
-		for (var r = 0; r < rules.length; r++) {
-			var item = rules[r]
-			if (!item.pos[item.posIdx]) {
-				if (!item.LHS) newState.isFinal = true
+		for (var r = 0; r < ruleSet.length; r++) {
+			var rule = ruleSet[r]
+
+			if (!rule.RHS.syms[rule.RHSIdx]) {
+				if (!rule.LHS) newState.isFinal = true
 			} else {
-				var sym = item.pos[item.posIdx]
+				var RHSSym = rule.RHS.syms[rule.RHSIdx]
 				var items = null
 
 				for (var x = XTab.length; x-- > 0;) {
 					var xItems = XTab[x]
-					if (xItems.sym === sym) {
+					if (xItems.sym === RHSSym) {
 						items = xItems
 						break
 					}
 				}
 
 				if (!items) {
-					items = { sym: sym, list: [] }
+					items = { sym: RHSSym, list: [] }
 					XTab.push(items)
-					sym.rules.forEach(function (rule) {
-						rules.push({ LHS: sym, RHS: rule, RHSIdx: 0, pos: rule, posIdx: 0 })
+
+					// RHS rules from grammar
+					RHSSym.rules.forEach(function (rule) {
+						ruleSet.push({ LHS: RHSSym, RHS: rule, RHSIdx: 0 })
 					})
 				}
 
-				item.posIdx++
-				addItem(items, item)
-				item.posIdx--
+				// Duplicate rule, saving RHSIdx
+				// Add rule to list of rules that produce RHSSym
+				rule.RHSIdx++
+				addRule(items, rule)
+				rule.RHSIdx--
 			}
 		}
 
-		rules.forEach(function (item) {
-			if (!item.pos[item.posIdx] && item.LHS) {
+		ruleSet.forEach(function (rule) {
+			if (!rule.RHS.syms[rule.RHSIdx] && rule.LHS) {
 				newState.reds.push({
-					LHS: item.LHS,
-					RHS: item.RHS
+					LHS: rule.LHS,
+					RHS: rule.RHS
 				})
 			}
 		})
@@ -175,7 +188,7 @@ StateTable.prototype.print = function () {
 		state.reds.forEach(function (red) {
 			var toPrint = '\t[' + red.LHS.name + ' ->'
 
-			red.RHS.forEach(function (sym) {
+			red.RHS.syms.forEach(function (sym) {
 				toPrint += ' ' + sym.name
 			})
 

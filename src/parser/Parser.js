@@ -1,80 +1,10 @@
-function SHOW_NODE(node) {
-	if (node.sym.isLiteral) {
-		return ' \"' + node.sym.name + '\"'
-	} else {
-		return ' ' + node.sym.name + '_' + node.start + '_' + (node.start + node.size)
-	}
+module.exports = Parser
+
+function Parser(stateTable) {
+	this.stateTable = stateTable
 }
 
-Parser.prototype.SHOW_FOREST = function () {
-	console.log("\nParse Forest:")
-
-	if (parser.startNode) {
-		console.log('*' + SHOW_NODE(parser.startNode) + '.')
-	}
-
-	this.nodeTab.forEach(function (node) {
-		if (node.sym.isLiteral) return
-
-		var toPrint = SHOW_NODE(node)
-
-		if (node.subs.length > 0) {
-			if (node.subs[0].parNode.sym.isLiteral) toPrint += ':'
-			else toPrint += ' ='
-		}
-
-		node.subs.forEach(function (sub, S) {
-			if (S > 0) toPrint += ' |'
-			for (; sub; sub = sub.next)
-				toPrint += SHOW_NODE(sub.parNode)
-		})
-
-		console.log(toPrint + '.');
-	})
-}
-
-function SHOW_STACK(vertTab, shifts) {
-	console.log("\nParse Stack:")
-	vertTab.forEach(function (vertex) {
-		var toPrint = ' v_' + vertex.start + '_' + shifts.indexOf(vertex.state)
-
-		if (vertex.list.length > 0) toPrint += ' <=\t'
-		else console.log(toPrint)
-
-		vertex.list.forEach(function (zNode, Z) {
-			if (Z > 0) toPrint += '\t\t'
-
-			toPrint += ' [' + SHOW_NODE(zNode.node) + ' ] <='
-
-			zNode.list.forEach(function (subVertex) {
-				toPrint += ' v_' + subVertex.start + '_' + shifts.indexOf(subVertex.state)
-			})
-
-			if (Z === vertex.list.length - 1) console.log(toPrint)
-			else toPrint += '\n'
-		})
-	})
-}
-
-function printGraph(startNode) {
-	console.log(JSON.stringify(print(startNode), null, 1))
-	function print (node) {
-		var newNode = { symbol: node.sym.name }
-		if (node.subs.length) {
-			newNode.children = []
-			node.subs.forEach(function (sub) {
-				for (; sub; sub = sub.next)
-					newNode.children.push(print(sub.parNode))
-			})
-		}
-		return newNode
-	}
-}
-
-
-
-/* TOMITA PARSER */
-function Parser(query) {
+Parser.prototype.parse = function (query) {
 	var tokens = query.split(' ')
 
 	this.position = 0
@@ -85,7 +15,7 @@ function Parser(query) {
 	this.reds = []
 	this.redsIdx = 0
 
-	this.addVertex(stateTable.shifts[0])
+	this.addVertex(this.stateTable.shifts[0])
 
 	while (true) {
 		/* REDUCE */
@@ -96,7 +26,7 @@ function Parser(query) {
 		this.position++
 		var token = tokens.shift()
 		if (!token) break
-		var word = stateTable.lookUp(token, true)
+		var word = this.stateTable.lookUp(token, true)
 
 		if (word.rules.length === 0) {
 			console.log('UNRECOGNIZED WORD!!', token)
@@ -112,9 +42,10 @@ function Parser(query) {
 		this.vertTabIdx = this.vertTab.length
 		this.nodeTabIdx = this.nodeTab.length
 		word.rules.forEach(function (rule) {
-			var node = this.addSub(rule[0], sub)
-			for (var vertIdx = oldVertTabIdx; vertIdx < this.vertTabIdx; vertIdx++)
+			var node = this.addSub(rule.syms[0], sub)
+			for (var vertIdx = oldVertTabIdx; vertIdx < this.vertTabIdx; vertIdx++) {
 				this.addNode(node, this.vertTab[vertIdx])
+			}
 		}, this)
 	}
 
@@ -179,15 +110,17 @@ Parser.prototype.addVertex = function (state) {
 	return vertex
 }
 
-function next(state, sym) {
-	for (var S = 0; S < state.shifts.length; S++) {
-		var shift = state.shifts[S]
-		if (shift.sym === sym) return stateTable.shifts[shift.stateIdx]
+Parser.prototype.next = function (state, sym) {
+	var stateShifts = state.shifts
+
+	for (var S = 0; S < stateShifts.length; S++) {
+		var shift = stateShifts[S]
+		if (shift.sym === sym) return this.stateTable.shifts[shift.stateIdx]
 	}
 }
 
 Parser.prototype.addNode = function (node, oldVertex) {
-	var state = next(oldVertex.state, node.sym)
+	var state = this.next(oldVertex.state, node.sym)
 	if (!state) return
 
 	var vertex = this.addVertex(state)
@@ -224,7 +157,7 @@ Parser.prototype.reduce = function (red) {
 		}
 	} ]
 
-	for (var RHSIdx = 1, pathTabIdx = 0; RHSIdx < red.RHS.length; RHSIdx++) {
+	for (var RHSIdx = 1, pathTabIdx = 0; RHSIdx < red.RHS.syms.length; RHSIdx++) {
 		var path = pathTab[pathTabIdx++],
 				sub = path.sub
 
@@ -252,12 +185,81 @@ Parser.prototype.reduce = function (red) {
 	}
 }
 
+function printNode(node) {
+	if (node.sym.isLiteral) {
+		return ' \"' + node.sym.name + '\"'
+	} else {
+		return ' ' + node.sym.name + '_' + node.start + '_' + (node.start + node.size)
+	}
+}
 
-var stateTable = new (require('./StateTable'))(require('../../gram0.json'))
-stateTable.print()
+Parser.prototype.printForest = function () {
+	console.log("\nParse Forest:")
 
-var parser = new Parser('the girl in the park saw a boy with a telescope in the park with a girl with a telescope')
+	if (this.startNode) {
+		console.log('*' + printNode(this.startNode) + '.')
+	}
 
-parser.SHOW_FOREST()
-SHOW_STACK(parser.vertTab, stateTable.shifts)
-// if (parser.startNode) printGraph(parser.startNode)
+	this.nodeTab.forEach(function (node) {
+		if (node.sym.isLiteral) return
+
+		var toPrint = printNode(node)
+
+		if (node.subs.length > 0) {
+			if (node.subs[0].parNode.sym.isLiteral) toPrint += ':'
+			else toPrint += ' ='
+		}
+
+		node.subs.forEach(function (sub, S) {
+			if (S > 0) toPrint += ' |'
+			for (; sub; sub = sub.next)
+				toPrint += printNode(sub.parNode)
+		})
+
+		console.log(toPrint + '.');
+	})
+}
+
+Parser.prototype.printStack = function () {
+	var shifts = this.stateTable.shifts
+
+	console.log("\nParse Stack:")
+
+	this.vertTab.forEach(function (vertex) {
+		var toPrint = ' v_' + vertex.start + '_' + shifts.indexOf(vertex.state)
+
+		if (vertex.list.length > 0) toPrint += ' <=\t'
+		else console.log(toPrint)
+
+		vertex.list.forEach(function (zNode, Z) {
+			if (Z > 0) toPrint += '\t\t'
+
+			toPrint += ' [' + printNode(zNode.node) + ' ] <='
+
+			zNode.list.forEach(function (subVertex) {
+				toPrint += ' v_' + subVertex.start + '_' + shifts.indexOf(subVertex.state)
+			})
+
+			if (Z === vertex.list.length - 1) console.log(toPrint)
+			else toPrint += '\n'
+		})
+	})
+}
+
+Parser.prototype.printGraph = function () {
+	console.log(JSON.stringify(print(this.startNode), null, 1))
+
+	function print(node) {
+		var newNode = { symbol: node.sym.name }
+
+		if (node.subs.length) {
+			newNode.children = []
+			node.subs.forEach(function (sub) {
+				for (; sub; sub = sub.next)
+					newNode.children.push(print(sub.parNode))
+			})
+		}
+
+		return newNode
+	}
+}
