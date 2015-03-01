@@ -3,7 +3,7 @@ var g = require('../grammar')
 var Category = require('./category')
 var stopwords = require('./stopWords')
 var oneSg = require('./oneSg')
-var prep = require('./prepositions')
+var preps = require('./prepositions')
 var poss = require('./poss')
 
 
@@ -27,16 +27,20 @@ github.addRule({ terminal: true, RHS: 'GitHub' }) // both accepted, though FB do
 // |Github users (I follow)
 user.head.addRule({ RHS: [ github, peopleTerm ] })
 
-// (people) I (follow)
 var nomUsers = new g.Symbol('nom', 'users')
+// (people) I (follow)
 nomUsers.addRule({ RHS: [ oneSg.plain ] })
+// (people) I'm (following) -> (people) I (follow)
+nomUsers.addRule({ RHS: [ oneSg.nom ] })
 
 // FOLLOW:
 var follow = new g.Symbol('follow')
 follow.addRule({ terminal: true, RHS: 'follow' })
 follow.addRule({ terminal: true, RHS: 'followed' })
-follow.addRule({ terminal: true, RHS: 'am|is|are|were|was|be following' }) // rejected
 follow.addRule({ terminal: true, RHS: 'have followed' }) // rejected
+follow.addRule({ terminal: true, RHS: 'following' }) // rejected
+follow.addRule({ terminal: true, RHS: 'have|has|had been following' }) // rejected
+follow.addRule({ terminal: true, RHS: 'am|is|are|were|was|be following' }) // rejected
 follow.addRule({ terminal: true, RHS: 'subscribe to' })
 follow.addRule({ terminal: true, RHS: 'subscribed to' }) // rejected
 
@@ -53,14 +57,17 @@ var objUser = new g.Symbol('obj', 'user')
 objUser.addRule({ RHS: [ oneSg.plain ] })
 
 var objUsers = new g.Symbol('obj', 'users')
+// (people who follow) me
 objUsers.addRule({ RHS: [ objUser ]})
+// (people who follow) people
+objUsers.addRule({ RHS: [ user.plural ]})
 
 var objUsersPlus = new g.Symbol('obj', 'users+')
 objUsersPlus.addRule({ RHS: [ objUsers ]})
 
 // (people followed) by me
 var byObjUsers = new g.Symbol('by', 'obj', 'users')
-byObjUsers.addRule({ RHS: [ prep.agent, objUsersPlus ]})
+byObjUsers.addRule({ RHS: [ preps.agent, objUsersPlus ]})
 
 // (people) followed by me
 user.passive.addRule({ RHS: [ follow, byObjUsers ] })
@@ -84,3 +91,7 @@ userFollowersPossessible.addRule({ RHS: [ user.lhs, userFollowersHead ] })
 
 // my followers
 user.noRelativePossessive.addRule({ RHS: [ poss.determinerOmissible, userFollowersPossessible ] })
+
+
+// followers of mine
+user.head.addRule({ RHS: [ userFollowersHead, poss.ofPossUsers ]})

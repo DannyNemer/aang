@@ -60,13 +60,19 @@ module.exports = function Category(catName) {
 
 
 	var filter = new g.Symbol(catName, 'filter')
+	// (people who) follow me
+	filter.addRule({ RHS: [ this.subjFilter ]})
+	// (people who) I follow
+	filter.addRule({ RHS: [ this.objFilter ]})
+	// (people who) I follow <adverbial-stopword>
+	filter.addRule({ RHS: [ filter, stopWords.sentenceAdverbial ]})
 	// (people who) are followed by me
 	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, reducedNoTense ]})
 
 	var bePastReducedNoTense = new g.Symbol('be', 'past', catName, 'reduced', 'no', 'tense')
-	// (people who have) been followed by me
+	// (people who have) been followed by me; (people who have) been following me
 	bePastReducedNoTense.addRule({ RHS: [ auxVerbs.bePast, reducedNoTense ] })
-	// (people who) have been follloed by me
+	// (people who) have been folllowed by me; (people who) have been following me
 	filter.addRule({ RHS: [ auxVerbs.have, bePastReducedNoTense ] })
 
 
