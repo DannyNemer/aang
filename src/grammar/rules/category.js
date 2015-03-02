@@ -1,4 +1,5 @@
 var g = require('../grammar')
+var util = require('../../util')
 var relativePronouns = require('./relativePronouns')
 var auxVerbs = require('./auxVerbs')
 var stopWords = require('./stopWords')
@@ -6,11 +7,21 @@ var stopWords = require('./stopWords')
 // Start symbol
 var start = new g.Symbol('start')
 
-// Create the rules every category has
-// - catName: { sg: String, pl: String }
-module.exports = function Category(catName) {
-	this.nameSg = catName.sg
-	this.namePl = catName.pl
+// Definition of accepted options for a Category
+var categoryOptsDef = {
+	sg: String,
+	pl: String,
+	person: Boolean // "that" vs. "who" for relative pronoun
+}
+
+// Create the rules every must category
+module.exports = function Category(catOpts) {
+	if (util.illFormedOpts(catOpts, categoryOptsDef)) {
+		throw 'ill-formed Category'
+	}
+
+	this.nameSg = catOpts.sg
+	this.namePl = catOpts.pl
 
 	this.lhs = new g.Symbol(this.nameSg, 'lhs')
 	this.lhs.addRule({ terminal: true, RHS: g.emptyTermSym })
@@ -85,12 +96,17 @@ module.exports = function Category(catName) {
 	filterPlus.addRule({ RHS: [ filter ] })
 
 	var relativeclause = new g.Symbol(this.nameSg, 'relativeclause')
-	// (people) who are followed by me
-	relativeclause.addRule({ RHS: [ relativePronouns.who, filterPlus ]})
+	if (catOpts.person) {
+		// (people) who are followed by me
+		relativeclause.addRule({ RHS: [ relativePronouns.who, filterPlus ]})
+	} else {
+		// (repos) that are liked by me
+		relativeclause.addRule({ RHS: [ relativePronouns.that, filterPlus ]})
+	}
 
 
 	var noRelative = new g.Symbol(this.nameSg, 'no', 'relative')
-	// people I follow
+	// people followed by me; people I follow
 	noRelative.addRule({ RHS: [ noRelativeBase ] })
 	// my followers
 	this.noRelativePossessive = new g.Symbol(this.nameSg, 'no', 'relative', 'possessive')
@@ -98,7 +114,7 @@ module.exports = function Category(catName) {
 
 
 	this.plural = new g.Symbol(this.nameSg, 'plural')
-	// people I follow
+	// people followed by me
 	this.plural.addRule({ RHS: [ noRelative ]})
 	// people who are followed by me
 	this.plural.addRule({ RHS: [ noRelative, relativeclause ]})
