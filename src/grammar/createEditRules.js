@@ -30,7 +30,8 @@ function findTermRuleInsertions(grammar, insertions) {
 				if (termSym === emptyTermSym) { // Empty-string
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost,
-						insertedSyms: [ { symbol: termSym } ]
+						insertedSyms: [ { symbol: termSym } ],
+						text: [ rule.text ].filter(Boolean)
 					})
 
 					// Remove empty-string term syms from grammar
@@ -39,7 +40,7 @@ function findTermRuleInsertions(grammar, insertions) {
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost + rule.insertionCost,
 						insertedSyms: [ { symbol: termSym } ],
-						text: termSym
+						text: [ rule.text || termSym ]
 					})
 				}
 			}
@@ -53,6 +54,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 
 	do { // Loop until no longer finding new productions
 		prevInsertionsSerial = JSON.stringify(insertions)
+
 		Object.keys(grammar).forEach(function (nontermSym) {
 			grammar[nontermSym].forEach(function (rule) {
 				if (!rule.terminal && RHSCanBeInserted(insertions, rule.RHS)) {
@@ -62,6 +64,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 							return {
 								cost: insertion.cost,
 								text: insertion.text,
+								personNumber: insertion.personNumber,
 								insertedSyms: [ { symbol: sym, children: insertion.insertedSyms } ]
 							}
 						})
@@ -73,7 +76,10 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 							BInsertions.forEach(function (B) {
 								mergedInsertions.push({
 									cost: A.cost + B.cost,
-									text: A.text && B.text ? A.text + ' ' + B.text : A.text || B.text,
+									text: A.text.concat(B.text),
+									// Person-number only needed for 1st for 2 RHS syms: nominative case (verb precedes subject)
+									// only used for conjugation of current rule
+									personNumber: A.personNumber,
 									insertedSyms: A.insertedSyms.concat(B.insertedSyms)
 								})
 							})
@@ -81,12 +87,15 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 
 						// Function only run once because array of length 2
 						return mergedInsertions
-					}).forEach(function (newInsertion) {
+					}).forEach(function (insertion) {
 						// Add each insertion the can be produced from the RHS
+
 						addInsertion(insertions, nontermSym, {
-							cost: rule.cost + newInsertion.cost,
-							text: newInsertion.text,
-							insertedSyms: newInsertion.insertedSyms
+							cost: rule.cost + insertion.cost,
+							text: conjugateText(rule, insertion),
+							// Person-number only traverses up for 1-to-1; person-number used on first 1-to-2
+							personNumber: rule.RHS.length === 1 ? (rule.personNumber || insertion.personNumber) : undefined,
+							insertedSyms: insertion.insertedSyms
 						})
 					})
 				}
@@ -123,7 +132,7 @@ function insertionExists(symInsertions, newInsertion) {
 		var existingInsertion = symInsertions[s]
 
 		// New insertion and existing insertion have identical display text
-		if (existingInsertion.text === newInsertion.text) {
+		if (util.arraysMatch(existingInsertion.text, newInsertion.text)) {
 			if (existingInsertion.cost < newInsertion.cost) {
 				return true
 			} else {
@@ -155,9 +164,14 @@ function createsRulesFromInsertions(grammar, insertions) {
 							}
 
 							// Empty-strings don't produce text
-							if (insertion.text) {
-								newRule.text = insertion.text
+							if (insertion.text && insertion.text[0]) {
+								newRule.text = conjugateText(rule, insertion)
 								newRule.textIdx = symIdx
+								// If insertion.personNumber exists, it is for this rule
+								// - Could conjugate now, but keep to chekc input (if multiple forms of inflection accepted)
+								// If insertion.personNumber exists, then conjugation will occur on this rule
+								// - don't need rule.personNumber because does not exist on forks
+								newRule.personNumber = insertion.personNumber
 							}
 
 							if (!ruleExists(symRules, newRule)) {
@@ -190,22 +204,71 @@ function createRulesFromTranspositions(grammar) {
 	})
 }
 
+// Replace text Objects, which contain different inflections or synonyms of a word, with accepted form
+// - grammatical case -> check parent rule
+// - tense -> check parent rule
+// - person-number -> check insertion of preceding branch (1st of two RHS branches)
+// - other -> replace unaccepted synonyms
+function conjugateText(rule, insertion) {
+	return insertion.text.map(function (text) {
+		// Already conjugated
+		if (typeof text === 'string') {
+			return text
+		}
+
+		// No conjugation needed (e.g., noun, preposition)
+		if (text.plain) {
+			return text.plain
+		}
+
+		// "me" vs. "I"
+		if (rule.gramCase) {
+			if (!text[rule.gramCase]) throw 'looking for a gram case'
+			return text[rule.gramCase]
+		}
+
+		// Past tense
+		// - Precedes person number: "I have liked" vs. "I have like"
+		if (rule.verbForm) {
+			if (!text[rule.verbForm]) throw 'looking for a verbForm'
+			return text[rule.verbForm]
+		}
+
+		// Could combine verbForm and personNumber because never applied at same time
+
+		// First person, vs. third person singular, vs. plural
+		// - Only used on 1-to-2, where first of two branches determines person-number of second branch
+		if (insertion.personNumber) {
+			if (!text[insertion.personNumber]) throw 'looking for a personNumber'
+			return text[insertion.personNumber]
+		}
+
+		// Err: unconjugated text for a new insertion
+		// - Check that it is not being call for creating of a new rule
+		if (insertion.insertedSyms[0].children) {
+			util.log(insertion, rule, text)
+			throw 'unable to conjugate text'
+		}
+
+		// Text of one of two RHS in a new rule
+		// Remain unconjugated as dependent on other RHS branch
+		return text
+	})
+}
+
 // Throw err if new rule generated from insertion(s), empty-string(s), or a transposition is a duplicate of an existing rule
 function ruleExists(rules, newRule) {
 	for (var r = rules.length; r-- > 0;) {
 		var existingRule = rules[r]
 
-		if (util.arraysMatch(existingRule.RHS, newRule.RHS) && existingRule.text === newRule.text) {
+		if (util.arraysMatch(existingRule.RHS, newRule.RHS) && util.arraysMatch(existingRule.text, newRule.text)) {
 			if (existingRule.insertedSyms) {
 				console.log('Err: two identical rules produced by insertion(s)')
 			} else {
 				console.log('Err: new rule produced with edits identical to original rule')
 			}
 
-			console.log(existingRule)
-			console.log(newRule)
-			console.log()
-
+			util.log(existingRule, newRule)
 			throw 'duplicate rule produced with edits'
 		}
 	}
