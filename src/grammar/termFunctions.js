@@ -56,8 +56,12 @@ exports.addVerb = function (opts) {
 
 	var defaultTextForms = {
 		oneOrPl: opts.oneOrPl[0],
-		threeSg: opts.threeSg[0],
-		past: opts.past[0]
+		threeSg: opts.threeSg[0]
+	}
+
+	// Past tense is optional (e.g., [have])
+	if (opts.past) {
+		defaultTextForms.past = opts.past[0]
 	}
 
 	opts.oneOrPl.forEach(function (termSym, i) {
@@ -82,13 +86,16 @@ exports.addVerb = function (opts) {
 		} })
 	})
 
-	opts.past.forEach(function (termSym) {
-		verb.addRule({ terminal: true, RHS: termSym, text: {
-			oneOrPl: defaultTextForms.oneOrPl,
-			threeSg: defaultTextForms.threeSg,
-			past: termSym
-		} })
-	})
+	// Past tense is optional
+	if (opts.past) {
+		opts.past.forEach(function (termSym) {
+			verb.addRule({ terminal: true, RHS: termSym, text: {
+				oneOrPl: defaultTextForms.oneOrPl,
+				threeSg: defaultTextForms.threeSg,
+				past: termSym
+			} })
+		})
+	}
 
 	if (opts.substitutions) {
 		opts.substitutions.forEach(function (termSym) {
