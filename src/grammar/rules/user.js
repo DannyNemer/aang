@@ -23,8 +23,6 @@ user.head.addRule({ RHS: [ this.github, peopleTerm ] })
 var nomUsers = new g.Symbol('nom', 'users')
 // (people) I (follow)
 nomUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'nom' })
-// (people) I'm (following) -> (people) I (follow)
-nomUsers.addRule({ RHS: [ oneSg.nom ] })
 
 // FOLLOW:
 var follow = new g.Symbol('follow')
