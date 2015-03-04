@@ -23,9 +23,16 @@ this.github = g.addWord({
 user.head.addRule({ RHS: [ this.github, peopleTerm ] })
 
 
+var userTerm = new g.Symbol(user.nameSg)
+// (people) {user} (follows); (people who follow) {user}
+userTerm.addRule({ terminal: true, RHS: '{user}' })
+
+
 var nomUsers = new g.Symbol('nom', 'users')
 // (repos) people who follow me (like)
 nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'oneOrPl' })
+// (people) {user} (follows)
+nomUsers.addRule({ RHS: [ userTerm ], personNumber: 'threeSg' })
 // (people) I (follow)
 nomUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'nom', personNumber: 'oneOrPl' })
 
@@ -34,11 +41,13 @@ this.nomUsersPlus.addRule({ RHS: [ nomUsers ] })
 
 
 var objUser = new g.Symbol('obj', 'user')
-// (people followed by) me
+// (people followed by) {user}; (people who follow) {user}
+objUser.addRule({ RHS: [ userTerm ], personNumber: 'threeSg' })
+// (people followed by) me; (people who follow) me
 objUser.addRule({ RHS: [ oneSg.plain ], gramCase: 'obj' })
 
 var objUsers = new g.Symbol('obj', 'users')
-// (people who follow) me
+// (people who follow) me/{user}
 objUsers.addRule({ RHS: [ objUser ] })
 // (people who follow) people
 objUsers.addRule({ RHS: [ user.plural ] })
