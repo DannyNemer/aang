@@ -7,6 +7,13 @@ exports.emptyTermSym = '<empty>'
 
 exports.Symbol = require('./Symbol').bind(null, grammar)
 
+var termFunctions = require('./termFunctions')
+exports.addVerb = termFunctions.addVerb
+exports.addWord = termFunctions.addWord
+exports.addPronoun = termFunctions.addPronoun
+
+exports.Semantic = require('./Semantic')
+
 // Derive rules from insertion and transposition costs, and empty-strings
 exports.createEditRules = require('./createEditRules').bind(null, grammar)
 

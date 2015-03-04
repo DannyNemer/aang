@@ -3,9 +3,15 @@ var g = require('../grammar')
 var prepStr = 'prep'
 
 // (people followed) by (me)
-this.agent = new g.Symbol(prepStr, 'agent')
-this.agent.addRule({ terminal: true, RHS: 'by', insertionCost: 0.5 })
+this.agent = g.addWord({
+	name: prepStr + '-agent',
+	insertionCost: 0.5,
+	accepted: [ 'by' ]
+})
 
 // (followers) of (mine)
-this.possessor = new g.Symbol(prepStr, 'possessor')
-this.possessor.addRule({ terminal: true, RHS: 'of', insertionCost: 0.5 })
+this.possessor = g.addWord({
+	name: prepStr + '-possessor',
+	insertionCost: 0.5,
+	accepted: [ 'of' ]
+})

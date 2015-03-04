@@ -51,7 +51,7 @@ var termRuleOptsDef = {
 	terminal: Boolean,
 	RHS: String,
 	insertionCost: Number,
-	gramCase: [ 'nom', 'obj' ] // "me" vs. "I"
+	text: Object
 }
 
 // Initialize a new terminal rule from passed opts
@@ -63,7 +63,7 @@ Symbol.prototype.newTermRule = function (opts) {
 	var newRule = {
 		RHS: [ opts.RHS ],
 		terminal: true,
-		gramCase: opts.gramCase
+		text: opts.text
 	}
 
 	if (opts.hasOwnProperty('insertionCost')) {
@@ -79,7 +79,9 @@ var nontermRuleOptsDef = {
 	terminal: Boolean,
 	RHS: Array,
 	transpositionCost: Number,
-	gramCase: [ 'nom', 'obj' ] // "me" vs. "I"
+	gramCase: [ 'nom', 'obj' ], // "me" vs. "I"
+	verbForm: [ 'past' ],
+	personNumber: [ 'oneOrPl', 'threeSg' ]
 }
 
 // Initialize a new nonterminal rule from passed opts
@@ -100,7 +102,9 @@ Symbol.prototype.newNontermRule = function (opts) {
 
 			return RHSSymbol.name
 		}),
-		gramCase: opts.gramCase
+		gramCase: opts.gramCase,
+		verbForm: opts.verbForm,
+		personNumber: opts.personNumber
 	}
 
 	if (opts.hasOwnProperty('transpositionCost')) {
