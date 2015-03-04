@@ -171,7 +171,13 @@ function createsRulesFromInsertions(grammar, insertions) {
 								// - Could conjugate now, but keep to chekc input (if multiple forms of inflection accepted)
 								// If insertion.personNumber exists, then conjugation will occur on this rule
 								// - don't need rule.personNumber because does not exist on forks
-								newRule.personNumber = insertion.personNumber
+								if (symIdx === 1) {
+									// (that) [have] been liked -> (that) have been liked
+									// - need rule.personNumber to conjugate [have]
+									newRule.personNumber = rule.personNumber || insertion.personNumber
+								} else {
+									newRule.personNumber = insertion.personNumber
+								}
 							}
 
 							if (!ruleExists(symRules, newRule)) {
@@ -210,50 +216,69 @@ function createRulesFromTranspositions(grammar) {
 // - person-number -> check insertion of preceding branch (1st of two RHS branches)
 // - other -> replace unaccepted synonyms
 function conjugateText(rule, insertion) {
-	return insertion.text.map(function (text) {
-		// Already conjugated
-		if (typeof text === 'string') {
+	if (rule.RHS.length === 1) {
+		// Grammatical case check only occurs in 1-1 rules
+		return insertion.text.map(function (text) {
+			// Already conjugated
+			if (typeof text === 'string') {
+				return text
+			}
+
+			// No conjugation needed (e.g., noun, preposition)
+			if (text.plain) {
+				return text.plain
+			}
+
+			// Objective vs. nominative case: "me" vs. "I"
+			if (rule.gramCase) {
+				if (!text[rule.gramCase]) throw 'looking for a gram case'
+				return text[rule.gramCase]
+			}
+
+			throw 'text cannot be conjugated'
+		})
+	} else {
+		// Tense and person-number check only occurs in 1-2 rules
+		return insertion.text.map(function (text) {
+			// Already conjugated
+			if (typeof text === 'string') {
+				return text
+			}
+
+			// No conjugation needed (e.g., noun, preposition)
+			if (text.plain) {
+				return text.plain
+			}
+
+			// Past tense
+			// - Precedes person number: "I have liked" vs. "I have like"
+			// - Doesn't have to apply to every verb: "[have] liked" - past-tense applies to "liked", not [have]
+			if (rule.verbForm && text[rule.verbForm]) {
+				// if (!text[rule.verbForm]) throw 'looking for a verbForm'
+				return text[rule.verbForm]
+			}
+
+			// Could combine verbForm and personNumber because never applied at same time
+
+			// First person, vs. third person singular, vs. plural
+			// - Only used on 1-to-2, where first of two branches determines person-number of second branch
+			if (insertion.personNumber) {
+				if (!text[insertion.personNumber]) throw 'looking for a personNumber'
+				return text[insertion.personNumber]
+			}
+
+			// (that) [have] been -> (that) have been
+			if (rule.personNumber) {
+				if (!text[rule.personNumber]) throw 'looking for a personNumber'
+				return text[rule.personNumber]
+			}
+
+			// Text cannot yet be conjugated:
+			// - One of two RHS in new rule -> dependent on other RHS branch
+			// - [have] liked
 			return text
-		}
-
-		// No conjugation needed (e.g., noun, preposition)
-		if (text.plain) {
-			return text.plain
-		}
-
-		// "me" vs. "I"
-		if (rule.gramCase) {
-			if (!text[rule.gramCase]) throw 'looking for a gram case'
-			return text[rule.gramCase]
-		}
-
-		// Past tense
-		// - Precedes person number: "I have liked" vs. "I have like"
-		if (rule.verbForm) {
-			if (!text[rule.verbForm]) throw 'looking for a verbForm'
-			return text[rule.verbForm]
-		}
-
-		// Could combine verbForm and personNumber because never applied at same time
-
-		// First person, vs. third person singular, vs. plural
-		// - Only used on 1-to-2, where first of two branches determines person-number of second branch
-		if (insertion.personNumber) {
-			if (!text[insertion.personNumber]) throw 'looking for a personNumber'
-			return text[insertion.personNumber]
-		}
-
-		// Err: unconjugated text for a new insertion
-		// - Check that it is not being call for creating of a new rule
-		if (insertion.insertedSyms[0].children) {
-			util.log(insertion, rule, text)
-			throw 'unable to conjugate text'
-		}
-
-		// Text of one of two RHS in a new rule
-		// Remain unconjugated as dependent on other RHS branch
-		return text
-	})
+		})
+	}
 }
 
 // Throw err if new rule generated from insertion(s), empty-string(s), or a transposition is a duplicate of an existing rule
