@@ -89,7 +89,8 @@ module.exports = function Category(catOpts) {
 	// (people who have) been followed by me; (people who have) been following me
 	bePastReducedNoTense.addRule({ RHS: [ auxVerbs.bePast, reducedNoTense ] })
 	// (people who) have been folllowed by me; (people who) have been following me
-	filter.addRule({ RHS: [ auxVerbs.have, bePastReducedNoTense ] })
+	// - personNumber exists to force [have] -> "have"
+	filter.addRule({ RHS: [ auxVerbs.have, bePastReducedNoTense ], personNumber: 'oneOrPl' })
 
 
 	var filterPlus = new g.Symbol(this.nameSg, 'filter+')

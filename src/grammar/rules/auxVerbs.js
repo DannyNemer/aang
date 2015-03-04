@@ -16,8 +16,11 @@ this.bePast = g.addWord({
 })
 
 // (people who) have (been followed by me)
-this.have = g.addWord({
+// - No past tense ('had') because it implies semantic no longer true; "had liked" -> no longer liked
+this.have = g.addVerb({
 	name: 'have',
 	insertionCost: 0.8,
-	accepted: [ 'have' ]
+	oneOrPl: [ 'have' ],
+	threeSg: [ 'has' ],
+	substitutions: [ 'had' ]
 })
