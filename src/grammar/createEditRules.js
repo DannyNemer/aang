@@ -171,13 +171,15 @@ function createsRulesFromInsertions(grammar, insertions) {
 								// - Could conjugate now, but keep to chekc input (if multiple forms of inflection accepted)
 								// If insertion.personNumber exists, then conjugation will occur on this rule
 								// - don't need rule.personNumber because does not exist on forks
-								if (symIdx === 1) {
-									// (that) [have] been liked -> (that) have been liked
-									// - need rule.personNumber to conjugate [have]
-									newRule.personNumber = rule.personNumber || insertion.personNumber
-								} else {
-									newRule.personNumber = insertion.personNumber
-								}
+
+								// symIdx === 1:
+								// - (that) [have] been liked -> (that) have been liked
+								// - (who) [follow] me -> (who) follow me
+								// - - need rule.personNumber to conjugate [have]
+								// symIdx === 0:
+								// - [nom-users] like/likes
+
+								newRule.personNumber = symIdx === 1 ? rule.personNumber : insertion.personNumber
 							}
 
 							if (!ruleExists(symRules, newRule)) {
@@ -219,14 +221,9 @@ function conjugateText(rule, insertion) {
 	if (rule.RHS.length === 1) {
 		// Grammatical case check only occurs in 1-1 rules
 		return insertion.text.map(function (text) {
-			// Already conjugated
+			// Already conjugated, or no conjugation needed (e.g., noun, preposition)
 			if (typeof text === 'string') {
 				return text
-			}
-
-			// No conjugation needed (e.g., noun, preposition)
-			if (text.plain) {
-				return text.plain
 			}
 
 			// Objective vs. nominative case: "me" vs. "I"
@@ -235,19 +232,15 @@ function conjugateText(rule, insertion) {
 				return text[rule.gramCase]
 			}
 
+			util.log(text, rule, insertion)
 			throw 'text cannot be conjugated'
 		})
 	} else {
 		// Tense and person-number check only occurs in 1-2 rules
 		return insertion.text.map(function (text) {
-			// Already conjugated
+			// Already conjugated, or no conjugation needed (e.g., noun, preposition)
 			if (typeof text === 'string') {
 				return text
-			}
-
-			// No conjugation needed (e.g., noun, preposition)
-			if (text.plain) {
-				return text.plain
 			}
 
 			// Past tense
@@ -262,12 +255,15 @@ function conjugateText(rule, insertion) {
 
 			// First person, vs. third person singular, vs. plural
 			// - Only used on 1-to-2, where first of two branches determines person-number of second branch
+			// - Only applies to 2nd of 2 RHS branches
 			if (insertion.personNumber) {
 				if (!text[insertion.personNumber]) throw 'looking for a personNumber'
 				return text[insertion.personNumber]
 			}
 
 			// (that) [have] been -> (that) have been
+			// (who) [follow] me -> (who) follow me
+			// - Only applies to 1st of 2 RHS branches
 			if (rule.personNumber) {
 				if (!text[rule.personNumber]) throw 'looking for a personNumber'
 				return text[rule.personNumber]

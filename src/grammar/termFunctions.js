@@ -22,16 +22,16 @@ exports.addPronoun = function (opts) {
 		obj: opts.obj
 	}
 
-	var newRule = { terminal: true, RHS: opts.nom, text: textForms }
+	var newRule = { terminal: true, RHS: opts.nom, textForms: textForms }
 	if (opts.hasOwnProperty('insertionCost')) {
 		newRule.insertionCost = opts.insertionCost
 	}
 	pronoun.addRule(newRule)
 
-	pronoun.addRule({ terminal: true, RHS: opts.obj, text: textForms })
+	pronoun.addRule({ terminal: true, RHS: opts.obj, textForms: textForms })
 
 	opts.substitutions.forEach(function (termSym) {
-		pronoun.addRule({ terminal: true, RHS: termSym, text: textForms })
+		pronoun.addRule({ terminal: true, RHS: termSym, textForms: textForms })
 	})
 
 	return pronoun
@@ -65,7 +65,7 @@ exports.addVerb = function (opts) {
 	}
 
 	opts.oneOrPl.forEach(function (termSym, i) {
-		var newRule = { terminal: true, RHS: termSym, text: {
+		var newRule = { terminal: true, RHS: termSym, textForms: {
 			oneOrPl: termSym,
 			threeSg: defaultTextForms.threeSg,
 			past: defaultTextForms.past
@@ -79,7 +79,7 @@ exports.addVerb = function (opts) {
 	})
 
 	opts.threeSg.forEach(function (termSym) {
-		verb.addRule({ terminal: true, RHS: termSym, text: {
+		verb.addRule({ terminal: true, RHS: termSym, textForms: {
 			oneOrPl: defaultTextForms.oneOrPl,
 			threeSg: termSym,
 			past: defaultTextForms.past
@@ -89,7 +89,7 @@ exports.addVerb = function (opts) {
 	// Past tense is optional
 	if (opts.past) {
 		opts.past.forEach(function (termSym) {
-			verb.addRule({ terminal: true, RHS: termSym, text: {
+			verb.addRule({ terminal: true, RHS: termSym, textForms: {
 				oneOrPl: defaultTextForms.oneOrPl,
 				threeSg: defaultTextForms.threeSg,
 				past: termSym
@@ -99,7 +99,7 @@ exports.addVerb = function (opts) {
 
 	if (opts.substitutions) {
 		opts.substitutions.forEach(function (termSym) {
-			verb.addRule({ terminal: true, RHS: termSym, text: defaultTextForms })
+			verb.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
 		})
 	}
 
@@ -125,7 +125,7 @@ exports.addWord = function (opts) {
 		var newRule = { terminal: true, RHS: termSym }
 
 		if (termSym !== g.emptyTermSym) {
-			newRule.text = { plain: termSym }
+			newRule.text = termSym
 		}
 
 		if (i === 0 && opts.hasOwnProperty('insertionCost')) {
@@ -139,7 +139,7 @@ exports.addWord = function (opts) {
 		var correctedText = opts.accepted[0]
 		if (correctedText !== g.emptyTermSym) {
 			opts.substitutions.forEach(function (termSym) {
-				word.addRule({ terminal: true, RHS: termSym, text: { plain: correctedText } })
+				word.addRule({ terminal: true, RHS: termSym, text: correctedText })
 			})
 		} else {
 			opts.substitutions.forEach(function (termSym) {

@@ -64,7 +64,7 @@ Symbol.prototype.newTermRule = function (opts) {
 	var newRule = {
 		RHS: [ opts.RHS ],
 		terminal: true,
-		text: opts.text
+		text: opts.text || opts.textForms
 	}
 
 	if (opts.hasOwnProperty('insertionCost')) {
