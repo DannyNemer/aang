@@ -4,10 +4,10 @@ module.exports = Semantic
 
 var semantics = {}
 
-var semanticDef = {
+var semanticSchema = {
 	name: String,
 	cost: Number,
-	arg: Boolean
+	arg: { type: Boolean, optional: true }
 }
 
 //
@@ -29,7 +29,7 @@ function Semantic(opts) {
 		throw 'ill-formed rule'
 	}
 
-	if (util.illFormedOpts(opts, semanticDef)) {
+	if (util.illFormedOpts(semanticSchema, opts)) {
 		throw 'ill-formed Semantic'
 	}
 

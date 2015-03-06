@@ -46,17 +46,18 @@ Symbol.prototype.addRule = function (opts) {
 }
 
 
-// Definition of accepted options for a terminal rule
-var termRuleOptsDef = {
+// Schema for terminal rules
+var termRuleOptsSchema = {
 	terminal: Boolean,
 	RHS: String,
-	insertionCost: Number,
-	text: Object
+	insertionCost: { type: Number, optional: true },
+	textForms: { type: Object, optional: true },
+	text: { type: String, optional: true }
 }
 
 // Initialize a new terminal rule from passed opts
 Symbol.prototype.newTermRule = function (opts) {
-	if (util.illFormedOpts(opts, termRuleOptsDef)) {
+	if (util.illFormedOpts(termRuleOptsSchema, opts)) {
 		throw 'ill-formed terminal rule'
 	}
 
@@ -74,19 +75,18 @@ Symbol.prototype.newTermRule = function (opts) {
 }
 
 
-// Definition of accepted options for a nonterminal rule
-var nontermRuleOptsDef = {
-	terminal: Boolean,
-	RHS: Array,
-	transpositionCost: Number,
-	gramCase: [ 'nom', 'obj' ], // "me" vs. "I"
-	verbForm: [ 'past' ],
-	personNumber: [ 'oneOrPl', 'threeSg' ]
+// Schema for nonterminal rule
+var nontermRuleOptsSchema = {
+	RHS: { type: Array, arrayType: Symbol },
+	transpositionCost: { type: Number, optional: true },
+	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
+	verbForm: { type: [ 'past' ], optional: true },
+	personNumber: { type: [ 'oneOrPl', 'threeSg' ], optional: true }
 }
 
 // Initialize a new nonterminal rule from passed opts
 Symbol.prototype.newNontermRule = function (opts) {
-	if (util.illFormedOpts(opts, nontermRuleOptsDef)) {
+	if (util.illFormedOpts(nontermRuleOptsSchema, opts)) {
 		throw 'ill-formed nonterminal rule'
 	}
 
@@ -95,13 +95,7 @@ Symbol.prototype.newNontermRule = function (opts) {
 	}
 
 	var newRule = {
-		RHS: opts.RHS.map(function (RHSSymbol) {
-			if (!(RHSSymbol instanceof Symbol)) {
-				this.ruleErr('RHS of nonterminal rules must be Symbols', opts.RHS)
-			}
-
-			return RHSSymbol.name
-		}),
+		RHS: opts.RHS.map(function (RHSSymbol) { return RHSSymbol.name }),
 		gramCase: opts.gramCase,
 		verbForm: opts.verbForm,
 		personNumber: opts.personNumber

@@ -2,16 +2,16 @@ var g = require('./grammar')
 var util = require('../util')
 
 
-var pronounOptsDef = {
+var pronounOptsSchema = {
 	name: String,
-	insertionCost: Number,
+	insertionCost: { type: Number, optional: true },
 	nom: String,
 	obj: String,
-	substitutions: Array
+	substitutions: { type: Array, arrayType: String }
 }
 
 exports.addPronoun = function (opts) {
-	if (util.illFormedOpts(opts, pronounOptsDef)) {
+	if (util.illFormedOpts(pronounOptsSchema, opts)) {
 		throw 'ill-formed pronoun'
 	}
 
@@ -38,17 +38,17 @@ exports.addPronoun = function (opts) {
 }
 
 
-var verbOptDef = {
+var verbOptSchema = {
 	name: String,
-	insertionCost: Number,
-	oneOrPl: Array,
-	threeSg: Array,
-	past: Array,
-	substitutions: Array
+	insertionCost: { type: Number, optional: true },
+	oneOrPl: { type: Array, arrayType: String },
+	threeSg: { type: Array, arrayType: String },
+	past: { type: Array, arrayType: String, optional: true },
+	substitutions: { type: Array, arrayType: String, optional: true }
 }
 
 exports.addVerb = function (opts) {
-	if (util.illFormedOpts(opts, verbOptDef)) {
+	if (util.illFormedOpts(verbOptSchema, opts)) {
 		throw 'ill-formed verb'
 	}
 
@@ -107,15 +107,15 @@ exports.addVerb = function (opts) {
 }
 
 
-var wordOptsDef = {
+var wordOptsSchema = {
 	name: String,
-	insertionCost: Number,
-	accepted: Array,
-	substitutions: Array
+	insertionCost: { type: Number, optional: true },
+	accepted: { type: Array, arrayType: String },
+	substitutions: { type: Array, arrayType: String, optional: true }
 }
 
 exports.addWord = function (opts) {
-	if (util.illFormedOpts(opts, wordOptsDef)) {
+	if (util.illFormedOpts(wordOptsSchema, opts)) {
 		throw 'ill-formed word'
 	}
 

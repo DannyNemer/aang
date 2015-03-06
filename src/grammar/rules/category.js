@@ -8,15 +8,15 @@ var stopWords = require('./stopWords')
 var start = new g.Symbol('start')
 
 // Definition of accepted options for a Category
-var categoryOptsDef = {
+var categoryOptsSchema = {
 	sg: String,
 	pl: String,
-	person: Boolean // "that" vs. "who" for relative pronoun
+	person: { type: Boolean, optional: true } // "that" vs. "who" for relative pronoun
 }
 
 // Create the rules every must category
 module.exports = function Category(catOpts) {
-	if (util.illFormedOpts(catOpts, categoryOptsDef)) {
+	if (util.illFormedOpts(categoryOptsSchema, catOpts)) {
 		throw 'ill-formed Category'
 	}
 

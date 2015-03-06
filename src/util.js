@@ -2,57 +2,76 @@
 
 var fs = require('fs')
 
-/*
-Checks if an object 'passedOpts' matches the definition 'optsDef' of accepted Object properties and types
-Used for debugging and simulating type checking
 
-Example optsDef:
-	{
-		LHS: String,
-		RHS: Array,
-		ignoreCheck: Boolean,
-		personNumber: [ '1', 'pl', '3sg' ]
+// Checks if an opts Object matches a schema
+// Used for simulating static functions arguments (type checking and parameter count)
+
+// Example opts schema:
+// {
+// 	cost: Number,                            Must be of type Number
+// 	RHS: { type: Array },                    Must be of type Array (identical to previous parameter)
+// 	RHS: { type: Array, arrayType: String }, Must be Array containing only String
+// 	name: { type: String optional: true },   Parameter can me omitted
+// 	personNumber: [ '1', 'pl', '3sg' ]       Must be one of pre-defined values
+// }
+exports.illFormedOpts = function (schema, opts) {
+	// Check if missing a required opts parameter
+	var schemaProps = Object.keys(schema)
+	for (var i = 0, schemaPropsLen = schemaProps.length; i < schemaPropsLen; ++i) {
+		var prop = schemaProps[i]
+		var val = schema[prop]
+
+		if (!val.optional && !opts.hasOwnProperty(prop)) {
+			return printOptsErr('Err: Missing \'' + prop + '\' property')
+		}
 	}
-*/
-exports.illFormedOpts = function (passedOpts, optsDef) {
-	var passedOptsProps = Object.keys(passedOpts)
 
-	for (var i = 0, passedOptsPropsLen = passedOptsProps.length; i < passedOptsPropsLen; ++i) {
-		var prop = passedOptsProps[i]
-		var passedVal = passedOpts[prop]
-		var propDef = optsDef[prop]
+	var optsProps = Object.keys(opts)
+	for (var i = 0, optsPropsLen = optsProps.length; i < optsPropsLen; ++i) {
+		var prop = optsProps[i]
+		var optsVal = opts[prop]
+		var schemaVal = schema[prop]
+		var schemaPropType = schemaVal.type || schemaVal
 
 		// Unrecognized property
-		if (!optsDef.hasOwnProperty(prop)) {
-			console.log('unrecognized prop name:', prop)
-			break
+		if (!schemaVal) {
+			return printOptsErr('Err: Unrecognized prop name:', prop)
 		}
 
-		// ex: undefined, [], [ 1, undefined ] - accidentally passed an undefined object
-		else if (passedVal === undefined || (Array.isArray(passedVal) && (passedVal.length === 0 || passedVal.indexOf(undefined) !== -1))) {
-			console.log('undefined ' + prop + ':', prop, '->', passedVal)
-			break
+		// Accidentally passed an undefined object; ex: undefined, [], [ 1, undefined ]
+		if (optsVal === undefined || (Array.isArray(optsVal) && (optsVal.length === 0 || optsVal.indexOf(undefined) !== -1))) {
+			return printOptsErr('Err: undefined ' + prop + ':', optsVal)
 		}
 
-		// ex: personNumber: [ '1', 'pl', '3sg' ] - allow RegExp '|' for accepting matches to multiple options
-		else if (Array.isArray(propDef) && passedVal.split('|').some(function (v) { return propDef.indexOf(v) === -1 })) {
-			console.log('unrecognized prop passedVal:', prop, '->', passedVal)
-			break
-		}
+		// Schema contains an Array of pre-defined accepted values
+		if (Array.isArray(schemaPropType)) {
+			// Unrecognized value for parameter with pre-defined values
+			if (schemaPropType.indexOf(optsVal) === -1) {
+				console.log('Err: Unrecognized value for ' + prop + ':', optsVal)
+				return printOptsErr('     Accepted values for ' + prop, ':', schemaPropType)
+			}
+		} else {
+			// Passed value of incorrect type; ex: LHS: String, RHS: Array
+			if (!exports.isType(optsVal, schemaPropType)) {
+				return printOptsErr('\'' + prop + '\' not of type ' + schemaPropType.name + ':', optsVal)
+			}
 
-		// ex: LHS: String
-		else if (!Array.isArray(propDef) && !exports.isType(passedVal, propDef)) {
-			console.log('\'' + prop + '\' not of type ' + propDef.name + ':', prop, '->', passedVal)
-			break
+			// Passed Array contains elements not of arrayType (if arrayType is defined)
+			if (Array.isArray(optsVal) && schemaVal.arrayType && !optsVal.every(function (el) { return exports.isType(el, schemaVal.arrayType) || el instanceof schemaVal.arrayType })) {
+				return printOptsErr('\'' + prop + '\' not an Array of type ' + schemaVal.arrayType.name + ':', optsVal)
+			}
 		}
-	}
-
-	if (i < passedOptsPropsLen) {
-		console.log(passedOpts)
-		console.log(exports.getLine())
-		return true
 	}
 }
+
+// Prints error message (concatenation of arguments) and line from which the parent function was called
+function printOptsErr() {
+	console.log.apply(null, Array.prototype.slice.call(arguments))
+	console.log(exports.getLine())
+
+	return true
+}
+
 
 // Get line number of first item in stack trace preceding call of this function
 exports.getLine = function () {
