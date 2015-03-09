@@ -16,7 +16,8 @@ var peopleTerm = g.addWord({
 
 this.github = g.addWord({
 	name: 'github',
-	accepted: [ g.emptyTermSym, 'GitHub' ] // opt (should I make specification for opt -> automatic?)
+	optional: true,
+	accepted: [ 'GitHub' ]
 })
 
 // |Github users (I follow)
