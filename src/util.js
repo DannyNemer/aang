@@ -53,12 +53,12 @@ exports.illFormedOpts = function (schema, opts) {
 		} else {
 			// Passed value of incorrect type; ex: LHS: String, RHS: Array
 			if (!exports.isType(optsVal, schemaPropType)) {
-				return printOptsErr('\'' + prop + '\' not of type ' + schemaPropType.name + ':', optsVal)
+				return printOptsErr('Err: \'' + prop + '\' not of type ' + schemaPropType.name + ':', optsVal)
 			}
 
 			// Passed Array contains elements not of arrayType (if arrayType is defined)
 			if (Array.isArray(optsVal) && schemaVal.arrayType && !optsVal.every(function (el) { return exports.isType(el, schemaVal.arrayType) || el instanceof schemaVal.arrayType })) {
-				return printOptsErr('\'' + prop + '\' not an Array of type ' + schemaVal.arrayType.name + ':', optsVal)
+				return printOptsErr('Err: \'' + prop + '\' not an Array of type ' + schemaVal.arrayType.name + ':', optsVal)
 			}
 		}
 	}

@@ -64,6 +64,7 @@ Symbol.prototype.newTermRule = function (opts) {
 	var newRule = {
 		RHS: [ opts.RHS ],
 		terminal: true,
+		// String for terminal symbols, or Object of inflected forms for conjugation
 		text: opts.text || opts.textForms
 	}
 

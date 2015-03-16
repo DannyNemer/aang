@@ -1,4 +1,6 @@
 do not do [t:] or [b:] rules. that comes in optomization after. instead, name every rule
+- they have duplicate [b:] and duplicate [t:], all optomized for cost
+- costs are pushed down [b:] as well as [t:]
 
 some term syms, like [have] have multiple term rules, but other instances of same term rule ('have') contain only one sym with not substitutes in the grammar. Only difference is here, the sustitutes will incur the 0.55 substitution cost penalty.
 
@@ -14,4 +16,4 @@ no two syms with strings - no Array for RHS
 perhaps make a TermSymbol obj?
 
 
-<empty> (I think) always first in nonterms and second in terms (and opts?)
+<empty> (I think) always first rule in nonterms and second in terms (and opts?)

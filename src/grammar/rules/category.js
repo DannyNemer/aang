@@ -111,7 +111,7 @@ module.exports = function Category(catOpts) {
 	noRelative.addRule({ RHS: [ noRelativeBase ] })
 	// my followers
 	this.noRelativePossessive = new g.Symbol(this.nameSg, 'no', 'relative', 'possessive')
-	noRelative.addRule({ RHS: [ this.noRelativePossessive, rhs ] })
+	noRelative.addRule({ RHS: [ this.noRelativePossessive, rhs ], transpositionCost: 1 })
 
 
 	this.plural = new g.Symbol(this.nameSg, 'plural')

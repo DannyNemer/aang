@@ -27,5 +27,11 @@ possUsers.addRule({ RHS: [ possUser ] })
 var possUsersPlus = new g.Symbol(possStr, 'users+')
 possUsersPlus.addRule({ RHS: [ possUsers] })
 
+// (followers of) mine
 this.ofPossUsers = new g.Symbol('of', possStr, 'users')
 this.ofPossUsers.addRule({ RHS: [ preps.possessor, possUsersPlus ] })
+
+// (repos of) mine
+// - No insertion for 'of'
+this.ofPossUsersSpecial = new g.Symbol('of', possStr, 'users', 'special')
+this.ofPossUsersSpecial.addRule({ RHS: [ preps.possessorSpecial, possUsersPlus ] })

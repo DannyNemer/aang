@@ -23,9 +23,11 @@ repository.head.addRule({ RHS: [ repositoryHeadMayPoss ] })
 var repositoryPossessible = new g.Symbol(repository.nameSg, 'possessible')
 // (my) repositories
 repositoryPossessible.addRule({ RHS: [ repository.lhs, repositoryHeadMayPoss ] })
-
 // my repositories
 repository.noRelativePossessive.addRule({ RHS: [ poss.determiner, repositoryPossessible ]})
+
+// repos of mine
+repository.head.addRule({ RHS: [ repositoryHeadMayPoss, poss.ofPossUsers ] })
 
 
 // LIKE:

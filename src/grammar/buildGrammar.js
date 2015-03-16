@@ -3,7 +3,7 @@ var g = require('./grammar')
 require('./rules/user')
 require('./rules/repository')
 
-var grammarPath = '../../grammar.json'
+var grammarPath = '../grammar.json'
 g.createEditRules()
 g.sortGrammar()
 g.printRuleCount(grammarPath)
@@ -11,7 +11,7 @@ g.writeGrammarToFile(grammarPath)
 
 
 /*
-Do the absolute minimum, then build up
+Do the absolute minimum, perfect it, then build up
 
 Any additional complexity will rely on same foundation
 

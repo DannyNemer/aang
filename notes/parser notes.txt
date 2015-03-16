@@ -1,0 +1,16 @@
+State table sorting (index) does not appear to be important
+- could be wrong
+
+It should be sorted alphabetically, then we can quickly search
+
+A linked list might be faster in place (cur, next)
+
+It is frustrating to consider whether to do certain things in grammar or in state table
+- Do as much in the grammar as possible to keep the statTable and Parser as grammar-agnostic as possible?
+- But, the parser + stateTable are designed for transpositions, insertions, etc
+
+Instead of having one reduction for each edit, could have the reductions hold arrays of edits
+- Maybe, depends on how we integrate k-best (sort reductions by cost?)
+
+Use module(s) from lunr.js for matching term symbols
+- Could relate to breaking multi-word term syms into token and getting insertion costs of tokens

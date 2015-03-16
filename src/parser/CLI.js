@@ -28,7 +28,9 @@ if (!grammar.startSymbol) {
 }
 
 
+var prevRSS = process.memoryUsage().rss
 var stateTable = new (require('./StateTable'))(grammar)
+console.log((process.memoryUsage().rss - prevRSS) / 1e6 + ' MB')
 stateTable.print()
 
 var readline = require('readline')

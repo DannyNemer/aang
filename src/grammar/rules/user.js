@@ -15,7 +15,7 @@ var peopleTerm = g.addWord({
 })
 
 this.github = g.addWord({
-	name: 'github',
+	name: 'github-opt',
 	optional: true,
 	accepted: [ 'GitHub' ]
 })
@@ -77,13 +77,13 @@ var follow = g.addVerb({
 })
 
 // (people) followed by me
-user.passive.addRule({ RHS: [ follow, this.byObjUsers ] })
+user.passive.addRule({ RHS: [ follow, this.byObjUsers ], verbForm: 'past' })
 // (people) I follow
 var stopwordFollow = new g.Symbol('stopword', 'follow')
 stopwordFollow.addRule({ RHS: [ stopwords.preVerbStopwords, follow ] })
 user.objFilter.addRule({ RHS: [ this.nomUsersPlus, stopwordFollow ] })
 // (people who) follow me
-user.subjFilter.addRule({ RHS: [ follow, objUsersPlus ] })
+user.subjFilter.addRule({ RHS: [ follow, objUsersPlus ], personNumber: 'oneOrPl' })
 
 
 
@@ -92,14 +92,13 @@ var followersTerm = g.addWord({
 	accepted: [ 'followers' ]
 })
 
-// (my) followers
+// (my) followers; followers (of mine)
 var userFollowersHead = new g.Symbol(user.nameSg, 'followers', 'head')
 userFollowersHead.addRule({ RHS: [ this.github, followersTerm ] })
 
 // (my) followers
 var userFollowersPossessible = new g.Symbol(user.nameSg, 'followers', 'possessible')
 userFollowersPossessible.addRule({ RHS: [ user.lhs, userFollowersHead ] })
-
 // my followers
 user.noRelativePossessive.addRule({ RHS: [ poss.determinerOmissible, userFollowersPossessible ] })
 

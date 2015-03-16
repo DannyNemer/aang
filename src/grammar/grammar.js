@@ -8,9 +8,10 @@ exports.emptyTermSym = '<empty>'
 exports.Symbol = require('./Symbol').bind(null, grammar)
 
 var termFunctions = require('./termFunctions')
-exports.addVerb = termFunctions.addVerb
-exports.addWord = termFunctions.addWord
 exports.addPronoun = termFunctions.addPronoun
+exports.addVerb = termFunctions.addVerb
+exports.addStopWord = termFunctions.addStopWord
+exports.addWord = termFunctions.addWord
 
 exports.Semantic = require('./Semantic')
 

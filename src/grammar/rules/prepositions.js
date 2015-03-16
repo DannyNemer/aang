@@ -15,3 +15,10 @@ this.possessor = g.addWord({
 	insertionCost: 0.5,
 	accepted: [ 'of' ]
 })
+
+// (repos) of (mine)
+// Same as [prep-possessor], without insertion cost
+this.possessorSpecial = g.addWord({
+	name: prepStr + '-possessor-special',
+	accepted: [ 'of' ]
+})
