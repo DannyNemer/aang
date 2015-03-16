@@ -12,7 +12,7 @@ function StateTable(inputGrammar) {
 				return this.lookUp(rightSymName)
 			}, this)
 
-			insertRule(LHS, newRuleRHS, rule.cost)
+			insertRule(LHS, newRuleRHS, rule, rule)
 		}, this)
 	}, this)
 
@@ -20,27 +20,33 @@ function StateTable(inputGrammar) {
 		var symBuf = [ this.lookUp(leftSymName) ]
 
 		inputGrammar.terminals[leftSymName].forEach(function (rule) {
-			insertRule(this.lookUp(rule.RHS[0], true), symBuf, rule.cost)
+			insertRule(this.lookUp(rule.RHS[0], true, rule.text), symBuf, rule)
 		}, this)
 	}, this)
 
 	this.generate(this.lookUp(inputGrammar.startSymbol))
 }
 
-StateTable.prototype.lookUp = function (name, isLiteral) {
+StateTable.prototype.lookUp = function (name, isLiteral, text) {
 	var sym = this.symbolTab[name]
 	if (sym && sym.isLiteral === isLiteral && sym.name === name)
 		return sym
 
-	return this.symbolTab[name] = {
+	sym = this.symbolTab[name] = {
 		name: name,
-		isLiteral: isLiteral,
 		index: Object.keys(this.symbolTab).length,
 		rules: []
 	}
+
+	if (isLiteral) {
+		sym.isLiteral = true
+		sym.text = text
+	}
+
+	return sym
 }
 
-function insertRule(sym, symBuf, cost) {
+function insertRule(sym, symBuf, origRule) {
 	var existingRules = sym.rules
 
 	for (var i = 0; i < existingRules.length; i++) {
@@ -53,8 +59,8 @@ function insertRule(sym, symBuf, cost) {
 		}
 
 		if (diff === 0 && !existingRuleRHS[j]) {
-			if (!symBuf[j]) return
-			// if (!symBuf[j] && cost === existingRules[i].cost) return // Identical RHS
+			// if (!symBuf[j]) return
+			if (!symBuf[j] && origRule.cost === existingRules[i].ruleProps.cost) return // Identical RHS
 			else break
 		} else if (diff > 0) {
 			break
@@ -63,8 +69,26 @@ function insertRule(sym, symBuf, cost) {
 
 	existingRules.splice(i, 0, {
 		RHS: symBuf,
-		cost: cost
+		ruleProps: createRuleProps(origRule)
 	})
+}
+
+// Create ruleProps obj manually to avoid memory consumption of undefined props
+function createRuleProps(origRule) {
+	var ruleProps = {
+		cost: origRule.cost // All rules have a cost
+	}
+
+	if (origRule.hasOwnProperty('text')) {
+		ruleProps.text = origRule.text
+		ruleProps.textIdx = origRule.textIdx
+	}
+
+	if (origRule.transposition) {
+		ruleProps.transposition = true
+	}
+
+	return ruleProps
 }
 
 function compItems(A, B) {
@@ -79,10 +103,10 @@ function compItems(A, B) {
 		if (diff) break
 	}
 
-	// if (!A.RHS[i] && !B.RHS[i]) {
-	// 	if (A.cost === B.cost) return 0
-	// 	else return 1
-	// }
+	if (!A.RHS[i] && !B.RHS[i]) {
+		if (A.ruleProps.cost === B.ruleProps.cost) return 0
+		else return 1
+	}
 
 	return A.RHS[i] ? (B.RHS[i] ? diff : 1) : (B.RHS[i] ? -1 : 0)
 }
@@ -105,19 +129,46 @@ function addState(ruleSets, newRuleSet) {
 }
 
 function addRule(items, rule) {
-	for (var i = 0; i < items.list.length; i++) {
-		var diff = compItems(items.list[i], rule)
+	var existingRules = items.list
+
+	for (var i = 0; i < existingRules.length; i++) {
+		var diff = compItems(existingRules[i], rule)
 
 		if (diff === 0) return
 		if (diff > 0) break
 	}
 
-	items.list.splice(i, 0, {
+	existingRules.splice(i, 0, {
 		LHS: rule.LHS,
 		RHS: rule.RHS,
 		RHSIdx: rule.RHSIdx,
-		cost: rule.cost
+		ruleProps: rule.ruleProps
 	})
+}
+
+function getItems(XTab, ruleSet, RHSSym) {
+	for (var x = XTab.length; x-- > 0;) {
+		var xItems = XTab[x]
+		if (xItems.sym === RHSSym) {
+			return xItems
+		}
+	}
+
+	// Existing not found
+	var items = { sym: RHSSym, list: [] }
+	XTab.push(items)
+
+	// Rules from grammar
+	RHSSym.rules.forEach(function (rule) {
+		ruleSet.push({
+			LHS: RHSSym,
+			RHS: rule.RHS,
+			RHSIdx: 0,
+			ruleProps: rule.ruleProps
+		})
+	})
+
+	return items
 }
 
 StateTable.prototype.generate = function (startSym) {
@@ -138,25 +189,7 @@ StateTable.prototype.generate = function (startSym) {
 				if (!rule.LHS) newState.isFinal = true
 			} else {
 				var RHSSym = rule.RHS[rule.RHSIdx]
-				var items = null
-
-				for (var x = XTab.length; x-- > 0;) {
-					var xItems = XTab[x]
-					if (xItems.sym === RHSSym) {
-						items = xItems
-						break
-					}
-				}
-
-				if (!items) {
-					items = { sym: RHSSym, list: [] }
-					XTab.push(items)
-
-					// RHS rules from grammar
-					RHSSym.rules.forEach(function (rule) {
-						ruleSet.push({ LHS: RHSSym, RHS: rule.RHS, RHSIdx: 0, cost: rule.cost })
-					})
-				}
+				var items = getItems(XTab, ruleSet, RHSSym)
 
 				// Duplicate rule, saving RHSIdx
 				// Add rule to list of rules that produce RHSSym
@@ -171,7 +204,7 @@ StateTable.prototype.generate = function (startSym) {
 				newState.reds.push({
 					LHS: rule.LHS,
 					RHS: rule.RHS,
-					cost: rule.cost
+					ruleProps: rule.ruleProps
 				})
 			}
 		})
@@ -197,7 +230,9 @@ StateTable.prototype.print = function () {
 				toPrint += ' ' + sym.name
 			})
 
-			console.log(toPrint + '] ' + red.cost)
+			toPrint += ']'
+
+			console.log(toPrint, red.ruleProps)
 		})
 
 		state.shifts.forEach(function (shift) {

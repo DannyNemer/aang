@@ -41,13 +41,15 @@ Parser.prototype.parse = function (query) {
 		var oldVertTabIdx = this.vertTabIdx
 		this.vertTabIdx = this.vertTab.length
 		this.nodeTabIdx = this.nodeTab.length
-		word.rules.forEach(function (rule) {
-			var node = this.addSub(rule.RHS[0], sub)
+
+		for (var r = 0, rules = word.rules, rulesLen = rules.length; r < rulesLen; ++r) {
+			var rule = rules[r]
+			var node = this.addSub(rule.RHS[0], sub, rule.ruleProps)
 
 			for (var vertIdx = oldVertTabIdx; vertIdx < this.vertTabIdx; vertIdx++) {
 				this.addNode(node, this.vertTab[vertIdx])
 			}
-		}, this)
+		}
 	}
 
 	/* ACCEPT */
@@ -61,18 +63,20 @@ Parser.prototype.parse = function (query) {
 	}
 }
 
-Parser.prototype.addSub = function (sym, sub) {
+Parser.prototype.addSub = function (sym, sub, ruleProps) {
 	var size = sym.isLiteral ? 1 : (sub ? sub.size : 0)
 	var node
 
 	for (var N = this.nodeTabIdx; N < this.nodeTab.length; N++) {
 		node = this.nodeTab[N]
-		if (node.sym === sym && node.size === size) break
+		// compare costs to allow identical RHS syms, but different edits
+		if (node.sym === sym && node.size === size && node.ruleProps.cost === ruleProps.cost) break
 	}
 
 	if (N === this.nodeTab.length) {
 		node = {
 			sym: sym,
+			ruleProps: ruleProps,
 			size: size,
 			start: sym.isLiteral ? (this.position - 1) : (sub ? sub.parNode.start : this.position),
 			subs: []
@@ -83,8 +87,9 @@ Parser.prototype.addSub = function (sym, sub) {
 
 	if (!sym.isLiteral) {
 		var match = node.subs.some(function (oldSub) {
-			for (; oldSub && sub; oldSub = oldSub.next, sub = sub.next)
+			for (; oldSub && sub; oldSub = oldSub.next, sub = sub.next) {
 				if (oldSub.size !== sub.size || oldSub.parNode !== sub.parNode) return false
+			}
 
 			return oldSub === sub
 		})
@@ -115,9 +120,11 @@ Parser.prototype.addVertex = function (state) {
 Parser.prototype.next = function (state, sym) {
 	var stateShifts = state.shifts
 
-	for (var S = 0; S < stateShifts.length; S++) {
+	for (var S = 0, stateShiftsLen = stateShifts.length; S < stateShiftsLen; ++S) {
 		var shift = stateShifts[S]
-		if (shift.sym === sym) return this.stateTable.shifts[shift.stateIdx]
+		if (shift.sym === sym) {
+			return this.stateTable.shifts[shift.stateIdx]
+		}
 	}
 }
 
@@ -125,29 +132,34 @@ Parser.prototype.addNode = function (node, oldVertex) {
 	var state = this.next(oldVertex.state, node.sym)
 	if (!state) return
 
-	var vertex = this.addVertex(state)
+	var vertexList = this.addVertex(state).list
 	var zNode
 
-	vertex.list.some(function (subZnode) {
-		if (subZnode.node === node)
-			return zNode = subZnode
-	})
+	for (var i = 0, vertexListLen = vertexList.length; i < vertexListLen; ++i) {
+		var subZNode = vertexList[i]
+		if (subZNode.node === node) {
+			zNode = subZNode
+			break
+		}
+	}
 
 	if (!zNode) {
 		zNode = { node: node, list: [] }
-		vertex.list.push(zNode)
+		vertexList.push(zNode)
 
 		Array.prototype.push.apply(this.reds, state.reds.map(function (red) {
 			return {
 				zNode: zNode,
 				LHS: red.LHS,
-				RHS: red.RHS
+				RHS: red.RHS,
+				ruleProps: red.ruleProps
 			}
 		}))
 	}
 
-	if (zNode.list.indexOf(oldVertex) === -1)
+	if (zNode.list.indexOf(oldVertex) === -1) {
 		zNode.list.push(oldVertex)
+	}
 }
 
 Parser.prototype.reduce = function (red) {
@@ -159,12 +171,18 @@ Parser.prototype.reduce = function (red) {
 		}
 	} ]
 
-	for (var RHSIdx = 1, pathTabIdx = 0; RHSIdx < red.RHS.length; RHSIdx++) {
-		var path = pathTab[pathTabIdx++],
-				sub = path.sub
+	var pathTabIdx = 0
+	if (red.RHS.length === 2) {
+		var path = pathTab[pathTabIdx++]
+		var sub = path.sub
+		var vertices = path.zNode.list
 
-		path.zNode.list.forEach(function (vertex) {
-			vertex.list.forEach(function (zNode) {
+		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
+			var vertexList = vertices[v].list
+
+			for (var z = 0, vertexListLen = vertexList.length; z < vertexListLen; ++z) {
+				var zNode = vertexList[z]
+
 				pathTab.push({
 					zNode: zNode,
 					sub: {
@@ -173,17 +191,18 @@ Parser.prototype.reduce = function (red) {
 						next: sub
 					}
 				})
-			})
-		})
+			}
+		}
 	}
 
 	while (pathTabIdx < pathTab.length) {
-		var path = pathTab[pathTabIdx++],
-				node = this.addSub(red.LHS, path.sub)
+		var path = pathTab[pathTabIdx++]
+		var node = this.addSub(red.LHS, path.sub, red.ruleProps)
 
-		path.zNode.list.forEach(function (vertex) {
-			this.addNode(node, vertex)
-		}, this)
+		var vertices = path.zNode.list
+		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
+			this.addNode(node, vertices[v])
+		}
 	}
 }
 
@@ -252,13 +271,17 @@ Parser.prototype.printGraph = function () {
 	console.log(JSON.stringify(print(this.startNode), null, 1))
 
 	function print(node) {
-		var newNode = { symbol: node.sym.name }
+		var newNode = {
+			symbol: node.sym.name,
+			ruleProps: node.ruleProps
+		}
 
 		if (node.subs.length) {
 			newNode.children = []
 			node.subs.forEach(function (sub) {
-				for (; sub; sub = sub.next)
+				for (; sub; sub = sub.next) {
 					newNode.children.push(print(sub.parNode))
+				}
 			})
 		}
 
