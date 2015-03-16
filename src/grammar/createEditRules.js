@@ -217,38 +217,55 @@ function createRulesFromTranspositions(grammar) {
 // - tense -> check parent rule
 // - person-number -> check insertion of preceding branch (1st of two RHS branches)
 // - other -> replace unaccepted synonyms
+// Concatenate adjacent strings
 function conjugateText(rule, insertion) {
 	if (rule.RHS.length === 1) {
-		// Grammatical case check only occurs in 1-1 rules
-		return insertion.text.map(function (text) {
+		// Grammatical case check only occurs in 1->1 rules
+		return insertion.text.reduce(function (textArray, text) {
 			// Already conjugated, or no conjugation needed (e.g., noun, preposition)
 			if (typeof text === 'string') {
-				return text
+				// Concatenate string to prev element if also a string
+				var lastIdx = textArray.length - 1
+				if (typeof textArray[lastIdx] === 'string') {
+					textArray[lastIdx] += ' ' + text
+				} else {
+					textArray.push(text)
+				}
 			}
 
 			// Objective vs. nominative case: "me" vs. "I"
-			if (rule.gramCase) {
+			else if (rule.gramCase) {
 				if (!text[rule.gramCase]) throw 'looking for a gram case'
-				return text[rule.gramCase]
+				textArray.push(text[rule.gramCase])
 			}
 
-			util.log(text, rule, insertion)
-			throw 'text cannot be conjugated'
-		})
+			else {
+				util.log(text, rule, insertion)
+				throw 'text cannot be conjugated'
+			}
+
+			return textArray
+		}, [])
 	} else {
-		// Tense and person-number check only occurs in 1-2 rules
-		return insertion.text.map(function (text) {
+		// Tense and person-number check only occurs in 1->2 rules
+		return insertion.text.reduce(function (textArray, text) {
 			// Already conjugated, or no conjugation needed (e.g., noun, preposition)
 			if (typeof text === 'string') {
-				return text
+				// Concatenate string to prev element if also a string
+				var lastIdx = textArray.length - 1
+				if (typeof textArray[lastIdx] === 'string') {
+					textArray[lastIdx] += ' ' + text
+				} else {
+					textArray.push(text)
+				}
 			}
 
 			// Past tense
 			// - Precedes person number: "I have liked" vs. "I have like"
 			// - Doesn't have to apply to every verb: "[have] liked" - past-tense applies to "liked", not [have]
-			if (rule.verbForm && text[rule.verbForm]) {
+			else if (rule.verbForm && text[rule.verbForm]) {
 				// if (!text[rule.verbForm]) throw 'looking for a verbForm'
-				return text[rule.verbForm]
+				textArray.push(text[rule.verbForm])
 			}
 
 			// Could combine verbForm and personNumber because never applied at same time
@@ -256,24 +273,28 @@ function conjugateText(rule, insertion) {
 			// First person, vs. third person singular, vs. plural
 			// - Only used on 1-to-2, where first of two branches determines person-number of second branch
 			// - Only applies to 2nd of 2 RHS branches
-			if (insertion.personNumber) {
+			else if (insertion.personNumber) {
 				if (!text[insertion.personNumber]) throw 'looking for a personNumber'
-				return text[insertion.personNumber]
+				textArray.push(text[insertion.personNumber])
 			}
 
 			// (that) [have] been -> (that) have been
 			// (who) [follow] me -> (who) follow me
 			// - Only applies to 1st of 2 RHS branches
-			if (rule.personNumber) {
+			else if (rule.personNumber) {
 				if (!text[rule.personNumber]) throw 'looking for a personNumber'
-				return text[rule.personNumber]
+				textArray.push(text[rule.personNumber])
 			}
 
 			// Text cannot yet be conjugated:
 			// - One of two RHS in new rule -> dependent on other RHS branch
 			// - [have] liked
-			return text
-		})
+			else {
+				textArray.push(text)
+			}
+
+			return textArray
+		}, [])
 	}
 }
 
