@@ -57,7 +57,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 
 		Object.keys(grammar).forEach(function (nontermSym) {
 			grammar[nontermSym].forEach(function (rule) {
-				if (!rule.terminal && RHSCanBeInserted(insertions, rule.RHS)) {
+				if (!rule.terminal && !rule.hasOwnProperty('transpositionCost') && RHSCanBeInserted(insertions, rule.RHS)) {
 					rule.RHS.map(function (sym) {
 						// Create an array of every insertion for each RHS symbol
 						return insertions[sym].map(function (insertion) {
