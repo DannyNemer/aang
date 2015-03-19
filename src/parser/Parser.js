@@ -88,25 +88,44 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 	}
 
 	if (!sym.isLiteral) {
-		var match = node.subs.some(function (oldSub) {
-			for (; oldSub && sub; oldSub = oldSub.next, sub = sub.next) {
-				if (oldSub.size !== sub.size || oldSub.parNode !== sub.parNode) return false
-			}
+		if (subDoesNotExists(node.subs, sub)) {
+			node.subs.push(sub)
+		}
 
-			return oldSub === sub
-		})
 		if (ruleProps instanceof Array) { // insertion
 			node.ruleProps = node.ruleProps.concat(ruleProps)
 		} else if (node.ruleProps.indexOf(ruleProps) === -1) {
 			node.ruleProps.push(ruleProps)
 		}
-
-		if (!match) node.subs.push(sub)
 	}
 
 	return node
 }
 
+// sub = { size: 1, node: { sym: { name: 'my', isLiteral: true, rules: [2] } } }
+function subDoesNotExists(existingSubs, newSub) {
+	var newSubNext = newSub.next
+
+	for (var s = existingSubs.length; s-- > 0;) {
+		var oldSub = existingSubs[s]
+
+		if (oldSub.size !== newSub.size || oldSub.node !== newSub.node) {
+			continue
+		}
+
+		if (newSubNext && (oldSub = oldSub.next)) {
+			if (oldSub.size !== newSubNext.size || oldSub.node !== newSubNext.node) {
+				continue
+			}
+		}
+
+		return false // sub exists
+	}
+
+	return true
+}
+
+// one vertex for each state
 Parser.prototype.addVertex = function (state) {
 	for (var V = this.vertTabIdx; V < this.vertTab.length; V++) {
 		var vertex = this.vertTab[V]
