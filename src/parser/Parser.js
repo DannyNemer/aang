@@ -15,6 +15,7 @@ Parser.prototype.parse = function (query) {
 	this.reds = []
 	this.redsIdx = 0
 
+	// { zNodes: [], startPosition: 0, state: { reds: [], shifts: [66] } }
 	this.addVertex(this.stateTable.shifts[0])
 
 	while (true) {
@@ -23,9 +24,11 @@ Parser.prototype.parse = function (query) {
 			this.reduce(this.reds[this.redsIdx++])
 
 		/* SHIFT */
-		this.position++
-		var token = tokens.shift()
+		var token = tokens[this.position++]
 		if (!token) break
+
+		// Terminal symbol, with all of the rules that lead to it
+		// { index: 83, isLiteral: true, name: 'my', rules: [ { RHS: [ { name: [1-sg-poss] } ] } ] }
 		var word = this.stateTable.lookUp(token, true)
 
 		if (word.rules.length === 0) {
@@ -34,19 +37,27 @@ Parser.prototype.parse = function (query) {
 		}
 
 		var sub = {
-			size: 1,
-			parNode: this.addSub(word)
+			size: 1, // size of literal (why not use node)
+			node: this.addSub(word) // { sym: word, size: 1, start: 0, subs: [] }
 		}
 
 		var oldVertTabIdx = this.vertTabIdx
-		this.vertTabIdx = this.vertTab.length
-		this.nodeTabIdx = this.nodeTab.length
+		this.vertTabIdx = this.vertTab.length // 1
+		this.nodeTabIdx = this.nodeTab.length // 1
 
+		// Loop through all term rules that produce term sym
 		for (var r = 0, rules = word.rules, rulesLen = rules.length; r < rulesLen; ++r) {
-			var rule = rules[r]
+			var rule = rules[r] // { RHS: [ { name: '[1-sg-poss]' } ] }
+			// node = {
+			// 	sym: { name: '[1-sg-poss]' },
+			// 	subs: [
+			// 		{ size: 1, node: { sym: { name: 'my' } } }
+			// 	]
+			// }
 			var node = this.addSub(rule.RHS[0], sub, rule.ruleProps)
 
 			for (var vertIdx = oldVertTabIdx; vertIdx < this.vertTabIdx; vertIdx++) {
+				// vert = { zNodes: [], startPosition: 0, state: { reds: [], shifts: [66] } }
 				this.addNode(node, this.vertTab[vertIdx])
 			}
 		}
@@ -57,23 +68,28 @@ Parser.prototype.parse = function (query) {
 		var vertex = this.vertTab[vertIdx]
 
 		if (vertex.state.isFinal) {
-			this.startNode = vertex.list[0].node
+			this.startNode = vertex.zNodes[0].node
 			break
 		}
 	}
 }
 
+// no sub for term syms
+// sym is either term sym or nonterm sym
 Parser.prototype.addSub = function (sym, sub, ruleProps) {
 	var size = sym.isLiteral ? 1 : (sub ? sub.size : 0)
-	var node
+	var node = null
 
-	for (var N = this.nodeTabIdx; N < this.nodeTab.length; N++) {
+	// Does not look at previously added nodes
+	for (var N = this.nodeTabIdx, nodeTabLen = this.nodeTab.length; N < nodeTabLen; ++N) {
 		node = this.nodeTab[N]
 		if (node.sym === sym && node.size === size) break
 	}
 
-	if (N === this.nodeTab.length) {
+	if (N === nodeTabLen) {
 		node = {
+			// sym = LHS - 'word' for term syms { name: 'my', rules: [ '[1-sg-poss]' ] }
+			// sym = { name: '[1-sg-poss]', rules: [] } - no rules
 			sym: sym,
 			size: size, // 1 for termsym
 			start: sym.isLiteral ? (this.position - 1) : (sub ? sub.node.start : this.position),
@@ -127,15 +143,15 @@ function subDoesNotExists(existingSubs, newSub) {
 
 // one vertex for each state
 Parser.prototype.addVertex = function (state) {
-	for (var V = this.vertTabIdx; V < this.vertTab.length; V++) {
-		var vertex = this.vertTab[V]
+	for (var v = this.vertTabIdx, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
+		var vertex = this.vertTab[v]
 		if (vertex.state === state) return vertex
 	}
 
 	var vertex = {
-		state: state,
-		start: this.position,
-		list: []
+		state: state, // idx of state in stateTable of reds or shifts
+		start: this.position, // index in input string tokens array
+		zNodes: [] // zNodes that point to this vertex
 	}
 
 	this.vertTab.push(vertex)
@@ -154,83 +170,109 @@ Parser.prototype.next = function (state, sym) {
 	}
 }
 
+// node = {
+// 	sym: { name: '[1-sg-poss]' },
+//  subs: [ { size: 1, node: { sym: { name: 'my' } } } ]
+// }
+// oldVertex = { zNodes: [], startPosition: 0, state: { reds: [], shifts: [66] } }
 Parser.prototype.addNode = function (node, oldVertex) {
+	// state = {
+	// 	reds: [ {
+	//		LHS: { name: "[poss-determiner-sg]" },
+	//		RHS: [ { name: "[1-sg-poss]" } ]
+	//	} ],
+	// 	shifts: []
+	// }
 	var state = this.next(oldVertex.state, node.sym)
 	if (!state) return
 
-	var vertexList = this.addVertex(state).list
+	// vertex = { state: state, startPos: 0, zNodes: [] }
+	var vertexZNodes = this.addVertex(state).zNodes
 	var zNode
 
-	for (var i = 0, vertexListLen = vertexList.length; i < vertexListLen; ++i) {
-		var subZNode = vertexList[i]
-		if (subZNode.node === node) {
-			zNode = subZNode
+	for (var i = 0, vertexZNodesLen = vertexZNodes.length; i < vertexZNodesLen; ++i) {
+		var vertexZNode = vertexZNodes[i]
+		if (vertexZNode.node === node) {
+			zNode = vertexZNode
 			break
 		}
 	}
 
 	if (!zNode) {
-		zNode = { node: node, list: [] }
-		vertexList.push(zNode)
+		// vertices are those which lead to this zNode
+		zNode = { node: node, vertices: [] }
+		vertexZNodes.push(zNode)
 
-		Array.prototype.push.apply(this.reds, state.reds.map(function (red) {
-			return {
+		var stateReds = state.reds
+		for (var r = 0, stateRedsLen = stateReds.length; r < stateRedsLen; ++r) {
+			var red = stateReds[r]
+			this.reds.push({
 				zNode: zNode,
 				LHS: red.LHS,
-				RHS: red.RHS,
+				RHSLengthIsTwo: red.RHS.length === 2,
 				ruleProps: red.ruleProps
-			}
-		}))
+			})
+		}
 	}
 
-	if (zNode.list.indexOf(oldVertex) === -1) {
-		zNode.list.push(oldVertex)
+	if (zNode.vertices.indexOf(oldVertex) === -1) {
+		zNode.vertices.push(oldVertex)
 	}
 }
 
+// red = {
+// 	LHS: { name: "[poss-determiner-sg]", rules: [ { RHS: [ { name: "[1-sg-poss]" } ] } ] },
+// 	ruleProps: {},
+// 	zNode: {
+// 		node: { size: 1, start: 0, subs: [], sym: { name: "[1-sg-poss]" }, ruleProps: {} }
+// 		vertices: [ { start: 0, state: { reds: [], shifts: [66] }, zNodes: [] } ]
+// 	}
+// }
 Parser.prototype.reduce = function (red) {
-	var pathTab = [ {
-		zNode: red.zNode,
-		sub: {
-			size: red.zNode.node.size,
-			parNode: red.zNode.node,
-		}
-	} ]
-
-	var pathTabIdx = 0
-	if (red.RHS.length === 2) {
-		var path = pathTab[pathTabIdx++]
-		var sub = path.sub
-		var vertices = path.zNode.list
-
-		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
-			var vertexList = vertices[v].list
-
-			for (var z = 0, vertexListLen = vertexList.length; z < vertexListLen; ++z) {
-				var zNode = vertexList[z]
-
-				pathTab.push({
-					zNode: zNode,
-					sub: {
-						size: zNode.node.size + sub.size,
-						parNode: zNode.node,
-						next: sub
-					}
-				})
-			}
-		}
+	var vertices = red.zNode.vertices
+	var sub = {
+		node: red.zNode.node,
+		size: red.zNode.node.size
 	}
 
-	while (pathTabIdx < pathTab.length) {
-		var path = pathTab[pathTabIdx++]
-		var node = this.addSub(red.LHS, path.sub, red.ruleProps)
-
-		var vertices = path.zNode.list
+	if (red.RHSLengthIsTwo) {
 		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
+			var vertexZNodes = vertices[v].zNodes
+
+			for (var z = 0, vertexZNodesLen = vertexZNodes.length; z < vertexZNodesLen; ++z) {
+				var zNode = vertexZNodes[z]
+				var subNew = {
+					node: zNode.node,
+					size: zNode.node.size + sub.size,
+					next: sub
+				}
+
+				var node = this.addSub(red.LHS, subNew, red.ruleProps)
+
+				var zNodeVertices = zNode.vertices
+				for (var v2 = 0, zNodeVerticesLen = zNodeVertices.length; v2 < zNodeVerticesLen; ++v2) {
+					this.addNode(node, zNodeVertices[v2])
+				}
+			}
+		}
+	} else {
+		// { size: 1, start: 0,
+		// 	subs: [ { node: { sym: { name: "[1-sg-poss]" } }, size: 1 } ],
+		// 	sym: { name: "[poss-determiner-sg]" } }
+		var node = this.addSub(red.LHS, sub, red.ruleProps)
+
+		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
+			if (this.next(vertices[v].state, node.sym).isFinal) {
+				debugger
+			// 	this.printGraph(node)
+			}
+			// vertex = { start: 0, state: { reds: [], shifts: [] }, zNodes: [] }
 			this.addNode(node, vertices[v])
 		}
 	}
 }
+
+
 
 function printNode(node) {
 	if (node.sym.isLiteral) {
@@ -253,14 +295,14 @@ Parser.prototype.printForest = function () {
 		var toPrint = printNode(node)
 
 		if (node.subs.length > 0) {
-			if (node.subs[0].parNode.sym.isLiteral) toPrint += ':'
+			if (node.subs[0].node.sym.isLiteral) toPrint += ':'
 			else toPrint += ' ='
 		}
 
 		node.subs.forEach(function (sub, S) {
 			if (S > 0) toPrint += ' |'
 			for (; sub; sub = sub.next)
-				toPrint += printNode(sub.parNode)
+				toPrint += printNode(sub.node)
 		})
 
 		console.log(toPrint + '.');
@@ -275,19 +317,19 @@ Parser.prototype.printStack = function () {
 	this.vertTab.forEach(function (vertex) {
 		var toPrint = ' v_' + vertex.start + '_' + shifts.indexOf(vertex.state)
 
-		if (vertex.list.length > 0) toPrint += ' <=\t'
+		if (vertex.zNodes.length > 0) toPrint += ' <=\t'
 		else console.log(toPrint)
 
-		vertex.list.forEach(function (zNode, Z) {
+		vertex.zNodes.forEach(function (zNode, Z) {
 			if (Z > 0) toPrint += '\t\t'
 
 			toPrint += ' [' + printNode(zNode.node) + ' ] <='
 
-			zNode.list.forEach(function (subVertex) {
+			zNode.vertices.forEach(function (subVertex) {
 				toPrint += ' v_' + subVertex.start + '_' + shifts.indexOf(subVertex.state)
 			})
 
-			if (Z === vertex.list.length - 1) console.log(toPrint)
+			if (Z === vertex.zNodes.length - 1) console.log(toPrint)
 			else toPrint += '\n'
 		})
 	})
