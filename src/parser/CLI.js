@@ -48,7 +48,7 @@ rl.on('line', function (line) {
 
 		parser.printForest()
 		parser.printStack()
-		if (parser.startNode) parser.printGraph()
+		if (parser.startNode) parser.printNodeGraph(parser.startNode)
 	} catch (e) {
 		// Remove portion of stack trace specific to Node
 		console.log()

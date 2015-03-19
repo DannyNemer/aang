@@ -267,24 +267,24 @@ Parser.prototype.printStack = function () {
 	})
 }
 
-Parser.prototype.printGraph = function () {
-	console.log(JSON.stringify(print(this.startNode), null, 1))
+Parser.prototype.printNodeGraph = function (node, notRoot) {
+	var newNode = {
+		symbol: node.sym.name,
+		ruleProps: node.ruleProps
+	}
 
-	function print(node) {
-		var newNode = {
-			symbol: node.sym.name,
-			ruleProps: node.ruleProps
-		}
+	if (node.subs.length) {
+		newNode.children = []
+		node.subs.forEach(function (sub) {
+			for (; sub; sub = sub.next) {
+				newNode.children.push(this.printNodeGraph(sub.node, true))
+			}
+		}, this)
+	}
 
-		if (node.subs.length) {
-			newNode.children = []
-			node.subs.forEach(function (sub) {
-				for (; sub; sub = sub.next) {
-					newNode.children.push(print(sub.parNode))
-				}
-			})
-		}
-
+	if (notRoot) {
 		return newNode
+	} else {
+		console.log(JSON.stringify(newNode, null, 1))
 	}
 }
