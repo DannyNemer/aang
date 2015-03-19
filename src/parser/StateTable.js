@@ -50,7 +50,8 @@ function insertRule(sym, symBuf, origRule) {
 	var existingRules = sym.rules
 
 	for (var i = 0; i < existingRules.length; i++) {
-		var existingRuleRHS = existingRules[i].RHS
+		var existingRule = existingRules[i]
+		var existingRuleRHS = existingRule.RHS
 		var diff
 
 		for (var j = 0; symBuf[j] && existingRuleRHS[j]; j++) {
@@ -59,16 +60,21 @@ function insertRule(sym, symBuf, origRule) {
 		}
 
 		if (diff === 0 && !existingRuleRHS[j]) {
-			// if (!symBuf[j]) return
-			if (!symBuf[j] && origRule.cost === existingRules[i].ruleProps.cost) return // Identical RHS
-			else break
+			if (!symBuf[j]) {
+				// assuming grammar doesn't have duplicates
+				// store as array - only for insertions
+				existingRule.ruleProps = [].concat(existingRule.ruleProps, createRuleProps(origRule))
+				return
+			} else {
+				break
+			}
 		} else if (diff > 0) {
 			break
 		}
 	}
 
 	existingRules.splice(i, 0, {
-		RHS: symBuf,
+		RHS: symBuf, // for term syms, this is the LHS (that produces the term syms)
 		ruleProps: createRuleProps(origRule)
 	})
 }
@@ -101,11 +107,6 @@ function compItems(A, B) {
 	for (var i = 0; A.RHS[i] && B.RHS[i]; ++i) {
 		diff = A.RHS[i].index - B.RHS[i].index
 		if (diff) break
-	}
-
-	if (!A.RHS[i] && !B.RHS[i]) {
-		if (A.ruleProps.cost === B.ruleProps.cost) return 0
-		else return 1
 	}
 
 	return A.RHS[i] ? (B.RHS[i] ? diff : 1) : (B.RHS[i] ? -1 : 0)

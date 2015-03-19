@@ -95,7 +95,9 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 
 			return oldSub === sub
 		})
-		if (node.ruleProps.indexOf(ruleProps) === -1) {
+		if (ruleProps instanceof Array) { // insertion
+			node.ruleProps = node.ruleProps.concat(ruleProps)
+		} else if (node.ruleProps.indexOf(ruleProps) === -1) {
 			node.ruleProps.push(ruleProps)
 		}
 
