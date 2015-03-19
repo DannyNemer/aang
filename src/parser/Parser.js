@@ -69,17 +69,19 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 
 	for (var N = this.nodeTabIdx; N < this.nodeTab.length; N++) {
 		node = this.nodeTab[N]
-		// compare costs to allow identical RHS syms, but different edits
-		if (node.sym === sym && node.size === size && node.ruleProps.cost === ruleProps.cost) break
+		if (node.sym === sym && node.size === size) break
 	}
 
 	if (N === this.nodeTab.length) {
 		node = {
 			sym: sym,
-			ruleProps: ruleProps,
-			size: size,
-			start: sym.isLiteral ? (this.position - 1) : (sub ? sub.parNode.start : this.position),
+			size: size, // 1 for termsym
+			start: sym.isLiteral ? (this.position - 1) : (sub ? sub.node.start : this.position),
 			subs: []
+		}
+
+		if (ruleProps) { // !sym.isLiteral
+			node.ruleProps = []
 		}
 
 		this.nodeTab.push(node)
@@ -93,6 +95,9 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 
 			return oldSub === sub
 		})
+		if (node.ruleProps.indexOf(ruleProps) === -1) {
+			node.ruleProps.push(ruleProps)
+		}
 
 		if (!match) node.subs.push(sub)
 	}
