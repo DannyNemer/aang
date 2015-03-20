@@ -8,16 +8,17 @@ Parser.prototype.parse = function (query) {
 	var tokens = query.split(' ')
 
 	this.position = 0
-	this.nodeTab = []
-	this.nodeTabIdx = 0
 	this.reds = []
 	this.redsIdx = 0
 
-	// Use a vertTab for each shift
+	// Use a vertTab and nodeTab for each shift
 	// laying groundwork for being able to out-of-order for k-best
-	// Using an array of arrays slows parser
+	// Using an array of arrays SLOWS parser
 	this.vertTabs = []
 	this.vertTab = this.vertTabs[this.position] = []
+
+	this.nodeTabs = []
+	this.nodeTab = this.nodeTabs[this.position] = []
 
 	// { zNodes: [], startPosition: 0, state: { reds: [], shifts: [66] } }
 	this.addVertex(this.stateTable.shifts[0])
@@ -46,7 +47,7 @@ Parser.prototype.parse = function (query) {
 			node: this.addSub(word) // { sym: word, size: 1, start: 0, subs: [] }
 		}
 
-		this.nodeTabIdx = this.nodeTab.length
+		this.nodeTab = this.nodeTabs[this.position] = []
 		var oldVertTab = this.vertTab
 		this.vertTab = this.vertTabs[this.position] = []
 
@@ -85,12 +86,12 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 	var node = null
 
 	// Does not look at previously added nodes
-	for (var N = this.nodeTabIdx, nodeTabLen = this.nodeTab.length; N < nodeTabLen; ++N) {
-		node = this.nodeTab[N]
+	for (var n = 0, nodeTabLen = this.nodeTab.length; n < nodeTabLen; ++n) {
+		node = this.nodeTab[n]
 		if (node.sym === sym && node.size === size) break
 	}
 
-	if (N === nodeTabLen) {
+	if (n === nodeTabLen) {
 		node = {
 			// sym = LHS - 'word' for term syms { name: 'my', rules: [ '[1-sg-poss]' ] }
 			// sym = { name: '[1-sg-poss]', rules: [] } - no rules
@@ -328,23 +329,25 @@ Parser.prototype.printForest = function () {
 		console.log('*' + printNode(this.startNode) + '.')
 	}
 
-	this.nodeTab.forEach(function (node) {
-		if (node.sym.isLiteral) return
+	this.nodeTabs.forEach(function (nodeTab) {
+		nodeTab.forEach(function (node) {
+			if (node.sym.isLiteral) return
 
-		var toPrint = printNode(node)
+			var toPrint = printNode(node)
 
-		if (node.subs.length > 0) {
-			if (node.subs[0].node.sym.isLiteral) toPrint += ':'
-			else toPrint += ' ='
-		}
+			if (node.subs.length > 0) {
+				if (node.subs[0].node.sym.isLiteral) toPrint += ':'
+				else toPrint += ' ='
+			}
 
-		node.subs.forEach(function (sub, S) {
-			if (S > 0) toPrint += ' |'
-			for (; sub; sub = sub.next)
-				toPrint += printNode(sub.node)
+			node.subs.forEach(function (sub, S) {
+				if (S > 0) toPrint += ' |'
+				for (; sub; sub = sub.next)
+					toPrint += printNode(sub.node)
+			})
+
+			console.log(toPrint + '.');
 		})
-
-		console.log(toPrint + '.');
 	})
 }
 
