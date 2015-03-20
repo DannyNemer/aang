@@ -104,14 +104,15 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 	}
 
 	if (!sym.isLiteral) {
-		if (subDoesNotExists(node.subs, sub)) {
+		if (subIsNew(node.subs, sub)) {
 			node.subs.push(sub)
-		}
 
-		if (ruleProps instanceof Array) { // insertion
-			node.ruleProps = node.ruleProps.concat(ruleProps)
-		} else if (node.ruleProps.indexOf(ruleProps) === -1) {
+			// Insertions are arrays of multiple ruleProps
+			// Do not check for duplicate ruleProps
 			node.ruleProps.push(ruleProps)
+		} else {
+			// console.log(subs)
+			// console.log(sub)
 		}
 	}
 
@@ -119,7 +120,7 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 }
 
 // sub = { size: 1, node: { sym: { name: 'my', isLiteral: true, rules: [2] } } }
-function subDoesNotExists(existingSubs, newSub) {
+function subIsNew(existingSubs, newSub) {
 	var newSubNext = newSub.next
 
 	for (var s = existingSubs.length; s-- > 0;) {
@@ -262,10 +263,6 @@ Parser.prototype.reduce = function (red) {
 		var node = this.addSub(red.LHS, sub, red.ruleProps)
 
 		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
-			if (this.next(vertices[v].state, node.sym).isFinal) {
-				debugger
-			// 	this.printGraph(node)
-			}
 			// vertex = { start: 0, state: { reds: [], shifts: [] }, zNodes: [] }
 			this.addNode(node, vertices[v])
 		}
@@ -342,11 +339,12 @@ Parser.prototype.printNodeGraph = function (node, notRoot) {
 	}
 
 	if (node.subs.length) {
-		newNode.children = []
-		node.subs.forEach(function (sub) {
+		newNode.subs = node.subs.map(function (sub) {
+			var children = []
 			for (; sub; sub = sub.next) {
-				newNode.children.push(this.printNodeGraph(sub.node, true))
+				children.push(this.printNodeGraph(sub.node, true))
 			}
+			return children
 		}, this)
 	}
 
