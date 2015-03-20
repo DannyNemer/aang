@@ -8,12 +8,16 @@ Parser.prototype.parse = function (query) {
 	var tokens = query.split(' ')
 
 	this.position = 0
-	this.vertTab = []
-	this.vertTabIdx = 0
 	this.nodeTab = []
 	this.nodeTabIdx = 0
 	this.reds = []
 	this.redsIdx = 0
+
+	// Use a vertTab for each shift
+	// laying groundwork for being able to out-of-order for k-best
+	// Using an array of arrays slows parser
+	this.vertTabs = []
+	this.vertTab = this.vertTabs[this.position] = []
 
 	// { zNodes: [], startPosition: 0, state: { reds: [], shifts: [66] } }
 	this.addVertex(this.stateTable.shifts[0])
@@ -41,9 +45,9 @@ Parser.prototype.parse = function (query) {
 			node: this.addSub(word) // { sym: word, size: 1, start: 0, subs: [] }
 		}
 
-		var oldVertTabIdx = this.vertTabIdx
-		this.vertTabIdx = this.vertTab.length // 1
-		this.nodeTabIdx = this.nodeTab.length // 1
+		this.nodeTabIdx = this.nodeTab.length
+		var oldVertTab = this.vertTab
+		this.vertTab = this.vertTabs[this.position] = []
 
 		// Loop through all term rules that produce term sym
 		for (var r = 0, rules = word.rules, rulesLen = rules.length; r < rulesLen; ++r) {
@@ -56,17 +60,16 @@ Parser.prototype.parse = function (query) {
 			// }
 			var node = this.addSub(rule.RHS[0], sub, rule.ruleProps)
 
-			for (var vertIdx = oldVertTabIdx; vertIdx < this.vertTabIdx; vertIdx++) {
+			for (var v = 0, vertTabLen = oldVertTab.length; v < vertTabLen; ++v) {
 				// vert = { zNodes: [], startPosition: 0, state: { reds: [], shifts: [66] } }
-				this.addNode(node, this.vertTab[vertIdx])
+				this.addNode(node, oldVertTab[v])
 			}
 		}
 	}
 
 	/* ACCEPT */
-	for (var vertIdx = this.vertTabIdx; vertIdx < this.vertTab.length; vertIdx++) {
-		var vertex = this.vertTab[vertIdx]
-
+	for (var v = 0, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
+		var vertex = this.vertTab[v]
 		if (vertex.state.isFinal) {
 			this.startNode = vertex.zNodes[0].node
 			break
@@ -144,7 +147,7 @@ function subIsNew(existingSubs, newSub) {
 
 // one vertex for each state
 Parser.prototype.addVertex = function (state) {
-	for (var v = this.vertTabIdx, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
+	for (var v = 0, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
 		var vertex = this.vertTab[v]
 		if (vertex.state === state) return vertex
 	}
@@ -311,23 +314,25 @@ Parser.prototype.printStack = function () {
 
 	console.log("\nParse Stack:")
 
-	this.vertTab.forEach(function (vertex) {
-		var toPrint = ' v_' + vertex.start + '_' + shifts.indexOf(vertex.state)
+	this.vertTabs.forEach(function (vertTab) {
+		vertTab.forEach(function (vertex) {
+			var toPrint = ' v_' + vertex.start + '_' + shifts.indexOf(vertex.state)
 
-		if (vertex.zNodes.length > 0) toPrint += ' <=\t'
-		else console.log(toPrint)
+			if (vertex.zNodes.length > 0) toPrint += ' <=\t'
+			else console.log(toPrint)
 
-		vertex.zNodes.forEach(function (zNode, Z) {
-			if (Z > 0) toPrint += '\t\t'
+			vertex.zNodes.forEach(function (zNode, Z) {
+				if (Z > 0) toPrint += '\t\t'
 
-			toPrint += ' [' + printNode(zNode.node) + ' ] <='
+				toPrint += ' [' + printNode(zNode.node) + ' ] <='
 
-			zNode.vertices.forEach(function (subVertex) {
-				toPrint += ' v_' + subVertex.start + '_' + shifts.indexOf(subVertex.state)
+				zNode.vertices.forEach(function (subVertex) {
+					toPrint += ' v_' + subVertex.start + '_' + shifts.indexOf(subVertex.state)
+				})
+
+				if (Z === vertex.zNodes.length - 1) console.log(toPrint)
+				else toPrint += '\n'
 			})
-
-			if (Z === vertex.zNodes.length - 1) console.log(toPrint)
-			else toPrint += '\n'
 		})
 	})
 }
