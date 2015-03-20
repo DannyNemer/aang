@@ -24,8 +24,9 @@ Parser.prototype.parse = function (query) {
 
 	while (true) {
 		/* REDUCE */
-		while (this.redsIdx < this.reds.length)
+		while (this.redsIdx < this.reds.length) {
 			this.reduce(this.reds[this.redsIdx++])
+		}
 
 		/* SHIFT */
 		var token = tokens[this.position++]
@@ -36,7 +37,7 @@ Parser.prototype.parse = function (query) {
 		var word = this.stateTable.lookUp(token, true)
 
 		if (word.rules.length === 0) {
-			console.log('UNRECOGNIZED WORD!!', token)
+			console.log('unrecognized word:', token)
 			return
 		}
 
@@ -95,11 +96,12 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 			// sym = { name: '[1-sg-poss]', rules: [] } - no rules
 			sym: sym,
 			size: size, // 1 for termsym
-			start: sym.isLiteral ? (this.position - 1) : (sub ? sub.node.start : this.position),
-			subs: []
+			start: sym.isLiteral ? (this.position - 1) : (sub ? sub.node.start : this.position)
 		}
 
-		if (ruleProps) { // !sym.isLiteral
+		if (!sym.isLiteral) {
+			node.paths = []
+			node.subs = []
 			node.ruleProps = []
 		}
 
@@ -109,9 +111,10 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 	if (!sym.isLiteral) {
 		if (subIsNew(node.subs, sub)) {
 			node.subs.push(sub)
+			appendPaths(node, sub, ruleProps)
 
-			// Insertions are arrays of multiple ruleProps
-			// Do not check for duplicate ruleProps
+			// Insertions are arrays of multiple ruleProps (or normal ruleProps if only insertion) - distinguish?
+			// 1 ruleProps per sub (matched by idx) - do not check for duplicate ruleProps
 			node.ruleProps.push(ruleProps)
 		} else {
 			// console.log(subs)
@@ -120,6 +123,42 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 	}
 
 	return node
+}
+
+// Temporary: bottom-up parse the display texts and costs
+function appendPaths(node, sub, ruleProps) {
+	if (ruleProps instanceof Array) {
+		ruleProps.forEach(function (rulePropsSub) {
+			appendPaths(node, sub, rulePropsSub)
+		})
+	} else if (sub.node.paths) {
+		sub.node.paths.forEach(function (pathA) {
+			if (ruleProps.text) {
+				// if insertion, don't check sub.ntext
+				node.paths.push({
+					text: ruleProps.textIdx ? pathA.text.concat(ruleProps.text) : ruleProps.text.concat(pathA.text),
+					cost: ruleProps.cost + pathA.cost
+				})
+			} else if (sub.next) {
+				sub.next.node.paths.forEach(function (pathB) {
+					node.paths.push({
+						text: ruleProps.transposition ? pathB.text.concat(pathA.text) : pathA.text.concat(pathB.text),
+						cost: ruleProps.cost + pathA.cost + pathB.cost
+					})
+				})
+			} else {
+				node.paths.push({
+					text: pathA.text,
+					cost: ruleProps.cost + pathA.cost
+				})
+			}
+		})
+	} else {
+		node.paths.push({
+			text: [ruleProps.text],
+			cost: ruleProps.cost
+		})
+	}
 }
 
 // sub = { size: 1, node: { sym: { name: 'my', isLiteral: true, rules: [2] } } }
@@ -163,7 +202,7 @@ Parser.prototype.addVertex = function (state) {
 	return vertex
 }
 
-Parser.prototype.next = function (state, sym) {
+Parser.prototype.nextState = function (state, sym) {
 	var stateShifts = state.shifts
 
 	for (var S = 0, stateShiftsLen = stateShifts.length; S < stateShiftsLen; ++S) {
@@ -187,7 +226,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 	//	} ],
 	// 	shifts: []
 	// }
-	var state = this.next(oldVertex.state, node.sym)
+	var state = this.nextState(oldVertex.state, node.sym)
 	if (!state) return
 
 	// vertex = { state: state, startPos: 0, zNodes: [] }
@@ -340,10 +379,11 @@ Parser.prototype.printStack = function () {
 Parser.prototype.printNodeGraph = function (node, notRoot) {
 	var newNode = {
 		symbol: node.sym.name,
-		ruleProps: node.ruleProps
+		ruleProps: node.ruleProps,
+		paths: node.paths
 	}
 
-	if (node.subs.length) {
+	if (node.subs) {
 		newNode.subs = node.subs.map(function (sub) {
 			var children = []
 			for (; sub; sub = sub.next) {
