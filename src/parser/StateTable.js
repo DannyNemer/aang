@@ -1,33 +1,30 @@
 module.exports = StateTable
 
-function StateTable(inputGrammar) {
+function StateTable(inputGrammar, startSymbol) {
 	this.symbolTab = {}
 	this.shifts = []
 
-	Object.keys(inputGrammar.nonterminals).forEach(function (leftSymName) {
-		var LHS = this.lookUp(leftSymName)
+	Object.keys(inputGrammar).forEach(function (nontermSym) {
+		var LHS = this.lookUp(nontermSym)
+		var symBuf = [ LHS ]
 
-		inputGrammar.nonterminals[leftSymName].forEach(function (rule) {
-			var newRuleRHS = rule.RHS.map(function (rightSymName) {
-				return this.lookUp(rightSymName)
-			}, this)
+		inputGrammar[nontermSym].forEach(function (rule) {
+			if (rule.terminal) {
+				insertRule(this.lookUp(rule.RHS[0], true), symBuf, rule)
+			} else {
+				var newRuleRHS = rule.RHS.map(function (rightSymName) {
+					return this.lookUp(rightSymName)
+				}, this)
 
-			insertRule(LHS, newRuleRHS, rule, rule)
+				insertRule(LHS, newRuleRHS, rule)
+			}
 		}, this)
 	}, this)
 
-	Object.keys(inputGrammar.terminals).forEach(function (leftSymName) {
-		var symBuf = [ this.lookUp(leftSymName) ]
-
-		inputGrammar.terminals[leftSymName].forEach(function (rule) {
-			insertRule(this.lookUp(rule.RHS[0], true, rule.text), symBuf, rule)
-		}, this)
-	}, this)
-
-	this.generate(this.lookUp(inputGrammar.startSymbol))
+	this.generate(this.lookUp(startSymbol))
 }
 
-StateTable.prototype.lookUp = function (name, isLiteral, text) {
+StateTable.prototype.lookUp = function (name, isLiteral) {
 	var sym = this.symbolTab[name]
 	if (sym && sym.isLiteral === isLiteral && sym.name === name)
 		return sym
@@ -40,7 +37,6 @@ StateTable.prototype.lookUp = function (name, isLiteral, text) {
 
 	if (isLiteral) {
 		sym.isLiteral = true
-		sym.text = text
 	}
 
 	return sym

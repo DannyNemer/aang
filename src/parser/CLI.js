@@ -4,32 +4,9 @@
 while (/bin/.test(process.argv[0]) && process.uptime() < 1) {}
 
 var grammar = require('../grammar.json')
-// var grammar = require('./original/gram0.json')
-
-if (!grammar.startSymbol) {
-	var nontermSyms = Object.keys(grammar)
-	grammar.startSymbol = '[start]'
-	grammar.terminals = []
-	grammar.nonterminals = []
-
-	nontermSyms.forEach(function (nontermSym) {
-		grammar[nontermSym].forEach(function (rule) {
-			var rules
-
-			if (rule.terminal) {
-				rules = grammar.terminals[nontermSym] || (grammar.terminals[nontermSym] = [])
-			} else {
-				rules = grammar.nonterminals[nontermSym] || (grammar.nonterminals[nontermSym] = [])
-			}
-
-			rules.push(rule)
-		})
-	})
-}
-
 
 var prevRSS = process.memoryUsage().rss
-var stateTable = new (require('./StateTable'))(grammar)
+var stateTable = new (require('./StateTable'))(grammar, '[start]')
 console.log((process.memoryUsage().rss - prevRSS) / 1e6 + ' MB')
 stateTable.print()
 
@@ -44,7 +21,10 @@ rl.on('line', function (line) {
 
 	try {
 		var parser = new (require('./Parser'))(stateTable)
+
+		// console.time('parse')
 		parser.parse(query)
+		// console.timeEnd('parse')
 
 		parser.printForest()
 		parser.printStack()
