@@ -2,6 +2,7 @@
 // Option --debug-brk (or -b) does this, but broken in node v0.12
 // Relies on breakpoints being set in inspector on previous run
 while (/bin/.test(process.argv[0]) && process.uptime() < 1) {}
+var printTime = process.argv.indexOf('-t') !== -1
 
 var grammar = require('../grammar.json')
 
@@ -22,9 +23,9 @@ rl.on('line', function (line) {
 	try {
 		var parser = new (require('./Parser'))(stateTable)
 
-		// console.time('parse')
+		if (printTime) console.time('parse')
 		parser.parse(query)
-		// console.timeEnd('parse')
+		if (printTime) console.timeEnd('parse')
 
 		parser.printForest()
 		parser.printStack()
