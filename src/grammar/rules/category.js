@@ -124,5 +124,11 @@ module.exports = function Category(catOpts) {
 	var catPl = new g.Symbol(this.namePl)
 	catPl.addRule({ RHS: [ this.plural ] })
 
+	if (!catOpts.person) { // user does not use because obj/nom-users
+		// (people who like) my repos
+		this.catPlPlus = new g.Symbol(this.namePl + '+')
+		this.catPlPlus.addRule({ RHS: [ catPl ] })
+	}
+
 	start.addRule({ RHS: [ catPl ]})
 }

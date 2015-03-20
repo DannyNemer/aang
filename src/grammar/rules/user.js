@@ -6,7 +6,7 @@ var preps = require('./prepositions')
 var poss = require('./poss')
 
 
-var user = new Category({ sg: 'user', pl: 'users', person: true })
+var user = module.exports = new Category({ sg: 'user', pl: 'users', person: true })
 
 var peopleTerm = g.addWord({
 	name: 'people-term',
@@ -14,14 +14,14 @@ var peopleTerm = g.addWord({
 	accepted: [ 'people', 'users' ]
 })
 
-this.github = g.addWord({
+user.github = g.addWord({
 	name: 'github-opt',
 	optional: true,
 	accepted: [ 'GitHub' ]
 })
 
 // |Github users (I follow)
-user.head.addRule({ RHS: [ this.github, peopleTerm ] })
+user.head.addRule({ RHS: [ user.github, peopleTerm ] })
 
 
 var userTerm = new g.Symbol(user.nameSg)
@@ -37,8 +37,8 @@ nomUsers.addRule({ RHS: [ userTerm ], personNumber: 'threeSg' })
 // (people) I (follow)
 nomUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'nom', personNumber: 'oneOrPl' })
 
-this.nomUsersPlus = new g.Symbol('nom', 'users+')
-this.nomUsersPlus.addRule({ RHS: [ nomUsers ] })
+user.nomUsersPlus = new g.Symbol('nom', 'users+')
+user.nomUsersPlus.addRule({ RHS: [ nomUsers ] })
 
 
 var objUser = new g.Symbol('obj', 'user')
@@ -53,8 +53,8 @@ objUsers.addRule({ RHS: [ objUser ] })
 // (people who follow) people
 objUsers.addRule({ RHS: [ user.plural ] })
 
-var objUsersPlus = new g.Symbol('obj', 'users+')
-objUsersPlus.addRule({ RHS: [ objUsers ] })
+user.objUsersPlus = new g.Symbol('obj', 'users+')
+user.objUsersPlus.addRule({ RHS: [ objUsers ] })
 
 // (people followed) by me
 this.byObjUsers = new g.Symbol('by', 'obj', 'users')
@@ -103,4 +103,5 @@ userFollowersPossessible.addRule({ RHS: [ user.lhs, userFollowersHead ] })
 user.noRelativePossessive.addRule({ RHS: [ poss.determinerOmissible, userFollowersPossessible ] })
 
 // followers of mine
-user.head.addRule({ RHS: [ userFollowersHead, poss.ofPossUsers ] })
+user.head.addRule({ RHS: [ userFollowersHead, poss.ofPossUsers ] })user.byObjUsers = new g.Symbol('by', 'obj', 'users')
+user.byObjUsers.addRule({ RHS: [ preps.agent, user.objUsersPlus ] })

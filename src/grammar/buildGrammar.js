@@ -1,6 +1,7 @@
 var g = require('./grammar')
 
 require('./rules/user')
+require('./rules/follow')
 require('./rules/repository')
 
 var grammarPath = '../grammar.json'

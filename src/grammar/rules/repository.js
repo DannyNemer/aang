@@ -47,3 +47,5 @@ repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, like ] })
 var haveLiked = new g.Symbol('have', 'liked')
 haveLiked.addRule({ RHS: [ auxVerbs.have, like ], verbForm: 'past' })
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, haveLiked ] })
+// (people who like) repos liked by me
+user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], personNumber: 'oneOrPl' })
