@@ -25,3 +25,12 @@
 - Keep removing features until it is brain-dead simple; like Picasso's bull.
 
 - Draw on latent powers of humans. Not using them is inhumane. Use all capabilities. Seeing Bret's Humane Representation of Thought
+
+- Next I want to do a smart, dynamic calendar and to-do productivity application. You give short- and long-term to-dos, and provide restrings: laundry every other week, requires being at home, can do other stuff while laundry is running; learn Chinese in 1 year by practicing 1 hours a day, read 1-2 hours a day, but prefer in morning; finish X by tomorrow, start today, requires 2-5 hours; eat 3 meals, scheduled throughout day. What adjustments can I be made to sleep and extra hour? Account for walking back from library. I want to slit my work on X in half during day.
+- I want to do this so bad. Such an easy, obvious user interface. The suggestions are definitive. Instantly helpful.
+- In contrast, at this moment, I see no application or interest of this NLI. All I can think of is searching for specific things: an email, a tweet. Rare instances, and I always end up finding them.
+- I don't need the dynamic calendar either. I can do it all in my head just fine.
+- This is hard. Every problem I think I have (e.g., tracking location, dynamic calendaring, searching for something) I can do already now, in a slightly slower way. I would use them, they would solve a problem, and they would be incredible products with rigorously thought-through design. Yet, I'm no confident in them.
+- These sound like Marco Arment's work: Instapaper (save reading for later), Overcast (better podcast player). Both good, used by him, solve a problem, and with a healthy user base providing sustainable income. But they aren't capable of growing into a large organization. What does?
+- Slack fits those characteristics (solves a problem by building a better designed product, nothing else compares, creator wants for himself). Difference is the communication is valuable. You can create equally great, useful, better-than-market products, but they aren't doing valuable jobs.
+- PG says build something a few people want really badly (depth). These all do this, but I don't see how they can expand. I didn't a better chat experience either (when I described a much better chat UI, with media embeds, better search, etc.), thought only I would like it, but was wrong.
