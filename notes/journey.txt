@@ -34,3 +34,7 @@
 - These sound like Marco Arment's work: Instapaper (save reading for later), Overcast (better podcast player). Both good, used by him, solve a problem, and with a healthy user base providing sustainable income. But they aren't capable of growing into a large organization. What does?
 - Slack fits those characteristics (solves a problem by building a better designed product, nothing else compares, creator wants for himself). Difference is the communication is valuable. You can create equally great, useful, better-than-market products, but they aren't doing valuable jobs.
 - PG says build something a few people want really badly (depth). These all do this, but I don't see how they can expand. I didn't a better chat experience either (when I described a much better chat UI, with media embeds, better search, etc.), thought only I would like it, but was wrong.
+
+- Design with this in mind: "pervasively direct-manipulation interfaces (where the user does his thing by moving and gesturing with meaningful objects, instead of relying on verb buttons and other indirect controls)" - Bret Vistor
+
+- Refer to Bret Victor's work about how this is all about UI and design. http://worrydream.com/ABriefRantOnTheFutureOfInteractionDesign/
