@@ -22,7 +22,7 @@ var parserOldPath = './util/ParserOld.js'
 rl.on('line', function (line) {
 	var query = line.trim()
 
-	if (!parseCommand(query)) {
+	if (query && !parseCommand(query)) {
 		try {
 			console.log('query:', query)
 			var parser = new (require(parserPath))(stateTable)

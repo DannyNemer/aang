@@ -5,9 +5,13 @@ module.exports = function (parserOld, parserNew) {
 
 	var stackOld = stringifyStack(parserOld)
 	var stackNew = stringifyStack(parserNew)
-
 	diffArrays(stackOld, stackNew, 'stack missing')
 	diffArrays(stackNew, stackOld, 'stack extra')
+
+	var forestOld = stringifyForest(parserOld.nodeTabs)
+	var forestNew = stringifyForest(parserNew.nodeTabs)
+	diffArrays(forestOld, forestNew, 'forest missing')
+	diffArrays(forestNew, forestOld, 'forest extra')
 }
 
 function compCounters(parserOld, parserNew, counterName) {
@@ -24,10 +28,30 @@ function diffArrays(arrayA, arrayB, msg) {
 	})
 
 	if (diff.length) {
-		console.log(msg + ' (want ' + arrayA.length + '):', diff.length)
+		console.log(msg + ' (of ' + arrayA.length + '):', diff.length)
 	} else {
 		console.log(msg + ':', diff.length)
 	}
+}
+
+function stringifyForest(nodeTabs) {
+	var forest = []
+
+	nodeTabs.forEach(function (nodeTab) {
+		nodeTab.forEach(function (node) {
+			if (!node.sym.isLiteral && node.subs.length > 0) {
+				var toPrint = stringifyNode(node)
+
+				toPrint += node.subs[0].node.sym.isLiteral ? ':' : ' ='
+
+				node.subs.forEach(function (sub, S) {
+					forest.push(toPrint + stringifyNode(sub.node) + (sub.next ? stringifyNode(sub.next.node) : ''))
+				})
+			}
+		})
+	})
+
+	return forest
 }
 
 function stringifyStack(parser) {
