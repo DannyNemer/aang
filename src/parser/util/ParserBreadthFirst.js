@@ -262,7 +262,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 			this.reds.push({
 				zNode: zNode,
 				LHS: red.LHS,
-				RHSLengthIsTwo: red.RHS.length === 2,
+				binary: red.binary,
 				ruleProps: red.ruleProps
 			})
 		}
@@ -288,7 +288,7 @@ Parser.prototype.reduce = function (red) {
 		size: red.zNode.node.size
 	}
 
-	if (red.RHSLengthIsTwo) {
+	if (red.binary) {
 		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
 			var vertexZNodes = vertices[v].zNodes
 

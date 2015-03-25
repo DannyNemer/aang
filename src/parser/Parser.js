@@ -140,11 +140,11 @@ Parser.prototype.reduce = function (red) {
 		size: red.zNode.node.size
 	}
 
-	if (red.RHSLengthIsTwo) {
+	if (red.binary) {
 		var newRed = { // save sub too!!! (and anything else) - we are creating duplicate reds (though not called)
 			zNode: red.zNode,
 			LHS: red.LHS,
-			RHSLengthIsTwo: true,
+			binary: true,
 			oldLength: red.vertex.zNodes.length,
 			ruleProps: red.ruleProps,
 			position: this.position
@@ -164,7 +164,7 @@ Parser.prototype.reduce = function (red) {
 
 			zNode.reds.push({
 				newNode: node,
-				RHSLengthIsTwo: false,
+				binary: false,
 				ruleProps: red.ruleProps,
 				position: this.position,
 				// cost: this.cost
@@ -248,7 +248,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 				zNode: zNode,
 				vertex: oldVertex,
 				LHS: red.LHS,
-				RHSLengthIsTwo: red.RHS.length === 2,
+				binary: red.binary,
 				ruleProps: red.ruleProps,
 				// position: this.position
 			}
@@ -271,7 +271,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 					zNode: zNode,
 					vertex: oldVertex,
 					LHS: red.LHS,
-					RHSLengthIsTwo: red.RHSLengthIsTwo,
+					binary: red.binary,
 					ruleProps: red.ruleProps,
 					redLink: red,
 				},

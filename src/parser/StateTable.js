@@ -83,6 +83,9 @@ function createRuleProps(origRule) {
 
 	if (origRule.hasOwnProperty('text')) {
 		ruleProps.text = origRule.text
+	}
+
+	if (origRule.hasOwnProperty('textIdx')) {
 		ruleProps.textIdx = origRule.textIdx
 	}
 
@@ -200,7 +203,7 @@ StateTable.prototype.generate = function (startSym) {
 			if (!rule.RHS[rule.RHSIdx] && rule.LHS) {
 				newState.reds.push({
 					LHS: rule.LHS,
-					RHS: rule.RHS,
+					binary: rule.RHS.length === 2,
 					ruleProps: rule.ruleProps
 				})
 			}
