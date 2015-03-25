@@ -1,4 +1,4 @@
-var BinaryHeap = require('./BinaryHeap.js')
+var BinaryHeap = require('../BinaryHeap.js')
 
 module.exports = Parser
 
@@ -82,17 +82,6 @@ Parser.prototype.parse = function (query) {
 			break
 		}
 	}
-
-	var stackLength = this.vertTabs.reduce(function (prev, vertTab) {
-		return prev + vertTab.reduce(function (prev, vertex) {
-			return prev + vertex.zNodes.reduce(function (prev, zNode) {
-				return prev + zNode.vertices.length
-			}, 0)
-		}, 0)
-	}, 0)
-	console.log(' addNodeCalls:', this.addNodeCalls)
-	console.log('  addSubCalls:', this.addSubCalls)
-	console.log(' stack length:', stackLength)
 }
 
 // no sub for term syms

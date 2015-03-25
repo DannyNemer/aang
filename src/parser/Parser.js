@@ -9,7 +9,6 @@ function Parser(stateTable) {
 Parser.prototype.parse = function (query) {
 	this.addNodeCalls = 0
 	this.addSubCalls = 0
-	this.reduceCounter = 0
 
 	var tokens = query.split(' ')
 	this.position = 0
@@ -77,19 +76,6 @@ Parser.prototype.parse = function (query) {
 			break
 		}
 	}
-
-	var stackLength = this.vertTabs.reduce(function (prev, vertTab) {
-		return prev + vertTab.reduce(function (prev, vertex) {
-			return prev + vertex.zNodes.reduce(function (prev, zNode) {
-				return prev + zNode.vertices.length
-			}, 0)
-		}, 0)
-	}, 0)
-	console.log('addNodeCalls (want 1022):', this.addNodeCalls)
-	console.log('  addSubCalls (want 646):', this.addSubCalls)
-	// console.log('reduceCounter (want 613):', this.reduceCounter)
-	console.log(' stack length (want 655):', stackLength)
-	require('./vertTabCompare.js')(this)
 }
 
 // no sub for term syms
@@ -149,7 +135,6 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 // 	}
 // }
 Parser.prototype.reduce = function (red) {
-	this.reduceCounter++
 	var sub = {
 		node: red.zNode.node,
 		size: red.zNode.node.size
@@ -409,7 +394,7 @@ function subIsNew(existingSubs, newSub) {
 
 
 
-Parser.prototype.printNode = function (node) {
+function printNode(node) {
 	if (node.sym.isLiteral) {
 		return ' \"' + node.sym.name + '\"'
 	} else {
@@ -421,14 +406,14 @@ Parser.prototype.printForest = function () {
 	console.log("\nParse Forest:")
 
 	if (this.startNode) {
-		console.log('*' + this.printNode(this.startNode) + '.')
+		console.log('*' + printNode(this.startNode) + '.')
 	}
 
 	this.nodeTabs.forEach(function (nodeTab) {
 		nodeTab.forEach(function (node) {
 			if (node.sym.isLiteral) return
 
-			var toPrint = this.printNode(node)
+			var toPrint = printNode(node)
 
 			if (node.subs.length > 0) {
 				if (node.subs[0].node.sym.isLiteral) toPrint += ':'
@@ -438,12 +423,12 @@ Parser.prototype.printForest = function () {
 			node.subs.forEach(function (sub, S) {
 				if (S > 0) toPrint += ' |'
 				for (; sub; sub = sub.next)
-					toPrint += this.printNode(sub.node)
-			}, this)
+					toPrint += printNode(sub.node)
+			})
 
 			console.log(toPrint + '.');
-		}, this)
-	}, this)
+		})
+	})
 }
 
 Parser.prototype.printStack = function () {
@@ -461,7 +446,7 @@ Parser.prototype.printStack = function () {
 			vertex.zNodes.forEach(function (zNode, Z) {
 				if (Z > 0) toPrint += '\t\t'
 
-				toPrint += ' [' + this.printNode(zNode.node) + ' ] <='
+				toPrint += ' [' + printNode(zNode.node) + ' ] <='
 
 				zNode.vertices.forEach(function (subVertex) {
 					toPrint += ' v_' + subVertex.start + '_' + shifts.indexOf(subVertex.state)
@@ -469,9 +454,9 @@ Parser.prototype.printStack = function () {
 
 				if (Z === vertex.zNodes.length - 1) console.log(toPrint)
 				else toPrint += '\n'
-			}, this)
-		}, this)
-	}, this)
+			})
+		})
+	})
 }
 
 Parser.prototype.printNodeGraph = function (node, notRoot) {
