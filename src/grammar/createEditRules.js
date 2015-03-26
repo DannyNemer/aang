@@ -31,7 +31,7 @@ function findTermRuleInsertions(grammar, insertions) {
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost,
 						insertedSyms: [ { symbol: termSym } ],
-						text: [ rule.text ].filter(Boolean)
+						text: rule.text ? [ rule.text ] : []
 					})
 
 					// Remove empty-string term syms from grammar

@@ -1,7 +1,7 @@
 module.exports = function (parserOld, parserNew) {
 	compCounters(parserOld, parserNew, 'addNodeCalls')
 	compCounters(parserOld, parserNew, 'addSubCalls')
-	compCounters(parserOld, parserNew, 'testCounter')
+	if (parserOld.testCounter) compCounters(parserOld, parserNew, 'testCounter')
 
 
 	var stackOld = stringifyStack(parserOld)

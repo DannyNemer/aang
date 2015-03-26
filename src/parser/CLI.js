@@ -23,24 +23,30 @@ rl.on('line', function (line) {
 	var query = line.trim()
 
 	if (query && !parseCommand(query)) {
-		console.log('query:', query)
-		var parser = new (require(parserPath))(stateTable)
+		try {
+			console.log('query:', query)
+			var parser = new (require(parserPath))(stateTable)
 
-		if (printTime) console.time('parse')
-		parser.parse(query)
-		if (printTime) console.timeEnd('parse')
+			if (printTime) console.time('parse')
+			parser.parse(query)
+			if (printTime) console.timeEnd('parse')
 
-		if (parser.startNode) {
 			var parserOld = new (require(parserOldPath))(stateTable)
 			parserOld.parse(query)
 			require('./util/diffParses')(parserOld, parser)
-		} else {
-			console.log('failed to reach start node')
-		}
 
-		if (printForest) parser.printForest()
-		if (printStack) parser.printStack()
-		if (printGraph && parser.startNode) parser.printNodeGraph(parser.startNode)
+			if (!parser.startNode) console.log('Failed to reach start node')
+
+			if (printForest) parser.printForest()
+			if (printStack) parser.printStack()
+			if (printGraph && parser.startNode) parser.printNodeGraph(parser.startNode)
+		} catch (e) {
+			console.log()
+			// Remove parentheses from stack for iTerm open-file shortcut
+			e.stack.split('\n').forEach(function (stackLine) {
+				console.log(stackLine.replace(/[()]/g, ''))
+			})
+		}
 
 		delete require.cache[require.resolve(parserPath)]
 		delete require.cache[require.resolve('./util/diffParses.js')]

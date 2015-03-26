@@ -13,15 +13,15 @@ Parser.prototype.parse = function (query) {
 
 	var tokens = query.split(' ')
 	this.position = 0
-	this.cost = 0
 	this.vertTabs = []
 	this.nodeTabs = []
 	this.tokenNodeTabs = []
 
 	this.nodeTab = this.nodeTabs[this.position] = []
-	this.vertTabs[this.position] = []
 
 	while (true) {
+		this.vertTabs[this.position] = []
+
 		var token = tokens[this.position]
 		if (!token) break
 
@@ -41,7 +41,6 @@ Parser.prototype.parse = function (query) {
 		}
 
 		this.nodeTab = this.nodeTabs[this.position] = []
-		this.vertTabs[this.position] = []
 
 		for (var r = 0, rules = word.rules, rulesLen = rules.length; r < rulesLen; ++r) {
 			var rule = rules[r] // { RHS: [ { name: '[1-sg-poss]' } ] }
@@ -50,13 +49,12 @@ Parser.prototype.parse = function (query) {
 		}
 	}
 
-	this.position = 0
-	this.vertTab = this.vertTabs[this.position]
-
 	this.heap = new BinaryHeap
 
-	var firstVert = this.addVertex(this.stateTable.shifts[0])
-	this.addVertexToNext(firstVert)
+	this.position = 0
+	this.cost = 0
+	this.vertTab = this.vertTabs[this.position]
+	this.addVertex(this.stateTable.shifts[0])
 
 	while (this.heap.size()) {
 		var item = this.heap.pop()
@@ -70,7 +68,7 @@ Parser.prototype.parse = function (query) {
 
 	/* ACCEPT */
 	this.vertTab = this.vertTabs[this.vertTabs.length - 1]
-	for (var v = 0, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
+	for (var v = this.vertTab.length; v-- > 0;) {
 		var vertex = this.vertTab[v]
 		if (vertex.state.isFinal) {
 			this.startNode = vertex.zNodes[0].node
@@ -88,7 +86,6 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 	var size = sym.isLiteral ? 1 : (sub ? sub.size : 0)
 	var node = null
 
-	// Does not look at previously added nodes
 	for (var n = 0, nodeTabLen = this.nodeTab.length; n < nodeTabLen; ++n) {
 		node = this.nodeTab[n]
 		if (node.sym === sym && node.size === size) break
@@ -201,11 +198,9 @@ Parser.prototype.addNode = function (node, oldVertex) {
 	var state = this.nextState(oldVertex.state, node.sym)
 	if (!state) return
 
-	// vertex = { state: state, startPos: 0, zNodes: [] }
-	var prevLen = this.vertTab.length
 	var vertex = this.addVertex(state)
 	var vertexZNodes = vertex.zNodes
-	var zNode
+	var zNode = null
 
 	for (var z = 0, vertexZNodesLen = vertexZNodes.length; z < vertexZNodesLen; ++z) {
 		var vertexZNode = vertexZNodes[z]
@@ -220,7 +215,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 		zNode = { node: node, vertices: [ oldVertex ], actions: [] }
 		vertexZNodes.push(zNode)
 
-		var stateReds = state.reds // order of loop matters - items pushed to heap increasing cost order (for speed)
+		var stateReds = state.reds // loop orders  matters - items pushed to heap increasing cost order (for speed)
 		for (var r = 0, stateRedsLen = stateReds.length; r < stateRedsLen; ++r) {
 			var red = stateReds[r]
 			var action = {
@@ -238,7 +233,6 @@ Parser.prototype.addNode = function (node, oldVertex) {
 			})
 		}
 
-		// will loop overzNodes  already seen - need to avoid
 		if (vertex.actions) {
 			var vertexActions = vertex.actions
 			for (var a = 0, vertexActionsLen = vertexActions.length; a < vertexActionsLen; ++a) {
@@ -254,8 +248,9 @@ Parser.prototype.addNode = function (node, oldVertex) {
 	} else if (zNode.vertices.indexOf(oldVertex) === -1) {
 		zNode.vertices.push(oldVertex)
 
-		for (var r = zNode.actions.length; r-- > 0;) {
-			var action = zNode.actions[r]
+		var zNodeActions = zNode.actions
+		for (var a = 0, zNodeActionsLen = zNodeActions.length; a < zNodeActionsLen; ++a) {
+			var action = zNodeActions[a]
 			this.heap.push({
 				action: action,
 				vertex: oldVertex,
@@ -263,24 +258,6 @@ Parser.prototype.addNode = function (node, oldVertex) {
 				position: action.hasOwnProperty('position') ? action.position : this.position
 			})
 		}
-	} // we are adding the same red twice, with different vertex, often times before first red done
-	// should have an array with idxs, but then how to know to readd to heap? based on last idx of vertex
-
-	if (this.vertTab.length > prevLen) {
-		this.addVertexToNext(vertex)
-	}
-}
-
-Parser.prototype.addVertexToNext = function (vertex) {
-	var tokenNodes = this.tokenNodeTabs[this.position]
-	if (tokenNodes) {
-		this.vertTab = this.vertTabs[++this.position]
-
-		for (var n = 0, tokenNodesLen = tokenNodes.length; n < tokenNodesLen; ++n) {
-			this.addNode(tokenNodes[n], vertex)
-		}
-
-		this.vertTab = this.vertTabs[--this.position]
 	}
 }
 
@@ -298,8 +275,22 @@ Parser.prototype.addVertex = function (state) {
 	}
 
 	this.vertTab.push(vertex)
+	this.addVertexToNext(vertex)
 
 	return vertex
+}
+
+Parser.prototype.addVertexToNext = function (vertex) {
+	var tokenNodes = this.tokenNodeTabs[this.position]
+	if (tokenNodes) {
+		this.vertTab = this.vertTabs[++this.position]
+
+		for (var n = 0, tokenNodesLen = tokenNodes.length; n < tokenNodesLen; ++n) {
+			this.addNode(tokenNodes[n], vertex)
+		}
+
+		this.vertTab = this.vertTabs[--this.position]
+	}
 }
 
 Parser.prototype.nextState = function (state, sym) {
