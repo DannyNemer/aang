@@ -1,4 +1,4 @@
-var BinaryHeap = require('./BinaryHeap.js')
+var BinaryHeap = require('../BinaryHeap.js')
 
 module.exports = Parser
 
@@ -12,22 +12,35 @@ Parser.prototype.parse = function (query) {
 	this.testCounter = 0
 
 	var tokens = query.split(' ')
-	this.position = 0
-	this.vertTabs = []
-	this.nodeTabs = []
-	this.tokenNodeTabs = []
 
+	this.position = 0
+	this.reds = []
+	this.redsIdx = 0
+
+	// Use a vertTab and nodeTab for each shift
+	// laying groundwork for being able to out-of-order for k-best
+	// Using an array of arrays SLOWS parser
+	this.vertTabs = []
+	this.vertTab = this.vertTabs[this.position] = []
+
+	this.nodeTabs = []
 	this.nodeTab = this.nodeTabs[this.position] = []
 
-	while (true) {
-		this.vertTabs[this.position] = []
+	// { zNodes: [], startPosition: 0, state: { reds: [], shifts: [66] } }
+	this.addVertex(this.stateTable.shifts[0])
 
-		var token = tokens[this.position]
+	while (true) {
+		/* REDUCE */
+		while (this.redsIdx < this.reds.length) {
+			this.reduce(this.reds[this.redsIdx++])
+		}
+
+		/* SHIFT */
+		var token = tokens[this.position++]
 		if (!token) break
 
-		var tokenNodes = this.tokenNodeTabs[this.position] = []
-		this.position++
-
+		// Terminal symbol, with all of the rules that lead to it
+		// { index: 83, isLiteral: true, name: 'my', rules: [ { RHS: [ { name: [1-sg-poss] } ] } ] }
 		var word = this.stateTable.lookUp(token, true)
 
 		if (word.rules.length === 0) {
@@ -41,42 +54,35 @@ Parser.prototype.parse = function (query) {
 		}
 
 		this.nodeTab = this.nodeTabs[this.position] = []
+		var oldVertTab = this.vertTab
+		this.vertTab = this.vertTabs[this.position] = []
 
+		// Loop through all term rules that produce term sym
 		for (var r = 0, rules = word.rules, rulesLen = rules.length; r < rulesLen; ++r) {
 			var rule = rules[r] // { RHS: [ { name: '[1-sg-poss]' } ] }
+			// node = {
+			// 	sym: { name: '[1-sg-poss]' },
+			// 	subs: [
+			// 		{ size: 1, node: { sym: { name: 'my' } } }
+			// 	]
+			// }
 			var node = this.addSub(rule.RHS[0], sub, rule.ruleProps)
-			tokenNodes.push(node)
+
+			for (var v = 0, vertTabLen = oldVertTab.length; v < vertTabLen; ++v) {
+				// vert = { zNodes: [], startPosition: 0, state: { reds: [], shifts: [66] } }
+				this.addNode(node, oldVertTab[v])
+			}
 		}
 	}
 
-	this.heap = new BinaryHeap
-
-	this.position = 0
-	this.cost = 0
-	this.vertTab = this.vertTabs[this.position]
-	this.addVertex(this.stateTable.shifts[0])
-
-	while (this.heap.size()) {
-		var item = this.heap.pop()
-		this.position = item.position
-		this.cost = item.cost
-
-		this.vertTab = this.vertTabs[this.position]
-		this.nodeTab = this.nodeTabs[this.position]
-		this.reduce(item.action, item.vertex)
-	}
-
 	/* ACCEPT */
-	this.vertTab = this.vertTabs[this.vertTabs.length - 1]
-	for (var v = this.vertTab.length; v-- > 0;) {
+	for (var v = 0, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
 		var vertex = this.vertTab[v]
 		if (vertex.state.isFinal) {
 			this.startNode = vertex.zNodes[0].node
 			break
 		}
 	}
-
-	if (this.testCounter) console.log('testCounter:', this.testCounter)
 }
 
 // no sub for term syms
@@ -86,6 +92,7 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 	var size = sym.isLiteral ? 1 : (sub ? sub.size : 0)
 	var node = null
 
+	// Does not look at previously added nodes
 	for (var n = 0, nodeTabLen = this.nodeTab.length; n < nodeTabLen; ++n) {
 		node = this.nodeTab[n]
 		if (node.sym === sym && node.size === size) break
@@ -93,12 +100,15 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 
 	if (n === nodeTabLen) {
 		node = {
+			// sym = LHS - 'word' for term syms { name: 'my', rules: [ '[1-sg-poss]' ] }
+			// sym = { name: '[1-sg-poss]', rules: [] } - no rules
 			sym: sym,
 			size: size, // 1 for termsym
 			start: sym.isLiteral ? (this.position - 1) : (sub ? sub.node.start : this.position)
 		}
 
 		if (!sym.isLiteral) {
+			node.paths = []
 			node.subs = []
 			node.ruleProps = []
 		}
@@ -106,201 +116,57 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 		this.nodeTab.push(node)
 	}
 
-	if (!sym.isLiteral && subIsNew(node.subs, sub)) {
-		node.subs.push(sub)
+	if (!sym.isLiteral) {
+		if (subIsNew(node.subs, sub)) {
+			node.subs.push(sub)
+			// appendPaths(node, sub, ruleProps)
 
-		// Insertions are arrays of multiple ruleProps (or normal ruleProps if only insertion) - distinguish?
-		// 1 ruleProps per sub (matched by idx) - do not check for duplicate ruleProps
-		node.ruleProps.push(ruleProps)
+			// Insertions are arrays of multiple ruleProps (or normal ruleProps if only insertion) - distinguish?
+			// 1 ruleProps per sub (matched by idx) - do not check for duplicate ruleProps
+			node.ruleProps.push(ruleProps)
+		} else {
+			// console.log(subs)
+			// console.log(sub)
+		}
 	}
 
 	return node
 }
 
-Parser.prototype.reduce = function (action, vertex) {
-	if (action.red.binary) {
-		var sub = null
-		if (action.subNext) {
-			sub = action.subNext
-		} else {
-			sub = action.subNext = {
-				node: action.node,
-				size: action.node.size
-			}
-		}
-
-		this.addVertexAction(vertex, sub, action)
-
-		var vertexZNodes = vertex.zNodes
-		for (var z = action.zNodeIdx || 0, vertexZNodesLen = vertexZNodes.length; z < vertexZNodesLen; ++z) {
-			var zNode = vertexZNodes[z]
-			var subNew = {
-				node: zNode.node,
-				size: zNode.node.size + sub.size,
-				next: sub
-			}
-
-			var node = this.addSub(action.red.LHS, subNew, action.red.ruleProps)
-
-			zNode.actions.push({
-				newNode: node,
-				red: {
-					binary: false,
-					ruleProps: action.red.ruleProps,
-				},
-				position: this.position,
-			})
-
-			var zNodeVertices = zNode.vertices
-			for (var v = 0, zNodeVerticesLen = zNodeVertices.length; v < zNodeVerticesLen; ++v) {
-				this.addNode(node, zNodeVertices[v])
-			}
-		}
-
-		if (action.zNodeIdx) action.zNodeIdx = vertexZNodesLen
-	} else {
-		var node = null
-		if (action.newNode) {
-			node = action.newNode
-		} else {
-			var sub = {
-				node: action.node,
-				size: action.node.size
-			}
-
-			node = action.newNode = this.addSub(action.red.LHS, sub, action.red.ruleProps)
-		}
-
-		this.addNode(node, vertex)
-	}
-}
-
-Parser.prototype.addVertexAction = function (vertex, sub, action) {
-	if (vertex.actions) {
-		var vertexActions = vertex.actions
-		for (var v = vertexActions.length; v-- > 0;) {
-			if (vertexActions[v].subNext === sub) return
-		}
-	} else {
-		vertex.actions = []
-	}
-
-	vertex.actions.push({
-		red: action.red,
-		zNodeIdx: vertex.zNodes.length,
-		position: this.position,
-		subNext: sub
-	})
-}
-
-Parser.prototype.addNode = function (node, oldVertex) {
-	this.addNodeCalls++
-	var state = this.nextState(oldVertex.state, node.sym)
-	if (!state) return
-
-	var vertex = this.addVertex(state)
-	var vertexZNodes = vertex.zNodes
-	var zNode = null
-
-	for (var z = 0, vertexZNodesLen = vertexZNodes.length; z < vertexZNodesLen; ++z) {
-		var vertexZNode = vertexZNodes[z]
-		if (vertexZNode.node === node) {
-			zNode = vertexZNode
-			break
-		}
-	}
-
-	if (!zNode) {
-		// vertices are those which lead to this zNode
-		zNode = { node: node, vertices: [ oldVertex ], actions: [] }
-		vertexZNodes.push(zNode)
-
-		var stateReds = state.reds // loop orders  matters - items pushed to heap increasing cost order (for speed)
-		for (var r = 0, stateRedsLen = stateReds.length; r < stateRedsLen; ++r) {
-			var red = stateReds[r]
-			var action = {
-				node: node,
-				red: red
-			}
-
-			zNode.actions.push(action)
-
-			this.heap.push({
-				action: action,
-				vertex: oldVertex,
-				cost: this.cost + (red.ruleProps instanceof Array ? red.ruleProps[0].cost : red.ruleProps.cost),
-				position: this.position
-			})
-		}
-
-		if (vertex.actions) {
-			var vertexActions = vertex.actions
-			for (var a = 0, vertexActionsLen = vertexActions.length; a < vertexActionsLen; ++a) {
-				var action = vertexActions[a]
-				this.heap.push({
-					action: action,
-					vertex: vertex,
-					cost: this.cost + (action.red.ruleProps instanceof Array ? action.red.ruleProps[0].cost : action.red.ruleProps.cost),
-					position: action.position
+// Does not work: start node is not the last reduction (not bottom of stack)
+// Not directly bottom-up
+function appendPaths(node, sub, ruleProps) {
+	if (ruleProps instanceof Array) {
+		ruleProps.forEach(function (rulePropsSub) {
+			appendPaths(node, sub, rulePropsSub)
+		})
+	} else if (sub.node.paths) {
+		sub.node.paths.forEach(function (pathA) {
+			if (ruleProps.text) {
+				// if insertion, don't check sub.ntext
+				node.paths.push({
+					text: ruleProps.textIdx ? pathA.text.concat(ruleProps.text) : ruleProps.text.concat(pathA.text),
+					cost: ruleProps.cost + pathA.cost
+				})
+			} else if (sub.next) {
+				sub.next.node.paths.forEach(function (pathB) {
+					node.paths.push({
+						text: ruleProps.transposition ? pathB.text.concat(pathA.text) : pathA.text.concat(pathB.text),
+						cost: ruleProps.cost + pathA.cost + pathB.cost
+					})
+				})
+			} else {
+				node.paths.push({
+					text: pathA.text,
+					cost: ruleProps.cost + pathA.cost
 				})
 			}
-		}
-	} else if (zNode.vertices.indexOf(oldVertex) === -1) {
-		zNode.vertices.push(oldVertex)
-
-		var zNodeActions = zNode.actions
-		for (var a = 0, zNodeActionsLen = zNodeActions.length; a < zNodeActionsLen; ++a) {
-			var action = zNodeActions[a]
-			this.heap.push({
-				action: action,
-				vertex: oldVertex,
-				cost: this.cost + (action.red.ruleProps instanceof Array ? action.red.ruleProps[0].cost : action.red.ruleProps.cost),
-				position: action.hasOwnProperty('position') ? action.position : this.position
-			})
-		}
-	}
-}
-
-// one vertex for each state
-Parser.prototype.addVertex = function (state) {
-	for (var v = 0, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
-		var vertex = this.vertTab[v]
-		if (vertex.state === state) return vertex
-	}
-
-	var vertex = {
-		state: state, // idx of state in stateTable of reds or shifts
-		start: this.position, // index in input string tokens array
-		zNodes: [] // zNodes that point to this vertex
-	}
-
-	this.vertTab.push(vertex)
-	this.addVertexToNext(vertex)
-
-	return vertex
-}
-
-Parser.prototype.addVertexToNext = function (vertex) {
-	var tokenNodes = this.tokenNodeTabs[this.position]
-	if (tokenNodes) {
-		this.vertTab = this.vertTabs[++this.position]
-
-		for (var n = 0, tokenNodesLen = tokenNodes.length; n < tokenNodesLen; ++n) {
-			this.addNode(tokenNodes[n], vertex)
-		}
-
-		this.vertTab = this.vertTabs[--this.position]
-	}
-}
-
-Parser.prototype.nextState = function (state, sym) {
-	var stateShifts = state.shifts
-
-	for (var s = 0, stateShiftsLen = stateShifts.length; s < stateShiftsLen; ++s) {
-		var shift = stateShifts[s]
-		if (shift.sym === sym) {
-			return this.stateTable.shifts[shift.stateIdx]
-		}
+		})
+	} else {
+		node.paths.push({
+			text: [ ruleProps.text ],
+			cost: ruleProps.cost
+		})
 	}
 }
 
@@ -325,6 +191,135 @@ function subIsNew(existingSubs, newSub) {
 	}
 
 	return true
+}
+
+// one vertex for each state
+Parser.prototype.addVertex = function (state) {
+	for (var v = 0, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
+		var vertex = this.vertTab[v]
+		if (vertex.state === state) return vertex
+	}
+
+	var vertex = {
+		state: state, // idx of state in stateTable of reds or shifts
+		start: this.position, // index in input string tokens array
+		zNodes: [] // zNodes that point to this vertex
+	}
+
+	this.vertTab.push(vertex)
+
+	return vertex
+}
+
+Parser.prototype.nextState = function (state, sym) {
+	var stateShifts = state.shifts
+
+	for (var S = 0, stateShiftsLen = stateShifts.length; S < stateShiftsLen; ++S) {
+		var shift = stateShifts[S]
+		if (shift.sym === sym) {
+			return this.stateTable.shifts[shift.stateIdx]
+		}
+	}
+}
+
+// node = {
+// 	sym: { name: '[1-sg-poss]' },
+//  subs: [ { size: 1, node: { sym: { name: 'my' } } } ]
+// }
+// oldVertex = { zNodes: [], startPosition: 0, state: { reds: [], shifts: [66] } }
+Parser.prototype.addNode = function (node, oldVertex) {
+	this.addNodeCalls++
+	// state = {
+	// 	reds: [ {
+	//		LHS: { name: "[poss-determiner-sg]" },
+	//		RHS: [ { name: "[1-sg-poss]" } ]
+	//	} ],
+	// 	shifts: []
+	// }
+	var state = this.nextState(oldVertex.state, node.sym)
+	if (!state) return
+
+	// vertex = { state: state, startPos: 0, zNodes: [] }
+	var vertex = this.addVertex(state)
+	var vertexZNodes = vertex.zNodes
+	var zNode
+
+	for (var v = 0, vertexZNodesLen = vertexZNodes.length; v < vertexZNodesLen; ++v) {
+		var vertexZNode = vertexZNodes[v]
+		if (vertexZNode.node === node) {
+			zNode = vertexZNode
+			break
+		}
+	}
+
+	if (!zNode) {
+		// vertices are those which lead to this zNode
+		zNode = { node: node, vertices: [] }
+		vertexZNodes.push(zNode)
+
+		var stateReds = state.reds
+		for (var r = 0, stateRedsLen = stateReds.length; r < stateRedsLen; ++r) {
+			var red = stateReds[r]
+			this.reds.push({
+				zNode: zNode,
+				LHS: red.LHS,
+				binary: red.binary,
+				ruleProps: red.ruleProps
+			})
+		}
+	}
+
+	if (zNode.vertices.indexOf(oldVertex) === -1) {
+		zNode.vertices.push(oldVertex)
+	}
+}
+
+// red = {
+// 	LHS: { name: "[poss-determiner-sg]", rules: [ { RHS: [ { name: "[1-sg-poss]" } ] } ] },
+// 	ruleProps: {},
+// 	zNode: {
+// 		node: { size: 1, start: 0, subs: [], sym: { name: "[1-sg-poss]" }, ruleProps: {} }
+// 		vertices: [ { start: 0, state: { reds: [], shifts: [66] }, zNodes: [] } ]
+// 	}
+// }
+Parser.prototype.reduce = function (red) {
+	var vertices = red.zNode.vertices
+	var sub = {
+		node: red.zNode.node,
+		size: red.zNode.node.size
+	}
+
+	if (red.binary) {
+		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
+			var vertexZNodes = vertices[v].zNodes
+
+			for (var z = 0, vertexZNodesLen = vertexZNodes.length; z < vertexZNodesLen; ++z) {
+				var zNode = vertexZNodes[z]
+				var subNew = {
+					node: zNode.node,
+					size: zNode.node.size + sub.size,
+					next: sub
+				}
+
+				var node = this.addSub(red.LHS, subNew, red.ruleProps)
+
+				var zNodeVertices = zNode.vertices
+				for (var v2 = 0, zNodeVerticesLen = zNodeVertices.length; v2 < zNodeVerticesLen; ++v2) {
+					this.addNode(node, zNodeVertices[v2])
+				}
+			}
+		}
+	} else {
+		// { size: 1, start: 0,
+		// 	subs: [ { node: { sym: { name: "[1-sg-poss]" } }, size: 1 } ],
+		// 	sym: { name: "[poss-determiner-sg]" } }
+		var node = this.addSub(red.LHS, sub, red.ruleProps)
+
+		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
+			// vertex = { start: 0, state: { reds: [], shifts: [] }, zNodes: [] }
+			this.addNode(node, vertices[v])
+		}
+	}
 }
 
 
@@ -398,7 +393,8 @@ Parser.prototype.printNodeGraph = function (node, notRoot) {
 	var newNode = {
 		symbol: node.sym.name,
 		ruleProps: node.ruleProps,
-		// paths: node.paths ? node.paths.length : undefined
+		pathsCount: node.paths ? node.paths.length : undefined,
+		paths: node.paths
 	}
 
 	if (node.subs) {

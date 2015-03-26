@@ -31,9 +31,9 @@ rl.on('line', function (line) {
 			parser.parse(query)
 			if (printTime) console.timeEnd('parse')
 
-			var parserOld = new (require(parserOldPath))(stateTable)
-			parserOld.parse(query)
-			require('./util/diffParses')(parserOld, parser)
+			// var parserOld = new (require(parserOldPath))(stateTable)
+			// parserOld.parse(query)
+			// require('./util/diffParses')(parserOld, parser)
 
 			if (!parser.startNode) console.log('Failed to reach start node')
 
@@ -49,8 +49,8 @@ rl.on('line', function (line) {
 		}
 
 		delete require.cache[require.resolve(parserPath)]
-		delete require.cache[require.resolve('./util/diffParses.js')]
-		delete require.cache[require.resolve('./util/ParserBreadthFirst.js')]
+		// delete require.cache[require.resolve('./util/diffParses.js')]
+		// delete require.cache[require.resolve('./util/ParserBreadthFirst.js')]
 		delete require.cache[require.resolve('./BinaryHeap.js')]
 	}
 
@@ -77,16 +77,16 @@ function parseCommand(query) {
 	} else if (query === '-g') {
 		printGraph = !printGraph
 		console.log('print graph:', printGraph)
-	} else if (query === '-p') {
-		parserPath = parserPath === parserNewPath ? parserOldPath : parserNewPath
-		console.log('parser path:', parserPath)
+	// } else if (query === '-p') {
+	// 	parserPath = parserPath === parserNewPath ? parserOldPath : parserNewPath
+	// 	console.log('parser path:', parserPath)
 	} else if (query === '-h') {
 		console.log('TOGGLES:')
 		console.log('-t  print time:', printTime)
 		console.log('-s  print stack:', printStack)
 		console.log('-f  print forest:', printForest)
 		console.log('-g  print graph:', printGraph)
-		console.log('-p  parser path:', parserPath)
+		// console.log('-p  parser path:', parserPath)
 	} else {
 		return false
 	}
