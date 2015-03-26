@@ -9,6 +9,7 @@ function Parser(stateTable) {
 Parser.prototype.parse = function (query) {
 	this.addNodeCalls = 0
 	this.addSubCalls = 0
+	this.testCounter = 0
 
 	var tokens = query.split(' ')
 	this.position = 0
@@ -58,13 +59,13 @@ Parser.prototype.parse = function (query) {
 	this.addVertexToNext(firstVert)
 
 	while (this.heap.size()) {
-		this.item = this.heap.pop()
-		this.position = this.item.position
-		this.cost = this.item.cost
+		var item = this.heap.pop()
+		this.position = item.position
+		this.cost = item.cost
 
 		this.vertTab = this.vertTabs[this.position]
 		this.nodeTab = this.nodeTabs[this.position]
-		this.reduce(this.item.red)
+		this.reduce(item.action, item.vertex)
 	}
 
 	/* ACCEPT */
@@ -76,6 +77,8 @@ Parser.prototype.parse = function (query) {
 			break
 		}
 	}
+
+	if (this.testCounter) console.log('testCounter:', this.testCounter)
 }
 
 // no sub for term syms
@@ -93,15 +96,12 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 
 	if (n === nodeTabLen) {
 		node = {
-			// sym = LHS - 'word' for term syms { name: 'my', rules: [ '[1-sg-poss]' ] }
-			// sym = { name: '[1-sg-poss]', rules: [] } - no rules
 			sym: sym,
 			size: size, // 1 for termsym
 			start: sym.isLiteral ? (this.position - 1) : (sub ? sub.node.start : this.position)
 		}
 
 		if (!sym.isLiteral) {
-			node.paths = []
 			node.subs = []
 			node.ruleProps = []
 		}
@@ -109,50 +109,33 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 		this.nodeTab.push(node)
 	}
 
-	if (!sym.isLiteral) {
-		if (subIsNew(node.subs, sub)) {
-			node.subs.push(sub)
-			// appendPaths(node, sub, ruleProps)
+	if (!sym.isLiteral && subIsNew(node.subs, sub)) {
+		node.subs.push(sub)
 
-			// Insertions are arrays of multiple ruleProps (or normal ruleProps if only insertion) - distinguish?
-			// 1 ruleProps per sub (matched by idx) - do not check for duplicate ruleProps
-			node.ruleProps.push(ruleProps)
-		} else {
-			// console.log(subs)
-			// console.log(sub)
-		}
+		// Insertions are arrays of multiple ruleProps (or normal ruleProps if only insertion) - distinguish?
+		// 1 ruleProps per sub (matched by idx) - do not check for duplicate ruleProps
+		node.ruleProps.push(ruleProps)
 	}
 
 	return node
 }
 
-// red = {
-// 	LHS: { name: "[poss-determiner-sg]", rules: [ { RHS: [ { name: "[1-sg-poss]" } ] } ] },
-// 	ruleProps: {},
-// 	zNode: {
-// 		node: { size: 1, start: 0, subs: [], sym: { name: "[1-sg-poss]" }, ruleProps: {} }
-// 		vertices: [ { start: 0, state: { reds: [], shifts: [66] }, zNodes: [] } ]
-// 	}
-// }
-Parser.prototype.reduce = function (red) {
-	var sub = {
-		node: red.zNode.node,
-		size: red.zNode.node.size
-	}
-
-	if (red.binary) {
-		var newRed = { // save sub too!!! (and anything else) - we are creating duplicate reds (though not called)
-			zNode: red.zNode,
-			LHS: red.LHS,
-			binary: true,
-			oldLength: red.vertex.zNodes.length,
-			ruleProps: red.ruleProps,
-			position: this.position
+Parser.prototype.reduce = function (action, vertex) {
+	if (action.red.binary) {
+		var sub = null
+		if (action.subNext) {
+			sub = action.subNext
+		} else {
+			sub = action.subNext = {
+				node: action.node,
+				size: action.node.size
+			}
 		}
-		red.vertex.reds ? red.vertex.reds.push(newRed) : red.vertex.reds = [ newRed ]
 
-		var vertexZNodes = red.vertex.zNodes
-		for (var z = red.oldLength || 0, vertexZNodesLen = vertexZNodes.length; z < vertexZNodesLen; ++z) {
+		this.addVertexAction(vertex, sub, action)
+
+		var vertexZNodes = vertex.zNodes
+		for (var z = action.zNodeIdx || 0, vertexZNodesLen = vertexZNodes.length; z < vertexZNodesLen; ++z) {
 			var zNode = vertexZNodes[z]
 			var subNew = {
 				node: zNode.node,
@@ -160,14 +143,15 @@ Parser.prototype.reduce = function (red) {
 				next: sub
 			}
 
-			var node = this.addSub(red.LHS, subNew, red.ruleProps)
+			var node = this.addSub(action.red.LHS, subNew, action.red.ruleProps)
 
-			zNode.reds.push({
+			zNode.actions.push({
 				newNode: node,
-				binary: false,
-				ruleProps: red.ruleProps,
+				red: {
+					binary: false,
+					ruleProps: action.red.ruleProps,
+				},
 				position: this.position,
-				// cost: this.cost
 			})
 
 			var zNodeVertices = zNode.vertices
@@ -175,31 +159,45 @@ Parser.prototype.reduce = function (red) {
 				this.addNode(node, zNodeVertices[v])
 			}
 		}
+
+		if (action.zNodeIdx) action.zNodeIdx = vertexZNodesLen
 	} else {
-		// { size: 1, start: 0,
-		// 	subs: [ { node: { sym: { name: "[1-sg-poss]" } }, size: 1 } ],
-		// 	sym: { name: "[poss-determiner-sg]" } }
-		var node = red.redLink.newNode || (red.redLink.newNode = this.addSub(red.LHS, sub, red.ruleProps))
-		this.addNode(node, red.vertex)
+		var node = null
+		if (action.newNode) {
+			node = action.newNode
+		} else {
+			var sub = {
+				node: action.node,
+				size: action.node.size
+			}
+
+			node = action.newNode = this.addSub(action.red.LHS, sub, action.red.ruleProps)
+		}
+
+		this.addNode(node, vertex)
 	}
 }
 
+Parser.prototype.addVertexAction = function (vertex, sub, action) {
+	if (vertex.actions) {
+		var vertexActions = vertex.actions
+		for (var v = vertexActions.length; v-- > 0;) {
+			if (vertexActions[v].subNext === sub) return
+		}
+	} else {
+		vertex.actions = []
+	}
 
+	vertex.actions.push({
+		red: action.red,
+		zNodeIdx: vertex.zNodes.length,
+		position: this.position,
+		subNext: sub
+	})
+}
 
-// node = {
-// 	sym: { name: '[1-sg-poss]' },
-//  subs: [ { size: 1, node: { sym: { name: 'my' } } } ]
-// }
-// oldVertex = { zNodes: [], startPosition: 0, state: { reds: [], shifts: [66] } }
 Parser.prototype.addNode = function (node, oldVertex) {
 	this.addNodeCalls++
-	// state = {
-	// 	reds: [ {
-	//		LHS: { name: "[poss-determiner-sg]" },
-	//		RHS: [ { name: "[1-sg-poss]" } ]
-	//	} ],
-	// 	shifts: []
-	// }
 	var state = this.nextState(oldVertex.state, node.sym)
 	if (!state) return
 
@@ -219,72 +217,54 @@ Parser.prototype.addNode = function (node, oldVertex) {
 
 	if (!zNode) {
 		// vertices are those which lead to this zNode
-		zNode = { node: node, vertices: [], reds: [] }
+		zNode = { node: node, vertices: [ oldVertex ], actions: [] }
 		vertexZNodes.push(zNode)
-		// will loop overzNodes  already seen - need to avoid
-		if (vertex.reds) {
-			vertex.reds.forEach(function (red) {
-				var newRed = {
-					zNode: red.zNode,
-					LHS: red.LHS,
-					vertex: vertex,
-					oldLength: red.oldLength,
-					RHSLengthIsTwo: red.RHSLengthIsTwo, // true
-					ruleProps: red.ruleProps
-				}
 
-				this.heap.push({
-					red: newRed,
-					cost: this.cost + (red.ruleProps instanceof Array ? red.ruleProps[0].cost : red.ruleProps.cost),
-					position: red.hasOwnProperty('position') ? red.position : this.position
-				})
-			}, this)
-		}
-
-		var stateReds = state.reds // order of loop matters so items are added to heap increasing cost order (for speed)
+		var stateReds = state.reds // order of loop matters - items pushed to heap increasing cost order (for speed)
 		for (var r = 0, stateRedsLen = stateReds.length; r < stateRedsLen; ++r) {
 			var red = stateReds[r]
-			var newRed = {
-				zNode: zNode,
-				vertex: oldVertex,
-				LHS: red.LHS,
-				binary: red.binary,
-				ruleProps: red.ruleProps,
-				// position: this.position
+			var action = {
+				node: node,
+				red: red
 			}
 
-			newRed.redLink = newRed // give you an idea of an array of reds?
-
-			zNode.reds.push(newRed)
+			zNode.actions.push(action)
 
 			this.heap.push({
-				red: newRed,
+				action: action,
+				vertex: oldVertex,
 				cost: this.cost + (red.ruleProps instanceof Array ? red.ruleProps[0].cost : red.ruleProps.cost),
 				position: this.position
 			})
 		}
+
+		// will loop overzNodes  already seen - need to avoid
+		if (vertex.actions) {
+			var vertexActions = vertex.actions
+			for (var a = 0, vertexActionsLen = vertexActions.length; a < vertexActionsLen; ++a) {
+				var action = vertexActions[a]
+				this.heap.push({
+					action: action,
+					vertex: vertex,
+					cost: this.cost + (action.red.ruleProps instanceof Array ? action.red.ruleProps[0].cost : action.red.ruleProps.cost),
+					position: action.position
+				})
+			}
+		}
 	} else if (zNode.vertices.indexOf(oldVertex) === -1) {
-		for (var r = zNode.reds.length; r-- > 0;) {
-			var red = zNode.reds[r]
+		zNode.vertices.push(oldVertex)
+
+		for (var r = zNode.actions.length; r-- > 0;) {
+			var action = zNode.actions[r]
 			this.heap.push({
-				red: {
-					zNode: zNode,
-					vertex: oldVertex,
-					LHS: red.LHS,
-					binary: red.binary,
-					ruleProps: red.ruleProps,
-					redLink: red,
-				},
-				cost: this.cost + (red.ruleProps instanceof Array ? red.ruleProps[0].cost : red.ruleProps.cost),
-				position: red.hasOwnProperty('position') ? red.position : this.position
+				action: action,
+				vertex: oldVertex,
+				cost: this.cost + (action.red.ruleProps instanceof Array ? action.red.ruleProps[0].cost : action.red.ruleProps.cost),
+				position: action.hasOwnProperty('position') ? action.position : this.position
 			})
 		}
 	} // we are adding the same red twice, with different vertex, often times before first red done
 	// should have an array with idxs, but then how to know to readd to heap? based on last idx of vertex
-
-	if (zNode.vertices.indexOf(oldVertex) === -1) {
-		zNode.vertices.push(oldVertex)
-	}
 
 	if (this.vertTab.length > prevLen) {
 		this.addVertexToNext(vertex)
@@ -330,42 +310,6 @@ Parser.prototype.nextState = function (state, sym) {
 		if (shift.sym === sym) {
 			return this.stateTable.shifts[shift.stateIdx]
 		}
-	}
-}
-
-// Temporary: bottom-up parse the display texts and costs
-function appendPaths(node, sub, ruleProps) {
-	if (ruleProps instanceof Array) {
-		ruleProps.forEach(function (rulePropsSub) {
-			appendPaths(node, sub, rulePropsSub)
-		})
-	} else if (sub.node.paths) {
-		sub.node.paths.forEach(function (pathA) {
-			if (ruleProps.text) {
-				// if insertion, don't check sub.ntext
-				node.paths.push({
-					text: ruleProps.textIdx ? pathA.text.concat(ruleProps.text) : ruleProps.text.concat(pathA.text),
-					cost: ruleProps.cost + pathA.cost
-				})
-			} else if (sub.next) {
-				sub.next.node.paths.forEach(function (pathB) {
-					node.paths.push({
-						text: ruleProps.transposition ? pathB.text.concat(pathA.text) : pathA.text.concat(pathB.text),
-						cost: ruleProps.cost + pathA.cost + pathB.cost
-					})
-				})
-			} else {
-				node.paths.push({
-					text: pathA.text,
-					cost: ruleProps.cost + pathA.cost
-				})
-			}
-		})
-	} else {
-		node.paths.push({
-			text: [ruleProps.text],
-			cost: ruleProps.cost
-		})
 	}
 }
 

@@ -9,6 +9,7 @@ function Parser(stateTable) {
 Parser.prototype.parse = function (query) {
 	this.addNodeCalls = 0
 	this.addSubCalls = 0
+	this.testCounter = 0
 
 	var tokens = query.split(' ')
 
@@ -312,7 +313,6 @@ Parser.prototype.reduce = function (red) {
 		// { size: 1, start: 0,
 		// 	subs: [ { node: { sym: { name: "[1-sg-poss]" } }, size: 1 } ],
 		// 	sym: { name: "[poss-determiner-sg]" } }
-		// this.addSubCalls++
 		var node = this.addSub(red.LHS, sub, red.ruleProps)
 
 		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {

@@ -1,6 +1,7 @@
 module.exports = function (parserOld, parserNew) {
 	compCounters(parserOld, parserNew, 'addNodeCalls')
 	compCounters(parserOld, parserNew, 'addSubCalls')
+	compCounters(parserOld, parserNew, 'testCounter')
 
 
 	var stackOld = stringifyStack(parserOld)
@@ -16,9 +17,9 @@ module.exports = function (parserOld, parserNew) {
 
 function compCounters(parserOld, parserNew, counterName) {
 	if (parserOld[counterName] === parserNew[counterName]) {
-		console.log(counterName + ':', parserNew[counterName])
+		// console.log(counterName + ':', parserNew[counterName])
 	} else {
-		console.log('Err:', addNodeCalls, '(want ' + parserOld[counterName] + ' ):', parserNew[counterName])
+		console.log('Err:', counterName, '(want ' + parserOld[counterName] + '):', parserNew[counterName])
 	}
 }
 
@@ -28,9 +29,9 @@ function diffArrays(arrayA, arrayB, msg) {
 	})
 
 	if (diff.length) {
-		console.log(msg + ' (of ' + arrayA.length + '):', diff.length)
+		console.log('Err:', msg + ' (of ' + arrayA.length + '):', diff.length)
 	} else {
-		console.log(msg + ':', diff.length)
+		// console.log(msg + ':', diff.length)
 	}
 }
 

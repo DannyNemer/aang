@@ -14,42 +14,37 @@ var readline = require('readline')
 var rl = readline.createInterface(process.stdin, process.stdout)
 
 rl.prompt()
-rl.write('people who like repos liked by people who follow people I follow')
+rl.write('people who like my repos liked by people who follow people I follow')
 
 var parserNewPath = './Parser.js'
-var parserOldPath = './util/ParserOld.js'
+var parserOldPath = './util/ParserBreadthFirst.js'
 
 rl.on('line', function (line) {
 	var query = line.trim()
 
 	if (query && !parseCommand(query)) {
-		try {
-			console.log('query:', query)
-			var parser = new (require(parserPath))(stateTable)
+		console.log('query:', query)
+		var parser = new (require(parserPath))(stateTable)
 
-			if (printTime) console.time('parse')
-			parser.parse(query)
-			if (printTime) console.timeEnd('parse')
+		if (printTime) console.time('parse')
+		parser.parse(query)
+		if (printTime) console.timeEnd('parse')
 
-			if (parser.startNode) {
-				var parserOld = new (require(parserOldPath))(stateTable)
-				parserOld.parse(query)
-				require('./util/diffParses')(parserOld, parser)
-			} else {
-				console.log('failed to reach start node')
-			}
-
-			if (printForest) parser.printForest()
-			if (printStack) parser.printStack()
-			if (printGraph && parser.startNode) parser.printNodeGraph(parser.startNode)
-		} catch (e) {
-			// Remove portion of stack trace specific to Node
-			console.log()
-			console.log(e.stack)
+		if (parser.startNode) {
+			var parserOld = new (require(parserOldPath))(stateTable)
+			parserOld.parse(query)
+			require('./util/diffParses')(parserOld, parser)
+		} else {
+			console.log('failed to reach start node')
 		}
+
+		if (printForest) parser.printForest()
+		if (printStack) parser.printStack()
+		if (printGraph && parser.startNode) parser.printNodeGraph(parser.startNode)
 
 		delete require.cache[require.resolve(parserPath)]
 		delete require.cache[require.resolve('./util/diffParses.js')]
+		delete require.cache[require.resolve('./util/ParserBreadthFirst.js')]
 		delete require.cache[require.resolve('./BinaryHeap.js')]
 	}
 
