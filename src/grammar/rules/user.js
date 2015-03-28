@@ -4,6 +4,7 @@ var stopwords = require('./stopWords')
 var oneSg = require('./oneSg')
 var preps = require('./prepositions')
 var poss = require('./poss')
+var operators = require('./operators')
 
 
 var user = module.exports = new Category({ sg: 'user', pl: 'users', person: true })
@@ -29,6 +30,7 @@ var userTerm = new g.Symbol(user.nameSg)
 userTerm.addRule({ terminal: true, RHS: '{user}' })
 
 
+// Person-number property only exists for nominative case
 var nomUsers = new g.Symbol('nom', 'users')
 // (repos) people who follow me (like)
 nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'oneOrPl' })
@@ -39,22 +41,34 @@ nomUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'nom', personNumber: 'oneOrPl
 
 user.nomUsersPlus = new g.Symbol('nom', 'users+')
 user.nomUsersPlus.addRule({ RHS: [ nomUsers ] })
+// (people) I and {user} follow
+var andNomUsersPlus = new g.Symbol('and', 'nom', 'users+')
+andNomUsersPlus.addRule({ RHS: [ operators.and, user.nomUsersPlus ] })
+user.nomUsersPlus.addRule({ RHS: [ nomUsers, andNomUsersPlus ], personNumber: 'oneOrPl' })
+// (people) I or {user} follow
+var orNomUsersPlus = new g.Symbol('or', 'nom', 'users+')
+orNomUsersPlus.addRule({ RHS: [ operators.union, user.nomUsersPlus ] })
+user.nomUsersPlus.addRule({ RHS: [ nomUsers, orNomUsersPlus ], personNumber: 'oneOrPl' })
 
-
-var objUser = new g.Symbol('obj', 'user')
-// (people followed by) {user}; (people who follow) {user}
-objUser.addRule({ RHS: [ userTerm ], personNumber: 'threeSg' })
-// (people followed by) me; (people who follow) me
-objUser.addRule({ RHS: [ oneSg.plain ], gramCase: 'obj' })
 
 var objUsers = new g.Symbol('obj', 'users')
-// (people who follow) me/{user}
-objUsers.addRule({ RHS: [ objUser ] })
-// (people who follow) people
+// (people who follow) people who...; (people followed by) people who...
 objUsers.addRule({ RHS: [ user.plural ] })
+// (people who follow) {user}; (people followed by) {user}
+objUsers.addRule({ RHS: [ userTerm ] })
+// (people who follow) me; (people followed by) me
+objUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'obj' })
 
 user.objUsersPlus = new g.Symbol('obj', 'users+')
 user.objUsersPlus.addRule({ RHS: [ objUsers ] })
+// (people who follow) me and {user}; (people followed by) me and {user}
+var andObjUsersPlus = new g.Symbol('and', 'obj', 'users+')
+andObjUsersPlus.addRule({ RHS: [ operators.and, user.objUsersPlus ] })
+user.objUsersPlus.addRule({ RHS: [ objUsers, andObjUsersPlus ] })
+// (people who follow) me or {user}; (people followed by) me or {user}
+var orObjUsersPlus = new g.Symbol('or', 'obj', 'users+')
+orObjUsersPlus.addRule({ RHS: [ operators.union, user.objUsersPlus ] })
+user.objUsersPlus.addRule({ RHS: [ objUsers, orObjUsersPlus ] })
 
 // (people followed) by me
 user.byObjUsers = new g.Symbol('by', 'obj', 'users')
