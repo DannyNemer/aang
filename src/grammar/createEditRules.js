@@ -78,7 +78,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 									cost: A.cost + B.cost,
 									text: A.text.concat(B.text),
 									// Person-number only needed for 1st for 2 RHS syms: nominative case (verb precedes subject)
-									// only used for conjugation of current rule
+									// Only used for conjugation of current rule
 									personNumber: A.personNumber,
 									insertedSyms: A.insertedSyms.concat(B.insertedSyms)
 								})
@@ -94,7 +94,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 							cost: rule.cost + insertion.cost,
 							text: conjugateText(rule, insertion),
 							// Person-number only traverses up for 1-to-1; person-number used on first 1-to-2
-							personNumber: rule.RHS.length === 1 ? (rule.personNumber || insertion.personNumber) : undefined,
+							personNumber: rule.RHS.length === 1 ? (rule.personNumber || insertion.personNumber) : rule.personNumber,
 							insertedSyms: insertion.insertedSyms
 						})
 					})
@@ -116,7 +116,7 @@ function RHSCanBeInserted(insertions, RHS) {
 function addInsertion(insertions, nontermSym, newInsertion) {
 	var symInsertions = insertions[nontermSym] || (insertions[nontermSym] = [])
 
-	if (!insertionExists(symInsertions, newInsertion)) {
+	if (!insertionExists(symInsertions, newInsertion) && newInsertion.cost < 6) {
 		symInsertions.push(newInsertion)
 		return true
 	}
@@ -167,19 +167,22 @@ function createsRulesFromInsertions(grammar, insertions) {
 							if (insertion.text && insertion.text[0]) {
 								newRule.text = conjugateText(rule, insertion)
 								newRule.textIdx = symIdx
-								// If insertion.personNumber exists, it is for this rule
-								// - Could conjugate now, but keep to chekc input (if multiple forms of inflection accepted)
-								// If insertion.personNumber exists, then conjugation will occur on this rule
-								// - don't need rule.personNumber because does not exist on forks
+								// If insertion.personNumber or rule.personNumber exists, conjugation will occur on this rule
+								// - Could conjugate now, but keep to check input (if multiple forms of inflection accepted)
 
 								// symIdx === 1:
 								// - (that) [have] been liked -> (that) have been liked
 								// - (who) [follow] me -> (who) follow me
-								// - - need rule.personNumber to conjugate [have]
+								// --- need rule.personNumber to conjugate [have]
 								// symIdx === 0:
 								// - [nom-users] like/likes
 
+								// Currently needlessly saves for [have] (been) in rule above after [have] conjugated (because personNumber on a fork, and travels up 1-1)
 								newRule.personNumber = symIdx === 1 ? rule.personNumber : insertion.personNumber
+
+								// [followed] (by me) -> followed (by me)
+								// Currently needlessly saves for "[have] (liked)", where verbForm already conjugated "liked"
+								newRule.verbForm = rule.verbForm
 							}
 
 							if (!ruleExists(symRules, newRule)) {
