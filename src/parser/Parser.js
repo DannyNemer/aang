@@ -35,10 +35,7 @@ Parser.prototype.parse = function (query) {
 			return
 		}
 
-		var sub = {
-			size: 1, // size of literal (why not use node)
-			node: this.addSub(word)
-		}
+		var wordNode = this.addSub(word)
 
 		var oldVertTabIdx = this.vertTabIdx
 		this.vertTabIdx = this.vertTab.length
@@ -47,7 +44,13 @@ Parser.prototype.parse = function (query) {
 		// Loop through all term rules that produce term sym
 		for (var r = 0, rules = word.rules, rulesLen = rules.length; r < rulesLen; ++r) {
 			var rule = rules[r]
-			var node = this.addSub(rule.RHS[0], sub, rule.ruleProps)
+			var sub = {
+				size: 1,  // size of literal (why can't just use nodes? size?)
+				node: wordNode,
+				ruleProps: rule.ruleProps
+			}
+
+			var node = this.addSub(rule.RHS[0], sub) // FIX: rule.RHS[0] is LHS for terms
 
 			for (var v = oldVertTabIdx; v < this.vertTabIdx; ++v) {
 				this.addNode(node, this.vertTab[v])
@@ -67,7 +70,7 @@ Parser.prototype.parse = function (query) {
 
 // no sub for term syms
 // sym is either term sym or nonterm sym
-Parser.prototype.addSub = function (sym, sub, ruleProps) {
+Parser.prototype.addSub = function (sym, sub) {
 	var size = sym.isLiteral ? 1 : (sub ? sub.size : 0)
 	var node = null
 
@@ -85,7 +88,6 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 
 		if (!sym.isLiteral) {
 			node.subs = []
-			node.ruleProps = []
 		}
 
 		this.nodeTab.push(node)
@@ -95,8 +97,7 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 		node.subs.push(sub)
 
 		// Insertions are arrays of multiple ruleProps (or normal ruleProps if only insertion) - distinguish?
-		// 1 ruleProps per sub (matched by idx) - do not check for duplicate ruleProps
-		node.ruleProps.push(ruleProps)
+		// 1 ruleProps per sub (matched by idx) - do not check for duplicate ruleProps - done in grammar
 	}
 
 	return node
@@ -136,7 +137,6 @@ Parser.prototype.addVertex = function (state) {
 		start: this.position, // index in input string tokens array
 		zNodes: [] // zNodes that point to this vertex
 	}
-	// console.log('here')
 
 	this.vertTab.push(vertex)
 
@@ -196,7 +196,7 @@ Parser.prototype.reduce = function (red) {
 	var vertices = red.zNode.vertices
 	var sub = {
 		node: red.zNode.node,
-		size: red.zNode.node.size
+		size: red.zNode.node.size,
 	}
 
 	if (red.binary) {
@@ -208,10 +208,11 @@ Parser.prototype.reduce = function (red) {
 				var subNew = {
 					node: zNode.node,
 					size: zNode.node.size + sub.size,
-					next: sub
+					next: sub,
+					ruleProps: red.ruleProps
 				}
 
-				var node = this.addSub(red.LHS, subNew, red.ruleProps)
+				var node = this.addSub(red.LHS, subNew)
 
 				var zNodeVertices = zNode.vertices
 				for (var v2 = 0, zNodeVerticesLen = zNodeVertices.length; v2 < zNodeVerticesLen; ++v2) {
@@ -220,7 +221,8 @@ Parser.prototype.reduce = function (red) {
 			}
 		}
 	} else {
-		var node = this.addSub(red.LHS, sub, red.ruleProps)
+		sub.ruleProps = red.ruleProps
+		var node = this.addSub(red.LHS, sub)
 
 		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
 			this.addNode(node, vertices[v])
@@ -291,25 +293,27 @@ Parser.prototype.printStack = function () {
 	})
 }
 
-Parser.prototype.printNodeGraph = function (node, notRoot) {
+Parser.prototype.printNodeGraph = function (sub) {
+	var node = sub.node || sub
+
 	var newNode = {
 		symbol: node.sym.name,
-		ruleProps: node.ruleProps
+		ruleProps: sub.ruleProps
 	}
 
 	if (node.subs) {
 		newNode.subs = node.subs.map(function (sub) {
 			var children = []
 			for (; sub; sub = sub.next) {
-				children.push(this.printNodeGraph(sub.node, true))
+				children.push(this.printNodeGraph(sub))
 			}
 			return children
 		}, this)
 	}
 
-	if (notRoot) {
+	if (sub.node) {
 		return newNode
 	} else {
-		console.log(JSON.stringify(newNode, null, 1))
+		console.log(JSON.stringify(newNode, null, 1)) // Start node
 	}
 }
