@@ -1,7 +1,7 @@
 // Test queries:
 // people who like my repos liked by people who follow people I follow
 // repos I have liked
-// my repos me and me who follow my followers
+// my repos me people who follow my followers have been and
 
 var util = require('../util')
 var BinaryHeap = require('./BinaryHeap')
@@ -20,6 +20,8 @@ exports.search = function (startNode, K) {
 		cost: 0,
 		tree: { startNode: tree, prevNodes: [ tree ] },
 	})
+
+	// Might be able to save ruleProps as a single object - issue with ordering (array could be faster than creating new objects?)
 
 	while (heap.size()) {
 		var item = heap.pop()
@@ -51,10 +53,10 @@ exports.search = function (startNode, K) {
 
 			if (ruleProps instanceof Array) {
 				for (var p = 0, rulePropsLen = ruleProps.length; p < rulePropsLen; ++p) {
-					heap.push(editThings(sub, item, ruleProps[p]))
+					heap.push(handleInsertion(sub, item, ruleProps[p]))
 				}
 			} else if (ruleProps.hasOwnProperty('textIdx')) {
-				heap.push(editThings(sub, item, ruleProps))
+				heap.push(handleInsertion(sub, item, ruleProps))
 			} else if (ruleProps.transposition) {
 				heap.push({
 					cost: item.cost + ruleProps.cost,
@@ -68,18 +70,18 @@ exports.search = function (startNode, K) {
 				var newItem = {
 					cost: item.cost + ruleProps.cost,
 					tree: spliceTree(item.tree, sub, ruleProps),
-				}
-
-				if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
-					newItem.ruleProps = item.ruleProps.concat(ruleProps)
-				} else {
-					newItem.ruleProps = item.ruleProps.slice()
+					ruleProps: item.ruleProps.slice()
 				}
 
 				if (sub.next) {
 					newItem.nextNodes = item.nextNodes.concat(sub.next.node)
 				} else {
 					newItem.nextNodes = item.nextNodes.slice()
+					// it does not make sense that you do not need to copy it
+					// every time you you edit it, you edit it in multiple trees
+					// we could use an idx var instead of editing a tree multiple times
+
+					// make something that will run through multiple queries on a K
 				}
 
 				if (sub.node.subs) {
@@ -94,6 +96,11 @@ exports.search = function (startNode, K) {
 					newItem.text = item.text.concat(text)
 				}
 
+				// Can go before text conjugation because there won't be inflection properties on a terminal rule
+				if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
+					newItem.ruleProps.push(ruleProps)
+				}
+
 				heap.push(newItem)
 			}
 		}
@@ -102,34 +109,35 @@ exports.search = function (startNode, K) {
 	return trees
 }
 
-function editThings(sub, item, ruleProps) {
+function handleInsertion(sub, item, ruleProps) {
 	var newItem = {
-		lastNode: sub.node,
 		cost: item.cost + ruleProps.cost,
+		tree: spliceTree(item.tree, sub, ruleProps),
 		ruleProps: item.ruleProps.slice(),
 		nextNodes: item.nextNodes.slice(),
-		tree: spliceTree(item.tree, sub, ruleProps),
+		lastNode: sub.node,
 	}
 
 	if (ruleProps.text) {
-		if (ruleProps.personNumber || ruleProps.verbForm) {
-			newItem.ruleProps.push(ruleProps)
-		}
+		var textArray = ruleProps.text.slice()
 
 		if (ruleProps.textIdx) {
-			newItem.nextNodes.push(ruleProps.text)
+			newItem.nextNodes.push(textArray)
 			newItem.text = item.text
 		} else {
 			// might not always need to run, based on if 'personNumber'
-			var textArray = ruleProps.text.slice()
 			for (var t = 0; t < textArray.length; ++t) {
 				var text = textArray[t]
 				if (text instanceof Object) {
-					textArray[t] = conjugateText(item.ruleProps, text) || text
+					textArray[t] = conjugateText(newItem.ruleProps, text) || text
 				}
 			}
 
 			newItem.text = item.text.concat(textArray)
+		}
+
+		if (ruleProps.personNumber || ruleProps.verbForm) {
+			newItem.ruleProps.push(ruleProps)
 		}
 	} else {
 		newItem.text = item.text
