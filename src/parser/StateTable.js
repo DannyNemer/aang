@@ -89,6 +89,18 @@ function createRuleProps(origRule) {
 		ruleProps.textIdx = origRule.textIdx
 	}
 
+	if (origRule.hasOwnProperty('verbForm')) {
+		ruleProps.verbForm = origRule.verbForm
+	}
+
+	if (origRule.hasOwnProperty('personNumber')) {
+		ruleProps.personNumber = origRule.personNumber
+	}
+
+	if (origRule.hasOwnProperty('gramCase')) {
+		ruleProps.gramCase = origRule.gramCase
+	}
+
 	if (origRule.transposition) {
 		ruleProps.transposition = true
 	}
