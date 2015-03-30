@@ -2,6 +2,7 @@
 // Option --debug-brk (or -b) does this, but broken in node v0.12
 // Relies on breakpoints being set in inspector on previous run
 while (/bin/.test(process.argv[0]) && process.uptime() < 1) {}
+var util = require('../util.js')
 
 var grammar = require('../grammar.json')
 
@@ -17,7 +18,7 @@ rl.prompt()
 rl.write('people who like my repos liked by people who follow people I follow')
 
 var parserNewPath = './Parser.js'
-var parserOldPath = './util/ParserBreadthFirst.js'
+var parserOldPath = './util/ParserBestFirst.js'
 
 rl.on('line', function (line) {
 	var query = line.trim()
@@ -35,29 +36,44 @@ rl.on('line', function (line) {
 			// parserOld.parse(query)
 			// require('./util/diffParses')(parserOld, parser)
 
-			if (!parser.startNode) console.log('Failed to reach start node')
+			if (parser.startNode) {
+				var search = require('./search.js')
+				var trees = search.search(parser.startNode, K)
+				if (printTime) console.timeEnd('parse')
+				search.print(trees, printGraph)
+			} else {
+				console.log('Failed to reach start node')
+			}
 
 			if (printForest) parser.printForest()
 			if (printStack) parser.printStack()
-			if (printGraph && parser.startNode) parser.printNodeGraph(parser.startNode)
+			// if (printGraph && parser.startNode) parser.printNodeGraph(parser.startNode)
 		} catch (e) {
 			console.log()
-			// Remove parentheses from stack for iTerm open-file shortcut
-			e.stack.split('\n').forEach(function (stackLine) {
-				console.log(stackLine.replace(/[()]/g, ''))
-			})
+
+			if (e.stack) {
+				// Remove parentheses from stack for iTerm open-file shortcut
+				e.stack.split('\n').forEach(function (stackLine) {
+					console.log(stackLine.replace(/[()]/g, ''))
+				})
+			} else {
+				console.log(e)
+			}
 		}
 
 		delete require.cache[require.resolve(parserPath)]
 		// delete require.cache[require.resolve('./util/diffParses.js')]
-		// delete require.cache[require.resolve('./util/ParserBreadthFirst.js')]
+		delete require.cache[require.resolve('./util/ParserBreadthFirst.js')]
+		delete require.cache[require.resolve('./util/ParserBestFirst.js')]
 		delete require.cache[require.resolve('./BinaryHeap.js')]
+		delete require.cache[require.resolve('./search.js')]
 	}
 
 	rl.prompt()
 })
 
 
+var K = 10
 var printTime = false
 var printStack = false
 var printForest = false
@@ -65,7 +81,11 @@ var printGraph = false
 var parserPath = parserNewPath
 
 function parseCommand(query) {
-	if (query === '-t') {
+	var args = query.split(' ')
+	if (args[0] === '-k') {
+		if (!isNaN(args[1])) K = Number(args[1])
+		console.log('K:', K)
+	} else if (query === '-t') {
 		printTime = !printTime
 		console.log('print time:', printTime)
 	} else if (query === '-s') {
@@ -77,16 +97,17 @@ function parseCommand(query) {
 	} else if (query === '-g') {
 		printGraph = !printGraph
 		console.log('print graph:', printGraph)
-	// } else if (query === '-p') {
-	// 	parserPath = parserPath === parserNewPath ? parserOldPath : parserNewPath
-	// 	console.log('parser path:', parserPath)
+	} else if (query === '-p') {
+		parserPath = parserPath === parserNewPath ? parserOldPath : parserNewPath
+		console.log('parser path:', parserPath)
 	} else if (query === '-h') {
-		console.log('TOGGLES:')
+		console.log('Settings:')
+		console.log('-k  K:', K)
 		console.log('-t  print time:', printTime)
 		console.log('-s  print stack:', printStack)
 		console.log('-f  print forest:', printForest)
 		console.log('-g  print graph:', printGraph)
-		// console.log('-p  parser path:', parserPath)
+		console.log('-p  parser path:', parserPath)
 	} else {
 		return false
 	}
