@@ -1,3 +1,8 @@
+// Test queries:
+// people who like my repos liked by people who follow people I follow
+// repos I have liked
+// my repos me and me who follow my followers
+
 var util = require('../util')
 var BinaryHeap = require('./BinaryHeap')
 
@@ -23,26 +28,10 @@ exports.search = function (startNode, K) {
 
 		while (lastNode && !lastNode.sym) {
 			var textArray = lastNode
-
-			for (var p = item.ruleProps.length; p-- > 0;) {
-				var prevProps = item.ruleProps[p]
-
-				for (var t = 0; t < textArray.length; ++t) {
-					var text = textArray[t]
-
-					if (text instanceof Object) {
-						if (prevProps.verbForm && text[prevProps.verbForm]) {
-							textArray[t] = text[prevProps.verbForm]
-							item.ruleProps.splice(p, 1)
-							break
-						} else if (prevProps.personNumber && text[prevProps.personNumber]) {
-							textArray[t] = text[prevProps.personNumber]
-							item.ruleProps.splice(p, 1)
-							break
-						} else {
-							console.log('not last ruleProps')
-						}
-					}
+			for (var t = 0; t < textArray.length; ++t) {
+				var text = textArray[t]
+				if (text instanceof Object) {
+					textArray[t] = conjugateText(item.ruleProps, text) || text
 				}
 			}
 
@@ -98,36 +87,8 @@ exports.search = function (startNode, K) {
 					newItem.text = item.text
 				} else {
 					var text = ruleProps.text
-
 					if (text instanceof Object) {
-						for (var r = newItem.ruleProps.length; r-- > 0;) {
-							var props = newItem.ruleProps[r]
-
-							if (props.verbForm && text[props.verbForm]) {
-								text = text[props.verbForm]
-								newItem.ruleProps.splice(r, 1)
-								break
-							} else if (props.personNumber && text[props.personNumber]) {
-								text = text[props.personNumber]
-								newItem.ruleProps.splice(r, 1)
-								break
-							} else if (props.gramCase && text[props.gramCase]) {
-								text = text[props.gramCase]
-								// rule with gramCase either has personNumber for nomitive (so will be needed again), or doesn't have personNUmer (For obj) and can be deleted
-								if (!props.personNumber) {
-									newItem.ruleProps.splice(r, 1)
-								}
-								break
-							} else {
-								console.log('not last ruleProps')
-							}
-						}
-					}
-
-					if (text instanceof Object) {
-						console.log('Failed to conjugate:', text)
-						console.log(item.ruleProps)
-						console.log()
+						text = conjugateText(newItem.ruleProps, text) || ruleProps.text
 					}
 
 					newItem.text = item.text.concat(text)
@@ -159,30 +120,12 @@ function editThings(sub, item, ruleProps) {
 			newItem.nextNodes.push(ruleProps.text)
 			newItem.text = item.text
 		} else {
+			// might not always need to run, based on if 'personNumber'
 			var textArray = ruleProps.text.slice()
-
-			// else (without verbForm in conditional)
 			for (var t = 0; t < textArray.length; ++t) {
 				var text = textArray[t]
-
 				if (text instanceof Object) {
-					for (var r = newItem.ruleProps.length; r-- > 0;) {
-						var textProps = newItem.ruleProps[r]
-
-						if (textProps.verbForm && text[textProps.verbForm]) {
-							textArray[t] = text[textProps.verbForm]
-							newItem.ruleProps.splice(r, 1)
-							break
-						}
-
-						if (textProps.personNumber && text[textProps.personNumber]) {
-							textArray[t] = text[textProps.personNumber]
-							newItem.ruleProps.splice(r, 1)
-							break
-						}
-
-						console.log('not last ruleProps')
-					}
+					textArray[t] = conjugateText(item.ruleProps, text) || text
 				}
 			}
 
@@ -193,6 +136,32 @@ function editThings(sub, item, ruleProps) {
 	}
 
 	return newItem
+}
+
+function conjugateText(rulePropsArray, text) {
+	for (var r = rulePropsArray.length; r-- > 0;) {
+		var ruleProps = rulePropsArray[r]
+
+		if (ruleProps.verbForm && text[ruleProps.verbForm]) {
+			rulePropsArray.splice(r, 1)
+			return text[ruleProps.verbForm]
+		} else if (ruleProps.personNumber && text[ruleProps.personNumber]) {
+			rulePropsArray.splice(r, 1)
+			return text[ruleProps.personNumber]
+		} else if (ruleProps.gramCase && text[ruleProps.gramCase]) {
+			// rule with gramCase either has personNumber for nomitive (so will be needed again), or doesn't have personNUmer (For obj) and can be deleted
+			if (!ruleProps.personNumber) {
+				rulePropsArray.splice(r, 1)
+			}
+			return text[ruleProps.gramCase]
+		} else {
+			console.log('not last ruleProps')
+		}
+	}
+
+	console.log('Failed to conjugateText:', text)
+	console.log(rulePropsArray)
+	console.log()
 }
 
 function spliceTree(tree, sub, ruleProps) {
@@ -259,7 +228,7 @@ function cloneTree(node, lastNodes) {
 
 exports.print = function (trees, printTrees) {
 	trees.forEach(function (tree){
-		console.log(tree.text.join(' '), tree.cost)
+		console.log(tree.text.join(' '))
 		if (printTrees) util.log(tree.tree)
 	})
 }
