@@ -14,7 +14,7 @@ module.exports = function (grammar) {
 
 	findNontermRulesProducingInsertions(grammar, insertions)
 
-	createsRulesFromInsertions(grammar, insertions)
+	createRulesFromInsertions(grammar, insertions)
 
 	createRulesFromTranspositions(grammar)
 }
@@ -89,12 +89,13 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 						return mergedInsertions
 					}).forEach(function (insertion) {
 						// Add each insertion the can be produced from the RHS
-
+						// Temp hack:
+						var noConjugation = insertion.text.join(' ') === conjugateText(rule, insertion).join(' ')
 						addInsertion(insertions, nontermSym, {
 							cost: rule.cost + insertion.cost,
 							text: conjugateText(rule, insertion),
 							// Person-number only traverses up for 1-to-1; person-number used on first 1-to-2
-							personNumber: rule.RHS.length === 1 ? (rule.personNumber || insertion.personNumber) : rule.personNumber,
+							personNumber: rule.RHS.length === 1 ? (rule.personNumber || insertion.personNumber) : (noConjugation ? rule.personNumber : undefined),
 							insertedSyms: insertion.insertedSyms
 						})
 					})
@@ -147,7 +148,7 @@ function insertionExists(symInsertions, newInsertion) {
 }
 
 // Add new rules from inserted terminal symbol productions and empty-string productions to grammar
-function createsRulesFromInsertions(grammar, insertions) {
+function createRulesFromInsertions(grammar, insertions) {
 	Object.keys(grammar).forEach(function (nontermSym) {
 		grammar[nontermSym].forEach(function (rule, ruleIdx, symRules) {
 			var RHS = rule.RHS
@@ -182,6 +183,7 @@ function createsRulesFromInsertions(grammar, insertions) {
 
 								// [followed] (by me) -> followed (by me)
 								// Currently needlessly saves for "[have] (liked)", where verbForm already conjugated "liked"
+								if (insertion.text.join(' ') === newRule.text.join(' ')) // No conjugation - temp hack
 								newRule.verbForm = rule.verbForm
 							}
 
@@ -264,14 +266,15 @@ function conjugateText(rule, insertion) {
 			}
 
 			// Past tense
-			// - Precedes person number: "I have liked" vs. "I have like"
-			// - Doesn't have to apply to every verb: "[have] liked" - past-tense applies to "liked", not [have]
+			// - Precedes person number: "I have liked" vs. "I have like" (though, now order doesn't matter)
+			// - Does not fail when text cannot conjugate - does not have to apply to every verb it sees:
+			// --- "[have] liked" - past-tense applies to "liked", not [have]
 			else if (rule.verbForm && text[rule.verbForm]) {
-				// if (!text[rule.verbForm]) throw 'looking for a verbForm'
 				textArray.push(text[rule.verbForm])
 			}
 
 			// Could combine verbForm and personNumber because never applied at same time
+			// -- But waiting until making more rules
 
 			// First person, vs. third person singular, vs. plural
 			// - Only used on 1-to-2, where first of two branches determines person-number of second branch
