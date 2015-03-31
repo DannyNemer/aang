@@ -31,24 +31,24 @@ userTerm.addRule({ terminal: true, RHS: '{user}' })
 
 
 // Person-number property only exists for nominative case
-var nomUsers = new g.Symbol('nom', 'users')
+user.nomUsers = new g.Symbol('nom', 'users')
 // (repos) people who follow me (like)
-nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'oneOrPl' })
+user.nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'oneOrPl' })
 // (people) {user} (follows)
-nomUsers.addRule({ RHS: [ userTerm ], personNumber: 'threeSg' })
+user.nomUsers.addRule({ RHS: [ userTerm ], personNumber: 'threeSg' })
 // (people) I (follow)
-nomUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'nom', personNumber: 'oneOrPl' })
+user.nomUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'nom', personNumber: 'oneOrPl' })
 
 user.nomUsersPlus = new g.Symbol('nom', 'users+')
-user.nomUsersPlus.addRule({ RHS: [ nomUsers ] })
+user.nomUsersPlus.addRule({ RHS: [ user.nomUsers ] })
 // (people) I and {user} follow
 var andNomUsersPlus = new g.Symbol('and', 'nom', 'users+')
 andNomUsersPlus.addRule({ RHS: [ operators.and, user.nomUsersPlus ] })
-user.nomUsersPlus.addRule({ RHS: [ nomUsers, andNomUsersPlus ], personNumber: 'oneOrPl' })
+user.nomUsersPlus.addRule({ RHS: [ user.nomUsers, andNomUsersPlus ], personNumber: 'oneOrPl' })
 // (people) I or {user} follow
 var orNomUsersPlus = new g.Symbol('or', 'nom', 'users+')
 orNomUsersPlus.addRule({ RHS: [ operators.union, user.nomUsersPlus ] })
-user.nomUsersPlus.addRule({ RHS: [ nomUsers, orNomUsersPlus ], personNumber: 'oneOrPl' })
+user.nomUsersPlus.addRule({ RHS: [ user.nomUsers, orNomUsersPlus ], personNumber: 'oneOrPl' })
 
 
 var objUsers = new g.Symbol('obj', 'users')
@@ -70,6 +70,10 @@ var orObjUsersPlus = new g.Symbol('or', 'obj', 'users+')
 orObjUsersPlus.addRule({ RHS: [ operators.union, user.objUsersPlus ] })
 user.objUsersPlus.addRule({ RHS: [ objUsers, orObjUsersPlus ] })
 
-// (people followed) by me
+// (people followed) by me; (repos liked) by me
+user.byObjUsersPlus = new g.Symbol('by', 'obj', 'users+')
+user.byObjUsersPlus.addRule({ RHS: [ preps.agent, user.objUsersPlus ] })
+
+// (repos created) by me
 user.byObjUsers = new g.Symbol('by', 'obj', 'users')
-user.byObjUsers.addRule({ RHS: [ preps.agent, user.objUsersPlus ] })
+user.byObjUsers.addRule({ RHS: [ preps.agent, objUsers ] })

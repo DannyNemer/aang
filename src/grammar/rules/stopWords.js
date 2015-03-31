@@ -2,8 +2,8 @@ var g = require('../grammar')
 
 // Stopwords that preceed verbs
 // (people I) <stop> follow
-this.preVerbStopwords = g.addStopWord({
-	name: 'pre-verb-stopwords',
+this.preVerbStopWords = g.addStopWord({
+	name: 'pre-verb-stop-words',
 	stopWords: [ 'like|liked|likes to' ]
 })
 

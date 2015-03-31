@@ -1,6 +1,6 @@
 var g = require('../grammar')
 var user = require('./user')
-var stopwords = require('./stopWords')
+var stopWords = require('./stopWords')
 var poss = require('./poss')
 
 var follow = g.addVerb({
@@ -18,11 +18,11 @@ var follow = g.addVerb({
 })
 
 // (people) followed by me
-user.passive.addRule({ RHS: [ follow, user.byObjUsers ], verbForm: 'past' })
+user.passive.addRule({ RHS: [ follow, user.byObjUsersPlus ], verbForm: 'past' })
 // (people) I follow
-var stopwordFollow = new g.Symbol('stopword', 'follow')
-stopwordFollow.addRule({ RHS: [ stopwords.preVerbStopwords, follow ] })
-user.objFilter.addRule({ RHS: [ user.nomUsersPlus, stopwordFollow ] })
+var preVerbStopWordsFollow = new g.Symbol('pre', 'verb', 'stop', 'words', 'follow')
+preVerbStopWordsFollow.addRule({ RHS: [ stopWords.preVerbStopWords, follow ] })
+user.objFilter.addRule({ RHS: [ user.nomUsersPlus, preVerbStopWordsFollow ] })
 // (people who) follow me
 user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], personNumber: 'oneOrPl' })
 

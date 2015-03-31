@@ -120,15 +120,9 @@ module.exports = function Category(catOpts) {
 	// people who are followed by me
 	this.plural.addRule({ RHS: [ noRelative, relativeclause ]})
 
+	// (people who like) my repos
+	this.catPl = new g.Symbol(this.namePl)
+	this.catPl.addRule({ RHS: [ this.plural ] })
 
-	var catPl = new g.Symbol(this.namePl)
-	catPl.addRule({ RHS: [ this.plural ] })
-
-	if (!catOpts.person) { // user does not use because obj/nom-users
-		// (people who like) my repos
-		this.catPlPlus = new g.Symbol(this.namePl + '+')
-		this.catPlPlus.addRule({ RHS: [ catPl ] })
-	}
-
-	start.addRule({ RHS: [ catPl ]})
+	start.addRule({ RHS: [ this.catPl ]})
 }

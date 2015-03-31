@@ -16,14 +16,14 @@ var repositoriesTerm = g.addWord({
 var repositoryHeadMayPoss = new g.Symbol(repository.nameSg, 'head', 'may', 'poss')
 repositoryHeadMayPoss.addRule({ RHS: [ user.github, repositoriesTerm ] })
 
-// |Github repositories (I starred)
+// |Github repos (I starred)
 repository.head.addRule({ RHS: [ repositoryHeadMayPoss ] })
 
 
 var repositoryPossessible = new g.Symbol(repository.nameSg, 'possessible')
-// (my) repositories
+// (my) repos
 repositoryPossessible.addRule({ RHS: [ repository.lhs, repositoryHeadMayPoss ] })
-// my repositories
+// my repos
 repository.noRelativePossessive.addRule({ RHS: [ poss.determiner, repositoryPossessible ]})
 
 // repos of mine
@@ -39,11 +39,11 @@ var like = g.addVerb({
 	past: [ 'liked' ]
 })
 
-// (repositories) liked by me
-repository.passive.addRule({ RHS: [ like, user.byObjUsers ], verbForm: 'past' })
-// (repositories) I like
+// (repos) liked by me
+repository.passive.addRule({ RHS: [ like, user.byObjUsersPlus ], verbForm: 'past' })
+// (repos) I like
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, like ] })
-// (repositories) I have liked
+// (repos) I have liked
 var haveLiked = new g.Symbol('have', 'liked')
 haveLiked.addRule({ RHS: [ auxVerbs.have, like ], verbForm: 'past' })
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, haveLiked ] })
@@ -53,3 +53,27 @@ user.subjFilter.addRule({ RHS: [ like, repository.catPl ], personNumber: 'oneOrP
 var likedRepos = new g.Symbol('liked', 'repos')
 likedRepos.addRule({ RHS: [ like, repository.catPl ], verbForm: 'past' })
 user.subjFilter.addRule({ RHS: [ auxVerbs.have, likedRepos ], personNumber: 'oneOrPl' })
+
+
+// CREATED:
+var created = g.addWord({
+	name: 'created',
+	accepted: [ 'created' ]
+})
+
+// (repos) created by me
+repository.passive.addRule({ RHS: [ created, user.byObjUsers ] })
+// (repos) I created
+repository.objFilter.addRule({ RHS: [ user.nomUsers, created ] })
+// (repos) I have created
+var haveCreated = new g.Symbol('have', 'created')
+haveCreated.addRule({ RHS: [ auxVerbs.have, created ] })
+var preVerbStopWordsHaveCreated = new g.Symbol('pre', 'verb', 'stop', 'words', 'have', 'created')
+preVerbStopWordsHaveCreated.addRule({ RHS: [ stopWords.preVerbStopWords, haveCreated ] })
+repository.objFilter.addRule({ RHS: [ user.nomUsers, preVerbStopWordsHaveCreated ] })
+// (people who) created repos ...
+user.subjFilter.addRule({ RHS: [ created, repository.catPl ] })
+// (people who) have created repos ...
+var createdRepos = new g.Symbol('created', 'repos')
+createdRepos.addRule({ RHS: [ created, repository.catPl ] })
+user.subjFilter.addRule({ RHS: [ auxVerbs.have, createdRepos ], personNumber: 'oneOrPl' })
