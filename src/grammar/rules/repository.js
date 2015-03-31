@@ -14,7 +14,7 @@ var repositoriesTerm = g.addWord({
 })
 
 var repositoryHeadMayPoss = new g.Symbol(repository.nameSg, 'head', 'may', 'poss')
-repositoryHeadMayPoss.addRule({ RHS: [ user.github, repositoriesTerm ] })
+repositoryHeadMayPoss.addRule({ RHS: [ github.termOpt, repositoriesTerm ] })
 
 // |Github repos (I starred)
 repository.head.addRule({ RHS: [ repositoryHeadMayPoss ] })

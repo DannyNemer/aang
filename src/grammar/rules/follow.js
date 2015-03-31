@@ -35,7 +35,7 @@ var followersTerm = g.addWord({
 
 // (my) followers; followers (of mine)
 var userFollowersHead = new g.Symbol(user.nameSg, 'followers', 'head')
-userFollowersHead.addRule({ RHS: [ user.github, followersTerm ] })
+userFollowersHead.addRule({ RHS: [ user.companyOpt, followersTerm ] })
 
 // (my) followers
 var userFollowersPossessible = new g.Symbol(user.nameSg, 'followers', 'possessible')
