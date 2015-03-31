@@ -1,3 +1,5 @@
+// Confirm best-first search parser has identical output and function calls to breadth-first search (BFS) parser
+
 module.exports = function (parserOld, parserNew) {
 	compCounters(parserOld, parserNew, 'addNodeCalls')
 	compCounters(parserOld, parserNew, 'addSubCalls')

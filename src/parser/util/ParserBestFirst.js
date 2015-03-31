@@ -1,4 +1,6 @@
-var BinaryHeap = require('./BinaryHeap.js')
+// Most likely requires making the insertion arrays (of multiple insertions on rule with same LHS and RHS syms) seperate reductions to take advatange of heap
+
+var BinaryHeap = require('../BinaryHeap.js')
 
 module.exports = Parser
 

@@ -215,6 +215,7 @@ StateTable.prototype.generate = function (startSym) {
 			if (!rule.RHS[rule.RHSIdx] && rule.LHS) {
 				newState.reds.push({
 					LHS: rule.LHS,
+					// RHS: rule.RHS, // Only useful for printing
 					binary: rule.RHS.length === 2,
 					ruleProps: rule.ruleProps
 				})
@@ -238,9 +239,11 @@ StateTable.prototype.print = function () {
 		state.reds.forEach(function (red) {
 			var toPrint = '\t[' + red.LHS.name + ' ->'
 
-			red.RHS.forEach(function (sym) {
-				toPrint += ' ' + sym.name
-			})
+			if (red.RHS) {
+				red.RHS.forEach(function (sym) {
+					toPrint += ' ' + sym.name
+				})
+			}
 
 			toPrint += ']'
 

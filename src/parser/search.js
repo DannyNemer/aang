@@ -140,6 +140,8 @@ function conjugateTextArray(item, textArray) {
 
 			// FIX: if we are conjugating multiple things in the array, then we should not edit it after each
 			// should apply same rule to multiple objs
+			// If so, would need to iterate through textArray WITHIN ruleprops,
+			// maybe not, could lead to wrong ruleprops being applied
 			textArray[t] = conjugateText(item.ruleProps, text)
 		}
 	}
