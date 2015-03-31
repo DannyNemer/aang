@@ -74,6 +74,13 @@ module.exports = function Category(catOpts) {
 	// people I follow; people followed by me
 	noRelativeBase.addRule({ RHS: [ lhsHead, rhs ], transpositionCost: 1 })
 
+	var noRelative = new g.Symbol(this.nameSg, 'no', 'relative')
+	// people followed by me; people I follow
+	noRelative.addRule({ RHS: [ noRelativeBase ] })
+	// my followers
+	this.noRelativePossessive = new g.Symbol(this.nameSg, 'no', 'relative', 'possessive')
+	noRelative.addRule({ RHS: [ this.noRelativePossessive, rhs ], transpositionCost: 1 })
+
 
 	var filter = new g.Symbol(this.nameSg, 'filter')
 	// (people who) follow me
@@ -82,8 +89,11 @@ module.exports = function Category(catOpts) {
 	filter.addRule({ RHS: [ this.objFilter ]})
 	// (people who) I follow <adverbial-stopword>
 	filter.addRule({ RHS: [ filter, stopWords.sentenceAdverbial ]})
+	// (people who) are followers of mine
+	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, noRelative ]})
 	// (people who) are followed by me
 	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, reducedNoTense ]})
+
 
 	var bePastReducedNoTense = new g.Symbol('be', 'past', this.nameSg, 'reduced', 'no', 'tense')
 	// (people who have) been followed by me; (people who have) been following me
@@ -104,14 +114,6 @@ module.exports = function Category(catOpts) {
 		// (repos) that are liked by me
 		relativeclause.addRule({ RHS: [ relativePronouns.that, filterPlus ]})
 	}
-
-
-	var noRelative = new g.Symbol(this.nameSg, 'no', 'relative')
-	// people followed by me; people I follow
-	noRelative.addRule({ RHS: [ noRelativeBase ] })
-	// my followers
-	this.noRelativePossessive = new g.Symbol(this.nameSg, 'no', 'relative', 'possessive')
-	noRelative.addRule({ RHS: [ this.noRelativePossessive, rhs ], transpositionCost: 1 })
 
 
 	this.plural = new g.Symbol(this.nameSg, 'plural')

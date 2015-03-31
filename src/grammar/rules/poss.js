@@ -17,9 +17,11 @@ this.determinerOmissible = new g.Symbol(possStr, 'determiner', 'omissible')
 this.determinerOmissible.addRule({ RHS: [ oneSg.possOmissible ]})
 
 
+// Seperate [poss-user] from [poss-users] if want rules (functions) limited to single people
+// Primarily exists, instead of just using [obj-users] to limit functions and "mine"
 var possUser = new g.Symbol(possStr, 'user')
-// (followers of) mine
-possUser.addRule({ terminal: true, RHS: 'mine' })
+// (followers of) mine - manually add text here because [poss-user] will also produce nonterminal rules
+possUser.addRule({ terminal: true, RHS: 'mine', text: 'mine' })
 
 var possUsers = new g.Symbol(possStr, 'users')
 possUsers.addRule({ RHS: [ possUser ] })

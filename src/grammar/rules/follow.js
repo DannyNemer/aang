@@ -30,7 +30,7 @@ user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], personNumber: 'one
 
 var followersTerm = g.addWord({
 	name: 'followers-term',
-	accepted: [ 'followers' ]
+	accepted: [ 'followers', 'subscribers' ]
 })
 
 // (my) followers; followers (of mine)

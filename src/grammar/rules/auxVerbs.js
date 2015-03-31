@@ -4,7 +4,7 @@ var g = require('../grammar')
 this.beNon1Sg = g.addWord({
 	name: 'be-non-1sg',
 	insertionCost: 1,
-	accepted: [ 'are' ],
+	accepted: [ 'are', 'were' ],
 	substitutions: [ 'is|are|be being', 'being|been' ]
 })
 

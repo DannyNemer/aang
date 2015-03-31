@@ -19,5 +19,5 @@ this.poss = g.addWord({
 this.possOmissible = g.addWord({
 	name: '1-sg-poss-omissible',
 	accepted: [ 'my' ],
-	substitutions: [ g.emptyTermSym ] // blank should be first rule (it is not here)
+	substitutions: [ g.emptyTermSym ] // blank should be first rule (it is not currently)
 })
