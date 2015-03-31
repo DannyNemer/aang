@@ -7,11 +7,8 @@ exports.emptyTermSym = '<empty>'
 
 exports.Symbol = require('./Symbol').bind(null, grammar)
 
-var termFunctions = require('./termFunctions')
-exports.addPronoun = termFunctions.addPronoun
-exports.addVerb = termFunctions.addVerb
-exports.addStopWord = termFunctions.addStopWord
-exports.addWord = termFunctions.addWord
+// Extend module with rule functions
+require('./ruleFunctions')
 
 exports.Semantic = require('./Semantic')
 

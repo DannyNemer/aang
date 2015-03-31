@@ -1,3 +1,5 @@
+// Functions to automate adding many common sets of rules to grammar
+
 var g = require('./grammar')
 var util = require('../util')
 
@@ -11,7 +13,7 @@ var pronounOptsSchema = {
 }
 
 // Add all terminal symbols for a pronoun to the grammar; ex: "I", "me"
-exports.addPronoun = function (opts) {
+g.addPronoun = function (opts) {
 	if (util.illFormedOpts(pronounOptsSchema, opts)) {
 		throw 'ill-formed pronoun'
 	}
@@ -57,7 +59,7 @@ var verbOptSchema = {
 
 // Add all terminal symbols for a verb to the grammar
 // Only used in nominative case; ex: "people [nom-users] follow/follows"
-exports.addVerb = function (opts) {
+g.addVerb = function (opts) {
 	if (util.illFormedOpts(verbOptSchema, opts)) {
 		throw 'ill-formed verb'
 	}
@@ -128,7 +130,7 @@ var stopWordOptSchema = {
 }
 
 // Add a stop-word to the grammar - replaces terminal symbols with an empty-string
-exports.addStopWord = function (opts) {
+g.addStopWord = function (opts) {
 	if (util.illFormedOpts(stopWordOptSchema, opts)) {
 		throw 'ill-formed stop-word'
 	}
@@ -156,7 +158,7 @@ var wordOptsSchema = {
 }
 
 // Add a set of terminal symbols to the grammar
-exports.addWord = function (opts) {
+g.addWord = function (opts) {
 	if (util.illFormedOpts(wordOptsSchema, opts)) {
 		throw 'ill-formed word'
 	}
