@@ -7,8 +7,7 @@ var util = require('../util.js')
 var grammar = require('../grammar.json')
 var prevRSS = process.memoryUsage().rss
 var stateTable = new (require('./StateTable'))(grammar, '[start]')
-// console.log((process.memoryUsage().rss - prevRSS) / 1e6 + ' MB')
-// stateTable.print()
+var stateTableMemoryUsage = (process.memoryUsage().rss - prevRSS) / 1e6 + ' MB'
 
 var rl = require('readline').createInterface(process.stdin, process.stdout)
 
@@ -89,6 +88,9 @@ function runCommand(query) {
 		K = 500
 		testQueries.forEach(parse)
 		K = prevK
+	} else if (query === '-st') {
+		console.log(stateTableMemoryUsage)
+		stateTable.print()
 	} else if (query === '-t') {
 		printTime = !printTime
 		console.log('print time:', printTime)
@@ -111,6 +113,7 @@ function runCommand(query) {
 		console.log('Settings:')
 		console.log('-k  K:', K)
 		console.log('-r  run test queries')
+		console.log('-st print state table')
 		console.log('-t  print time:', printTime)
 		console.log('-o  print output:', printOutput)
 		console.log('-s  print stack:', printStack)
