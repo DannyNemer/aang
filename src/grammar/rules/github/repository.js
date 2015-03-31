@@ -1,8 +1,10 @@
-var g = require('../grammar')
-var Category = require('./Category')
-var poss = require('./poss')
-var user = require('./user')
-var auxVerbs = require('./auxVerbs')
+var g = require('../../grammar')
+var Category = require('../Category')
+var poss = require('../poss')
+var user = require('../user')
+var auxVerbs = require('../auxVerbs')
+var stopWords = require('../stopWords')
+var github = require('./github')
 
 
 var repository = new Category({ sg: 'repository', pl: 'repositories' })

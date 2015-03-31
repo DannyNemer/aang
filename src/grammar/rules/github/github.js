@@ -1,5 +1,5 @@
-var g = require('../grammar')
-var user = require('./user')
+var g = require('../../grammar')
+var user = require('../user')
 
 var github = g.addWord({
 	name: 'github',

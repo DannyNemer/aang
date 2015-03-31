@@ -2,7 +2,7 @@ var g = require('./grammar')
 
 require('./rules/user')
 require('./rules/follow')
-require('./rules/repository')
+require('./rules/github/github')
 
 var grammarPath = '../grammar.json'
 g.createEditRules()
