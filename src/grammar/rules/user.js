@@ -15,14 +15,9 @@ var peopleTerm = g.addWord({
 	accepted: [ 'people', 'users' ]
 })
 
-user.companyOpt = new g.Symbol('company', 'opt')
-// GitHub users I follow
-user.company = new g.Symbol('company')
-user.companyOpt.addRule({ RHS: [ user.company ] })
-// users I follow
-user.companyOpt.addRule({ terminal: true, RHS: g.emptyTermSym }) // <empty> always last for nonterm opt
-
 // |Github users (I follow)
+user.company = new g.Symbol('company')
+user.companyOpt = g.addNonterminalOpt(user.company)
 user.head.addRule({ RHS: [ user.companyOpt, peopleTerm ] })
 
 

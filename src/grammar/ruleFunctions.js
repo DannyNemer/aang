@@ -208,3 +208,15 @@ g.addWord = function (opts) {
 
 	return word
 }
+
+// Create an optionalized version of an existing nonterminal symbol
+g.addNonterminalOpt = function (symbol) {
+	// Append 'opt' to original symbol name
+	var optSymbol = new g.Symbol(symbol.name.slice(1, -1), 'opt')
+
+	optSymbol.addRule({ RHS: [ symbol ] })
+	// <empty> always last for optional nonterminal symbols
+	optSymbol.addRule({ terminal: true, RHS: g.emptyTermSym })
+
+	return optSymbol
+}

@@ -7,9 +7,7 @@ var github = g.addWord({
 })
 
 // (my) |GitHub (repos)
-this.termOpt = new g.Symbol('github', 'opt')
-this.termOpt.addRule({ RHS: [ github ] })
-this.termOpt.addRule({ terminal: true, RHS: g.emptyTermSym })
+this.termOpt = g.addNonterminalOpt(github)
 
 // GitHub (users I follow)
 user.company.addRule({ RHS: [ github ] })
