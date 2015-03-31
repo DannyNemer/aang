@@ -29,15 +29,8 @@ exports.search = function (startNode, K) {
 		var lastNode = item.lastNode || item.nextNodes.pop()
 
 		while (lastNode && !lastNode.sym) {
-			var textArray = lastNode
-			for (var t = 0; t < textArray.length; ++t) {
-				var text = textArray[t]
-				if (text instanceof Object) {
-					textArray[t] = conjugateText(item.ruleProps, text) || text
-				}
-			}
-
-			item.text = item.text.concat(textArray)
+			// might not need to call conjugateTextArray every time
+			item.text = item.text.concat(conjugateTextArray(item.ruleProps, lastNode))
 			lastNode = item.nextNodes.pop()
 		}
 
@@ -53,10 +46,8 @@ exports.search = function (startNode, K) {
 
 			if (ruleProps instanceof Array) {
 				for (var p = 0, rulePropsLen = ruleProps.length; p < rulePropsLen; ++p) {
-					heap.push(handleInsertion(sub, item, ruleProps[p]))
+					heap.push(createItem(sub, item, ruleProps[p]))
 				}
-			} else if (ruleProps.hasOwnProperty('textIdx')) {
-				heap.push(handleInsertion(sub, item, ruleProps))
 			} else if (ruleProps.transposition) {
 				heap.push({
 					cost: item.cost + ruleProps.cost,
@@ -67,41 +58,7 @@ exports.search = function (startNode, K) {
 					tree: spliceTree(item.tree, sub, ruleProps),
 				})
 			} else {
-				var newItem = {
-					cost: item.cost + ruleProps.cost,
-					tree: spliceTree(item.tree, sub, ruleProps),
-					ruleProps: item.ruleProps.slice()
-				}
-
-				if (sub.next) {
-					newItem.nextNodes = item.nextNodes.concat(sub.next.node)
-				} else {
-					newItem.nextNodes = item.nextNodes.slice()
-					// it does not make sense that you do not need to copy it
-					// every time you you edit it, you edit it in multiple trees
-					// we could use an idx var instead of editing a tree multiple times
-
-					// make something that will run through multiple queries on a K
-				}
-
-				if (sub.node.subs) {
-					newItem.lastNode = sub.node
-					newItem.text = item.text
-				} else {
-					var text = ruleProps.text
-					if (text instanceof Object) {
-						text = conjugateText(newItem.ruleProps, text) || ruleProps.text
-					}
-
-					newItem.text = item.text.concat(text)
-				}
-
-				// Can go before text conjugation because there won't be inflection properties on a terminal rule
-				if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
-					newItem.ruleProps.push(ruleProps)
-				}
-
-				heap.push(newItem)
+				heap.push(createItem(sub, item, ruleProps))
 			}
 		}
 	}
@@ -109,41 +66,79 @@ exports.search = function (startNode, K) {
 	return trees
 }
 
-function handleInsertion(sub, item, ruleProps) {
+function createItem(sub, item, ruleProps) {
 	var newItem = {
 		cost: item.cost + ruleProps.cost,
 		tree: spliceTree(item.tree, sub, ruleProps),
-		ruleProps: item.ruleProps.slice(),
-		nextNodes: item.nextNodes.slice(),
-		lastNode: sub.node,
+		ruleProps: item.ruleProps.slice()
 	}
 
-	if (ruleProps.text) {
-		var textArray = ruleProps.text.slice()
+	// Insertion
+	if (ruleProps.hasOwnProperty('textIdx')) {
+		newItem.nextNodes = item.nextNodes.slice()
+		newItem.lastNode = sub.node
 
-		if (ruleProps.textIdx) {
-			newItem.nextNodes.push(textArray)
-			newItem.text = item.text
-		} else {
-			// might not always need to run, based on if 'personNumber'
-			for (var t = 0; t < textArray.length; ++t) {
-				var text = textArray[t]
-				if (text instanceof Object) {
-					textArray[t] = conjugateText(newItem.ruleProps, text) || text
-				}
+		if (ruleProps.text) {
+			var textArray = ruleProps.text.slice()
+
+			if (ruleProps.textIdx) {
+				newItem.nextNodes.push(textArray)
+				newItem.text = item.text
+			} else {
+				// might not always need to run, based on if 'personNumber'
+				newItem.text = item.text.concat(conjugateTextArray(newItem.ruleProps, textArray))
 			}
 
-			newItem.text = item.text.concat(textArray)
+			if (ruleProps.personNumber || ruleProps.verbForm) {
+				newItem.ruleProps.push(ruleProps)
+			}
+		} else {
+			newItem.text = item.text
+		}
+	}
+
+	else {
+		if (sub.next) {
+			newItem.nextNodes = item.nextNodes.concat(sub.next.node)
+		} else {
+			newItem.nextNodes = item.nextNodes.slice()
+			// it does not make sense that you do not need to copy it
+			// every time you you edit it, you edit it in multiple trees
+			// we could use an idx var instead of editing a tree multiple times
+
+			// make something that will run through multiple queries on a K
 		}
 
-		if (ruleProps.personNumber || ruleProps.verbForm) {
+		if (sub.node.subs) {
+			newItem.lastNode = sub.node
+			newItem.text = item.text
+		} else {
+			var text = ruleProps.text
+			if (text instanceof Object) {
+				text = conjugateText(newItem.ruleProps, text)
+			}
+
+			newItem.text = item.text.concat(text)
+		}
+
+		// Can go before text conjugation because there won't be inflection properties on a terminal rule
+		if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
 			newItem.ruleProps.push(ruleProps)
 		}
-	} else {
-		newItem.text = item.text
 	}
 
 	return newItem
+}
+
+function conjugateTextArray(rulePropsArray, textArray) {
+	for (var t = 0, textArrayLen = textArray.length; t < textArrayLen; ++t) {
+		var text = textArray[t]
+		if (text instanceof Object) {
+			textArray[t] = conjugateText(rulePropsArray, text)
+		}
+	}
+
+	return textArray
 }
 
 function conjugateText(rulePropsArray, text) {
