@@ -1,8 +1,3 @@
-// Test queries:
-// people who like my repos liked by people who follow people I follow
-// repos I have liked
-// my repos me people who follow my followers have been and
-
 var util = require('../util')
 var BinaryHeap = require('./BinaryHeap')
 
