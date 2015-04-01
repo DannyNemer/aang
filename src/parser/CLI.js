@@ -26,7 +26,7 @@ rl.on('line', function (line) {
 
 function parse(query) {
 	try {
-		console.log('query:', query)
+		// console.log('query:', query)
 		var parser = new (require(parserPath))(stateTable)
 
 		if (printTime) console.time('parse')
@@ -35,16 +35,16 @@ function parse(query) {
 
 		if (parser.startNode) {
 			var search = require(searchPath)
-			var trees = search.search(parser.startNode, K)
+			var trees = search.search(parser.startNode, K, printTrees)
 			if (printTime) console.timeEnd('parse')
-			if (printOutput) search.print(trees, printGraph)
+			if (printOutput) search.print(trees, printTrees)
 		} else {
 			console.log('Failed to reach start node')
 		}
 
 		if (printForest) parser.printForest()
 		if (printStack) parser.printStack()
-		// if (printGraph && parser.startNode) parser.printNodeGraph(parser.startNode)
+		// if (printTrees && parser.startNode) parser.printNodeGraph(parser.startNode)
 	} catch (e) {
 		console.log()
 
@@ -75,7 +75,7 @@ var printTime = false
 var printOutput = true
 var printStack = false
 var printForest = false
-var printGraph = false
+var printTrees = false
 var parserPath = parserNewPath
 
 function runCommand(query) {
@@ -103,9 +103,9 @@ function runCommand(query) {
 	} else if (query === '-f') {
 		printForest = !printForest
 		console.log('print forest:', printForest)
-	} else if (query === '-g') {
-		printGraph = !printGraph
-		console.log('print graph:', printGraph)
+	} else if (query === '-tr') {
+		printTrees = !printTrees
+		console.log('print trees:', printTrees)
 	} else if (query === '-p') {
 		parserPath = parserPath === parserNewPath ? parserOldPath : parserNewPath
 		console.log('parser path:', parserPath)
@@ -118,7 +118,7 @@ function runCommand(query) {
 		console.log('-o  print output:', printOutput)
 		console.log('-s  print stack:', printStack)
 		console.log('-f  print forest:', printForest)
-		console.log('-g  print graph:', printGraph)
+		console.log('-tr print trees:', printTrees)
 		console.log('-p  parser path:', parserPath)
 	} else {
 		return false

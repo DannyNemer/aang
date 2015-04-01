@@ -3,20 +3,24 @@ var BinaryHeap = require('./BinaryHeap')
 
 var testCounter = 0
 
-exports.search = function (startNode, K) {
+exports.search = function (startNode, K, buildTrees) {
 	var heap = new BinaryHeap
 	var trees = []
 
-	var tree = { symbol: startNode.sym.name, children: [] }
-
-	heap.push({
+	var newItem = {
 		lastNode: startNode,
 		ruleProps: [],
 		nextNodes: [],
 		text: [],
-		cost: 0,
-		tree: { startNode: tree, prevNodes: [ tree ] },
-	})
+		cost: 0
+	}
+
+	if (buildTrees) {
+		var tree = { symbol: startNode.sym.name, children: [] }
+		newItem.tree = { startNode: tree, prevNodes: [ tree ] }
+	}
+
+	heap.push(newItem)
 
 	// Might be able to save ruleProps as a single object - issue with ordering (array could be faster than creating new objects?)
 
@@ -43,19 +47,24 @@ exports.search = function (startNode, K) {
 
 			if (ruleProps instanceof Array) {
 				for (var p = 0, rulePropsLen = ruleProps.length; p < rulePropsLen; ++p) {
-					heap.push(createItem(sub, item, ruleProps[p]))
+					heap.push(createItem(sub, item, ruleProps[p], buildTrees))
 				}
 			} else if (ruleProps.transposition) {
-				heap.push({
+				var newItem = {
 					cost: item.cost + ruleProps.cost,
 					lastNode: sub.next.node,
 					nextNodes: item.nextNodes.concat(sub.node),
 					text: item.text,
-					ruleProps: item.ruleProps,
-					tree: spliceTree(item.tree, sub, ruleProps),
-				})
+					ruleProps: item.ruleProps
+				}
+
+				if (buildTrees) {
+					newItem.tree = spliceTree(item.tree, sub, ruleProps)
+				}
+
+				heap.push(newItem)
 			} else {
-				heap.push(createItem(sub, item, ruleProps))
+				heap.push(createItem(sub, item, ruleProps, buildTrees))
 			}
 		}
 	}
@@ -64,12 +73,15 @@ exports.search = function (startNode, K) {
 	return trees
 }
 
-function createItem(sub, item, ruleProps) {
+function createItem(sub, item, ruleProps, buildTrees) {
 	var newItem = {
 		cost: item.cost + ruleProps.cost,
-		tree: spliceTree(item.tree, sub, ruleProps),
 		ruleProps: item.ruleProps,
 		nextNodes: item.nextNodes
+	}
+
+	if (buildTrees) {
+		newItem.tree = spliceTree(item.tree, sub, ruleProps)
 	}
 
 	// Insertion
@@ -183,7 +195,6 @@ function conjugateText(rulePropsArray, text) {
 }
 
 function spliceTree(tree, sub, ruleProps) {
-	return
 	var prevNodes = tree.prevNodes.slice()
 	var newTree = cloneTree(tree.startNode, prevNodes)
 
