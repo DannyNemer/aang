@@ -1,8 +1,9 @@
 var g = require('../grammar')
 var util = require('../../util')
-var relativePronouns = require('./relativePronouns')
+var relPronouns = require('./relativePronouns')
 var auxVerbs = require('./auxVerbs')
 var stopWords = require('./stopWords')
+var operators = require('./operators')
 
 // Start symbol
 var start = new g.Symbol('start')
@@ -37,6 +38,15 @@ module.exports = function Category(catOpts) {
 	// (people) followed by me
 	this.passive = new g.Symbol(this.nameSg, 'passive')
 	passivePlus.addRule({ RHS: [ this.passive ] })
+	// (repos) liked by me and created by {user}
+	var andPassivePlus = new g.Symbol('and', this.nameSg, 'passive+')
+	andPassivePlus.addRule({ RHS: [ operators.and, passivePlus ] })
+	passivePlus.addRule({ RHS: [ this.passive, andPassivePlus ] })
+	// (repos) liked by me or created by {user}
+	var orPassivePlus = new g.Symbol('or', this.nameSg, 'passive+')
+	orPassivePlus.addRule({ RHS: [ operators.union, passivePlus ] })
+	passivePlus.addRule({ RHS: [ this.passive, orPassivePlus ] })
+
 
 	var reducedNoTense = new g.Symbol(this.nameSg, 'reduced', 'no', 'tense')
 	// (people) followed by me; (people who are) followed by me
@@ -55,6 +65,15 @@ module.exports = function Category(catOpts) {
 	// (people) I follow
 	this.objFilter = new g.Symbol(this.nameSg, 'obj', 'filter')
 	objFilterPlus.addRule({ RHS: [ this.objFilter ] })
+	// (people) I follow and {user} follows
+	var andObjFilterPlus = new g.Symbol('and', this.nameSg, 'obj', 'filter+')
+	andObjFilterPlus.addRule({ RHS: [ operators.and, objFilterPlus ] })
+	objFilterPlus.addRule({ RHS: [ this.objFilter, andObjFilterPlus ] })
+	// (people) I follow or {user} follows
+	var orObjFilterPlus = new g.Symbol('or', this.nameSg, 'obj', 'filter+')
+	orObjFilterPlus.addRule({ RHS: [ operators.union, objFilterPlus ] })
+	objFilterPlus.addRule({ RHS: [ this.objFilter, orObjFilterPlus ] })
+
 
 	var rhsExt = new g.Symbol(this.nameSg, 'rhs', 'ext')
 	// (people) I follow
@@ -104,16 +123,36 @@ module.exports = function Category(catOpts) {
 	filter.addRule({ RHS: [ auxVerbs.have, bePastReducedNoTense ], personNumber: 'oneOrPl' })
 
 
+	// (people who) follow me
 	var filterPlus = new g.Symbol(this.nameSg, 'filter+')
 	filterPlus.addRule({ RHS: [ filter ] })
+	// (people) who ... and I follow
+	var andFilterPlus = new g.Symbol('and', this.nameSg, 'filter+')
+	andFilterPlus.addRule({ RHS: [ operators.and, filterPlus ]})
+	filterPlus.addRule({ RHS: [ filter, andFilterPlus ] })
+	// (people) who ... and who I follow
+	var relPronounFilterPlus = new g.Symbol(catOpts.person ? 'who' : 'that', 'filter+')
+	relPronounFilterPlus.addRule({ RHS: [ catOpts.person ? relPronouns.who : relPronouns.that, filterPlus ] })
+	var andRelPronounFilterPlus = new g.Symbol('and', catOpts.person ? 'who' : 'that', 'filter+')
+	andRelPronounFilterPlus.addRule({ RHS: [ operators.and, relPronounFilterPlus ] })
+	filterPlus.addRule({ RHS: [ filter, andRelPronounFilterPlus ] })
+	// (people) who ... or I follow
+	var orFilterPlus = new g.Symbol('or', this.nameSg, 'filter+')
+	orFilterPlus.addRule({ RHS: [ operators.union, filterPlus ]})
+	filterPlus.addRule({ RHS: [ filter, orFilterPlus ] })
+	// (people) who ... or who I follow
+	var orRelPronounFilterPlus = new g.Symbol('or', catOpts.person ? 'who' : 'that', 'filter+')
+	orRelPronounFilterPlus.addRule({ RHS: [ operators.union, relPronounFilterPlus ] })
+	filterPlus.addRule({ RHS: [ filter, orRelPronounFilterPlus ] })
+
 
 	var relativeclause = new g.Symbol(this.nameSg, 'relativeclause')
 	if (catOpts.person) {
 		// (people) who are followed by me
-		relativeclause.addRule({ RHS: [ relativePronouns.who, filterPlus ]})
+		relativeclause.addRule({ RHS: [ relPronouns.who, filterPlus ]})
 	} else {
 		// (repos) that are liked by me
-		relativeclause.addRule({ RHS: [ relativePronouns.that, filterPlus ]})
+		relativeclause.addRule({ RHS: [ relPronouns.that, filterPlus ]})
 	}
 
 
