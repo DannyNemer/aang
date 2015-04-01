@@ -7,7 +7,7 @@ var stopWords = require('../stopWords')
 var github = require('./github')
 
 
-var repository = new Category({ sg: 'repository', pl: 'repositories' })
+var repository = new Category({ sg: 'repository', pl: 'repositories', entity: true })
 
 var repositoriesTerm = g.addWord({
 	name: repository.namePl + '-term',

@@ -11,7 +11,8 @@ var start = new g.Symbol('start')
 var categoryOptsSchema = {
 	sg: String,
 	pl: String,
-	person: { type: Boolean, optional: true } // "that" vs. "who" for relative pronoun
+	person: { type: Boolean, optional: true }, // "that" vs. "who" for relative pronoun
+	entity: { type: Boolean, optional: true }
 }
 
 // Create the rules every must category
@@ -122,9 +123,20 @@ module.exports = function Category(catOpts) {
 	// people who are followed by me
 	this.plural.addRule({ RHS: [ noRelative, relativeclause ]})
 
-	// (people who created) repos ...
 	this.catPl = new g.Symbol(this.namePl)
+	// (people who created) repos ...
 	this.catPl.addRule({ RHS: [ this.plural ] })
+
+	if (catOpts.entity) {
+		this.catSg = new g.Symbol(this.nameSg)
+		// (people) {user} (follows); (people who follow) {user}
+		this.catSg.addRule({ terminal: true, RHS: '{' + this.nameSg + '}'  })
+
+		if (!catOpts.person) { // user does not use because obj/nom-users -> [user]
+			// (people who like) {repo}
+			this.catPl.addRule({ RHS: [ this.catSg ] })
+		}
+	}
 
 	if (!catOpts.person) { // user does not use because obj/nom-users
 		// (people who like) repos ...

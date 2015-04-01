@@ -7,7 +7,7 @@ var poss = require('./poss')
 var operators = require('./operators')
 
 // Merges this module with 'user' category
-var user = module.exports = new Category({ sg: 'user', pl: 'users', person: true })
+var user = module.exports = new Category({ sg: 'user', pl: 'users', person: true, entity: true })
 
 var peopleTerm = g.addWord({
 	name: 'people-term',
@@ -21,17 +21,12 @@ user.companyOpt = g.addNonterminalOpt(user.company)
 user.head.addRule({ RHS: [ user.companyOpt, peopleTerm ] })
 
 
-var userTerm = new g.Symbol(user.nameSg)
-// (people) {user} (follows); (people who follow) {user}
-userTerm.addRule({ terminal: true, RHS: '{user}' })
-
-
 // Person-number property only exists for nominative case
 user.nomUsers = new g.Symbol('nom', 'users')
 // (repos) people who follow me (like)
 user.nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'oneOrPl' })
 // (people) {user} (follows)
-user.nomUsers.addRule({ RHS: [ userTerm ], personNumber: 'threeSg' })
+user.nomUsers.addRule({ RHS: [ user.catSg ], personNumber: 'threeSg' })
 // (people) I (follow)
 user.nomUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'nom', personNumber: 'oneOrPl' })
 
@@ -51,7 +46,7 @@ var objUsers = new g.Symbol('obj', 'users')
 // (people who follow) people who...; (people followed by) people who...
 objUsers.addRule({ RHS: [ user.plural ] })
 // (people who follow) {user}; (people followed by) {user}
-objUsers.addRule({ RHS: [ userTerm ] })
+objUsers.addRule({ RHS: [ user.catSg ] })
 // (people who follow) me; (people followed by) me
 objUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'obj' })
 
