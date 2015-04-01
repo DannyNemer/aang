@@ -11,25 +11,18 @@ var repository = new Category({ sg: 'repository', pl: 'repositories', entity: tr
 
 var repositoriesTerm = g.addWord({
 	name: repository.namePl + '-term',
-	insertionCost: 3.9,
+	insertionCost: 3.5,
 	accepted: [ repository.namePl, 'repos' ]
 })
 
-var repositoryHeadMayPoss = new g.Symbol(repository.nameSg, 'head', 'may', 'poss')
-repositoryHeadMayPoss.addRule({ RHS: [ github.termOpt, repositoriesTerm ] })
-
 // |Github repos (I starred)
-repository.head.addRule({ RHS: [ repositoryHeadMayPoss ] })
+repository.headMayPoss.addRule({ RHS: [ github.termOpt, repositoriesTerm ] })
 
 
-var repositoryPossessible = new g.Symbol(repository.nameSg, 'possessible')
-// (my) repos
-repositoryPossessible.addRule({ RHS: [ repository.lhs, repositoryHeadMayPoss ] })
 // my repos
-repository.noRelativePossessive.addRule({ RHS: [ poss.determiner, repositoryPossessible ]})
-
+repository.noRelativePossessive.addRule({ RHS: [ poss.determiner, repository.possessible ]})
 // repos of mine
-repository.head.addRule({ RHS: [ repositoryHeadMayPoss, poss.ofPossUsers ] })
+repository.head.addRule({ RHS: [ repository.headMayPoss, poss.ofPossUsers ] })
 
 
 // LIKE:
@@ -52,33 +45,24 @@ repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, haveLiked ] })
 // (people who) like repos ...
 user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], personNumber: 'oneOrPl' })
 // (people who) have liked repos ...
-var likedRepos = new g.Symbol('liked', 'repos+')
+var likedRepos = new g.Symbol('liked', repository.namePl + '+')
 likedRepos.addRule({ RHS: [ like, repository.catPlPlus ], verbForm: 'past' })
 user.subjFilter.addRule({ RHS: [ auxVerbs.have, likedRepos ], personNumber: 'oneOrPl' })
 
 
 // CREATED:
-var created = g.addWord({
-	name: 'created',
-	accepted: [ 'created' ]
-})
-
 // (repos) created by me
-repository.passive.addRule({ RHS: [ created, user.byObjUsers ] })
+repository.passive.addRule({ RHS: [ github.created, user.byObjUsers ] })
 // (repos) I created
-repository.objFilter.addRule({ RHS: [ user.nomUsers, created ] })
+repository.objFilter.addRule({ RHS: [ user.nomUsers, github.created ] })
 // (repos) I have created
-var haveCreated = new g.Symbol('have', 'created')
-haveCreated.addRule({ RHS: [ auxVerbs.have, created ] })
-var preVerbStopWordsHaveCreated = new g.Symbol('pre', 'verb', 'stop', 'words', 'have', 'created')
-preVerbStopWordsHaveCreated.addRule({ RHS: [ stopWords.preVerbStopWords, haveCreated ] })
-repository.objFilter.addRule({ RHS: [ user.nomUsers, preVerbStopWordsHaveCreated ] })
+repository.objFilter.addRule({ RHS: [ user.nomUsers, github.preVerbStopWordsHaveCreated ] })
 // (people who) created repos ...
-user.subjFilter.addRule({ RHS: [ created, repository.catPl ] })
+user.subjFilter.addRule({ RHS: [ github.created, repository.catPl ] })
 // (people who) have created repos ...
-var createdRepos = new g.Symbol('created', 'repos')
-createdRepos.addRule({ RHS: [ created, repository.catPl ] }) // not [repos+] because 'by'
-user.subjFilter.addRule({ RHS: [ auxVerbs.have, createdRepos ], personNumber: 'oneOrPl' })
+var createdRepositories = new g.Symbol('created', repository.namePl)
+createdRepositories.addRule({ RHS: [ github.created, repository.catPl ] }) // not [repositories+] because 'by'
+user.subjFilter.addRule({ RHS: [ auxVerbs.have, createdRepositories ], personNumber: 'oneOrPl' })
 
 
 // CONTRIBUTE-TO:
@@ -101,6 +85,6 @@ repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, havePreVerbStopWordsCon
 // (people who) contributed to repos ...
 user.subjFilter.addRule({ RHS: [ contributeTo, repository.catPlPlus ] })
 // (people who) have contributed to repos ...
-var contributeToRepos = new g.Symbol('contribute', 'to', 'repos+')
+var contributeToRepos = new g.Symbol('contribute', 'to', repository.namePl + '+')
 contributeToRepos.addRule({ RHS: [ contributeTo, repository.catPlPlus ] })
 user.subjFilter.addRule({ RHS: [ auxVerbs.have, contributeToRepos ], personNumber: 'oneOrPl' })

@@ -28,9 +28,21 @@ module.exports = function Category(catOpts) {
 	this.lhs = new g.Symbol(this.nameSg, 'lhs')
 	this.lhs.addRule({ terminal: true, RHS: g.emptyTermSym })
 
+	this.head = new g.Symbol(this.nameSg, 'head')
+
+	if (!catOpts.person) {
+		this.headMayPoss = new g.Symbol(this.nameSg, 'head', 'may', 'poss')
+
+		// |Github repos (I starred)
+		this.head.addRule({ RHS: [ this.headMayPoss ] })
+
+		this.possessible = new g.Symbol(this.nameSg, 'possessible')
+		// (my) repos
+		this.possessible.addRule({ RHS: [ this.lhs, this.headMayPoss ] })
+	}
+
 	var lhsHead = new g.Symbol(this.nameSg, 'lhs', this.nameSg, 'head')
 	// people (I follow); people (followed by me)
-	this.head = new g.Symbol(this.nameSg, 'head')
 	lhsHead.addRule({ RHS: [ this.lhs, this.head ], transpositionCost: 1 })
 
 
@@ -131,9 +143,9 @@ module.exports = function Category(catOpts) {
 	andFilterPlus.addRule({ RHS: [ operators.and, filterPlus ]})
 	filterPlus.addRule({ RHS: [ filter, andFilterPlus ] })
 	// (people) who ... and who I follow
-	var relPronounFilterPlus = new g.Symbol(catOpts.person ? 'who' : 'that', 'filter+')
+	var relPronounFilterPlus = new g.Symbol(catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
 	relPronounFilterPlus.addRule({ RHS: [ catOpts.person ? relPronouns.who : relPronouns.that, filterPlus ] })
-	var andRelPronounFilterPlus = new g.Symbol('and', catOpts.person ? 'who' : 'that', 'filter+')
+	var andRelPronounFilterPlus = new g.Symbol('and', catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
 	andRelPronounFilterPlus.addRule({ RHS: [ operators.and, relPronounFilterPlus ] })
 	filterPlus.addRule({ RHS: [ filter, andRelPronounFilterPlus ] })
 	// (people) who ... or I follow
@@ -141,7 +153,7 @@ module.exports = function Category(catOpts) {
 	orFilterPlus.addRule({ RHS: [ operators.union, filterPlus ]})
 	filterPlus.addRule({ RHS: [ filter, orFilterPlus ] })
 	// (people) who ... or who I follow
-	var orRelPronounFilterPlus = new g.Symbol('or', catOpts.person ? 'who' : 'that', 'filter+')
+	var orRelPronounFilterPlus = new g.Symbol('or', catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
 	orRelPronounFilterPlus.addRule({ RHS: [ operators.union, relPronounFilterPlus ] })
 	filterPlus.addRule({ RHS: [ filter, orRelPronounFilterPlus ] })
 
@@ -169,7 +181,7 @@ module.exports = function Category(catOpts) {
 	if (catOpts.entity) {
 		this.catSg = new g.Symbol(this.nameSg)
 		// (people) {user} (follows); (people who follow) {user}
-		this.catSg.addRule({ terminal: true, RHS: '{' + this.nameSg + '}'  })
+		this.catSg.addRule({ terminal: true, RHS: '{' + this.nameSg + '}' })
 
 		if (!catOpts.person) { // user does not use because obj/nom-users -> [user]
 			// (people who like) {repo}
