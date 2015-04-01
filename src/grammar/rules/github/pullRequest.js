@@ -36,7 +36,7 @@ user.subjFilter.addRule({ RHS: [ github.created, pullRequest.catPl ] })
 // (people who) have created pull requests ...
 var createdPullRequests = new g.Symbol('created', pullRequest.namePl)
 createdPullRequests.addRule({ RHS: [ github.created, pullRequest.catPl ] }) // not [pull-requests+] because 'by'
-user.subjFilter.addRule({ RHS: [ auxVerbs.have, createdPullRequests ], personNumber: 'oneOrPl' })
+user.subjFilter.addRule({ RHS: [ auxVerbs.have, createdPullRequests ], personNumber: 'pl' })
 
 
 // MENTION:

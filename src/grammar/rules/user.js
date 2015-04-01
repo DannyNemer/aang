@@ -24,22 +24,22 @@ user.head.addRule({ RHS: [ user.companyOpt, peopleTerm ] })
 // Person-number property only exists for nominative case
 user.nomUsers = new g.Symbol('nom', 'users')
 // (repos) people who follow me (like)
-user.nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'oneOrPl' })
+user.nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'pl' })
 // (people) {user} (follows)
 user.nomUsers.addRule({ RHS: [ user.catSg ], personNumber: 'threeSg' })
 // (people) I (follow)
-user.nomUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'nom', personNumber: 'oneOrPl' })
+user.nomUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'nom', personNumber: 'one' })
 
 user.nomUsersPlus = new g.Symbol('nom', 'users+')
 user.nomUsersPlus.addRule({ RHS: [ user.nomUsers ] })
 // (people) I and {user} follow
 var andNomUsersPlus = new g.Symbol('and', 'nom', 'users+')
 andNomUsersPlus.addRule({ RHS: [ operators.and, user.nomUsersPlus ] })
-user.nomUsersPlus.addRule({ RHS: [ user.nomUsers, andNomUsersPlus ], personNumber: 'oneOrPl' })
+user.nomUsersPlus.addRule({ RHS: [ user.nomUsers, andNomUsersPlus ], personNumber: 'pl' })
 // (people) I or {user} follow
 var orNomUsersPlus = new g.Symbol('or', 'nom', 'users+')
 orNomUsersPlus.addRule({ RHS: [ operators.union, user.nomUsersPlus ] })
-user.nomUsersPlus.addRule({ RHS: [ user.nomUsers, orNomUsersPlus ], personNumber: 'oneOrPl' })
+user.nomUsersPlus.addRule({ RHS: [ user.nomUsers, orNomUsersPlus ], personNumber: 'pl' })
 
 
 var objUsers = new g.Symbol('obj', 'users')

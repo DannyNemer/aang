@@ -24,7 +24,7 @@ var preVerbStopWordsFollow = new g.Symbol('pre', 'verb', 'stop', 'words', 'follo
 preVerbStopWordsFollow.addRule({ RHS: [ stopWords.preVerbStopWords, follow ] })
 user.objFilter.addRule({ RHS: [ user.nomUsersPlus, preVerbStopWordsFollow ] })
 // (people who) follow me
-user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], personNumber: 'oneOrPl' })
+user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], personNumber: 'pl' })
 
 
 

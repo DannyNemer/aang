@@ -82,7 +82,7 @@ var nontermRuleOptsSchema = {
 	transpositionCost: { type: Number, optional: true },
 	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
 	verbForm: { type: [ 'past' ], optional: true },
-	personNumber: { type: [ 'oneOrPl', 'threeSg' ], optional: true }
+	personNumber: { type: [ 'one', 'threeSg', 'pl' ], optional: true }
 }
 
 // Initialize a new nonterminal rule from passed opts

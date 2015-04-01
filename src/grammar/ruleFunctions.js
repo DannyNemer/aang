@@ -51,7 +51,9 @@ g.addPronoun = function (opts) {
 var verbOptSchema = {
 	name: String,
 	insertionCost: { type: Number, optional: true },
-	oneOrPl: { type: Array, arrayType: String },
+	one: { type: Array, arrayType: String, optional: true },
+	pl: { type: Array, arrayType: String, optional: true },
+	oneOrPl: { type: Array, arrayType: String, optional: true },
 	threeSg: { type: Array, arrayType: String },
 	past: { type: Array, arrayType: String, optional: true },
 	substitutions: { type: Array, arrayType: String, optional: true }
@@ -64,39 +66,99 @@ g.addVerb = function (opts) {
 		throw 'ill-formed verb'
 	}
 
+	// Must have an inflected form for every person-number combination in nominative case:
+	// - first-person, plural, third-person-singular
+	if (!opts.oneOrPl) {
+		if (!opts.one) {
+			console.log('Err: Missing inflected verb form for first-person')
+			console.log(util.getLine())
+			throw 'ill-formed verb'
+		}
+
+		if (!opts.pl) {
+			console.log('Err: Missing inflected verb form for plural')
+			console.log(util.getLine())
+			throw 'ill-formed verb'
+		}
+	}
+
 	var verb = new g.Symbol(opts.name)
 
 	// Object of inflection forms for conjugation
 	var defaultTextForms = {
-		oneOrPl: opts.oneOrPl[0], // "like"
-		threeSg: opts.threeSg[0] // "likes"
+		one: opts.one ? opts.one[0] : opts.oneOrPl[0], // "am", "like"
+		pl: opts.pl ? opts.pl[0] : opts.oneOrPl[0], // "are", "like"
+		threeSg: opts.threeSg[0] // "is", "likes"
 	}
 
-	// Past tense is optional (e.g., [have])
+	// Past tense is optional (e.g.: [have])
 	if (opts.past) {
 		defaultTextForms.past = opts.past[0] // "liked"
 	}
 
-	// Inflections for first-person or plural
-	opts.oneOrPl.forEach(function (termSym, i) {
-		var newRule = { terminal: true, RHS: termSym, textForms: {
-			oneOrPl: termSym,
-			threeSg: defaultTextForms.threeSg,
-			past: defaultTextForms.past
-		} }
+	// Inflected forms for first-person
+	if (opts.one) {
+		opts.one.forEach(function (termSym, i) {
+			var newRule = { terminal: true, RHS: termSym, textForms: {
+				one: termSym,
+				pl: defaultTextForms.pl,
+				threeSg: defaultTextForms.threeSg,
+				past: defaultTextForms.past
+			} }
 
-		// Insertion cost added to first terminal rule (though, inconsequential)
-		if (i === 0 && opts.hasOwnProperty('insertionCost')) {
-			newRule.insertionCost = opts.insertionCost
-		}
+			// Insertion cost added to first terminal rule (though, inconsequential)
+			if (i === 0 && opts.hasOwnProperty('insertionCost')) {
+				newRule.insertionCost = opts.insertionCost
+			}
 
-		verb.addRule(newRule)
-	})
+			verb.addRule(newRule)
+		})
+	}
 
-	// Inflections for third-person-singular
+	// Inflected forms for plural
+	if (opts.pl) {
+		opts.pl.forEach(function (termSym, i) {
+			var newRule = { terminal: true, RHS: termSym, textForms: {
+				one: defaultTextForms.one,
+				pl: termSym,
+				threeSg: defaultTextForms.threeSg,
+				past: defaultTextForms.past
+			} }
+
+			// Insertion cost added to first terminal rule (though, inconsequential)
+			if (i === 0 && !opts.one && opts.hasOwnProperty('insertionCost')) {
+				newRule.insertionCost = opts.insertionCost
+			}
+
+			verb.addRule(newRule)
+		})
+	}
+
+	// Inflected forms for first-person or plural (same for both)
+	if (opts.oneOrPl) {
+		opts.oneOrPl.forEach(function (termSym, i) {
+			var newRule = { terminal: true, RHS: termSym, textForms: {
+				one: termSym,
+				pl: termSym,
+				threeSg: defaultTextForms.threeSg,
+				past: defaultTextForms.past
+			} }
+
+			// Insertion cost added to first terminal rule (though, inconsequential)
+			if (i === 0 && !opts.one && !opts.pl && opts.hasOwnProperty('insertionCost')) {
+				newRule.insertionCost = opts.insertionCost
+				assignedInsertionCost = true
+			}
+
+			verb.addRule(newRule)
+		})
+	}
+
+	// Inflected forms for third-person-singular
 	opts.threeSg.forEach(function (termSym) {
 		verb.addRule({ terminal: true, RHS: termSym, textForms: {
-			oneOrPl: defaultTextForms.oneOrPl,
+			one: defaultTextForms.one,
+			pl: defaultTextForms.pl,
 			threeSg: termSym,
 			past: defaultTextForms.past
 		} })
@@ -106,7 +168,8 @@ g.addVerb = function (opts) {
 	if (opts.past) {
 		opts.past.forEach(function (termSym) {
 			verb.addRule({ terminal: true, RHS: termSym, textForms: {
-				oneOrPl: defaultTextForms.oneOrPl,
+				one: defaultTextForms.one,
+				pl: defaultTextForms.pl,
 				threeSg: defaultTextForms.threeSg,
 				past: termSym
 			} })

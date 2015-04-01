@@ -132,7 +132,7 @@ module.exports = function Category(catOpts) {
 	bePastReducedNoTense.addRule({ RHS: [ auxVerbs.bePast, reducedNoTense ] })
 	// (people who) have been folllowed by me; (people who) have been following me
 	// - personNumber exists to force [have] -> "have"
-	filter.addRule({ RHS: [ auxVerbs.have, bePastReducedNoTense ], personNumber: 'oneOrPl' })
+	filter.addRule({ RHS: [ auxVerbs.have, bePastReducedNoTense ], personNumber: 'pl' })
 
 
 	// (people who) follow me

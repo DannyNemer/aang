@@ -16,10 +16,13 @@ this.bePast = g.addWord({
 })
 
 // (pull requests I) am (mentioned in)
-this.beGeneral = g.addWord({
+// (pull requests {user}) is (mentioned in)
+this.beGeneral = g.addVerb({
 	name: 'be-general',
 	insertionCost: 1,
-	accepted: [ 'am' ]
+	one: [ 'am' ],
+	pl: [ 'are' ],
+	threeSg: [ 'is' ]
 })
 
 // (people who) have (been followed by me)
