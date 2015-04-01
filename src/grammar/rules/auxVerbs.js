@@ -15,6 +15,13 @@ this.bePast = g.addWord({
 	accepted: [ 'been' ]
 })
 
+// (pull requests I) am (mentioned in)
+this.beGeneral = g.addWord({
+	name: 'be-general',
+	insertionCost: 1,
+	accepted: [ 'am' ]
+})
+
 // (people who) have (been followed by me)
 // - No past tense ('had') because it implies semantic no longer true; "had liked" -> no longer liked
 this.have = g.addVerb({
