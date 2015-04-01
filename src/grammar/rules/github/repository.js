@@ -77,5 +77,30 @@ repository.objFilter.addRule({ RHS: [ user.nomUsers, preVerbStopWordsHaveCreated
 user.subjFilter.addRule({ RHS: [ created, repository.catPl ] })
 // (people who) have created repos ...
 var createdRepos = new g.Symbol('created', 'repos')
-createdRepos.addRule({ RHS: [ created, repository.catPl ] })
+createdRepos.addRule({ RHS: [ created, repository.catPl ] }) // not [repos+] because 'by'
 user.subjFilter.addRule({ RHS: [ auxVerbs.have, createdRepos ], personNumber: 'oneOrPl' })
+
+
+// CONTRIBUTE-TO:
+var contributeTo = g.addWord({
+	name: 'contribute-to',
+	insertionCost: 1.2,
+	accepted: [ 'contributed to' ]
+})
+
+// (repos) contributed to by me
+repository.passive.addRule({ RHS: [ contributeTo, user.byObjUsersPlus ] })
+// (repos) I contributed to
+var preVerbStopWordsContributeTo = new g.Symbol('pre', 'verb', 'stop', 'words', 'contribute', 'to')
+preVerbStopWordsContributeTo.addRule({ RHS: [ stopWords.preVerbStopWords, contributeTo ] })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, preVerbStopWordsContributeTo ] })
+// (repos) I have contributed to
+var havePreVerbStopWordsContributeTo = new g.Symbol('have', 'pre', 'verb', 'stop', 'words', 'contribute', 'to')
+havePreVerbStopWordsContributeTo.addRule({ RHS: [ auxVerbs.have, preVerbStopWordsContributeTo ] })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, havePreVerbStopWordsContributeTo ] })
+// (people who) contributed to repos ...
+user.subjFilter.addRule({ RHS: [ contributeTo, repository.catPlPlus ] })
+// (people who) have contributed to repos ...
+var contributeToRepos = new g.Symbol('contribute', 'to', 'repos+')
+contributeToRepos.addRule({ RHS: [ contributeTo, repository.catPlPlus ] })
+user.subjFilter.addRule({ RHS: [ auxVerbs.have, contributeToRepos ], personNumber: 'oneOrPl' })
