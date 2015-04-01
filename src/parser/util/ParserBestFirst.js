@@ -37,16 +37,19 @@ Parser.prototype.parse = function (query) {
 			return
 		}
 
-		var sub = {
-			size: 1, // size of literal (why not use node)
-			node: this.addSub(word) // { sym: word, size: 1, start: 0, subs: [] }
-		}
+		var wordNode = this.addSub(word)
 
 		this.nodeTab = this.nodeTabs[this.position] = []
 
 		for (var r = 0, rules = word.rules, rulesLen = rules.length; r < rulesLen; ++r) {
-			var rule = rules[r] // { RHS: [ { name: '[1-sg-poss]' } ] }
-			var node = this.addSub(rule.RHS[0], sub, rule.ruleProps)
+			var rule = rules[r]
+			var sub = {
+				size: 1,  // size of literal (why can't just use nodes? size?)
+				node: wordNode,
+				ruleProps: rule.ruleProps
+			}
+
+			var node = this.addSub(rule.RHS[0], sub)
 			tokenNodes.push(node)
 		}
 	}
@@ -83,7 +86,7 @@ Parser.prototype.parse = function (query) {
 
 // no sub for term syms
 // sym is either term sym or nonterm sym
-Parser.prototype.addSub = function (sym, sub, ruleProps) {
+Parser.prototype.addSub = function (sym, sub) {
 	this.addSubCalls++
 	var size = sym.isLiteral ? 1 : (sub ? sub.size : 0)
 	var node = null
@@ -102,7 +105,6 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 
 		if (!sym.isLiteral) {
 			node.subs = []
-			node.ruleProps = []
 		}
 
 		this.nodeTab.push(node)
@@ -113,7 +115,6 @@ Parser.prototype.addSub = function (sym, sub, ruleProps) {
 
 		// Insertions are arrays of multiple ruleProps (or normal ruleProps if only insertion) - distinguish?
 		// 1 ruleProps per sub (matched by idx) - do not check for duplicate ruleProps
-		node.ruleProps.push(ruleProps)
 	}
 
 	return node
@@ -139,10 +140,11 @@ Parser.prototype.reduce = function (action, vertex) {
 			var subNew = {
 				node: zNode.node,
 				size: zNode.node.size + sub.size,
-				next: sub
+				next: sub,
+				ruleProps: action.red.ruleProps
 			}
 
-			var node = this.addSub(action.red.LHS, subNew, action.red.ruleProps)
+			var node = this.addSub(action.red.LHS, subNew)
 
 			zNode.actions.push({
 				newNode: node,
@@ -167,10 +169,11 @@ Parser.prototype.reduce = function (action, vertex) {
 		} else {
 			var sub = {
 				node: action.node,
-				size: action.node.size
+				size: action.node.size,
+				ruleProps: action.red.ruleProps
 			}
 
-			node = action.newNode = this.addSub(action.red.LHS, sub, action.red.ruleProps)
+			node = action.newNode = this.addSub(action.red.LHS, sub)
 		}
 
 		this.addNode(node, vertex)
