@@ -61,17 +61,7 @@ preVerbStopWordsBeGeneralMentionedIn.addRule({ RHS: [ stopWords.preVerbStopWords
 // (pull requests) I-am/{user}-is/[users]-are mentioned in
 pullRequest.objFilter.addRule({ RHS: [ user.nomUsers, preVerbStopWordsBeGeneralMentionedIn ] })
 
-// (pull requests) I am mentioned in
-
-// pull requests that mention me
-// pull requests I am mentioned in
+// Add:
 // pull requests where I am mentioned
 // pull requests mentioning me
-// pull requests that have mention of me
-
-// people who follow me
-// people who follow me
-
-// photos that interest me
-// [tag-verb]? posts tagged with me
-// places I am tagged in
+// pull requests that have mentioned of me

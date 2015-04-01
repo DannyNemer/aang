@@ -15,14 +15,15 @@ this.bePast = g.addWord({
 	accepted: [ 'been' ]
 })
 
-// (pull requests I) am (mentioned in)
-// (pull requests {user}) is (mentioned in)
+// (pull requests I/{user}/[users]) am/is/are (mentioned in)
 this.beGeneral = g.addVerb({
 	name: 'be-general',
 	insertionCost: 1,
 	one: [ 'am' ],
-	pl: [ 'are' ],
-	threeSg: [ 'is' ]
+	pl: [ 'are', 'were' ],
+	oneOrPl: [ 'have-been' ],
+	threeSg: [ 'is', 'has-been' ],
+	oneOrThreeSg: [ 'was' ]
 })
 
 // (people who) have (been followed by me)

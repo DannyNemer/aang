@@ -54,7 +54,8 @@ var verbOptSchema = {
 	one: { type: Array, arrayType: String, optional: true },
 	pl: { type: Array, arrayType: String, optional: true },
 	oneOrPl: { type: Array, arrayType: String, optional: true },
-	threeSg: { type: Array, arrayType: String },
+	threeSg: { type: Array, arrayType: String, optional: true },
+	oneOrThreeSg: { type: Array, arrayType: String, optional: true },
 	past: { type: Array, arrayType: String, optional: true },
 	substitutions: { type: Array, arrayType: String, optional: true }
 }
@@ -67,28 +68,32 @@ g.addVerb = function (opts) {
 	}
 
 	// Must have an inflected form for every person-number combination in nominative case:
-	// - first-person, plural, third-person-singular
-	if (!opts.oneOrPl) {
-		if (!opts.one) {
-			console.log('Err: Missing inflected verb form for first-person')
-			console.log(util.getLine())
-			throw 'ill-formed verb'
-		}
+	// - first-person, third-person-singular, plural
+	if (!opts.oneOrPl && !opts.oneOrThreeSg && !opts.one) {
+		console.log('Err: Missing inflected verb form for first-person')
+		console.log(util.getLine())
+		throw 'ill-formed verb'
+	}
 
-		if (!opts.pl) {
-			console.log('Err: Missing inflected verb form for plural')
-			console.log(util.getLine())
-			throw 'ill-formed verb'
-		}
+	if (!opts.oneOrPl && !opts.pl) {
+		console.log('Err: Missing inflected verb form for plural')
+		console.log(util.getLine())
+		throw 'ill-formed verb'
+	}
+
+	if (!opts.oneOrThreeSg && !opts.threeSg) {
+		console.log('Err: Missing inflected verb form for third-person-singular')
+		console.log(util.getLine())
+		throw 'ill-formed verb'
 	}
 
 	var verb = new g.Symbol(opts.name)
 
 	// Object of inflection forms for conjugation
 	var defaultTextForms = {
-		one: opts.one ? opts.one[0] : opts.oneOrPl[0], // "am", "like"
-		pl: opts.pl ? opts.pl[0] : opts.oneOrPl[0], // "are", "like"
-		threeSg: opts.threeSg[0] // "is", "likes"
+		one: opts.one ? opts.one[0] : (opts.oneOrPl ? opts.oneOrPl[0] : opts.oneOrThreeSg[0]), // "am","was","like"
+		pl: opts.pl ? opts.pl[0] : opts.oneOrPl[0], // "are", "were", "like"
+		threeSg: opts.threeSg ? opts.threeSg[0] : opts.oneOrThreeSg[0] // "is", "was", "likes"
 	}
 
 	// Past tense is optional (e.g.: [have])
@@ -96,7 +101,7 @@ g.addVerb = function (opts) {
 		defaultTextForms.past = opts.past[0] // "liked"
 	}
 
-	// Inflected forms for first-person
+	// Inflected forms for first-person (e.g., "am")
 	if (opts.one) {
 		opts.one.forEach(function (termSym, i) {
 			var newRule = { terminal: true, RHS: termSym, textForms: {
@@ -115,7 +120,7 @@ g.addVerb = function (opts) {
 		})
 	}
 
-	// Inflected forms for plural
+	// Inflected forms for plural (e.g., "are", "were")
 	if (opts.pl) {
 		opts.pl.forEach(function (termSym, i) {
 			var newRule = { terminal: true, RHS: termSym, textForms: {
@@ -134,7 +139,7 @@ g.addVerb = function (opts) {
 		})
 	}
 
-	// Inflected forms for first-person or plural (same for both)
+	// Inflected forms for first-person or plural (e.g., "have", "like")
 	if (opts.oneOrPl) {
 		opts.oneOrPl.forEach(function (termSym, i) {
 			var newRule = { terminal: true, RHS: termSym, textForms: {
@@ -154,15 +159,30 @@ g.addVerb = function (opts) {
 		})
 	}
 
-	// Inflected forms for third-person-singular
-	opts.threeSg.forEach(function (termSym) {
-		verb.addRule({ terminal: true, RHS: termSym, textForms: {
-			one: defaultTextForms.one,
-			pl: defaultTextForms.pl,
-			threeSg: termSym,
-			past: defaultTextForms.past
-		} })
-	})
+	// Inflected forms for third-person-singular (e.g., "is", "has", "likes")
+	if (opts.threeSg) {
+		opts.threeSg.forEach(function (termSym) {
+			verb.addRule({ terminal: true, RHS: termSym, textForms: {
+				one: defaultTextForms.one,
+				pl: defaultTextForms.pl,
+				threeSg: termSym,
+				past: defaultTextForms.past
+			} })
+		})
+	}
+
+	// Inflected forms for third-person-singular or first-person (e.g., "was")
+	if (opts.oneOrThreeSg) {
+		opts.oneOrThreeSg.forEach(function (termSym) {
+			verb.addRule({ terminal: true, RHS: termSym, textForms: {
+				one: termSym,
+				pl: defaultTextForms.pl,
+				threeSg: termSym,
+				past: defaultTextForms.past
+			} })
+		})
+	}
+
 
 	// Past tense - optional
 	if (opts.past) {
