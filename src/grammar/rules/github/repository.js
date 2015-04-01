@@ -50,10 +50,10 @@ var haveLiked = new g.Symbol('have', 'liked')
 haveLiked.addRule({ RHS: [ auxVerbs.have, like ], verbForm: 'past' })
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, haveLiked ] })
 // (people who) like repos ...
-user.subjFilter.addRule({ RHS: [ like, repository.catPl ], personNumber: 'oneOrPl' })
+user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], personNumber: 'oneOrPl' })
 // (people who) have liked repos ...
-var likedRepos = new g.Symbol('liked', 'repos')
-likedRepos.addRule({ RHS: [ like, repository.catPl ], verbForm: 'past' })
+var likedRepos = new g.Symbol('liked', 'repos+')
+likedRepos.addRule({ RHS: [ like, repository.catPlPlus ], verbForm: 'past' })
 user.subjFilter.addRule({ RHS: [ auxVerbs.have, likedRepos ], personNumber: 'oneOrPl' })
 
 
