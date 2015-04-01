@@ -256,9 +256,9 @@ function cloneTree(node, lastNodes) {
 	return newNode
 }
 
-exports.print = function (trees, printTrees) {
+exports.print = function (trees, printTrees, printCost) {
 	trees.forEach(function (tree){
-		console.log(tree.text.join(' '))
+		console.log(tree.text.join(' '), printCost ? tree.cost : '')
 		if (printTrees) util.log(tree.tree)
 	})
 }

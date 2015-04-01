@@ -37,7 +37,7 @@ function parse(query) {
 			var search = require(searchPath)
 			var trees = search.search(parser.startNode, K, printTrees)
 			if (printTime) console.timeEnd('parse')
-			if (printOutput) search.print(trees, printTrees)
+			if (printOutput) search.print(trees, printTrees, printCost)
 		} else {
 			console.log('Failed to reach start node')
 		}
@@ -76,6 +76,7 @@ var printOutput = true
 var printStack = false
 var printForest = false
 var printTrees = false
+var printCost = false
 var parserPath = parserNewPath
 
 function runCommand(query) {
@@ -106,6 +107,9 @@ function runCommand(query) {
 	} else if (query === '-tr') {
 		printTrees = !printTrees
 		console.log('print trees:', printTrees)
+	} else if (query === '-c') {
+		printCost = !printCost
+		console.log('print cost:', printCost)
 	} else if (query === '-p') {
 		parserPath = parserPath === parserNewPath ? parserOldPath : parserNewPath
 		console.log('parser path:', parserPath)
@@ -119,6 +123,7 @@ function runCommand(query) {
 		console.log('-s  print stack:', printStack)
 		console.log('-f  print forest:', printForest)
 		console.log('-tr print trees:', printTrees)
+		console.log('-c  print cost:', printCost)
 		console.log('-p  parser path:', parserPath)
 	} else {
 		return false
