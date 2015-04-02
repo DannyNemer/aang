@@ -91,9 +91,12 @@ g.addVerb = function (opts) {
 
 	// Object of inflection forms for conjugation
 	var defaultTextForms = {
-		one: opts.one ? opts.one[0] : (opts.oneOrPl ? opts.oneOrPl[0] : opts.oneOrThreeSg[0]), // "am","was","like"
-		pl: opts.pl ? opts.pl[0] : opts.oneOrPl[0], // "are", "were", "like"
-		threeSg: opts.threeSg ? opts.threeSg[0] : opts.oneOrThreeSg[0] // "is", "was", "likes"
+		// "am", "was", "like"
+		one: opts.one ? opts.one[0] : (opts.oneOrPl ? opts.oneOrPl[0] : opts.oneOrThreeSg[0]),
+		// "are", "were", "like"
+		pl: opts.pl ? opts.pl[0] : opts.oneOrPl[0],
+		// "is", "was", "likes"
+		threeSg: opts.threeSg ? opts.threeSg[0] : opts.oneOrThreeSg[0]
 	}
 
 	// Past tense is optional (e.g.: [have])

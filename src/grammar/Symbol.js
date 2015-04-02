@@ -20,7 +20,7 @@ function Symbol(grammar) {
 	this.name = '[' + symNameChunks.join('-') + ']'
 
 	if (grammar.hasOwnProperty(this.name)) {
-		console.log('duplicate Symbol:', this.name)
+		console.log('Err: Duplicate Symbol:', this.name)
 		console.log(util.getLine())
 		throw 'duplicate Symbol'
 	}
@@ -35,10 +35,10 @@ Symbol.prototype.addRule = function (opts) {
 		throw 'ill-formed rule'
 	}
 
-	var newRule = opts.terminal ? this.newTermRule(opts) : this.newNontermRule(opts)
+	var newRule = opts.terminal ? this.newTerminalRule(opts) : this.newNonterminalRule(opts)
 
 	if (this.ruleExists(newRule)) {
-		this.ruleErr('duplicate rule', newRule.RHS)
+		ruleErr('duplicate rule', this.name, newRule.RHS)
 	}
 
 	this.rules.push(newRule)
@@ -55,7 +55,7 @@ var termRuleOptsSchema = {
 }
 
 // Initialize a new terminal rule from passed opts
-Symbol.prototype.newTermRule = function (opts) {
+Symbol.prototype.newTerminalRule = function (opts) {
 	if (util.illFormedOpts(termRuleOptsSchema, opts)) {
 		throw 'ill-formed terminal rule'
 	}
@@ -87,13 +87,13 @@ var nontermRuleOptsSchema = {
 }
 
 // Initialize a new nonterminal rule from passed opts
-Symbol.prototype.newNontermRule = function (opts) {
+Symbol.prototype.newNonterminalRule = function (opts) {
 	if (util.illFormedOpts(nontermRuleOptsSchema, opts)) {
 		throw 'ill-formed nonterminal rule'
 	}
 
 	if (opts.RHS.length > 2) {
-		this.ruleErr('rules can only have 1 or 2 RHS symbols', opts.RHS)
+		ruleErr('rules can only have 1 or 2 RHS symbols', this.name, opts.RHS)
 	}
 
 	var newRule = {
@@ -112,7 +112,7 @@ Symbol.prototype.newNontermRule = function (opts) {
 
 	if (opts.hasOwnProperty('transpositionCost')) {
 		if (opts.RHS.length !== 2) {
-			this.ruleErr('nonterminal rules with transposition-costs must have 2 RHS symbols', opts.RHS)
+			ruleErr('nonterminal rules with transposition-costs must have 2 RHS symbols', this.name, opts.RHS)
 		}
 
 		newRule.transpositionCost = opts.transpositionCost
@@ -140,13 +140,13 @@ Symbol.prototype.calcCost = function (costPenalty) {
 }
 
 // Print error when new rule is ill-formed
-Symbol.prototype.ruleErr = function (errMessage, RHS) {
+function ruleErr(errMessage, name, RHS) {
 	RHS = RHS.map(function (sym) {
 		return sym instanceof Symbol ? sym.name : sym
 	})
 
 	console.log(util.getLine())
 	console.log(errMessage + ':')
-	console.log('\t' + this.name, '->', RHS)
+	console.log('\t' + name, '->', RHS)
 	throw 'ill-formed rule'
 }
