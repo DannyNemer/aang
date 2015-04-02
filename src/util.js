@@ -52,12 +52,12 @@ exports.illFormedOpts = function (schema, opts) {
 			}
 		} else {
 			// Passed value of incorrect type; ex: LHS: String, RHS: Array
-			if (!exports.isType(optsVal, schemaPropType)) {
+			if (optsVal.constructor !== schemaPropType) {
 				return printOptsErr('Err: \'' + prop + '\' not of type ' + schemaPropType.name + ':', optsVal)
 			}
 
 			// Passed Array contains elements not of arrayType (if arrayType is defined)
-			if (Array.isArray(optsVal) && schemaVal.arrayType && !optsVal.every(function (el) { return exports.isType(el, schemaVal.arrayType) || el instanceof schemaVal.arrayType })) {
+			if (Array.isArray(optsVal) && schemaVal.arrayType && !optsVal.every(function (el) { return el.constructor === schemaVal.arrayType })) {
 				return printOptsErr('Err: \'' + prop + '\' not an Array of type ' + schemaVal.arrayType.name + ':', optsVal)
 			}
 		}
@@ -98,11 +98,6 @@ exports.getLine = function () {
 
 	// Could not find line in stack for file from which funciton calling getLine() was called
 	console.log('sought-after line not found in stack trace (trace limited to 10 most recent')
-}
-
-// Returns true if obj is of type propTypeFunc
-exports.isType = function (obj, propTypeFunc) {
-	return Object.prototype.toString.call(obj).slice(8, -1) === propTypeFunc.name
 }
 
 // Returns true if arrays a and b are of the same length and same shallow-level contents
