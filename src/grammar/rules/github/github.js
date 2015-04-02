@@ -20,6 +20,11 @@ this.created = g.addWord({
 	accepted: [ 'created' ]
 })
 
+// (repos/pull-requests I) created
+this.preVerbStopWordsCreated = new g.Symbol('pre', 'verb', 'stop', 'words', 'created')
+this.preVerbStopWordsCreated.addRule({ RHS: [ stopWords.preVerbStopWords, this.created ] })
+
+// (repos/pull-requests I) have created
 var haveCreated = new g.Symbol('have', 'created')
 haveCreated.addRule({ RHS: [ auxVerbs.have, this.created ] })
 this.preVerbStopWordsHaveCreated = new g.Symbol('pre', 'verb', 'stop', 'words', 'have', 'created')

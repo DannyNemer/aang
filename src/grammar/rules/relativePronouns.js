@@ -11,5 +11,5 @@ this.who = g.addWord({
 this.that = g.addWord({
 	name: 'that',
 	insertionCost: 0.1,
-	accepted: [ 'that' ]
+	accepted: [ 'that', 'which' ]
 })

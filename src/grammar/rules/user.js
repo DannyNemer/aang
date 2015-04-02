@@ -1,9 +1,7 @@
 var g = require('../grammar')
 var Category = require('./Category')
-var stopwords = require('./stopWords')
 var oneSg = require('./oneSg')
 var preps = require('./prepositions')
-var poss = require('./poss')
 var operators = require('./operators')
 
 // Merges this module with 'user' category
@@ -28,7 +26,7 @@ user.nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'pl' })
 // (people) {user} (follows)
 user.nomUsers.addRule({ RHS: [ user.catSg ], personNumber: 'threeSg' })
 // (people) I (follow)
-user.nomUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'nom', personNumber: 'one' })
+user.nomUsers.addRule({ RHS: [ oneSg.plain ], semantic: oneSg.semantic, gramCase: 'nom', personNumber: 'one' })
 
 user.nomUsersPlus = new g.Symbol('nom', 'users+')
 user.nomUsersPlus.addRule({ RHS: [ user.nomUsers ] })
@@ -48,7 +46,7 @@ objUsers.addRule({ RHS: [ user.plural ] })
 // (people who follow) {user}; (people followed by) {user}
 objUsers.addRule({ RHS: [ user.catSg ] })
 // (people who follow) me; (people followed by) me
-objUsers.addRule({ RHS: [ oneSg.plain ], gramCase: 'obj' })
+objUsers.addRule({ RHS: [ oneSg.plain ], semantic: oneSg.semantic, gramCase: 'obj' })
 
 user.objUsersPlus = new g.Symbol('obj', 'users+')
 user.objUsersPlus.addRule({ RHS: [ objUsers ] })

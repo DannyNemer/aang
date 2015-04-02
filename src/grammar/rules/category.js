@@ -8,6 +8,8 @@ var operators = require('./operators')
 // Start symbol
 var start = new g.Symbol('start')
 
+var intersectSemantic = new g.Semantic({ name: 'intersect', cost: 0 })
+
 // Definition of accepted options for a Category
 var categoryOptsSchema = {
 	sg: String,
@@ -170,9 +172,9 @@ module.exports = function Category(catOpts) {
 
 	this.plural = new g.Symbol(this.nameSg, 'plural')
 	// people followed by me
-	this.plural.addRule({ RHS: [ noRelative ]})
+	this.plural.addRule({ RHS: [ noRelative ], semantic: intersectSemantic })
 	// people who are followed by me
-	this.plural.addRule({ RHS: [ noRelative, relativeclause ]})
+	this.plural.addRule({ RHS: [ noRelative, relativeclause ], semantic: intersectSemantic })
 
 	this.catPl = new g.Symbol(this.namePl)
 	// (people who created) repos ...

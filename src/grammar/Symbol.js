@@ -1,6 +1,7 @@
 // Create nonterminal symbols and add production rules to grammar
 
 var util = require('../util')
+var Semantic = require('./Semantic')
 
 module.exports = Symbol
 
@@ -36,8 +37,6 @@ Symbol.prototype.addRule = function (opts) {
 
 	var newRule = opts.terminal ? this.newTermRule(opts) : this.newNontermRule(opts)
 
-	newRule.cost = this.calcCost()
-
 	if (this.ruleExists(newRule)) {
 		this.ruleErr('duplicate rule', newRule.RHS)
 	}
@@ -65,7 +64,8 @@ Symbol.prototype.newTermRule = function (opts) {
 		RHS: [ opts.RHS ],
 		terminal: true,
 		// String for terminal symbols, or Object of inflected forms for conjugation
-		text: opts.text || opts.textForms
+		text: opts.text || opts.textForms,
+		cost: this.calcCost()
 	}
 
 	if (opts.hasOwnProperty('insertionCost')) {
@@ -80,6 +80,7 @@ Symbol.prototype.newTermRule = function (opts) {
 var nontermRuleOptsSchema = {
 	RHS: { type: Array, arrayType: Symbol },
 	transpositionCost: { type: Number, optional: true },
+	semantic: { type: Semantic, optional: true },
 	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
 	verbForm: { type: [ 'past' ], optional: true },
 	personNumber: { type: [ 'one', 'threeSg', 'pl' ], optional: true }
@@ -102,6 +103,13 @@ Symbol.prototype.newNontermRule = function (opts) {
 		personNumber: opts.personNumber
 	}
 
+	if (opts.semantic) {
+		newRule.semantic = opts.semantic.function
+		newRule.cost = this.calcCost(opts.semantic.cost)
+	} else {
+		newRule.cost = this.calcCost()
+	}
+
 	if (opts.hasOwnProperty('transpositionCost')) {
 		if (opts.RHS.length !== 2) {
 			this.ruleErr('nonterminal rules with transposition-costs must have 2 RHS symbols', opts.RHS)
@@ -122,10 +130,13 @@ Symbol.prototype.ruleExists = function (newRule) {
 }
 
 // Calculate cost of new rule
-// Could have a cost penalty, especially for term rules, but need a mechanism for choose determining this cost
+// Could have a cost penalty, especially for term rules, but need a mechanism for determining this cost
 Symbol.prototype.calcCost = function (costPenalty) {
+	// Cost penalty is cost of Semantic on nonterminal rules (if present)
+	var costPenalty = costPenalty || 0
+
 	// Cost of rules for each sym are incremented by 1e-7
-	return this.rules.length * 1e-7
+	return this.rules.length * 1e-7 + costPenalty
 }
 
 // Print error when new rule is ill-formed
