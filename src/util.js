@@ -29,14 +29,15 @@ exports.illFormedOpts = function (schema, opts) {
 	var optsProps = Object.keys(opts)
 	for (var i = 0, optsPropsLen = optsProps.length; i < optsPropsLen; ++i) {
 		var prop = optsProps[i]
+
+		// Unrecognized property
+		if (!schema.hasOwnProperty(prop)) {
+			return printOptsErr('Err: Unrecognized property:', prop)
+		}
+
 		var optsVal = opts[prop]
 		var schemaVal = schema[prop]
 		var schemaPropType = schemaVal.type || schemaVal
-
-		// Unrecognized property
-		if (!schemaVal) {
-			return printOptsErr('Err: Unrecognized prop name:', prop)
-		}
 
 		// Accidentally passed an undefined object; ex: undefined, [], [ 1, undefined ]
 		if (optsVal === undefined || (Array.isArray(optsVal) && (optsVal.length === 0 || optsVal.indexOf(undefined) !== -1))) {
