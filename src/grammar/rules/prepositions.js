@@ -4,14 +4,14 @@ var prepStr = 'prep'
 
 // (people followed) by (me)
 this.agent = g.addWord({
-	name: prepStr + '-agent',
+	symbol: new g.Symbol(prepStr, 'agent'),
 	insertionCost: 0.5,
 	accepted: [ 'by' ]
 })
 
 // (followers) of (mine)
 this.possessor = g.addWord({
-	name: prepStr + '-possessor',
+	symbol: new g.Symbol(prepStr, 'possessor'),
 	insertionCost: 0.5,
 	accepted: [ 'of' ]
 })
@@ -19,6 +19,6 @@ this.possessor = g.addWord({
 // (repos) of (mine)
 // Same as [prep-possessor], without insertion cost
 this.possessorSpecial = g.addWord({
-	name: prepStr + '-possessor-special',
+	symbol: new g.Symbol(prepStr, 'possessor', 'special'),
 	accepted: [ 'of' ]
 })

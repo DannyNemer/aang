@@ -8,7 +8,7 @@ var operators = require('./operators')
 var user = module.exports = new Category({ sg: 'user', pl: 'users', person: true, entity: true })
 
 var peopleTerm = g.addWord({
-	name: 'people-term',
+	symbol: new g.Symbol('people', 'term'),
 	insertionCost: 2.5,
 	accepted: [ 'people', 'users' ]
 })

@@ -10,7 +10,7 @@ var stopWords = require('../stopWords')
 var pullRequest = new Category({ sg: 'pull-request', pl: 'pull-requests' })
 
 var pullRequestsTerm = g.addWord({
-	name: pullRequest.namePl + '-term',
+	symbol: new g.Symbol(pullRequest.namePl, 'term'),
 	insertionCost: 3.5,
 	accepted: [ 'pull-requests' ]
 })
@@ -45,7 +45,7 @@ user.subjFilter.addRule({ RHS: [ auxVerbs.have, createdPullRequests ], semantic:
 
 // MENTION:
 var mention = g.addWord({
-	name: 'mention',
+	symbol: new g.Symbol('mention'),
 	accepted: [ 'mention' ]
 })
 
@@ -55,7 +55,7 @@ var pullRequestsMentioned = new g.Semantic({ name: pullRequest.namePl + '-mentio
 pullRequest.subjFilter.addRule({ RHS: [ mention, user.objUsersPlus ], semantic: pullRequestsMentioned })
 
 var mentionedIn = g.addWord({
-	name: 'mentioned-in',
+	symbol: new g.Symbol('mentioned', 'in'),
 	insertionCost: 2,
 	accepted: [ 'mentioned-in' ]
 })

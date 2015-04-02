@@ -2,7 +2,7 @@ var g = require('../grammar')
 
 // (people who) are (followed by me)
 this.beNon1Sg = g.addWord({
-	name: 'be-non-1sg',
+	symbol: new g.Symbol('be', 'non', '1sg'),
 	insertionCost: 1,
 	accepted: [ 'are', 'were' ],
 	substitutions: [ 'is|are|be being', 'being|been' ]
@@ -10,14 +10,14 @@ this.beNon1Sg = g.addWord({
 
 // (people who have) been (followed by me)
 this.bePast = g.addWord({
-	name: 'be-past',
+	symbol: new g.Symbol('be', 'past'),
 	insertionCost: 1,
 	accepted: [ 'been' ]
 })
 
 // (pull requests I/{user}/[users]) am/is/are (mentioned in)
 this.beGeneral = g.addVerb({
-	name: 'be-general',
+	symbol: new g.Symbol('be', 'general'),
 	insertionCost: 1,
 	one: [ 'am' ],
 	pl: [ 'are', 'were' ],
@@ -29,7 +29,7 @@ this.beGeneral = g.addVerb({
 // (people who) have (been followed by me)
 // - No past tense ('had') because it implies semantic no longer true; "had liked" -> no longer liked
 this.have = g.addVerb({
-	name: 'have',
+	symbol: new g.Symbol('have'),
 	insertionCost: 0.8,
 	oneOrPl: [ 'have' ],
 	threeSg: [ 'has' ],

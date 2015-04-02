@@ -10,7 +10,7 @@ var stopWords = require('../stopWords')
 var repository = new Category({ sg: 'repository', pl: 'repositories', entity: true })
 
 var repositoriesTerm = g.addWord({
-	name: repository.namePl + '-term',
+	symbol: new g.Symbol(repository.namePl, 'term'),
 	insertionCost: 3.5,
 	accepted: [ repository.namePl, 'repos' ]
 })
@@ -45,7 +45,7 @@ user.subjFilter.addRule({ RHS: [ auxVerbs.have, createdRepositories ], semantic:
 
 // LIKE:
 var like = g.addVerb({
-	name: 'like',
+	symbol: new g.Symbol('like'),
 	insertionCost: 0.8,
 	oneOrPl: [ 'like' ],
 	threeSg: [ 'likes' ],
@@ -73,7 +73,7 @@ user.subjFilter.addRule({ RHS: [ auxVerbs.have, likedRepos ], semantic: reposito
 
 // CONTRIBUTE-TO:
 var contributeTo = g.addWord({
-	name: 'contribute-to',
+	symbol: new g.Symbol('contribute', 'to'),
 	insertionCost: 1.2,
 	accepted: [ 'contributed-to' ]
 })

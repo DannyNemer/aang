@@ -1,11 +1,13 @@
 // Functions to automate adding many common sets of rules to grammar
 
 var g = require('./grammar')
+var Symbol = require('./Symbol')
 var util = require('../util')
+
 
 // Schema for pronouns
 var pronounOptsSchema = {
-	name: String,
+	symbol: Symbol,
 	insertionCost: { type: Number, optional: true },
 	nom: String,
 	obj: String,
@@ -18,7 +20,7 @@ g.addPronoun = function (opts) {
 		throw 'ill-formed pronoun'
 	}
 
-	var pronoun = new g.Symbol(opts.name)
+	var pronoun = opts.symbol
 
 	// Object of inflection forms for conjugation
 	var textForms = {
@@ -47,9 +49,10 @@ g.addPronoun = function (opts) {
 	return pronoun
 }
 
+
 // Schema for verbs
 var verbOptSchema = {
-	name: String,
+	symbol: Symbol,
 	insertionCost: { type: Number, optional: true },
 	one: { type: Array, arrayType: String, optional: true },
 	pl: { type: Array, arrayType: String, optional: true },
@@ -87,7 +90,7 @@ g.addVerb = function (opts) {
 		throw 'ill-formed verb'
 	}
 
-	var verb = new g.Symbol(opts.name)
+	var verb = opts.symbol
 
 	// Object of inflection forms for conjugation
 	var defaultTextForms = {
@@ -186,7 +189,6 @@ g.addVerb = function (opts) {
 		})
 	}
 
-
 	// Past tense - optional
 	if (opts.past) {
 		opts.past.forEach(function (termSym) {
@@ -209,9 +211,10 @@ g.addVerb = function (opts) {
 	return verb
 }
 
+
 // Schema for stop-words
 var stopWordOptSchema = {
-	name: String,
+	symbol: Symbol,
 	stopWords: { type: Array, arrayType: String }
 }
 
@@ -221,7 +224,7 @@ g.addStopWord = function (opts) {
 		throw 'ill-formed stop-word'
 	}
 
-	var stopWord = new g.Symbol(opts.name)
+	var stopWord = opts.symbol
 
 	// Accepted terminal symbol is an empty-string
 	stopWord.addRule({ terminal: true, RHS: g.emptyTermSym })
@@ -234,9 +237,10 @@ g.addStopWord = function (opts) {
 	return stopWord
 }
 
+
 // Schema for other words
 var wordOptsSchema = {
-	name: String,
+	symbol: Symbol,
 	optional: { type: Boolean, optional: true },
 	insertionCost: { type: Number, optional: true },
 	accepted: { type: Array, arrayType: String },
@@ -263,7 +267,7 @@ g.addWord = function (opts) {
 		throw 'ill-formed opt-word'
 	}
 
-	var word = new g.Symbol(opts.name)
+	var word = opts.symbol
 
 	// Optional terminal rule -> rule can be omitted from input by accepting empty-string without penalty
 	if (opts.optional) {
@@ -294,6 +298,7 @@ g.addWord = function (opts) {
 
 	return word
 }
+
 
 // Create an optionalized version of an existing nonterminal symbol
 g.addNonterminalOpt = function (symbol) {

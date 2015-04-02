@@ -4,13 +4,13 @@ var g = require('../grammar')
 
 // conjunction
 this.and = g.addWord({
-	name: 'and',
+	symbol: new g.Symbol('and'),
 	insertionCost: 2,
 	accepted: [ 'and' ]
 })
 
 // disjunction
 this.union = g.addWord({
-	name: 'union',
+	symbol: new g.Symbol('union'),
 	accepted: [ 'or' ]
 })

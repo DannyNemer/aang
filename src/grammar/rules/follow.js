@@ -7,7 +7,7 @@ var followersSemantic = new g.Semantic({ name: 'followers', cost: 0.5 })
 var usersFollowedSemantic = new g.Semantic({ name: user.namePl + '-followed', cost: 0.5 })
 
 var follow = g.addVerb({
-	name: 'follow',
+	symbol: new g.Symbol('follow'),
 	oneOrPl: [ 'follow', 'subscribe to' ],
 	threeSg: [ 'follows' ],
 	past: [ 'followed' ],
@@ -32,7 +32,7 @@ user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: follower
 
 
 var followersTerm = g.addWord({
-	name: 'followers-term',
+	symbol: new g.Symbol('followers', 'term'),
 	accepted: [ 'followers', 'subscribers' ]
 })
 

@@ -4,7 +4,7 @@ var auxVerbs = require('../auxVerbs')
 var stopWords = require('../stopWords')
 
 var github = g.addWord({
-	name: 'github',
+	symbol: new g.Symbol('github'),
 	accepted: [ 'GitHub' ]
 })
 
@@ -15,7 +15,7 @@ this.termOpt = g.addNonterminalOpt(github)
 user.company.addRule({ RHS: [ github ] })
 
 this.created = g.addWord({
-	name: 'created',
+	symbol: new g.Symbol('created'),
 	insertionCost: 0.5,
 	accepted: [ 'created' ]
 })
