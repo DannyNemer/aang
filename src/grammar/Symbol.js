@@ -37,6 +37,13 @@ Symbol.prototype.addRule = function (opts) {
 
 	var newRule = opts.terminal ? this.newTerminalRule(opts) : this.newNonterminalRule(opts)
 
+	if (opts.semantic) {
+		newRule.semantic = opts.semantic.function
+		newRule.cost = this.calcCost(opts.semantic.cost)
+	} else {
+		newRule.cost = this.calcCost()
+	}
+
 	if (this.ruleExists(newRule)) {
 		ruleErr('duplicate rule', this.name, newRule.RHS)
 	}
@@ -49,6 +56,7 @@ Symbol.prototype.addRule = function (opts) {
 var termRuleOptsSchema = {
 	terminal: Boolean,
 	RHS: String,
+	semantic: { type: Semantic, optional: true },
 	insertionCost: { type: Number, optional: true },
 	textForms: { type: Object, optional: true },
 	text: { type: String, optional: true }
@@ -64,8 +72,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 		RHS: [ opts.RHS ],
 		terminal: true,
 		// String for terminal symbols, or Object of inflected forms for conjugation
-		text: opts.text || opts.textForms,
-		cost: this.calcCost()
+		text: opts.text || opts.textForms
 	}
 
 	if (opts.hasOwnProperty('insertionCost')) {
@@ -79,8 +86,8 @@ Symbol.prototype.newTerminalRule = function (opts) {
 // Schema for nonterminal rule
 var nontermRuleOptsSchema = {
 	RHS: { type: Array, arrayType: Symbol },
-	transpositionCost: { type: Number, optional: true },
 	semantic: { type: Semantic, optional: true },
+	transpositionCost: { type: Number, optional: true },
 	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
 	verbForm: { type: [ 'past' ], optional: true },
 	personNumber: { type: [ 'one', 'threeSg', 'pl' ], optional: true }
@@ -101,13 +108,6 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 		gramCase: opts.gramCase,
 		verbForm: opts.verbForm,
 		personNumber: opts.personNumber
-	}
-
-	if (opts.semantic) {
-		newRule.semantic = opts.semantic.function
-		newRule.cost = this.calcCost(opts.semantic.cost)
-	} else {
-		newRule.cost = this.calcCost()
 	}
 
 	if (opts.hasOwnProperty('transpositionCost')) {

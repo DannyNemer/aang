@@ -24,7 +24,7 @@ var possUser = new g.Symbol(possStr, 'user')
 // (followers of) {user}
 possUser.addRule({ RHS: [ user.catSg ] })
 // (followers of) mine - manually add text here because [poss-user] will also produce nonterminal rules
-possUser.addRule({ terminal: true, RHS: 'mine', text: 'mine' })
+possUser.addRule({ terminal: true, RHS: 'mine', text: 'mine', semantic: oneSg.semantic })
 
 var possUsers = new g.Symbol(possStr, 'users')
 // (repos of) {user}/mine
