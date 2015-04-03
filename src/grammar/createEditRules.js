@@ -4,6 +4,7 @@
 //   Transposition - swapped RHS of nonterminal rules
 
 var util = require('../util')
+var insertSemantic = require('./Semantic.js').insertSemantic
 
 
 module.exports = function (grammar) {
@@ -31,7 +32,7 @@ function findTermRuleInsertions(grammar, insertions) {
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost,
 						insertedSyms: [ { symbol: termSym } ],
-						text: rule.text ? [ rule.text ] : []
+						text: []
 					})
 
 					// Remove empty-string term syms from grammar
@@ -40,7 +41,8 @@ function findTermRuleInsertions(grammar, insertions) {
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost + rule.insertionCost,
 						insertedSyms: [ { symbol: termSym } ],
-						text: [ rule.text || termSym ]
+						text: [ rule.text || termSym ],
+						semantic: rule.semantic
 					})
 				}
 			}
@@ -64,6 +66,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 							return {
 								cost: insertion.cost,
 								text: insertion.text,
+								semantic: insertion.semantic,
 								personNumber: insertion.personNumber,
 								insertedSyms: [ { symbol: sym, children: insertion.insertedSyms } ]
 							}
@@ -77,6 +80,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 								mergedInsertions.push({
 									cost: A.cost + B.cost,
 									text: A.text.concat(B.text),
+									semantic: A.semantic && B.semantic ? A.semantic.concat(B.semantic) : A.semantic || B.semantic,
 									// Person-number only needed for 1st for 2 RHS syms: nominative case (verb precedes subject)
 									// Only used for conjugation of current rule
 									personNumber: A.personNumber,
@@ -89,11 +93,18 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 						return mergedInsertions
 					}).forEach(function (insertion) {
 						// Add each insertion the can be produced from the RHS
+
+						// TEMP
+						var semantic = insertSemantic(rule.semantic, insertion.semantic)
+						if (semantic === -1) return
+
 						// Temp hack:
 						var noConjugation = insertion.text.join(' ') === conjugateText(rule, insertion).join(' ')
+
 						addInsertion(insertions, nontermSym, {
 							cost: rule.cost + insertion.cost,
 							text: conjugateText(rule, insertion),
+							semantic: semantic,
 							// Person-number only traverses up for 1-to-1; person-number used on first 1-to-2
 							personNumber: rule.RHS.length === 1 ? (rule.personNumber || insertion.personNumber) : (noConjugation ? rule.personNumber : undefined),
 							insertedSyms: insertion.insertedSyms
@@ -161,13 +172,15 @@ function createRulesFromInsertions(grammar, insertions) {
 							var newRule = {
 								RHS: [ otherSym ],
 								cost: rule.cost + insertion.cost,
+								semantic: rule.semantic,
 								insertedSyms: [ { symbol: sym, children: insertion.insertedSyms } ],
 							}
 
-							// Empty-strings don't produce text
+							// Empty-strings don't produce text or semantics (for now)
 							if (insertion.text && insertion.text[0]) {
+								newRule.insertionIdx = symIdx
+								newRule.insertedSemantic = insertion.semantic
 								newRule.text = conjugateText(rule, insertion)
-								newRule.textIdx = symIdx
 								// If insertion.personNumber or rule.personNumber exists, conjugation will occur on this rule
 								// - Could conjugate now, but keep to check input (if multiple forms of inflection accepted)
 

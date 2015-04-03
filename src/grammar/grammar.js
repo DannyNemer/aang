@@ -10,7 +10,7 @@ exports.Symbol = require('./Symbol').bind(null, grammar)
 // Extend module with rule functions
 require('./ruleFunctions')
 
-exports.Semantic = require('./Semantic')
+exports.Semantic = require('./Semantic').Semantic
 
 // Derive rules from insertion and transposition costs, and empty-strings
 exports.createEditRules = require('./createEditRules').bind(null, grammar)
@@ -51,4 +51,5 @@ function ruleCount(grammar) {
 // Write grammar to 'filepath'
 exports.writeGrammarToFile = function (filepath) {
 	util.writeJSONFile(filepath, grammar)
+	util.writeJSONFile('../semantics.json', require('./Semantic').semantics)
 }

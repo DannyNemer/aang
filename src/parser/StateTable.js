@@ -85,8 +85,8 @@ function createRuleProps(origRule) {
 		ruleProps.text = origRule.text
 	}
 
-	if (origRule.hasOwnProperty('textIdx')) {
-		ruleProps.textIdx = origRule.textIdx
+	if (origRule.hasOwnProperty('insertionIdx')) {
+		ruleProps.insertionIdx = origRule.insertionIdx
 	}
 
 	if (origRule.hasOwnProperty('verbForm')) {
@@ -99,6 +99,14 @@ function createRuleProps(origRule) {
 
 	if (origRule.hasOwnProperty('gramCase')) {
 		ruleProps.gramCase = origRule.gramCase
+	}
+
+	if (origRule.hasOwnProperty('semantic')) {
+		ruleProps.semantic = origRule.semantic
+	}
+
+	if (origRule.hasOwnProperty('insertedSemantic')) {
+		ruleProps.insertedSemantic = origRule.insertedSemantic
 	}
 
 	if (origRule.transposition) {

@@ -1,5 +1,7 @@
 var util = require('../util')
 var BinaryHeap = require('./BinaryHeap')
+var insertSemantic = require('../grammar/Semantic').insertSemantic
+require('../grammar/Semantic').semantics = require('../semantics.json')
 
 var testCounter = 0
 
@@ -12,7 +14,9 @@ exports.search = function (startNode, K, buildTrees) {
 		ruleProps: [],
 		nextNodes: [],
 		text: [],
-		cost: 0
+		cost: 0,
+		prevSemantics: [],
+		semantic: undefined
 	}
 
 	if (buildTrees) {
@@ -24,7 +28,7 @@ exports.search = function (startNode, K, buildTrees) {
 
 	// Might be able to save ruleProps as a single object - issue with ordering (array could be faster than creating new objects?)
 
-	while (heap.size()) {
+	while (heap.size() > 0 && heap.size() < 1e5) {
 		var item = heap.pop()
 
 		var lastNode = item.lastNode || item.nextNodes.pop()
@@ -36,7 +40,16 @@ exports.search = function (startNode, K, buildTrees) {
 		}
 
 		if (!lastNode) {
-			if (trees.push(item) === K) break
+			item.semantic = item.prevSemantics.pop().semantic
+			if (item.prevSemantics.length) console.log('problem')
+			var exists = trees.some(function (tree) {
+				return JSON.stringify(tree.semantic) === JSON.stringify(item.semantic)
+			})
+			if (!exists) {
+				if (trees.push(item) === K) break
+				// console.log(item.text.join(' '))
+				// console.log(semanticToString(item.semantic))
+			}
 			continue
 		}
 
@@ -47,7 +60,10 @@ exports.search = function (startNode, K, buildTrees) {
 
 			if (ruleProps instanceof Array) {
 				for (var p = 0, rulePropsLen = ruleProps.length; p < rulePropsLen; ++p) {
-					heap.push(createItem(sub, item, ruleProps[p], buildTrees))
+					var newItem = createItem(sub, item, ruleProps[p], buildTrees)
+					if (newItem !== -1) {
+						heap.push(newItem)
+					}
 				}
 			} else if (ruleProps.transposition) {
 				var newItem = {
@@ -58,13 +74,21 @@ exports.search = function (startNode, K, buildTrees) {
 					ruleProps: item.ruleProps
 				}
 
+				var newSemantic = insertSemantic(item.semantic, ruleProps.semantic) // useless b/c no semantic on trans
+				if (newSemantic === -1) continue
+				newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic })
+				newItem.semantic = undefined
+
 				if (buildTrees) {
 					newItem.tree = spliceTree(item.tree, sub, ruleProps)
 				}
 
 				heap.push(newItem)
 			} else {
-				heap.push(createItem(sub, item, ruleProps, buildTrees))
+				var newItem = createItem(sub, item, ruleProps, buildTrees)
+				if (newItem !== -1) {
+					heap.push(newItem)
+				}
 			}
 		}
 	}
@@ -84,12 +108,18 @@ function createItem(sub, item, ruleProps, buildTrees) {
 		newItem.tree = spliceTree(item.tree, sub, ruleProps)
 	}
 
+	var newSemantic = insertSemantic(item.semantic, ruleProps.semantic)
+	if (newSemantic === -1) return -1
+
 	// Insertion
-	if (ruleProps.hasOwnProperty('textIdx')) {
+	if (ruleProps.hasOwnProperty('insertionIdx')) {
+		newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic }, { LHS: false, semantic: ruleProps.insertedSemantic })
+		newItem.semantic = undefined
+
 		newItem.lastNode = sub.node
 
 		if (ruleProps.text) {
-			if (ruleProps.textIdx) {
+			if (ruleProps.insertionIdx) {
 				newItem.nextNodes = newItem.nextNodes.slice()
 				newItem.nextNodes.push(ruleProps.text)
 				newItem.text = item.text
@@ -98,7 +128,7 @@ function createItem(sub, item, ruleProps, buildTrees) {
 				newItem.text = item.text.concat(conjugateTextArray(newItem, ruleProps.text))
 			}
 
-			// both can occur for both textIdx
+			// both can occur for both insertionIdx
 			if (ruleProps.personNumber || ruleProps.verbForm) {
 				// might copy array twice because copied in conjugation
 				newItem.ruleProps = newItem.ruleProps.concat(ruleProps)
@@ -111,6 +141,33 @@ function createItem(sub, item, ruleProps, buildTrees) {
 	else {
 		if (sub.next) {
 			newItem.nextNodes = newItem.nextNodes.concat(sub.next.node)
+		}
+
+		if (sub.next) {
+			newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic })
+			newItem.semantic = undefined
+		} else if (sub.node.subs) {
+			newItem.prevSemantics = item.prevSemantics
+			newItem.semantic = newSemantic
+		} else if (item.prevSemantics[item.prevSemantics.length - 1].LHS) { // term rule RHSA
+			newItem.prevSemantics = item.prevSemantics.concat({ LHS: false, semantic: newSemantic })
+			newItem.semantic = undefined
+		} else if (!item.prevSemantics[item.prevSemantics.length - 1].LHS) { // term rule RHSA
+			newItem.prevSemantics = item.prevSemantics.slice()
+
+			while (newItem.prevSemantics.length >= 2 && !newItem.prevSemantics[newItem.prevSemantics.length - 1].LHS) {
+				var RHSA = newItem.prevSemantics.pop().semantic
+				var LHS = newItem.prevSemantics.pop().semantic
+				var newSemanticTwo = insertSemantic(LHS, RHSA, newSemantic)
+				if (newSemanticTwo === -1) return -1
+
+				newSemantic = newSemanticTwo
+			}
+
+			newItem.prevSemantics.push({ LHS: false, semantic: newSemantic }) // next RHSA
+			newItem.semantic = undefined
+		} else {
+			console.log('should never be here')
 		}
 
 		if (sub.node.subs) {
@@ -219,9 +276,9 @@ function spliceTree(tree, sub, ruleProps) {
 	}
 
 	// Insertion
-	if (ruleProps.hasOwnProperty('textIdx')) {
+	if (ruleProps.hasOwnProperty('insertionIdx')) {
 		delete prevNode.props
-		if (ruleProps.textIdx) {
+		if (ruleProps.insertionIdx) {
 			prevNode.children.push(ruleProps)
 		} else {
 			prevNode.children.splice(-1, 0, ruleProps)
@@ -259,6 +316,20 @@ function cloneTree(node, lastNodes) {
 exports.print = function (trees, printTrees, printCost) {
 	trees.forEach(function (tree){
 		console.log(tree.text.join(' '), printCost ? tree.cost : '')
+		console.log(semanticToString(tree.semantic))
 		if (printTrees) util.log(tree.tree)
 	})
+}
+
+function semanticToString(semanticArgs) {
+	if (!semanticArgs) return
+
+	return semanticArgs.map(function (semantic) {
+		if (util.isType(semantic, Object)) {
+			var semanticName = Object.keys(semantic)[0]
+			return semanticName + '(' + semanticToString(semantic[semanticName]) + ')'
+		} else {
+			return semantic // number or string
+		}
+	}).join(',')
 }

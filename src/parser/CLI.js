@@ -19,7 +19,7 @@ rl.on('line', function (line) {
 		parse(query)
 	}
 
-	deleteCache(parserNewPath, parserOldPath, searchPath, './BinaryHeap.js')
+	deleteCache(parserNewPath, parserOldPath, searchPath, './BinaryHeap.js', '../grammar/Semantic.js')
 
 	rl.prompt()
 })
