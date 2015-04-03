@@ -20,6 +20,6 @@ this.poss = g.addWord({
 // my (followers)
 this.possOmissible = g.addWord({
 	symbol: new g.Symbol('1', 'sg', 'poss', 'omissible'),
-	accepted: [ 'my' ],
-	substitutions: [ g.emptyTermSym ] // blank should be first rule (it is not currently)
+	insertionCost: 0,
+	accepted: [ 'my' ]
 })
