@@ -195,6 +195,14 @@ module.exports = function Category(catOpts) {
 		// (people who like) repos ...
 		this.catPlPlus = new g.Symbol(this.namePl + '+')
 		this.catPlPlus.addRule({ RHS: [ this.catPl ] })
+		// (people who like) my repos and {user}'s repos
+		var andCatPlPlus = new g.Symbol('and', this.namePl + '+')
+		andCatPlPlus.addRule({ RHS: [ operators.and, this.catPlPlus ] })
+		this.catPlPlus.addRule({ RHS: [ this.catPl, andCatPlPlus ] })
+		// (people who like) my repos or {user}'s repos
+		var orCatPlPlus = new g.Symbol('or', this.namePl + '+')
+		orCatPlPlus.addRule({ RHS: [ operators.union, this.catPlPlus ] })
+		this.catPlPlus.addRule({ RHS: [ this.catPl, orCatPlPlus ] })
 	}
 
 	start.addRule({ RHS: [ this.catPl ]})
