@@ -8,8 +8,6 @@ var operators = require('./operators')
 // Start symbol
 var start = new g.Symbol('start')
 
-var intersectSemantic = new g.Semantic({ name: 'intersect', cost: 0 })
-
 // Definition of accepted options for a Category
 var categoryOptsSchema = {
 	sg: String,
@@ -59,7 +57,7 @@ module.exports = function Category(catOpts) {
 	// (repos) liked by me or created by {user}
 	var orPassivePlus = new g.Symbol('or', this.nameSg, 'passive+')
 	orPassivePlus.addRule({ RHS: [ operators.union, passivePlus ] })
-	passivePlus.addRule({ RHS: [ this.passive, orPassivePlus ] })
+	passivePlus.addRule({ RHS: [ this.passive, orPassivePlus ], semantic: operators.unionSemantic })
 
 
 	var reducedNoTense = new g.Symbol(this.nameSg, 'reduced', 'no', 'tense')
@@ -86,7 +84,7 @@ module.exports = function Category(catOpts) {
 	// (people) I follow or {user} follows
 	var orObjFilterPlus = new g.Symbol('or', this.nameSg, 'obj', 'filter+')
 	orObjFilterPlus.addRule({ RHS: [ operators.union, objFilterPlus ] })
-	objFilterPlus.addRule({ RHS: [ this.objFilter, orObjFilterPlus ] })
+	objFilterPlus.addRule({ RHS: [ this.objFilter, orObjFilterPlus ], semantic: operators.unionSemantic })
 
 
 	var rhsExt = new g.Symbol(this.nameSg, 'rhs', 'ext')
@@ -153,11 +151,11 @@ module.exports = function Category(catOpts) {
 	// (people) who ... or I follow
 	var orFilterPlus = new g.Symbol('or', this.nameSg, 'filter+')
 	orFilterPlus.addRule({ RHS: [ operators.union, filterPlus ]})
-	filterPlus.addRule({ RHS: [ filter, orFilterPlus ] })
+	filterPlus.addRule({ RHS: [ filter, orFilterPlus ], semantic: operators.unionSemantic })
 	// (people) who ... or who I follow
 	var orRelPronounFilterPlus = new g.Symbol('or', catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
 	orRelPronounFilterPlus.addRule({ RHS: [ operators.union, relPronounFilterPlus ] })
-	filterPlus.addRule({ RHS: [ filter, orRelPronounFilterPlus ] })
+	filterPlus.addRule({ RHS: [ filter, orRelPronounFilterPlus ], semantic: operators.unionSemantic })
 
 
 	var relativeclause = new g.Symbol(this.nameSg, 'relativeclause')
@@ -172,9 +170,9 @@ module.exports = function Category(catOpts) {
 
 	this.plural = new g.Symbol(this.nameSg, 'plural')
 	// people followed by me
-	this.plural.addRule({ RHS: [ noRelative ], semantic: intersectSemantic })
+	this.plural.addRule({ RHS: [ noRelative ], semantic: operators.intersectSemantic })
 	// people who are followed by me
-	this.plural.addRule({ RHS: [ noRelative, relativeclause ], semantic: intersectSemantic })
+	this.plural.addRule({ RHS: [ noRelative, relativeclause ], semantic: operators.intersectSemantic })
 
 	this.catPl = new g.Symbol(this.namePl)
 	// (people who created) repos ...
