@@ -19,8 +19,8 @@ var repositoriesTerm = g.addWord({
 repository.headMayPoss.addRule({ RHS: [ github.termOpt, repositoriesTerm ] })
 
 
-var repositoriesCreatedSemantic = new g.Semantic({ name: repository.namePl + '-created', cost: 0.5 })
-var repositoryCreatorsSemantic = new g.Semantic({ name: repository.nameSg + '-creators', cost: 0.5 })
+var repositoriesCreatedSemantic = new g.Semantic({ name: repository.namePl + '-created', cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoryCreatorsSemantic = new g.Semantic({ name: repository.nameSg + '-creators', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my repos
 repository.noRelativePossessive.addRule({ RHS: [ poss.determiner, repository.possessible ], semantic: repositoriesCreatedSemantic })
@@ -52,8 +52,8 @@ var like = g.addVerb({
 	past: [ 'liked' ]
 })
 
-var repositoriesLikedSemantic = new g.Semantic({ name: repository.namePl + '-liked', cost: 0.5 })
-var repositoryLikersSemantic = new g.Semantic({ name: repository.nameSg + '-likers', cost: 0.5 })
+var repositoriesLikedSemantic = new g.Semantic({ name: repository.namePl + '-liked', cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoryLikersSemantic = new g.Semantic({ name: repository.nameSg + '-likers', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // (repos) liked by me
 repository.passive.addRule({ RHS: [ like, user.byObjUsersPlus ], semantic: repositoriesLikedSemantic, verbForm: 'past' })
@@ -78,8 +78,8 @@ var contributeTo = g.addWord({
 	accepted: [ 'contributed-to' ]
 })
 
-var repositoriesContributedSemantic = new g.Semantic({ name: repository.namePl + '-contributed', cost: 0.5 })
-var repositoryContributorsSemantic = new g.Semantic({ name: repository.nameSg + '-contributors', cost: 0.5 })
+var repositoriesContributedSemantic = new g.Semantic({ name: repository.namePl + '-contributed', cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoryContributorsSemantic = new g.Semantic({ name: repository.nameSg + '-contributors', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // (repos) contributed to by me
 repository.passive.addRule({ RHS: [ contributeTo, user.byObjUsersPlus ], semantic: repositoriesContributedSemantic })

@@ -19,8 +19,8 @@ var pullRequestsTerm = g.addWord({
 pullRequest.headMayPoss.addRule({ RHS: [ github.termOpt, pullRequestsTerm ] })
 
 
-var pullRequestsCreatedSemantic = new g.Semantic({ name: pullRequest.namePl + '-created', cost: 0.5 })
-var pullRequestCreatorsSemantic = new g.Semantic({ name: pullRequest.nameSg + '-creators', cost: 0.5 })
+var pullRequestsCreatedSemantic = new g.Semantic({ name: pullRequest.namePl + '-created', cost: 0.5, minParams: 1, maxParams: 1 })
+var pullRequestCreatorsSemantic = new g.Semantic({ name: pullRequest.nameSg + '-creators', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my pull requests
 pullRequest.noRelativePossessive.addRule({ RHS: [ poss.determiner, pullRequest.possessible ], semantic: pullRequestsCreatedSemantic })
@@ -49,7 +49,7 @@ var mention = g.addWord({
 	accepted: [ 'mention' ]
 })
 
-var pullRequestsMentioned = new g.Semantic({ name: pullRequest.namePl + '-mentioned', cost: 0.5 })
+var pullRequestsMentioned = new g.Semantic({ name: pullRequest.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // (pull requests that) mention me
 pullRequest.subjFilter.addRule({ RHS: [ mention, user.objUsersPlus ], semantic: pullRequestsMentioned })
