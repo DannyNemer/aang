@@ -19,16 +19,16 @@ var repositoriesTerm = g.addWord({
 repository.headMayPoss.addRule({ RHS: [ github.termOpt, repositoriesTerm ] })
 
 
-// my repos
-repository.noRelativePossessive.addRule({ RHS: [ poss.determiner, repository.possessible ] })
-// repos of mine
-repository.head.addRule({ RHS: [ repository.headMayPoss, poss.ofPossUsers ] })
-
-
-// CREATED:
 var repositoriesCreatedSemantic = new g.Semantic({ name: repository.namePl + '-created', cost: 0.5 })
 var repositoryCreatorsSemantic = new g.Semantic({ name: repository.nameSg + '-creators', cost: 0.5 })
 
+// my repos
+repository.noRelativePossessive.addRule({ RHS: [ poss.determiner, repository.possessible ], semantic: repositoriesCreatedSemantic })
+// repos of mine
+repository.head.addRule({ RHS: [ repository.headMayPoss, poss.ofPossUsers ], semantic: repositoriesCreatedSemantic })
+
+
+// CREATED:
 // (repos) created by me
 repository.passive.addRule({ RHS: [ github.created, user.byObjUsers ], semantic: repositoriesCreatedSemantic })
 // (repos) I created

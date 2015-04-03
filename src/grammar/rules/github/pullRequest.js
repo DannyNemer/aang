@@ -19,16 +19,16 @@ var pullRequestsTerm = g.addWord({
 pullRequest.headMayPoss.addRule({ RHS: [ github.termOpt, pullRequestsTerm ] })
 
 
-// my pull requests
-pullRequest.noRelativePossessive.addRule({ RHS: [ poss.determiner, pullRequest.possessible ]})
-// pull requests of mine
-pullRequest.head.addRule({ RHS: [ pullRequest.headMayPoss, poss.ofPossUsers ] })
-
-
-// CREATED:
 var pullRequestsCreatedSemantic = new g.Semantic({ name: pullRequest.namePl + '-created', cost: 0.5 })
 var pullRequestCreatorsSemantic = new g.Semantic({ name: pullRequest.nameSg + '-creators', cost: 0.5 })
 
+// my pull requests
+pullRequest.noRelativePossessive.addRule({ RHS: [ poss.determiner, pullRequest.possessible ], semantic: pullRequestsCreatedSemantic })
+// pull requests of mine
+pullRequest.head.addRule({ RHS: [ pullRequest.headMayPoss, poss.ofPossUsers ], semantic: pullRequestsCreatedSemantic })
+
+
+// CREATED:
 // (pull requests) created by me
 pullRequest.passive.addRule({ RHS: [ github.created, user.byObjUsers ], semantic: pullRequestsCreatedSemantic })
 // (pull requests) I created
