@@ -98,6 +98,8 @@ module.exports = function Category(catOpts) {
 	rhs.addRule({ RHS: [ reduced ] })
 	// (people) I follow
 	rhs.addRule({ RHS: [ rhsExt ] })
+	// (people) followed by me {user} follows (NOTE: orig has base cost penalty of 0.1)
+	rhs.addRule({ RHS: [ reduced, rhsExt ] })
 	// (people) I follow <adverbial-stopword>
 	rhs.addRule({ RHS: [ rhs, stopWords.sentenceAdverbial ] })
 

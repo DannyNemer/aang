@@ -8,6 +8,7 @@ var usersFollowedSemantic = new g.Semantic({ name: user.namePl + '-followed', co
 
 var follow = g.addVerb({
 	symbol: new g.Symbol('follow'),
+	insertionCost: 1,
 	oneOrPl: [ 'follow', 'subscribe to' ],
 	threeSg: [ 'follows' ],
 	past: [ 'followed' ],

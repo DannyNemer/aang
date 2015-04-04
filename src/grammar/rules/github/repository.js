@@ -23,7 +23,7 @@ var repositoriesCreatedSemantic = new g.Semantic({ name: repository.namePl + '-c
 var repositoryCreatorsSemantic = new g.Semantic({ name: repository.nameSg + '-creators', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my repos
-repository.noRelativePossessive.addRule({ RHS: [ poss.determiner, repository.possessible ], semantic: repositoriesCreatedSemantic })
+repository.noRelativePossessive.addRule({ RHS: [ poss.determinerOmissible, repository.possessible ], semantic: repositoriesCreatedSemantic })
 // repos of mine
 repository.head.addRule({ RHS: [ repository.headMayPoss, poss.ofPossUsers ], semantic: repositoriesCreatedSemantic })
 
