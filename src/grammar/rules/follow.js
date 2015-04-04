@@ -43,7 +43,7 @@ userFollowersHead.addRule({ RHS: [ user.companyOpt, followersTerm ] })
 
 // my followers
 var userFollowersPossessible = new g.Symbol(user.nameSg, 'followers', 'possessible')
-userFollowersPossessible.addRule({ RHS: [ user.lhs, userFollowersHead ] })
+userFollowersPossessible.addRule({ RHS: [ user.lhs, userFollowersHead ], transpositionCost: 1 })
 user.noRelativePossessive.addRule({ RHS: [ poss.determinerOmissible, userFollowersPossessible ], semantic: followersSemantic })
 
 // followers of mine

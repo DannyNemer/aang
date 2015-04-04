@@ -38,7 +38,7 @@ module.exports = function Category(catOpts) {
 
 		this.possessible = new g.Symbol(this.nameSg, 'possessible')
 		// (my) repos
-		this.possessible.addRule({ RHS: [ this.lhs, this.headMayPoss ] })
+		this.possessible.addRule({ RHS: [ this.lhs, this.headMayPoss ], transpositionCost: 1 })
 	}
 
 	var lhsHead = new g.Symbol(this.nameSg, 'lhs', this.nameSg, 'head')
@@ -99,9 +99,9 @@ module.exports = function Category(catOpts) {
 	// (people) I follow
 	rhs.addRule({ RHS: [ rhsExt ] })
 	// (people) followed by me {user} follows (NOTE: orig has base cost penalty of 0.1)
-	rhs.addRule({ RHS: [ reduced, rhsExt ] })
+	rhs.addRule({ RHS: [ reduced, rhsExt ], transpositionCost: 0.1 })
 	// (people) I follow <adverbial-stopword>
-	rhs.addRule({ RHS: [ rhs, stopWords.sentenceAdverbial ] })
+	rhs.addRule({ RHS: [ rhs, stopWords.sentenceAdverbial ], transpositionCost: 0 })
 
 
 	var noRelativeBase = new g.Symbol(this.nameSg, 'no', 'relative', 'base')
