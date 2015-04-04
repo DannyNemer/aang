@@ -59,6 +59,9 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 
 		Object.keys(grammar).forEach(function (nontermSym) {
 			grammar[nontermSym].forEach(function (rule) {
+				if (rule.RHS.length === 2 && /\+/.test(nontermSym)) return // TEMP
+				// if (rule.RHS.indexOf(nontermSym) !== -1) return
+
 				if (!rule.terminal && !rule.hasOwnProperty('transpositionCost') && RHSCanBeInserted(insertions, rule.RHS)) {
 					rule.RHS.map(function (sym) {
 						// Create an array of every insertion for each RHS symbol
@@ -128,7 +131,7 @@ function RHSCanBeInserted(insertions, RHS) {
 function addInsertion(insertions, nontermSym, newInsertion) {
 	var symInsertions = insertions[nontermSym] || (insertions[nontermSym] = [])
 
-	if (!insertionExists(symInsertions, newInsertion) && newInsertion.cost < 6) {
+	if (!insertionExists(symInsertions, newInsertion)) {
 		symInsertions.push(newInsertion)
 		return true
 	}
@@ -161,6 +164,8 @@ function insertionExists(symInsertions, newInsertion) {
 // Add new rules from inserted terminal symbol productions and empty-string productions to grammar
 function createRulesFromInsertions(grammar, insertions) {
 	Object.keys(grammar).forEach(function (nontermSym) {
+		if (/\+/.test(nontermSym)) return // TEMP
+
 		grammar[nontermSym].forEach(function (rule, ruleIdx, symRules) {
 			var RHS = rule.RHS
 			if (RHS.length > 1) {
