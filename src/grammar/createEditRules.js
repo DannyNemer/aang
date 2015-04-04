@@ -4,7 +4,7 @@
 //   Transposition - swapped RHS of nonterminal rules
 
 var util = require('../util')
-var insertSemantic = require('./Semantic.js').insertSemantic
+var insertSemanticBinary = require('./Semantic.js').insertSemanticBinary
 
 
 module.exports = function (grammar) {
@@ -98,7 +98,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 						// Add each insertion the can be produced from the RHS
 
 						// TEMP
-						var semantic = insertSemantic(rule.semantic, insertion.semantic)
+						var semantic = insertSemanticBinary(rule.semantic, insertion.semantic)
 						if (semantic === -1) return
 
 						// Temp hack:

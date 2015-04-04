@@ -4,11 +4,17 @@
 while (/bin/.test(process.argv[0]) && process.uptime() < 1) {}
 var util = require('../util.js')
 
+var stateTablePath = './StateTable.js'
+var parserNewPath = './Parser.js'
+var parserOldPath = './util/ParserBestFirst.js'
+var searchPath = './search.js'
 var grammarPath = '../grammar.json'
+
 var grammar = require(grammarPath)
 var prevRSS = process.memoryUsage().rss
-var stateTable = new (require('./StateTable'))(grammar, '[start]')
+var stateTable = new (require(stateTablePath))(grammar, '[start]')
 var stateTableMemoryUsage = (process.memoryUsage().rss - prevRSS) / 1e6 + ' MB'
+
 
 var rl = require('readline').createInterface(process.stdin, process.stdout)
 
@@ -17,15 +23,16 @@ rl.on('line', function (line) {
 	var query = line.trim()
 
 	if (query && !runCommand(query)) {
-		parse(query)
+		parse(query, K)
 	}
 
-	deleteCache(parserNewPath, parserOldPath, searchPath, './BinaryHeap.js', '../grammar/Semantic.js')
+	deleteCache(parserNewPath, parserOldPath, searchPath, './BinaryHeap.js', '../grammar/Semantic.js', '../util.js')
 
 	rl.prompt()
 })
 
-function parse(query) {
+
+function parse(query, K) {
 	try {
 		// console.log('query:', query)
 		var parser = new (require(parserPath))(stateTable)
@@ -61,14 +68,23 @@ function parse(query) {
 }
 
 
-var parserNewPath = './Parser.js'
-var parserOldPath = './util/ParserBestFirst.js'
-var searchPath = './search.js'
-
 var testQueries = [
-	'people who like my repos liked by people who follow people I follow',
 	'repos I have liked',
-	'my repos me people who follow my followers have been and',
+	'people who like my repos liked by people who follow people I follow',
+	'people who like repos',
+	'repos been followers',
+	'repos been followers people who like repos that I have',
+	'repos people who like and created',
+	'repos that have been created by people and like and I contributed-to',
+	'repos that are repos',
+	'my followers who are my followers',
+	'my followers who are followers of followers of mine',
+	'my followers who are followers of followers of mine who liked that repos contributed-to of mine',
+	'repos',
+	'people',
+	'people who created my repos and my pull-requests',
+	'people pull-requests like repos I like',
+// 'my repos me people who follow my followers have been and',
 ]
 
 var K = 10
@@ -86,18 +102,21 @@ function runCommand(query) {
 		if (!isNaN(args[1])) K = Number(args[1])
 		console.log('K:', K)
 	} else if (query === '-r') {
-		var prevK = K
-		K = 500
-		testQueries.forEach(parse)
-		K = prevK
+		if (!printOutput) console.time('test')
+
+		testQueries.forEach(function (testQuery) {
+			parse(testQuery, 100)
+		})
+
+		if (!printOutput) console.timeEnd('test')
 	} else if (query === '-rb') {
 		console.log('Rebuild grammar and state table:')
 		// Rebuild grammar
 		require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
 		// Remove previous grammar from cache
-		deleteCache(grammarPath)
+		deleteCache(grammarPath, '../semantics.json')
 		// Rebuild state table
-		stateTable = new (require('./StateTable'))(require(grammarPath), '[start]')
+		stateTable = new (require(stateTablePath))(require(grammarPath), '[start]')
 	} else if (query === '-st') {
 		console.log(stateTableMemoryUsage)
 		stateTable.print()
@@ -126,7 +145,7 @@ function runCommand(query) {
 		console.log('Commands:')
 		console.log('-k  K:', K)
 		console.log('-r  run test queries')
-		console.log('-rb rebuild state table')
+		console.log('-rb rebuild grammar and state table')
 		console.log('-st print state table')
 		console.log('-t  print time:', printTime)
 		console.log('-o  print output:', printOutput)

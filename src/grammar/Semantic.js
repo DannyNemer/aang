@@ -4,51 +4,71 @@ var util = require('../util')
 
 exports.semantics = {}
 
-var semanticSchema = {
-	name: String,
-	cost: Number,
-	arg: { type: Boolean, optional: true },
-	minParams: { type: Number, optional: true },
-	maxParams: { type: Number, optional: true }
-}
-
 exports.Semantic = function (opts) {
-	if (util.illFormedOpts(semanticSchema, opts)) {
-		throw 'ill-formed Semantic'
-	}
-
-	if (opts.args && (opts.hasOwnProperty('minParams') || opts.hasOwnProperty('maxParams'))) {
-		console.log('Err: Semantic arguments cannot have parameter settings:', opts.name)
-		console.log(util.getLine())
-		throw 'ill-formed Semantic'
-	}
-
 	if (exports.semantics.hasOwnProperty(opts.name)) {
 		console.log('Err: Duplicate Semantic:', opts.name)
 		console.log(util.getLine())
 		throw 'duplicate Semantic'
 	}
 
+	return opts.arg ? newSemanticArg(opts) : newSemanticFunc(opts)
+}
+
+
+// Schema for semantic functions
+var semanticFuncOptsSchema = {
+	name: String,
+	cost: Number,
+	minParams: Number,
+	maxParams: Number
+}
+
+// Create a new semantic function from passed opts
+function newSemanticFunc(opts) {
+	if (util.illFormedOpts(semanticFuncOptsSchema, opts)) {
+		throw 'ill-formed Semantic function'
+	}
+
 	exports.semantics[opts.name] = {
+		name: opts.name,
 		cost: opts.cost,
-		arg: opts.arg,
 		minParams: opts.minParams,
 		maxParams: opts.maxParams
 	}
 
-	if (opts.arg) {
-		return [ opts.name ]
-	} else {
-		var semantic = {}
-		semantic[opts.name] = []
-		return [ semantic ]
-	}
+	var semantic = {}
+	semantic[opts.name] = []
+	return [ semantic ]
 }
+
+
+// Schema for semantic arguments
+var semanticArgOptsSchema = {
+	name: String,
+	cost: Number,
+	arg: Boolean
+}
+
+// Create a new semantic argument from passed opts
+function newSemanticArg(opts) {
+	if (util.illFormedOpts(semanticArgOptsSchema, opts)) {
+		throw 'ill-formed Semantic argument'
+	}
+
+	exports.semantics[opts.name] = {
+		name: opts.name,
+		cost: opts.cost,
+		arg: true
+	}
+
+	return [ opts.name ]
+}
+
 
 exports.costOfSemantic = function (semantic) {
 	return semantic.reduce(function (accum, cur) {
 		// Semantic function
-		if (util.isType(cur, Object)) {
+		if (cur.constructor === Object) {
 			var semanticName = Object.keys(cur)[0]
 			return accum + exports.semantics[semanticName].cost + exports.costOfSemantic(cur[semanticName])
 		}
@@ -63,13 +83,38 @@ exports.costOfSemantic = function (semantic) {
 	}, 0)
 }
 
-exports.insertSemantic = function (LHS) {
-	var RHS = Array.prototype.slice.call(arguments, 1).filter(Boolean)
-	if (RHS.length === 0) return LHS
+exports.insertSemantic = function (LHS, RHS) {
+	if (!RHS) return LHS
 
-	RHS = RHS.reduce(function (prev, cur) {
-		return prev.concat(cur)
-	}, [])
+	if (dupSemantics(RHS)) return -1 // not doing anything because RHS.length == 1
+
+	// might be unecessary - all semantics saved in grammar are sorted, otherwise previously seen + sorted
+	// RHS = RHS.sort(compareSemantics)
+
+	if (!LHS) return RHS
+
+	var newSemantic = insert(LHS, RHS)
+	if (!newSemantic) throw 'merge fail' // TURNED OFF temporarily for display text check
+	if (!newSemantic) return -1
+
+	// remove intersect() when contains single argument
+	for (var s = newSemantic.length; s-- > 0;) {
+		var semanticChild = newSemantic[s]
+
+		var intersectSemantic = semanticChild.intersect
+		if (intersectSemantic) {
+			if (intersectSemantic.length === 1) {
+				newSemantic[s] = intersectSemantic[0]
+			}
+		}
+	}
+
+	return newSemantic
+}
+
+exports.insertSemanticBinary = function (LHS, RHSA, RHSB) {
+	var RHS = RHSA && RHSB ? RHSA.concat(RHSB) : (RHSA || RHSB)
+	if (!RHS) return LHS
 
 	if (dupSemantics(RHS)) return -1
 	if (hasOpenEndedSemantic(RHS)) return -1
@@ -78,59 +123,49 @@ exports.insertSemantic = function (LHS) {
 
 	if (!LHS) return RHS
 
-	// RHS = RHS.sort(compareSemantics) // here? (or taken care of later)
+	// RHS = RHS.sort(compareSemantics) // here? (or taken care of earlier)
 	var newSemantic = insert(LHS, RHS)
-	// if (!newSemantic) throw 'merge fail' // TURNED OFF temporarily for display text check
+	if (!newSemantic) throw 'merge fail' // TURNED OFF temporarily for display text check
 	if (!newSemantic) return -1
 
 	// remove intersect() when contains single argument
-	newSemantic.forEach(function (semanticChild, i) {
+	for (var s = newSemantic.length; s-- > 0;) {
+		var semanticChild = newSemantic[s]
+
 		var intersectSemantic = semanticChild.intersect
-		if (intersectSemantic && intersectSemantic.length === 1) {
-			newSemantic[i] = intersectSemantic[0]
+		if (intersectSemantic) {
+			if (intersectSemantic.length === 1) {
+				newSemantic[s] = intersectSemantic[0]
+			}
 		}
-	})
+	}
 
 	return newSemantic
 }
 
+// not slicing RHS here because did before
+// the LHS should always be empty
 function insert(LHS, RHS) {
-	var newLHS
-	var newLHSIdxOffset = 0
+	var lastIdx = LHS.length - 1
+	var lhsSemantic = LHS[lastIdx]
 
-	for (var lhsIdx = 0, lhsLength = LHS.length; lhsIdx < lhsLength; lhsIdx++) {
-		var lhsSemantic = LHS[lhsIdx]
-		if (!util.isType(lhsSemantic, Object)) continue
+	var semanticName = getSemanticName(lhsSemantic)
+	var semanticChildren = lhsSemantic[semanticName]
 
-		var semanticName = getSemanticName(lhsSemantic)
-		var maxParams = exports.semantics[semanticName].maxParams
-		if (maxParams === 0) continue
-
-		var semanticChildren = lhsSemantic[semanticName]
-
-		var newSemanticChildren
-		if (semanticChildren.length === 0) {
-			newSemanticChildren = RHS
-		} else {
-			newSemanticChildren = insert(semanticChildren, RHS)
-			if (!newSemanticChildren) continue
-		}
-
-		if (newSemanticChildren.length > maxParams && maxParams > 1) throw 'problem'
-		newLHS = newLHS || LHS.slice()
-
-		if (newSemanticChildren.length > maxParams) {
-			newSemanticChildren.forEach(function (newSemanticChild, i) {
-				if (i) newLHSIdxOffset++
-				var newSemantic = newLHS[lhsIdx + newLHSIdxOffset] = {}
-				newSemantic[semanticName] = [ newSemanticChild ]
-			})
-		} else {
-			var newSemantic = newLHS[lhsIdx + newLHSIdxOffset] = {}
-			newSemantic[semanticName] = newSemanticChildren.sort(compareSemantics)
-		}
+	var newSemanticChildren = null
+	if (semanticChildren.length === 0) {
+		newSemanticChildren = RHS
+	} else {
+		// Go to deeper level
+		newSemanticChildren = insert(semanticChildren, RHS) // when LHS.length > 0
+		if (!newSemanticChildren) return null
 	}
 
+	if (newSemanticChildren.length > exports.semantics[semanticName].maxParams) throw 'problem'
+
+	var newLHS = LHS.slice()
+	var newSemantic = newLHS[lastIdx] = {}
+	newSemantic[semanticName] = newSemanticChildren.sort(compareSemantics)
 	return newLHS
 }
 
@@ -140,16 +175,18 @@ function insert(LHS, RHS) {
 // if returns greater than 0, sort b to a lower index than a
 // if returns 0, leave a and b unchanged with respect to each other
 function compareSemantics(a, b) {
-	var aIsObject = util.isType(a, Object)
-	var bIsObject = util.isType(b, Object)
+	var aIsObject = a.constructor === Object
+	var bIsObject = b.constructor === Object
 
 	// arg, func()
-	if (!aIsObject && bIsObject)
+	if (!aIsObject && bIsObject) {
 		return -1
+	}
 
 	// func(), arg
-	if (aIsObject && !bIsObject)
+	if (aIsObject && !bIsObject) {
 		return 1
+	}
 
 	// func(), func()
 	if (aIsObject && bIsObject) {
@@ -204,11 +241,22 @@ function getSemanticName(semantic) {
 
 function hasOpenEndedSemantic(RHS) {
 	return RHS.some(function (semantic) {
-		if (util.isType(semantic, Object)) {
+		if (semantic.constructor === Object) {
 			var semanticName = getSemanticName(semantic)
-			return exports.semantics[semanticName].length < exports.semantics[semanticName].minParams
+			return semantic[semanticName].length < exports.semantics[semanticName].minParams
 		}
 	})
 }
 
-// need a create semantic class, and a create semantic thing
+exports.semanticToString = function (semanticArgs) {
+	if (!semanticArgs) return
+
+	return semanticArgs.map(function (semantic) {
+		if (semantic.constructor === Object) {
+			var semanticName = Object.keys(semantic)[0]
+			return semanticName + '(' + exports.semanticToString(semantic[semanticName]) + ')'
+		} else {
+			return semantic // number or string
+		}
+	}).join(',')
+}

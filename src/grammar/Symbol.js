@@ -11,7 +11,7 @@ function Symbol(grammar) {
 	var symNameChunks = Array.prototype.slice.call(arguments, 1)
 
 	if (symNameChunks.indexOf(undefined) !== -1) {
-		console.log('undefined String in Symbol name:', symNameChunks)
+		console.log('Err: undefined String in Symbol name:', symNameChunks)
 		console.log(util.getLine())
 		throw 'ill-formed Symbol'
 	}
@@ -30,22 +30,19 @@ function Symbol(grammar) {
 
 // Add a new rule to the grammar
 Symbol.prototype.addRule = function (opts) {
-	if (!opts.hasOwnProperty('RHS')) {
-		console.log('rule missing RHS:', opts)
-		throw 'ill-formed rule'
-	}
-
 	var newRule = opts.terminal ? this.newTerminalRule(opts) : this.newNonterminalRule(opts)
 
 	if (opts.semantic) {
-		newRule.semantic = opts.semantic.function
-		newRule.cost = this.calcCost(opts.semantic.cost)
+		newRule.semantic = opts.semantic
+		newRule.cost = this.calcCost(Semantic.costOfSemantic(opts.semantic))
+		// newRule.semantic = opts.semantic.function
+		// newRule.cost = this.calcCost(opts.semantic.cost)
 	} else {
 		newRule.cost = this.calcCost()
 	}
 
 	if (this.ruleExists(newRule)) {
-		ruleErr('duplicate rule', this.name, newRule.RHS)
+		ruleErr('Duplicate rule', this.name, newRule.RHS)
 	}
 
 	this.rules.push(newRule)
@@ -56,13 +53,14 @@ Symbol.prototype.addRule = function (opts) {
 var termRuleOptsSchema = {
 	terminal: Boolean,
 	RHS: String,
-	semantic: { type: Semantic, optional: true },
+	// semantic: { type: Semantic, optional: true },
+	semantic: { type: Array, optional: true },
 	insertionCost: { type: Number, optional: true },
 	textForms: { type: Object, optional: true },
 	text: { type: String, optional: true }
 }
 
-// Initialize a new terminal rule from passed opts
+// Create a new terminal rule from passed opts
 Symbol.prototype.newTerminalRule = function (opts) {
 	if (util.illFormedOpts(termRuleOptsSchema, opts)) {
 		throw 'ill-formed terminal rule'
@@ -86,21 +84,22 @@ Symbol.prototype.newTerminalRule = function (opts) {
 // Schema for nonterminal rule
 var nontermRuleOptsSchema = {
 	RHS: { type: Array, arrayType: Symbol },
-	semantic: { type: Semantic, optional: true },
+	semantic: { type: Array, optional: true },
+	// semantic: { type: Semantic, optional: true },
 	transpositionCost: { type: Number, optional: true },
 	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
 	verbForm: { type: [ 'past' ], optional: true },
 	personNumber: { type: [ 'one', 'threeSg', 'pl' ], optional: true }
 }
 
-// Initialize a new nonterminal rule from passed opts
+// Create a new nonterminal rule from passed opts
 Symbol.prototype.newNonterminalRule = function (opts) {
 	if (util.illFormedOpts(nontermRuleOptsSchema, opts)) {
 		throw 'ill-formed nonterminal rule'
 	}
 
 	if (opts.RHS.length > 2) {
-		ruleErr('rules can only have 1 or 2 RHS symbols', this.name, opts.RHS)
+		ruleErr('Rules can only have 1 or 2 RHS symbols', this.name, opts.RHS)
 	}
 
 	var newRule = {
@@ -112,7 +111,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 
 	if (opts.hasOwnProperty('transpositionCost')) {
 		if (opts.RHS.length !== 2) {
-			ruleErr('nonterminal rules with transposition-costs must have 2 RHS symbols', this.name, opts.RHS)
+			ruleErr('Nonterminal rules with transposition-costs must have 2 RHS symbols', this.name, opts.RHS)
 		}
 
 		newRule.transpositionCost = opts.transpositionCost
@@ -146,7 +145,7 @@ function ruleErr(errMessage, name, RHS) {
 	})
 
 	console.log(util.getLine())
-	console.log(errMessage + ':')
+	console.log('Err:', errMessage + ':')
 	console.log('\t' + name, '->', RHS)
 	throw 'ill-formed rule'
 }

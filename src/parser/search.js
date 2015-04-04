@@ -1,7 +1,10 @@
 var util = require('../util')
 var BinaryHeap = require('./BinaryHeap')
-var insertSemantic = require('../grammar/Semantic').insertSemantic
-require('../grammar/Semantic').semantics = require('../semantics.json')
+
+var semantic = require('../grammar/Semantic')
+semantic.semantics = require('../semantics.json')
+var insertSemantic = semantic.insertSemantic
+var insertSemanticBinary = semantic.insertSemanticBinary
 
 var testCounter = 0
 
@@ -28,7 +31,7 @@ exports.search = function (startNode, K, buildTrees) {
 
 	// Might be able to save ruleProps as a single object - issue with ordering (array could be faster than creating new objects?)
 
-	while (heap.size() > 0 && heap.size() < 1e5) {
+	while (heap.size() > 0) {
 		var item = heap.pop()
 
 		var lastNode = item.lastNode || item.nextNodes.pop()
@@ -42,14 +45,13 @@ exports.search = function (startNode, K, buildTrees) {
 		if (!lastNode) {
 			item.semantic = item.prevSemantics.pop().semantic
 			if (item.prevSemantics.length) console.log('problem')
+
+			var str = JSON.stringify(item.semantic)
 			var exists = trees.some(function (tree) {
-				return JSON.stringify(tree.semantic) === JSON.stringify(item.semantic)
+				return JSON.stringify(tree.semantic) === str
 			})
-			if (!exists) {
-				if (trees.push(item) === K) break
-				// console.log(item.text.join(' '))
-				// console.log(semanticToString(item.semantic))
-			}
+
+			if (!exists && trees.push(item) === K) break
 			continue
 		}
 
@@ -77,7 +79,6 @@ exports.search = function (startNode, K, buildTrees) {
 				var newSemantic = insertSemantic(item.semantic, ruleProps.semantic) // useless b/c no semantic on trans
 				if (newSemantic === -1) continue
 				newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic })
-				newItem.semantic = undefined
 
 				if (buildTrees) {
 					newItem.tree = spliceTree(item.tree, sub, ruleProps)
@@ -93,11 +94,15 @@ exports.search = function (startNode, K, buildTrees) {
 		}
 	}
 
+	console.log('heap size:', heap.size())
 	if (testCounter) console.log('testCounter:', testCounter)
 	return trees
 }
 
 function createItem(sub, item, ruleProps, buildTrees) {
+	var newSemantic = insertSemantic(item.semantic, ruleProps.semantic)
+	if (newSemantic === -1) return -1
+
 	var newItem = {
 		cost: item.cost + ruleProps.cost,
 		ruleProps: item.ruleProps,
@@ -108,13 +113,12 @@ function createItem(sub, item, ruleProps, buildTrees) {
 		newItem.tree = spliceTree(item.tree, sub, ruleProps)
 	}
 
-	var newSemantic = insertSemantic(item.semantic, ruleProps.semantic)
-	if (newSemantic === -1) return -1
-
 	// Insertion
 	if (ruleProps.hasOwnProperty('insertionIdx')) {
-		newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic }, { LHS: false, semantic: ruleProps.insertedSemantic })
-		newItem.semantic = undefined
+		newItem.prevSemantics = item.prevSemantics.concat(
+			{ LHS: true, semantic: newSemantic },
+			{ LHS: false, semantic: ruleProps.insertedSemantic }
+		)
 
 		newItem.lastNode = sub.node
 
@@ -140,34 +144,37 @@ function createItem(sub, item, ruleProps, buildTrees) {
 
 	else {
 		if (sub.next) {
-			newItem.nextNodes = newItem.nextNodes.concat(sub.next.node)
-		}
-
-		if (sub.next) {
 			newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic })
-			newItem.semantic = undefined
 		} else if (sub.node.subs) {
 			newItem.prevSemantics = item.prevSemantics
 			newItem.semantic = newSemantic
-		} else if (item.prevSemantics[item.prevSemantics.length - 1].LHS) { // term rule RHSA
-			newItem.prevSemantics = item.prevSemantics.concat({ LHS: false, semantic: newSemantic })
-			newItem.semantic = undefined
-		} else if (!item.prevSemantics[item.prevSemantics.length - 1].LHS) { // term rule RHSA
-			newItem.prevSemantics = item.prevSemantics.slice()
+		} else {
+			var prevSemanticsLen = item.prevSemantics.length
 
-			while (newItem.prevSemantics.length >= 2 && !newItem.prevSemantics[newItem.prevSemantics.length - 1].LHS) {
-				var RHSA = newItem.prevSemantics.pop().semantic
-				var LHS = newItem.prevSemantics.pop().semantic
-				var newSemanticTwo = insertSemantic(LHS, RHSA, newSemantic)
-				if (newSemanticTwo === -1) return -1
-
-				newSemantic = newSemanticTwo
+			// Left of RHS
+			// prevSemanticsLen === 0 -> only one terminal symbol in tree (no branches)
+			if (prevSemanticsLen === 0 || item.prevSemantics[prevSemanticsLen - 1].LHS) {
+				newItem.prevSemantics = item.prevSemantics.concat({ LHS: false, semantic: newSemantic })
 			}
 
-			newItem.prevSemantics.push({ LHS: false, semantic: newSemantic }) // next RHSA
-			newItem.semantic = undefined
-		} else {
-			console.log('should never be here')
+			// Right of RHS
+			else {
+				var prevSemantics = newItem.prevSemantics = item.prevSemantics.slice()
+
+				while (prevSemantics.length >= 2 && !prevSemantics[prevSemantics.length - 1].LHS) {
+					var RHSA = prevSemantics.pop().semantic
+					var LHS = prevSemantics.pop().semantic
+					newSemantic = insertSemanticBinary(LHS, RHSA, newSemantic)
+					if (newSemantic === -1) return -1
+				}
+
+				prevSemantics.push({ LHS: false, semantic: newSemantic }) // next RHSA
+			}
+		}
+
+
+		if (sub.next) {
+			newItem.nextNodes = newItem.nextNodes.concat(sub.next.node)
 		}
 
 		if (sub.node.subs) {
@@ -183,12 +190,16 @@ function createItem(sub, item, ruleProps, buildTrees) {
 			newItem.nextNodes = newItem.nextNodes.slice()
 
 			var text = ruleProps.text
-			if (text instanceof Object) {
-				newItem.ruleProps = newItem.ruleProps.slice()
-				text = conjugateText(newItem.ruleProps, text)
-			}
+			if (text) {
+				if (text instanceof Object) {
+					newItem.ruleProps = newItem.ruleProps.slice()
+					text = conjugateText(newItem.ruleProps, text)
+				}
 
-			newItem.text = item.text.concat(text)
+				newItem.text = item.text.concat(text)
+			} else {
+				newItem.text = item.text // stop words
+			}
 		}
 	}
 
@@ -316,20 +327,7 @@ function cloneTree(node, lastNodes) {
 exports.print = function (trees, printTrees, printCost) {
 	trees.forEach(function (tree){
 		console.log(tree.text.join(' '), printCost ? tree.cost : '')
-		console.log(semanticToString(tree.semantic))
+		console.log(' ', semantic.semanticToString(tree.semantic))
 		if (printTrees) util.log(tree.tree)
 	})
-}
-
-function semanticToString(semanticArgs) {
-	if (!semanticArgs) return
-
-	return semanticArgs.map(function (semantic) {
-		if (util.isType(semantic, Object)) {
-			var semanticName = Object.keys(semantic)[0]
-			return semanticName + '(' + semanticToString(semantic[semanticName]) + ')'
-		} else {
-			return semantic // number or string
-		}
-	}).join(',')
 }
