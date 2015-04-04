@@ -4,7 +4,8 @@
 while (/bin/.test(process.argv[0]) && process.uptime() < 1) {}
 var util = require('../util.js')
 
-var grammar = require('../grammar.json')
+var grammarPath = '../grammar.json'
+var grammar = require(grammarPath)
 var prevRSS = process.memoryUsage().rss
 var stateTable = new (require('./StateTable'))(grammar, '[start]')
 var stateTableMemoryUsage = (process.memoryUsage().rss - prevRSS) / 1e6 + ' MB'
@@ -89,6 +90,14 @@ function runCommand(query) {
 		K = 500
 		testQueries.forEach(parse)
 		K = prevK
+	} else if (query === '-rb') {
+		console.log('Rebuild grammar and state table:')
+		// Rebuild grammar
+		require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
+		// Remove previous grammar from cache
+		deleteCache(grammarPath)
+		// Rebuild state table
+		stateTable = new (require('./StateTable'))(require(grammarPath), '[start]')
 	} else if (query === '-st') {
 		console.log(stateTableMemoryUsage)
 		stateTable.print()
@@ -114,9 +123,10 @@ function runCommand(query) {
 		parserPath = parserPath === parserNewPath ? parserOldPath : parserNewPath
 		console.log('parser path:', parserPath)
 	} else if (query === '-h') {
-		console.log('Settings:')
+		console.log('Commands:')
 		console.log('-k  K:', K)
 		console.log('-r  run test queries')
+		console.log('-rb rebuild state table')
 		console.log('-st print state table')
 		console.log('-t  print time:', printTime)
 		console.log('-o  print output:', printOutput)
