@@ -213,14 +213,6 @@ function compareSemantics(a, b) {
 	return a === b ? 0 : (a < b ? -1 : 1)
 }
 
-// could eventually make function a prototype of semant
-// just adds the RHS directly to function in LHS
-// if using semanticRHS, etc, might not need to check to concat, etc - you know it needs to go inside
-// -- in fact, you should only do it that way (simpler) and throw err when failed
-// -- events is working now because of our ridiculous checks
-// change to taking one RHS
-// TODO: maybe it stops duplicates not created by the multiplier
-
 
 // rejected semantics:
 	// exact duplicats (accouting for sub-semantics)
@@ -228,12 +220,47 @@ function compareSemantics(a, b) {
 	// photos-of(), photos-of()
 
 function dupSemantics(semantic) {
-	return semantic.some(function (argA, aIdx) {
-		return semantic.some(function (argB, bIdx) {
-			return aIdx < bIdx && JSON.stringify(argA) === JSON.stringify(argB) // temporary because slow
-		})
-	})
+	for (var a = semantic.length; a-- > 0;) {
+		var semanticA = semantic[a]
+
+		for (var b = a; b-- > 0;) {
+			if (semanticsMatch(semanticA, semantic[b])) {
+				return true
+			}
+		}
+	}
+
+	return false
 }
+
+function semanticsMatch(a, b) {
+	if (a === b) { // entities
+		return true
+	} else if (a.constructor === Object && b.constructor === Object) {
+		var semanticName = getSemanticName(a)
+		if (semanticArraysMatch(a[semanticName], b[semanticName])) return true
+	}
+
+	return false
+}
+
+function semanticArraysMatch(a, b) {
+	// Same entity arrays
+	if (a === b) return true
+
+	// One of two is undefined (different semantics)
+	if (!a || !b) return false
+
+	var i = a.length
+	if (i !== b.length) return false
+
+	while (i-- > 0) {
+		if (semanticsMatch(a[i], b[i])) return true
+	}
+
+	return false
+}
+
 
 function getSemanticName(semantic) {
 	return Object.keys(semantic)[0]
