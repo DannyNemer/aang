@@ -327,15 +327,29 @@ function ruleExists(rules, newRule) {
 	for (var r = rules.length; r-- > 0;) {
 		var existingRule = rules[r]
 
-		if (util.arraysMatch(existingRule.RHS, newRule.RHS) && util.arraysMatch(existingRule.text, newRule.text)) {
-			if (existingRule.insertedSyms) {
-				console.log('Err: two identical rules produced by insertion(s)')
-			} else {
-				console.log('Err: new rule produced with edits identical to original rule')
+		if (util.arraysMatch(existingRule.RHS, newRule.RHS)) {
+			if (util.arraysMatch(existingRule.text, newRule.text)) {
+				if (existingRule.insertedSyms) {
+					console.log('Err: two identical rules produced by insertion(s)')
+				} else {
+					console.log('Err: new rule produced with edits identical to original rule')
+				}
+
+				util.log(existingRule, newRule)
+				throw 'duplicate rule produced with edits'
 			}
 
-			util.log(existingRule, newRule)
-			throw 'duplicate rule produced with edits'
+			if (existingRule.semantic === newRule.semantic && existingRule.insertedSemantic) {
+				if (JSON.stringify(existingRule.insertedSemantic) === JSON.stringify(newRule.insertedSemantic)) {
+					if (existingRule.cost > newRule.cost) {
+						console.log('Err: new rule with identical semantic cheaper than previously added rule')
+						util.log(existingRule, newRule)
+						throw 'rules not added by increasing costs'
+					}
+
+					return true
+				}
+			}
 		}
 	}
 
