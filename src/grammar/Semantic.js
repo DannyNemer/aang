@@ -234,11 +234,12 @@ function dupSemantics(semantic) {
 }
 
 function semanticsMatch(a, b) {
-	if (a === b) { // entities
-		return true
-	} else if (a.constructor === Object && b.constructor === Object) {
+	// entities
+	if (a === b) return true
+
+	if (a.constructor === Object && b.constructor === Object) {
 		var semanticName = getSemanticName(a)
-		if (semanticArraysMatch(a[semanticName], b[semanticName])) return true
+		return semanticArraysMatch(a[semanticName], b[semanticName])
 	}
 
 	return false
@@ -267,12 +268,18 @@ function getSemanticName(semantic) {
 }
 
 function hasOpenEndedSemantic(RHS) {
-	return RHS.some(function (semantic) {
+	for (var r = RHS.length; r-- > 0;) {
+		var semantic = RHS[r]
+
 		if (semantic.constructor === Object) {
 			var semanticName = getSemanticName(semantic)
-			return semantic[semanticName].length < exports.semantics[semanticName].minParams
+			if (semantic[semanticName].length < exports.semantics[semanticName].minParams) {
+				return true
+			}
 		}
-	})
+	}
+
+	return false
 }
 
 exports.semanticToString = function (semanticArgs) {
