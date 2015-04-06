@@ -44,14 +44,15 @@ exports.search = function (startNode, K, buildTrees) {
 
 		if (!lastNode) {
 			item.semantic = item.prevSemantics.pop().semantic
-			if (item.prevSemantics.length) console.log('problem')
+			if (item.prevSemantics.length) throw 'prevSemantics remain'
 
-			var str = JSON.stringify(item.semantic)
-			var exists = trees.some(function (tree) {
-				return JSON.stringify(tree.semantic) === str
-			})
+			var semanticStr = JSON.stringify(item.semantic)
+			for (var t = trees.length; t-- > 0;) {
+				if (trees[t].semanticStr === semanticStr) break
+			}
+			item.semanticStr = semanticStr
 
-			if (!exists && trees.push(item) === K) break
+			if (t < 0 && trees.push(item) === K) break
 			continue
 		}
 
