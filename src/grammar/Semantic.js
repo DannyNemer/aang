@@ -143,29 +143,42 @@ exports.insertSemanticBinary = function (LHS, RHSA, RHSB) {
 	return newSemantic
 }
 
+
 // not slicing RHS here because did before
-// the LHS should always be empty
+// the LHS should always be empty, and last one - because of sorting we know it is not arguemnt
 function insert(LHS, RHS) {
-	var lastIdx = LHS.length - 1
-	var lhsSemantic = LHS[lastIdx]
+	var lhsIdx = LHS.length - 1
+	var lhsSemantic = LHS[lhsIdx]
 
 	var semanticName = getSemanticName(lhsSemantic)
+	var maxParams = exports.semantics[semanticName].maxParams
+
 	var semanticChildren = lhsSemantic[semanticName]
 
-	var newSemanticChildren = null
+	var newSemanticChildren
 	if (semanticChildren.length === 0) {
 		newSemanticChildren = RHS
 	} else {
 		// Go to deeper level
-		newSemanticChildren = insert(semanticChildren, RHS) // when LHS.length > 0
-		if (!newSemanticChildren) return null
+		newSemanticChildren = insertSemanitcs(semanticChildren, RHS) // when LHS.length > 0
+		if (!newSemanticChildren) return null // might never be reached
 	}
 
-	if (newSemanticChildren.length > exports.semantics[semanticName].maxParams) throw 'problem'
-
 	var newLHS = LHS.slice()
-	var newSemantic = newLHS[lastIdx] = {}
-	newSemantic[semanticName] = newSemanticChildren.sort(compareSemantics)
+
+	if (newSemanticChildren.length > maxParams) {
+		if (maxParams > 1) throw 'semantic problem'
+
+		// repos liked by me and my followers -> copy "repos-liked()" for each child
+		for (var s = 0, newSemanticChildrenLen = newSemanticChildren.length; s < newSemanticChildrenLen; ++s) {
+			var newSemantic = newLHS[lhsIdx + s] = {}
+			newSemantic[semanticName] = [ newSemanticChildren[s] ]
+		}
+	} else {
+		var newSemantic = newLHS[lhsIdx] = {}
+		newSemantic[semanticName] = newSemanticChildren.sort(compareSemantics)
+	}
+
 	return newLHS
 }
 
