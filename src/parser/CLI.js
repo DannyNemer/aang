@@ -34,7 +34,7 @@ rl.on('line', function (line) {
 
 function parse(query, K) {
 	try {
-		// console.log('query:', query)
+		if (printQuery) console.log('\nquery:', query)
 		var parser = new (require(parserPath))(stateTable)
 
 		if (printTime) console.time('parse')
@@ -89,6 +89,7 @@ var testQueries = [
 
 var K = 10
 var printTime = false
+var printQuery = false
 var printOutput = true
 var printStack = false
 var printForest = false
@@ -123,6 +124,9 @@ function runCommand(query) {
 	} else if (query === '-t') {
 		printTime = !printTime
 		console.log('print time:', printTime)
+	} else if (query === '-q') {
+		printQuery = !printQuery
+		console.log('print query:', printQuery)
 	} else if (query === '-o') {
 		printOutput = !printOutput
 		console.log('print output:', printOutput)
@@ -148,6 +152,7 @@ function runCommand(query) {
 		console.log('-rb rebuild grammar and state table')
 		console.log('-st print state table')
 		console.log('-t  print time:', printTime)
+		console.log('-q  print query:', printQuery)
 		console.log('-o  print output:', printOutput)
 		console.log('-s  print stack:', printStack)
 		console.log('-f  print forest:', printForest)
