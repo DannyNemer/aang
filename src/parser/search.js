@@ -19,7 +19,7 @@ exports.search = function (startNode, K, buildTrees) {
 		text: [],
 		cost: 0,
 		prevSemantics: [],
-		semantic: undefined
+		prevIsFork: false,
 	}
 
 	if (buildTrees) {
@@ -64,9 +64,8 @@ exports.search = function (startNode, K, buildTrees) {
 			if (ruleProps instanceof Array) {
 				for (var p = 0, rulePropsLen = ruleProps.length; p < rulePropsLen; ++p) {
 					var newItem = createItem(sub, item, ruleProps[p], buildTrees)
-					if (newItem !== -1) {
-						heap.push(newItem)
-					}
+					if (newItem === -1) continue
+					heap.push(newItem)
 				}
 			} else if (ruleProps.transposition) {
 				var newItem = {
@@ -77,9 +76,14 @@ exports.search = function (startNode, K, buildTrees) {
 					ruleProps: item.ruleProps
 				}
 
-				var newSemantic = insertSemantic(item.semantic, ruleProps.semantic) // useless b/c no semantic on trans
-				if (newSemantic === -1) continue
-				newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic })
+				var newSemantic = ruleProps.semantic
+
+				newItem.prevIsFork = true
+				if (newSemantic) {
+					newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
+				} else {
+					newItem.prevSemantics = item.prevSemantics
+				}
 
 				if (buildTrees) {
 					newItem.tree = spliceTree(item.tree, sub, ruleProps)
@@ -88,9 +92,8 @@ exports.search = function (startNode, K, buildTrees) {
 				heap.push(newItem)
 			} else {
 				var newItem = createItem(sub, item, ruleProps, buildTrees)
-				if (newItem !== -1) {
-					heap.push(newItem)
-				}
+				if (newItem === -1) continue
+				heap.push(newItem)
 			}
 		}
 	}
@@ -100,9 +103,17 @@ exports.search = function (startNode, K, buildTrees) {
 	return trees
 }
 
+// don't count text
+// perhaps do similar thing as with semantics - mark next nodes count
+function nextNodesLen(item) {
+	// return item.nextNodes.length
+	return item.nextNodes.reduce(function (prev, cur) {
+		return prev + (cur.sym ? 1 : 0)
+	}, 0)
+}
+
 function createItem(sub, item, ruleProps, buildTrees) {
-	var newSemantic = insertSemantic(item.semantic, ruleProps.semantic)
-	if (newSemantic === -1) return -1
+	var newSemantic = ruleProps.semantic
 
 	var newItem = {
 		cost: item.cost + ruleProps.cost,
@@ -116,10 +127,28 @@ function createItem(sub, item, ruleProps, buildTrees) {
 
 	// Insertion
 	if (ruleProps.hasOwnProperty('insertionIdx')) {
-		newItem.prevSemantics = item.prevSemantics.concat(
-			{ LHS: true, semantic: newSemantic },
-			{ LHS: false, semantic: ruleProps.insertedSemantic }
-		)
+		newItem.prevIsFork = false // insertion is the completion of one branch
+		if (newSemantic) {
+			newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
+			if (ruleProps.insertedSemantic) {
+				newItem.prevSemantics.push({ LHS: false, semantic: ruleProps.insertedSemantic })
+			}
+		} else if (ruleProps.insertedSemantic) {
+			var prevSemanticsLen = item.prevSemantics.length
+			var prevSemantic = item.prevSemantics[prevSemanticsLen - 1]
+
+			if (prevSemantic.LHS) {
+				newItem.prevSemantics = item.prevSemantics.concat({ LHS: false, semantic: ruleProps.insertedSemantic })
+			} else {
+				newSemantic = insertSemanticBinary(undefined, prevSemantic.semantic, ruleProps.insertedSemantic)
+				if (newSemantic === -1) return -1
+				newItem.prevSemantics = item.prevSemantics.slice()
+				newItem.prevSemantics[prevSemanticsLen - 1] = { LHS: false, semantic: newSemantic }
+			}
+		} else {
+			newItem.prevSemantics = item.prevSemantics
+		}
+
 
 		newItem.lastNode = sub.node
 
@@ -145,34 +174,62 @@ function createItem(sub, item, ruleProps, buildTrees) {
 
 	else {
 		if (sub.next) {
-			newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic })
-		} else if (sub.node.subs) {
-			newItem.prevSemantics = item.prevSemantics
-			newItem.semantic = newSemantic
-		} else {
-			var prevSemanticsLen = item.prevSemantics.length
-
-			// Left of RHS
-			// prevSemanticsLen === 0 -> only one terminal symbol in tree (no branches)
-			if (prevSemanticsLen === 0 || item.prevSemantics[prevSemanticsLen - 1].LHS) {
-				newItem.prevSemantics = item.prevSemantics.concat({ LHS: false, semantic: newSemantic })
+			newItem.prevIsFork = true // two branches must be traversed
+			if (newSemantic) { // same as transposition
+				newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
+			} else {
+				newItem.prevSemantics = item.prevSemantics
 			}
+		} else if (sub.node.subs) { // 1 -> 1
+			newItem.prevIsFork = item.prevIsFork
+			if (newSemantic) {
+				newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
+			} else {
+				newItem.prevSemantics = item.prevSemantics
+			}
+		} else {
+			newItem.prevIsFork = false
+			if (item.prevIsFork) { // finishing left side of reduction
+				if (newSemantic) {
+					var prevSemanticsLen = item.prevSemantics.length
+					var prevSemantic = item.prevSemantics[prevSemanticsLen - 1]
 
-			// Right of RHS
-			else {
-				var prevSemantics = newItem.prevSemantics = item.prevSemantics.slice()
+					if (prevSemantic.LHS) {
+						newItem.prevSemantics = item.prevSemantics.concat({ LHS: false, semantic: newSemantic })
+					} else {
+						newSemantic = insertSemanticBinary(undefined, prevSemantic.semantic, newSemantic)
+						if (newSemantic === -1) return -1
+						newItem.prevSemantics = item.prevSemantics.slice()
+						newItem.prevSemantics[prevSemanticsLen - 1] = { LHS: false, semantic: newSemantic }
+					}
+				} else {
+					newItem.prevSemantics = item.prevSemantics
+				}
+			} else { // finishing whole reduction
+				newItem.prevSemantics = item.prevSemantics.slice()
+				while (newItem.prevSemantics.length) {
+					var prevSemanticsLen = newItem.prevSemantics.length
+					var prevSemantic = newItem.prevSemantics[prevSemanticsLen - 1]
 
-				while (prevSemantics.length >= 2 && !prevSemantics[prevSemantics.length - 1].LHS) {
-					var RHSA = prevSemantics.pop().semantic
-					var LHS = prevSemantics.pop().semantic
-					newSemantic = insertSemanticBinary(LHS, RHSA, newSemantic)
-					if (newSemantic === -1) return -1
+					if (!prevSemantic.LHS) {
+						newSemantic = insertSemanticBinary(undefined, prevSemantic.semantic, newSemantic)
+						if (newSemantic === -1) return -1
+					} else if (prevSemantic.nextNodesLen >= nextNodesLen(item)) {
+						newSemantic = insertSemanticBinary(prevSemantic.semantic, newSemantic)
+						if (newSemantic === -1) return -1 // won't happen
+					} else {
+						// on left side of a reduction
+						break
+					}
+
+					newItem.prevSemantics.pop()
 				}
 
-				prevSemantics.push({ LHS: false, semantic: newSemantic }) // next RHSA
+				if (newSemantic) {
+					newItem.prevSemantics.push({ LHS: false, semantic: newSemantic })
+				}
 			}
 		}
-
 
 		if (sub.next) {
 			newItem.nextNodes = newItem.nextNodes.concat(sub.next.node)

@@ -83,10 +83,13 @@ exports.costOfSemantic = function (semantic) {
 	}, 0)
 }
 
+// does not check for dupSemantics or hasOpenEndedSemantic
 exports.insertSemantic = function (LHS, RHS) {
 	if (!RHS) return LHS
 
-	if (dupSemantics(RHS)) return -1 // not doing anything because RHS.length == 1
+	// if (dupSemantics(RHS)) return -1 // not doing anything because RHS.length == 1
+	// could optomize because we know when it might be called
+	// if (hasOpenEndedSemantic(RHS)) return -1 // might not be needed
 
 	// might be unecessary - all semantics saved in grammar are sorted, otherwise previously seen + sorted
 	// RHS = RHS.sort(compareSemantics)
@@ -94,10 +97,10 @@ exports.insertSemantic = function (LHS, RHS) {
 	if (!LHS) return RHS
 
 	var newSemantic = insert(LHS, RHS)
-	if (!newSemantic) throw 'merge fail' // TURNED OFF temporarily for display text check
-	if (!newSemantic) return -1
+	if (!newSemantic) throw 'merge fail'
 
 	// remove intersect() when contains single argument
+// SHOULD NEVER NEED TO DO THIS. WILL ONLY OCCUR IF LHS IS INTERSECT FROM START
 	for (var s = newSemantic.length; s-- > 0;) {
 		var semanticChild = newSemantic[s]
 
@@ -105,6 +108,7 @@ exports.insertSemantic = function (LHS, RHS) {
 		if (intersectSemantic) {
 			if (intersectSemantic.length === 1) {
 				newSemantic[s] = intersectSemantic[0]
+				// break // should be okay because only ever 1 intersect
 			}
 		}
 	}
@@ -116,17 +120,17 @@ exports.insertSemanticBinary = function (LHS, RHSA, RHSB) {
 	var RHS = RHSA && RHSB ? RHSA.concat(RHSB) : (RHSA || RHSB)
 	if (!RHS) return LHS
 
+	// could seperate this to a RHS-merging function
 	if (dupSemantics(RHS)) return -1
-	if (hasOpenEndedSemantic(RHS)) return -1
+	if (hasOpenEndedSemantic(RHS)) return -1 // might not be needed
 
-	RHS = RHS.sort(compareSemantics)
+	RHS = RHS.sort(compareSemantics) // might not be needed
 
 	if (!LHS) return RHS
 
 	// RHS = RHS.sort(compareSemantics) // here? (or taken care of earlier)
 	var newSemantic = insert(LHS, RHS)
-	if (!newSemantic) throw 'merge fail' // TURNED OFF temporarily for display text check
-	if (!newSemantic) return -1
+	if (!newSemantic) throw 'merge fail'
 
 	// remove intersect() when contains single argument
 	for (var s = newSemantic.length; s-- > 0;) {
@@ -160,7 +164,8 @@ function insert(LHS, RHS) {
 		newSemanticChildren = RHS
 	} else {
 		// Go to deeper level
-		newSemanticChildren = insertSemanitcs(semanticChildren, RHS) // when LHS.length > 0
+		// console.log('should not be here')
+		newSemanticChildren = insert(semanticChildren, RHS) // when LHS.length > 0
 		if (!newSemanticChildren) return null // might never be reached
 	}
 
