@@ -4,7 +4,6 @@ var BinaryHeap = require('./BinaryHeap')
 var semantic = require('../grammar/Semantic')
 semantic.semantics = require('../semantics.json')
 var insertSemantic = semantic.insertSemantic
-var insertSemanticBinary = semantic.insertSemanticBinary
 
 var testCounter = 0
 
@@ -140,7 +139,7 @@ function createItem(sub, item, ruleProps, buildTrees) {
 			if (prevSemantic.LHS) {
 				newItem.prevSemantics = item.prevSemantics.concat({ LHS: false, semantic: ruleProps.insertedSemantic })
 			} else {
-				newSemantic = insertSemanticBinary(undefined, prevSemantic.semantic, ruleProps.insertedSemantic)
+				newSemantic = semantic.mergeRHS(prevSemantic.semantic, ruleProps.insertedSemantic)
 				if (newSemantic === -1) return -1
 				newItem.prevSemantics = item.prevSemantics.slice()
 				newItem.prevSemantics[prevSemanticsLen - 1] = { LHS: false, semantic: newSemantic }
@@ -182,8 +181,15 @@ function createItem(sub, item, ruleProps, buildTrees) {
 			}
 		} else if (sub.node.subs) { // 1 -> 1
 			newItem.prevIsFork = item.prevIsFork
+			// semantic args are getting here, but being marked as LHS
 			if (newSemantic) {
-				newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
+				if (newSemantic[0].constructor === Object) {
+					newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
+				} else {
+					// should always be a LHS before
+					// semantic arg
+					newItem.prevSemantics = item.prevSemantics.concat({ LHS: false, semantic: newSemantic })
+				}
 			} else {
 				newItem.prevSemantics = item.prevSemantics
 			}
@@ -197,7 +203,7 @@ function createItem(sub, item, ruleProps, buildTrees) {
 					if (prevSemantic.LHS) {
 						newItem.prevSemantics = item.prevSemantics.concat({ LHS: false, semantic: newSemantic })
 					} else {
-						newSemantic = insertSemanticBinary(undefined, prevSemantic.semantic, newSemantic)
+						newSemantic = semantic.mergeRHS(prevSemantic.semantic, newSemantic)
 						if (newSemantic === -1) return -1
 						newItem.prevSemantics = item.prevSemantics.slice()
 						newItem.prevSemantics[prevSemanticsLen - 1] = { LHS: false, semantic: newSemantic }
@@ -206,27 +212,38 @@ function createItem(sub, item, ruleProps, buildTrees) {
 					newItem.prevSemantics = item.prevSemantics
 				}
 			} else { // finishing whole reduction
-				newItem.prevSemantics = item.prevSemantics.slice()
-				while (newItem.prevSemantics.length) {
-					var prevSemanticsLen = newItem.prevSemantics.length
-					var prevSemantic = newItem.prevSemantics[prevSemanticsLen - 1]
+				for (var p = item.prevSemantics.length; p-- > 0;) {
+					var prevSemantic = item.prevSemantics[p]
 
 					if (!prevSemantic.LHS) {
-						newSemantic = insertSemanticBinary(undefined, prevSemantic.semantic, newSemantic)
-						if (newSemantic === -1) return -1
+						if (newSemantic) {
+							newSemantic = semantic.mergeRHS(prevSemantic.semantic, newSemantic)
+							if (newSemantic === -1) return -1
+						} else {
+							newSemantic = prevSemantic.semantic
+						}
 					} else if (prevSemantic.nextNodesLen >= nextNodesLen(item)) {
-						newSemantic = insertSemanticBinary(prevSemantic.semantic, newSemantic)
-						if (newSemantic === -1) return -1 // won't happen
+						if (newSemantic) {
+							newSemantic = insertSemantic(prevSemantic.semantic, newSemantic)
+							if (newSemantic === -1) {
+								// util.log(prevSemantic.semantic)
+								return -1
+							}
+						} else {
+							newSemantic = prevSemantic.semantic
+							if (newSemantic[0].constructor === Object) return -1
+						}
 					} else {
 						// on left side of a reduction
 						break
 					}
-
-					newItem.prevSemantics.pop()
 				}
 
 				if (newSemantic) {
+					newItem.prevSemantics = item.prevSemantics.slice(0, p + 1)
 					newItem.prevSemantics.push({ LHS: false, semantic: newSemantic })
+				} else {
+					newItem.prevSemantics = item.prevSemantics
 				}
 			}
 		}
@@ -385,6 +402,7 @@ function cloneTree(node, lastNodes) {
 exports.print = function (trees, printTrees, printCost) {
 	trees.forEach(function (tree){
 		console.log(tree.text.join(' '), printCost ? tree.cost : '')
+		// util.log(tree.semantic)
 		console.log(' ', semantic.semanticToString(tree.semantic))
 		if (printTrees) util.log(tree.tree)
 	})

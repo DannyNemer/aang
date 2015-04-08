@@ -83,66 +83,24 @@ exports.costOfSemantic = function (semantic) {
 	}, 0)
 }
 
-// does not check for dupSemantics or hasOpenEndedSemantic
-exports.insertSemantic = function (LHS, RHS) {
-	if (!RHS) return LHS
+// A and B both always exist
+exports.mergeRHS = function (A, B) {
+	var RHS = A.concat(B)
 
-	// if (dupSemantics(RHS)) return -1 // not doing anything because RHS.length == 1
-	// could optomize because we know when it might be called
-	// if (hasOpenEndedSemantic(RHS)) return -1 // might not be needed
+	if (dupSemantics(RHS)) return -1
 
-	// might be unecessary - all semantics saved in grammar are sorted, otherwise previously seen + sorted
-	// RHS = RHS.sort(compareSemantics)
+	// Do not need to sort because will be sorted when added to a LHS
+	// And every one with the RHS (being check for dup) has been added to RHS
 
-	if (!LHS) return RHS
-
-	var newSemantic = insert(LHS, RHS)
-	if (!newSemantic) throw 'merge fail'
-
-	// remove intersect() when contains single argument
-// SHOULD NEVER NEED TO DO THIS. WILL ONLY OCCUR IF LHS IS INTERSECT FROM START
-	for (var s = newSemantic.length; s-- > 0;) {
-		var semanticChild = newSemantic[s]
-
-		var intersectSemantic = semanticChild.intersect
-		if (intersectSemantic) {
-			if (intersectSemantic.length === 1) {
-				newSemantic[s] = intersectSemantic[0]
-				// break // should be okay because only ever 1 intersect
-			}
-		}
-	}
-
-	return newSemantic
+	return RHS
 }
 
-exports.insertSemanticBinary = function (LHS, RHSA, RHSB) {
-	var RHS = RHSA && RHSB ? RHSA.concat(RHSB) : (RHSA || RHSB)
-	if (!RHS) return LHS
+// LHS and RHS both always defined
+exports.insertSemantic = function (LHS, RHS) {
+	if (RHS.length === 1 && LHS[0].intersect) return RHS
 
-	// could seperate this to a RHS-merging function
-	if (dupSemantics(RHS)) return -1
-	if (hasOpenEndedSemantic(RHS)) return -1 // might not be needed
-
-	RHS = RHS.sort(compareSemantics) // might not be needed
-
-	if (!LHS) return RHS
-
-	// RHS = RHS.sort(compareSemantics) // here? (or taken care of earlier)
 	var newSemantic = insert(LHS, RHS)
 	if (!newSemantic) throw 'merge fail'
-
-	// remove intersect() when contains single argument
-	for (var s = newSemantic.length; s-- > 0;) {
-		var semanticChild = newSemantic[s]
-
-		var intersectSemantic = semanticChild.intersect
-		if (intersectSemantic) {
-			if (intersectSemantic.length === 1) {
-				newSemantic[s] = intersectSemantic[0]
-			}
-		}
-	}
 
 	return newSemantic
 }
@@ -151,37 +109,25 @@ exports.insertSemanticBinary = function (LHS, RHSA, RHSB) {
 // not slicing RHS here because did before
 // the LHS should always be empty, and last one - because of sorting we know it is not arguemnt
 function insert(LHS, RHS) {
-	var lhsIdx = LHS.length - 1
-	var lhsSemantic = LHS[lhsIdx]
-
+	var lhsSemantic = LHS[0]
 	var semanticName = getSemanticName(lhsSemantic)
 	var maxParams = exports.semantics[semanticName].maxParams
 
-	var semanticChildren = lhsSemantic[semanticName]
-
-	var newSemanticChildren
-	if (semanticChildren.length === 0) {
-		newSemanticChildren = RHS
-	} else {
-		// Go to deeper level
-		// console.log('should not be here')
-		newSemanticChildren = insert(semanticChildren, RHS) // when LHS.length > 0
-		if (!newSemanticChildren) return null // might never be reached
-	}
-
 	var newLHS = LHS.slice()
 
-	if (newSemanticChildren.length > maxParams) {
+	if (RHS.length > maxParams) {
 		if (maxParams > 1) throw 'semantic problem'
 
 		// repos liked by me and my followers -> copy "repos-liked()" for each child
-		for (var s = 0, newSemanticChildrenLen = newSemanticChildren.length; s < newSemanticChildrenLen; ++s) {
-			var newSemantic = newLHS[lhsIdx + s] = {}
-			newSemantic[semanticName] = [ newSemanticChildren[s] ]
+		for (var s = 0, RHSLen = RHS.length; s < RHSLen; ++s) {
+			var newSemantic = newLHS[s] = {}
+			newSemantic[semanticName] = [ RHS[s] ]
 		}
 	} else {
-		var newSemantic = newLHS[lhsIdx] = {}
-		newSemantic[semanticName] = newSemanticChildren.sort(compareSemantics)
+		var newSemantic = newLHS[0] = {}
+
+		// Sort arguments
+		newSemantic[semanticName] = RHS.sort(compareSemantics)
 	}
 
 	return newLHS
@@ -283,21 +229,6 @@ function semanticArraysMatch(a, b) {
 
 function getSemanticName(semantic) {
 	return Object.keys(semantic)[0]
-}
-
-function hasOpenEndedSemantic(RHS) {
-	for (var r = RHS.length; r-- > 0;) {
-		var semantic = RHS[r]
-
-		if (semantic.constructor === Object) {
-			var semanticName = getSemanticName(semantic)
-			if (semantic[semanticName].length < exports.semantics[semanticName].minParams) {
-				return true
-			}
-		}
-	}
-
-	return false
 }
 
 exports.semanticToString = function (semanticArgs) {
