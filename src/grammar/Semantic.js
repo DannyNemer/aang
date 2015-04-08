@@ -85,14 +85,12 @@ exports.costOfSemantic = function (semantic) {
 
 // A and B both always exist
 exports.mergeRHS = function (A, B) {
-	var RHS = A.concat(B)
-
-	if (dupSemantics(RHS)) return -1
+	if (dupSemantics(A, B)) return -1
 
 	// Do not need to sort because will be sorted when added to a LHS
 	// And every one with the RHS (being check for dup) has been added to RHS
 
-	return RHS
+	return A.concat(B)
 }
 
 // LHS and RHS both always defined
@@ -183,12 +181,12 @@ function compareSemantics(a, b) {
 	// returns empty-set: my male female friends, photos by me and my friends
 	// photos-of(), photos-of()
 
-function dupSemantics(semantic) {
-	for (var a = semantic.length; a-- > 0;) {
-		var semanticA = semantic[a]
+function dupSemantics(arrayA, semanticB) {
+	for (var a = arrayA.length; a-- > 0;) {
+		var semanticAItem = arrayA[a]
 
-		for (var b = a; b-- > 0;) {
-			if (semanticsMatch(semanticA, semantic[b])) {
+		for (var b = semanticB.length; b-- > 0;) {
+			if (semanticsMatch(semanticAItem, semanticB[b])) {
 				return true
 			}
 		}
