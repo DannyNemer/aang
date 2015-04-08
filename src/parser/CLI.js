@@ -4,17 +4,13 @@
 while (/bin/.test(process.argv[0]) && process.uptime() < 1) {}
 var util = require('../util.js')
 
+var grammarPath = '../grammar.json'
 var stateTablePath = './StateTable.js'
 var parserNewPath = './Parser.js'
 var parserOldPath = './util/ParserBestFirst.js'
 var searchPath = './search.js'
-var grammarPath = '../grammar.json'
 
-var grammar = require(grammarPath)
-var prevRSS = process.memoryUsage().rss
-var stateTable = new (require(stateTablePath))(grammar, '[start]')
-var stateTableMemoryUsage = (process.memoryUsage().rss - prevRSS) / 1e6 + ' MB'
-
+var stateTable = buildStateTable()
 
 var rl = require('readline').createInterface(process.stdin, process.stdout)
 
@@ -26,7 +22,7 @@ rl.on('line', function (line) {
 		parse(query, K)
 	}
 
-	deleteCache(parserNewPath, parserOldPath, searchPath, './BinaryHeap.js', '../grammar/Semantic.js', '../util.js')
+	deleteModuleCache()
 
 	rl.prompt()
 })
@@ -84,7 +80,10 @@ var testQueries = [
 	'people',
 	'people who created my repos and my pull-requests',
 	'people pull-requests like repos I like',
-// 'my repos me people who follow my followers have been and',
+	'repos liked by followers of followers of mine',
+	// 'followers of my followers who are followers of mine my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to follow',
+	// 'my followers who created pull-requests of mine created by my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to I am mentioned-in'
+	// 'my repos me people who follow my followers have been and', - BROKEN
 ]
 
 var K = 10
@@ -117,9 +116,11 @@ function runCommand(query) {
 		// Remove previous grammar from cache
 		deleteCache(grammarPath, '../semantics.json')
 		// Rebuild state table
-		stateTable = new (require(stateTablePath))(require(grammarPath), '[start]')
+		stateTable = buildStateTable()
+	} else if (query === '-d') {
+		deleteModuleCache()
+		console.log('Deleted cache of modules')
 	} else if (query === '-st') {
-		console.log(stateTableMemoryUsage)
 		stateTable.print()
 	} else if (query === '-t') {
 		printTime = !printTime
@@ -151,6 +152,7 @@ function runCommand(query) {
 		console.log('-r  run test queries')
 		console.log('-rb rebuild grammar and state table')
 		console.log('-st print state table')
+		console.log('-d  delete module cache')
 		console.log('-t  print time:', printTime)
 		console.log('-q  print query:', printQuery)
 		console.log('-o  print output:', printOutput)
@@ -166,7 +168,20 @@ function runCommand(query) {
 	return true
 }
 
-// Remove files from cache so may be reloaded with changes
+function buildStateTable() {
+	// Build state table
+	var stateTable = new (require(stateTablePath))(require(grammarPath), '[start]')
+	// Remove grammar from cache
+	deleteCache(grammarPath)
+
+	return stateTable
+}
+
+// Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
+function deleteModuleCache() {
+	deleteCache(parserNewPath, parserOldPath, searchPath, './BinaryHeap.js', '../grammar/Semantic.js')
+}
+
 function deleteCache() {
 	Array.prototype.slice.call(arguments).forEach(function (filePath) {
 		delete require.cache[require.resolve(filePath)]
