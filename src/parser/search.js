@@ -18,7 +18,6 @@ exports.search = function (startNode, K, buildTrees) {
 		text: [],
 		cost: 0,
 		prevSemantics: [],
-		prevIsFork: false,
 	}
 
 	if (buildTrees) {
@@ -87,7 +86,6 @@ exports.search = function (startNode, K, buildTrees) {
 
 				var newSemantic = ruleProps.semantic
 
-				newItem.prevIsFork = true
 				if (newSemantic) {
 					newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
 				} else {
@@ -136,7 +134,6 @@ function createItem(sub, item, ruleProps, buildTrees) {
 
 	// Insertion
 	if (ruleProps.hasOwnProperty('insertionIdx')) {
-		newItem.prevIsFork = false // insertion is the completion of one branch
 		if (newSemantic) {
 			newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
 			if (ruleProps.insertedSemantic) {
@@ -183,14 +180,12 @@ function createItem(sub, item, ruleProps, buildTrees) {
 
 	else {
 		if (sub.next) {
-			newItem.prevIsFork = true // two branches must be traversed
 			if (newSemantic) { // same as transposition
 				newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
 			} else {
 				newItem.prevSemantics = item.prevSemantics
 			}
 		} else if (sub.node.subs) { // 1 -> 1
-			newItem.prevIsFork = item.prevIsFork
 			// semantic args are getting here, but being marked as LHS
 			if (newSemantic) {
 				if (newSemantic[0].constructor === Object) {
@@ -204,57 +199,35 @@ function createItem(sub, item, ruleProps, buildTrees) {
 				newItem.prevSemantics = item.prevSemantics
 			}
 		} else {
-			newItem.prevIsFork = false
-			if (item.prevIsFork) { // finishing left side of reduction
-				if (newSemantic) {
-					var prevSemanticsLen = item.prevSemantics.length
-					var prevSemantic = item.prevSemantics[prevSemanticsLen - 1]
+			for (var p = item.prevSemantics.length; p-- > 0;) {
+				var prevSemantic = item.prevSemantics[p]
 
-					if (prevSemantic.LHS) {
-						newItem.prevSemantics = item.prevSemantics.concat({ LHS: false, semantic: newSemantic })
-					} else {
+				if (!prevSemantic.LHS) {
+					if (newSemantic) {
 						newSemantic = semantic.mergeRHS(prevSemantic.semantic, newSemantic)
 						if (newSemantic === -1) return -1
-						newItem.prevSemantics = item.prevSemantics.slice()
-						newItem.prevSemantics[prevSemanticsLen - 1] = { LHS: false, semantic: newSemantic }
-					}
-				} else {
-					newItem.prevSemantics = item.prevSemantics
-				}
-			} else { // finishing whole reduction
-				for (var p = item.prevSemantics.length; p-- > 0;) {
-					var prevSemantic = item.prevSemantics[p]
-
-					if (!prevSemantic.LHS) {
-						if (newSemantic) {
-							newSemantic = semantic.mergeRHS(prevSemantic.semantic, newSemantic)
-							if (newSemantic === -1) return -1
-						} else {
-							newSemantic = prevSemantic.semantic
-						}
-					} else if (prevSemantic.nextNodesLen >= nextNodesLen(item)) {
-						if (newSemantic) {
-							newSemantic = insertSemantic(prevSemantic.semantic, newSemantic)
-							if (newSemantic === -1) {
-								// util.log(prevSemantic.semantic)
-								return -1
-							}
-						} else {
-							newSemantic = prevSemantic.semantic
-							if (newSemantic[0].constructor === Object) return -1
-						}
 					} else {
-						// on left side of a reduction
-						break
+						newSemantic = prevSemantic.semantic
 					}
-				}
-
-				if (newSemantic) {
-					newItem.prevSemantics = item.prevSemantics.slice(0, p + 1)
-					newItem.prevSemantics.push({ LHS: false, semantic: newSemantic })
+				} else if (prevSemantic.nextNodesLen >= nextNodesLen(item)) {
+					if (newSemantic) {
+						newSemantic = semantic.insertSemantic(prevSemantic.semantic, newSemantic)
+					} else {
+						newSemantic = prevSemantic.semantic
+						if (newSemantic[0].constructor === Object) return -1
+					}
 				} else {
-					newItem.prevSemantics = item.prevSemantics
+					// console.log('here')
+					// on left side of a reduction
+					break
 				}
+			}
+
+			if (newSemantic) {
+				newItem.prevSemantics = item.prevSemantics.slice(0, p + 1)
+				newItem.prevSemantics.push({ semantic: newSemantic })
+			} else {
+				newItem.prevSemantics = item.prevSemantics
 			}
 		}
 
