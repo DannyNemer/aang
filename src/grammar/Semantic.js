@@ -27,6 +27,12 @@ function newSemanticFunc(opts) {
 		throw 'ill-formed Semantic function'
 	}
 
+	if (opts.minParams > opts.maxParams) {
+		console.log('Err: Semantic minParams > maxParams:', opts)
+		console.log(util.getLine())
+		throw 'ill-formed Semantic function'
+	}
+
 	exports.semantics[opts.name] = {
 		name: opts.name,
 		cost: opts.cost,
@@ -54,7 +60,6 @@ function newSemanticArg(opts) {
 	}
 
 	exports.semantics[opts.name] = {
-		name: opts.name,
 		cost: opts.cost,
 		arg: true
 	}
@@ -67,7 +72,7 @@ exports.costOfSemantic = function (semantic) {
 	return semantic.reduce(function (accum, cur) {
 		// Semantic function
 		if (cur.constructor === Object) {
-			var semanticName = Object.keys(cur)[0]
+			var semanticName = getSemanticName(cur)
 			return accum + exports.semantics[semanticName].cost + exports.costOfSemantic(cur[semanticName])
 		}
 
@@ -82,11 +87,10 @@ exports.costOfSemantic = function (semantic) {
 }
 
 // rejected semantics:
-	// exact duplicats (accouting for sub-semantics)
-
-	// contradictions:
-	// returns empty-set: my male female friends, photos by me and my friends
-	// photos-of(), photos-of()
+// - exact duplicats (accouting for sub-semantics)
+// - contradictions (unimplemented):
+// - - returns empty-set: my male female friends, photos by me and my friends
+// - - photos-of(), photos-of()
 
 // A and B both always exist
 exports.mergeRHS = function (A, B) {
@@ -116,18 +120,22 @@ exports.insertSemantic = function (LHS, RHS) {
 
 	var lhsSemantic = LHS[0]
 	var semanticName = getSemanticName(lhsSemantic)
-	var maxParams = exports.semantics[semanticName].maxParams
+	var semanticDef = exports.semantics[semanticName]
+	var RHSLen = RHS.length
 
-	var newLHS = LHS.slice()
+	var newLHS = []
+	console.log('here')
 
-	if (RHS.length > maxParams) {
-		if (maxParams > 1) throw 'semantic problem'
+	if (RHSLen > semanticDef.maxParams) {
+		if (semanticDef.maxParams > 1) throw 'semantic problem'
 
 		// repos liked by me and my followers -> copy "repos-liked()" for each child
-		for (var s = 0, RHSLen = RHS.length; s < RHSLen; ++s) {
+		for (var s = 0; s < RHSLen; ++s) {
 			var newSemantic = newLHS[s] = {}
 			newSemantic[semanticName] = [ RHS[s] ]
 		}
+	} else if (RHSLen < semanticDef.minParams) {
+		throw 'semantic problem: RHS.length < minParams'
 	} else {
 		var newSemantic = newLHS[0] = {}
 
