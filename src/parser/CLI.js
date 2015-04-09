@@ -22,7 +22,10 @@ rl.on('line', function (line) {
 		parse(query, K)
 	}
 
-	deleteModuleCache()
+	// If no '-t' arg (for 'time'), reload modules after for changes to take effect
+	if (process.argv.indexOf('-t') === -1) {
+		deleteModuleCache()
+	}
 
 	rl.prompt()
 })
