@@ -60,3 +60,12 @@
 - Much language in the video applies here: "Deliberite", "Percision"
 
 - Most personal and significant work of my life. To start, I am only sharing it with a few people while it is in its infancy.
+
+- "The purpose of the wrist-mounted technology, what problems it might solve—that was something the Watch team would come up with slowly, during the process of inventing a bunch of new ways to interact with the device. But one thing was clear from the start: The Watch would succeed or fail on the strength of what’s prosaically called the user interface."
+
+- Still unsure whether to construct the parse forest with shift-reduce and then use Dijkstra's on the forest from the start node, or whether to use k-best shift-reduce to construct the parse forest while constructing trees. Is the latter even possible? I have concluded it is not.
+- Reduced speed comes from insertion edits. Must optimize which to permit.
+
+- I do not think I can convey to Buhler the magnitude of the work that went into it. The Semantic parsing alone is an enormous amound of work.
+
+- I can design and write/rewrite this whole system on paper, and know when it will or won't work.
