@@ -32,7 +32,7 @@ rl.on('line', function (line) {
 
 
 function parse(query, K) {
-	try {
+	tryCatchWrapper(function () {
 		if (printQuery) console.log('\nquery:', query)
 		var parser = new (require(parserPath))(stateTable)
 
@@ -52,18 +52,7 @@ function parse(query, K) {
 		if (printForest) parser.printForest()
 		if (printStack) parser.printStack()
 		// if (printTrees && parser.startNode) parser.printNodeGraph(parser.startNode)
-	} catch (e) {
-		console.log()
-
-		if (e.stack) {
-			// Remove parentheses from stack for iTerm open-file shortcut
-			e.stack.split('\n').forEach(function (stackLine) {
-				console.log(stackLine.replace(/[()]/g, ''))
-			})
-		} else {
-			console.log(e)
-		}
-	}
+	})
 }
 
 
@@ -84,12 +73,14 @@ var testQueries = [
 	'people who created my repos and my pull-requests',
 	'people pull-requests like repos I like',
 	'repos liked by followers of followers of mine',
+	'repos liked by me and my followers',
+	'repos liked by me and my followers and people who like repos liked by me and my followers',
 	// 'followers of my followers who are followers of mine my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to follow',
 	// 'my followers who created pull-requests of mine created by my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to I am mentioned-in'
 	// 'my repos me people who follow my followers have been and', - BROKEN
 ]
 
-var K = 10
+var K = 7
 var printTime = false
 var printQuery = false
 var printOutput = true
@@ -115,7 +106,9 @@ function runCommand(query) {
 	} else if (query === '-rb') {
 		console.log('Rebuild grammar and state table:')
 		// Rebuild grammar
-		require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
+		tryCatchWrapper(function () {
+			require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
+		})
 		// Remove previous grammar from cache
 		deleteCache(grammarPath, '../semantics.json')
 		// Rebuild state table
@@ -189,4 +182,22 @@ function deleteCache() {
 	Array.prototype.slice.call(arguments).forEach(function (filePath) {
 		delete require.cache[require.resolve(filePath)]
 	})
+}
+
+// Execute the anonymous function within a try-catch statement
+// Removes parentheses from error stack for iTerm open-file shortcut
+function tryCatchWrapper(func) {
+	try {
+		func()
+	} catch (e) {
+		console.log()
+
+		if (e.stack) {
+			e.stack.split('\n').forEach(function (stackLine) {
+				console.log(stackLine.replace(/[()]/g, ''))
+			})
+		} else {
+			console.log(e)
+		}
+	}
 }
