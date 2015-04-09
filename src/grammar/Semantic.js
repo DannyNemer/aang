@@ -33,16 +33,17 @@ function newSemanticFunc(opts) {
 		throw 'ill-formed Semantic function'
 	}
 
-	exports.semantics[opts.name] = {
+	var semantic = exports.semantics[opts.name] = {
 		name: opts.name,
 		cost: opts.cost,
 		minParams: opts.minParams,
 		maxParams: opts.maxParams
 	}
 
-	var semantic = {}
-	semantic[opts.name] = []
-	return [ semantic ]
+	return [ {
+		semantic: semantic,
+		children: []
+	} ]
 }
 
 
@@ -59,30 +60,21 @@ function newSemanticArg(opts) {
 		throw 'ill-formed Semantic argument'
 	}
 
-	exports.semantics[opts.name] = {
+	var semantic = exports.semantics[opts.name] = {
+		name: opts.name,
 		cost: opts.cost,
 		arg: true
 	}
 
-	return [ opts.name ]
+	return [ {
+		semantic: semantic
+	} ]
 }
 
 
-exports.costOfSemantic = function (semantic) {
-	return semantic.reduce(function (accum, cur) {
-		// Semantic function
-		if (cur.constructor === Object) {
-			var semanticName = getSemanticName(cur)
-			return accum + exports.semantics[semanticName].cost + exports.costOfSemantic(cur[semanticName])
-		}
-
-		// Semantic argument
-		else if (exports.semantics.hasOwnProperty(cur)) {
-			return accum + exports.semantics[cur].cost
-		}
-
-		// ID or numeric value
-		return accum
+exports.costOfSemantic = function (semanticArray) {
+	return semanticArray.reduce(function (accum, cur) {
+		return accum + cur.semantic.cost + (cur.children ? exports.costOfSemantic(cur.children) : 0)
 	}, 0)
 }
 
@@ -115,32 +107,33 @@ exports.mergeRHS = function (A, B) {
 // not slicing RHS here because did before
 // the LHS should always be empty, and last one - because of sorting we know it is not arguemnt
 exports.insertSemantic = function (LHS, RHS) {
-	// If intersect with one semantic arg
-	if (RHS.length === 1 && LHS[0].intersect) return RHS
-
-	var lhsSemantic = LHS[0]
-	var semanticName = getSemanticName(lhsSemantic)
-	var semanticDef = exports.semantics[semanticName]
+	var lhsSemantic = LHS[0].semantic
 	var RHSLen = RHS.length
 
-	var newLHS = []
-	console.log('here')
+	// If intersect with one semantic arg
+	if (RHSLen === 1 && lhsSemantic.name === 'intersect') return RHS
 
-	if (RHSLen > semanticDef.maxParams) {
-		if (semanticDef.maxParams > 1) throw 'semantic problem'
+	if (RHSLen > lhsSemantic.maxParams) {
+		if (lhsSemantic.maxParams > 1) throw 'semantic problem'
 
+		var newLHS = []
 		// repos liked by me and my followers -> copy "repos-liked()" for each child
 		for (var s = 0; s < RHSLen; ++s) {
-			var newSemantic = newLHS[s] = {}
-			newSemantic[semanticName] = [ RHS[s] ]
+			newLHS[s] = {
+				semantic: lhsSemantic,
+				children: [ RHS[s] ]
+			}
 		}
-	} else if (RHSLen < semanticDef.minParams) {
-		throw 'semantic problem: RHS.length < minParams'
-	} else {
-		var newSemantic = newLHS[0] = {}
 
-		// Sort arguments
-		newSemantic[semanticName] = RHS.sort(compareSemantics)
+		return newLHS
+	} else if (RHSLen < lhsSemantic.minParams) {
+		// throw 'semantic problem: RHS.length < minParams'
+		return -1
+	} else {
+		return [ {
+			semantic: lhsSemantic,
+			children: RHS.sort(compareSemantics)
+		} ]
 	}
 
 	return newLHS
@@ -152,8 +145,8 @@ exports.insertSemantic = function (LHS, RHS) {
 // if returns greater than 0, sort b to a lower index than a
 // if returns 0, leave a and b unchanged with respect to each other
 function compareSemantics(a, b) {
-	var aIsObject = a.constructor === Object
-	var bIsObject = b.constructor === Object
+	var aIsObject = a.children !== undefined
+	var bIsObject = b.children !== undefined
 
 	// arg, func()
 	if (!aIsObject && bIsObject) {
@@ -167,16 +160,16 @@ function compareSemantics(a, b) {
 
 	// func(), func()
 	if (aIsObject && bIsObject) {
-		var aName = getSemanticName(a)
-		var bName = getSemanticName(b)
+		var aName = a.semantic.name
+		var bName = b.semantic.name
 
 		if (aName < bName) return -1
 		if (aName > bName) return 1
 
 		// same semantic function (by name)
 		// compare semantic children
-		var aChildren = a[aName]
-		var bChildren = b[bName]
+		var aChildren = a.children
+		var bChildren = b.children
 		var returnVal = 0
 
 		for (var i = 0, minLength = Math.min(aChildren.length, bChildren.length); i < minLength; ++i) {
@@ -188,7 +181,8 @@ function compareSemantics(a, b) {
 	}
 
 	// Strings: semantic argument, numeric id, or number
-	return a === b ? 0 : (a < b ? -1 : 1)
+	return a.semantic === b.semantic ? 0 : (a.semantic.name < b.semantic.name ? -1 : 1)
+	// return a === b ? 0 : (a < b ? -1 : 1) // might be able to compare a == b
 }
 
 
@@ -196,15 +190,16 @@ function semanticsMatch(a, b) {
 	// entities
 	if (a === b) return true
 
-	if (a.constructor === Object && b.constructor === Object) {
-		var semanticName = getSemanticName(a)
-		return semanticArraysMatch(a[semanticName], b[semanticName])
+	if (a.semantic !== b.semantic) return false
+
+	if (a.children && b.children) {
+		return exports.semanticArraysMatch(a.children, b.children)
 	}
 
-	return false
+	return true // args with same name
 }
 
-function semanticArraysMatch(a, b) {
+exports.semanticArraysMatch = function (a, b) {
 	// Same entity arrays
 	if (a === b) return true
 
@@ -221,22 +216,13 @@ function semanticArraysMatch(a, b) {
 	return false
 }
 
-
-function getSemanticName(semantic) {
-	for (var name in semantic) {
-		return name
-	}
-}
-
-exports.semanticToString = function (semanticArgs) {
-	if (!semanticArgs) return
-
-	return semanticArgs.map(function (semantic) {
-		if (semantic.constructor === Object) {
-			var semanticName = Object.keys(semantic)[0]
-			return semanticName + '(' + exports.semanticToString(semantic[semanticName]) + ')'
+exports.semanticToString = function (semanticArray) {
+	return semanticArray.map(function (semanticNode) {
+		if (semanticNode.children) {
+			var semanticName = semanticNode.semantic.name
+			return semanticName + '(' + exports.semanticToString(semanticNode.children) + ')'
 		} else {
-			return semantic // number or string
+			return semanticNode.semantic.name // number or string
 		}
 	}).join(',')
 }

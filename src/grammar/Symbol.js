@@ -53,7 +53,6 @@ Symbol.prototype.addRule = function (opts) {
 var termRuleOptsSchema = {
 	terminal: Boolean,
 	RHS: String,
-	// semantic: { type: Semantic, optional: true },
 	semantic: { type: Array, optional: true },
 	insertionCost: { type: Number, optional: true },
 	textForms: { type: Object, optional: true },
@@ -91,7 +90,6 @@ Symbol.prototype.newTerminalRule = function (opts) {
 var nontermRuleOptsSchema = {
 	RHS: { type: Array, arrayType: Symbol },
 	semantic: { type: Array, optional: true },
-	// semantic: { type: Semantic, optional: true },
 	transpositionCost: { type: Number, optional: true },
 	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
 	verbForm: { type: [ 'past' ], optional: true },

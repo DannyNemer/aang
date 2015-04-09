@@ -10,6 +10,8 @@ var parserNewPath = './Parser.js'
 var parserOldPath = './util/ParserBestFirst.js'
 var searchPath = './search.js'
 
+var semantics = require('../semantics.json')
+
 var stateTable = buildStateTable()
 
 var rl = require('readline').createInterface(process.stdin, process.stdout)
@@ -164,18 +166,34 @@ function runCommand(query) {
 	return true
 }
 
+
 function buildStateTable() {
+	var grammar = require(grammarPath)
+	Object.keys(grammar).forEach(function (sym) {
+		grammar[sym].forEach(function (rule) {
+			if (rule.semantic) mapSemantic(rule.semantic)
+			if (rule.insertedSemantic) mapSemantic(rule.insertedSemantic)
+		})
+	})
+
 	// Build state table
-	var stateTable = new (require(stateTablePath))(require(grammarPath), '[start]')
-	// Remove grammar from cache
-	deleteCache(grammarPath)
+	var stateTable = new (require(stateTablePath))(grammar, '[start]')
+	// Remove grammar and semantics from cache
+	deleteCache(grammarPath, '../semantics.json')
 
 	return stateTable
 }
 
+function mapSemantic(semanticArray) {
+	semanticArray.forEach(function (semanticNode) {
+		semanticNode.semantic = semantics[semanticNode.semantic.name]
+		if (semanticNode.children) mapSemantic(semanticNode.children)
+	})
+}
+
 // Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
 function deleteModuleCache() {
-	deleteCache(parserNewPath, parserOldPath, searchPath, './BinaryHeap.js', '../grammar/Semantic.js')
+	deleteCache(parserPath, searchPath, './BinaryHeap.js', '../grammar/Semantic.js')
 }
 
 function deleteCache() {

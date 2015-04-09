@@ -2,7 +2,6 @@ var util = require('../util')
 var BinaryHeap = require('./BinaryHeap')
 
 var semantic = require('../grammar/Semantic')
-semantic.semantics = require('../semantics.json')
 
 var testCounter = 0
 
@@ -204,7 +203,7 @@ function createItem(sub, item, ruleProps, buildTrees) {
 						newSemantic = prevSemantic.semantic
 						// A function without an arugment - currently can only be intersect()
 						// This will need to be extended if we incorporate functions that don't require args
-						if (newSemantic[0].constructor === Object) return -1
+						if (newSemantic[0].children) return -1
 					}
 				}
 
@@ -256,7 +255,7 @@ function treeIsUnique(item, trees) {
 	if (item.prevSemantics.length > 1) throw 'prevSemantics remain'
 
 	// Check for duplicate semantics
-	var semanticStr = JSON.stringify(item.semantic)
+	var semanticStr = semantic.semanticToString(item.semantic)
 	for (var t = trees.length; t-- > 0;) {
 		var tree = trees[t]
 		if (tree.semanticStr === semanticStr) return false
@@ -407,7 +406,7 @@ exports.print = function (trees, printTrees, printCost) {
 
 		if (tree.disambiguation) {
 			tree.disambiguation.forEach(function (semanticStr) {
-				console.log(' ', semantic.semanticToString(JSON.parse(semanticStr)))
+				console.log(' ', semanticStr)
 			})
 		}
 
