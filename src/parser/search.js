@@ -44,16 +44,7 @@ exports.search = function (startNode, K, buildTrees) {
 			}
 
 			if (i < 0) {
-				item.semantic = item.prevSemantics.pop().semantic
-				if (item.prevSemantics.length) throw 'prevSemantics remain'
-
-				var semanticStr = JSON.stringify(item.semantic)
-				for (var t = trees.length; t-- > 0;) {
-					if (trees[t].semanticStr === semanticStr) break
-				}
-
-				if (t < 0) {
-					item.semanticStr = semanticStr
+				if (treeIsUnique(item, trees)) {
 					if (trees.push(item) === K) break
 				}
 
@@ -262,6 +253,41 @@ function createItem(sub, item, ruleProps, buildTrees) {
 	return newItem
 }
 
+function treeIsUnique(item, trees) {
+	item.semantic = item.prevSemantics[0].semantic
+	if (item.prevSemantics.length > 1) throw 'prevSemantics remain'
+
+	// Check for duplicate semantics
+	var semanticStr = JSON.stringify(item.semantic)
+	for (var t = trees.length; t-- > 0;) {
+		var tree = trees[t]
+		if (tree.semanticStr === semanticStr) return false
+		if (tree.disambiguation && tree.disambiguation.indexOf(semanticStr) !== -1) return false
+	}
+
+	// Semantic is new
+	// Check is text string is new, if save to disambiguation of existing tree
+	var textStr = item.text.join(' ')
+	for (var t = trees.length; t-- > 0;) {
+		var tree = trees[t]
+		if (tree.text === textStr) {
+			if (tree.disambiguation) {
+				tree.disambiguation.push(semanticStr)
+			} else {
+				tree.disambiguation = [ semanticStr ]
+			}
+
+			return false
+		}
+	}
+
+	// Tree is new
+	item.semanticStr = semanticStr
+	item.text = textStr
+	return true
+}
+
+// textArray is a ruleProps.text
 function conjugateTextArray(item, textArray) {
 	var arraysCopied = false
 
@@ -381,10 +407,17 @@ function cloneTree(node, lastNodes) {
 }
 
 exports.print = function (trees, printTrees, printCost) {
-	trees.forEach(function (tree){
-		console.log(tree.text.join(' '), printCost ? tree.cost : '')
+	trees.forEach(function (tree) {
+		console.log(tree.text, printCost ? tree.cost : '')
 		// util.log(tree.semantic)
 		console.log(' ', semantic.semanticToString(tree.semantic))
+
+		if (tree.disambiguation) {
+			tree.disambiguation.forEach(function (semanticStr) {
+				console.log(' ', semantic.semanticToString(JSON.parse(semanticStr)))
+			})
+		}
+
 		if (printTrees) util.log(tree.tree)
 	})
 }
