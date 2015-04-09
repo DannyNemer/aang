@@ -3,7 +3,6 @@ var BinaryHeap = require('./BinaryHeap')
 
 var semantic = require('../grammar/Semantic')
 semantic.semantics = require('../semantics.json')
-var insertSemantic = semantic.insertSemantic
 
 var testCounter = 0
 
@@ -104,15 +103,12 @@ exports.search = function (startNode, K, buildTrees) {
 // don't count text
 // perhaps do similar thing as with semantics - mark next nodes count
 function nextNodesLen(item) {
-	// return item.nextNodes.length
 	return item.nextNodes.reduce(function (prev, cur) {
 		return prev + (cur.sym ? 1 : 0)
 	}, 0)
 }
 
 function createItem(sub, item, ruleProps, buildTrees) {
-	var newSemantic = ruleProps.semantic
-
 	var newItem = {
 		cost: item.cost + ruleProps.cost,
 		ruleProps: item.ruleProps,
@@ -123,24 +119,25 @@ function createItem(sub, item, ruleProps, buildTrees) {
 		newItem.tree = spliceTree(item.tree, sub, ruleProps)
 	}
 
+	var newSemantic = ruleProps.semantic
+
 	// Insertion
 	if (ruleProps.hasOwnProperty('insertionIdx')) {
 		if (newSemantic) {
 			newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
 			if (ruleProps.insertedSemantic) {
-				newItem.prevSemantics.push({ LHS: false, semantic: ruleProps.insertedSemantic })
+				newItem.prevSemantics.push({ semantic: ruleProps.insertedSemantic })
 			}
 		} else if (ruleProps.insertedSemantic) {
-			var prevSemanticsLen = item.prevSemantics.length
-			var prevSemantic = item.prevSemantics[prevSemanticsLen - 1]
+			var prevSemantic = item.prevSemantics[item.prevSemantics.length - 1]
 
 			if (prevSemantic.LHS) {
-				newItem.prevSemantics = item.prevSemantics.concat({ LHS: false, semantic: ruleProps.insertedSemantic })
+				newItem.prevSemantics = item.prevSemantics.concat({ semantic: ruleProps.insertedSemantic })
 			} else {
 				newSemantic = semantic.mergeRHS(prevSemantic.semantic, ruleProps.insertedSemantic)
 				if (newSemantic === -1) return -1
-				newItem.prevSemantics = item.prevSemantics.slice()
-				newItem.prevSemantics[prevSemanticsLen - 1] = { LHS: false, semantic: newSemantic }
+				newItem.prevSemantics = item.prevSemantics.slice(0, -1)
+				newItem.prevSemantics.push({ semantic: newSemantic })
 			}
 		} else {
 			newItem.prevSemantics = item.prevSemantics
@@ -149,42 +146,37 @@ function createItem(sub, item, ruleProps, buildTrees) {
 
 		newItem.lastNode = sub.node
 
-		if (ruleProps.text) {
-			if (ruleProps.insertionIdx) {
-				newItem.nextNodes = newItem.nextNodes.slice()
-				newItem.nextNodes.push(ruleProps.text)
-				newItem.text = item.text
-			} else {
-				// conjugates "have" - never person number, because only person number only nominative -> idx = 1
-				newItem.text = item.text.concat(conjugateTextArray(newItem, ruleProps.text))
-			}
-
-			// both can occur for both insertionIdx
-			if (ruleProps.personNumber || ruleProps.verbForm) {
-				// might copy array twice because copied in conjugation
-				newItem.ruleProps = newItem.ruleProps.concat(ruleProps)
-			}
-		} else {
+		if (ruleProps.insertionIdx === 1) {
+			// cannot concat because will alter text array
+			newItem.nextNodes = newItem.nextNodes.slice()
+			newItem.nextNodes.push(ruleProps.text)
 			newItem.text = item.text
+		} else {
+			// conjugates "have" - never person number, because only person number only nominative -> idx = 1
+			newItem.text = item.text.concat(conjugateTextArray(newItem, ruleProps.text))
+		}
+
+		// both can occur for both insertionIdx
+		if (ruleProps.personNumber || ruleProps.verbForm) {
+			// might copy array twice because copied in conjugation
+			newItem.ruleProps = newItem.ruleProps.concat(ruleProps)
 		}
 	}
 
 	else {
-		if (sub.next) {
-			if (newSemantic) { // same as transposition
-				newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
-			} else {
-				newItem.prevSemantics = item.prevSemantics
-			}
-		} else if (sub.node.subs) { // 1 -> 1
+		if (sub.node.subs) {
 			// semantic args are getting here, but being marked as LHS
 			if (newSemantic) {
+				// Semantic function (LHS)
+				// This is always true if sub.next (because unlikely to put a semantic argument on a fork)
 				if (newSemantic[0].constructor === Object) {
 					newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
 				} else {
 					// should always be a LHS before
 					// semantic arg
-					newItem.prevSemantics = item.prevSemantics.concat({ LHS: false, semantic: newSemantic })
+					// Will be a 1 -> 1
+					// We are counting on there not being any semantics that come after this down the branch
+					newItem.prevSemantics = item.prevSemantics.concat({ semantic: newSemantic })
 				}
 			} else {
 				newItem.prevSemantics = item.prevSemantics
@@ -193,25 +185,31 @@ function createItem(sub, item, ruleProps, buildTrees) {
 			for (var p = item.prevSemantics.length; p-- > 0;) {
 				var prevSemantic = item.prevSemantics[p]
 
+				// RHS
 				if (!prevSemantic.LHS) {
 					if (newSemantic) {
 						newSemantic = semantic.mergeRHS(prevSemantic.semantic, newSemantic)
+						// Duplicates
 						if (newSemantic === -1) return -1
 					} else {
 						newSemantic = prevSemantic.semantic
 					}
-				} else if (prevSemantic.nextNodesLen >= nextNodesLen(item)) {
+				}
+
+				// LHS after parsing the right-most branch that follows the semantic (completed the reduction)
+				else if (prevSemantic.nextNodesLen >= nextNodesLen(item)) {
 					if (newSemantic) {
 						newSemantic = semantic.insertSemantic(prevSemantic.semantic, newSemantic)
 					} else {
 						newSemantic = prevSemantic.semantic
+						// A function without an arugment - currently can only be intersect()
+						// This will need to be extended if we incorporate functions that don't require args
 						if (newSemantic[0].constructor === Object) return -1
 					}
-				} else {
-					// console.log('here')
-					// on left side of a reduction
-					break
 				}
+
+				// On left side of a reduction and cannot continue merging with LHS w/o completing its RHS (children)
+				else break
 			}
 
 			if (newSemantic) {
@@ -330,18 +328,13 @@ function conjugateText(rulePropsArray, text) {
 		var gramCase = ruleProps.gramCase
 		if (gramCase && text[gramCase]) {
 			// rule with gramCase either has personNumber for nomitive (so will be needed again), or doesn't have personNUmer (For obj) and can be deleted
-			if (!personNumber) {
-				rulePropsArray.splice(r, 1)
-			}
+			if (!personNumber) rulePropsArray.splice(r, 1)
+
 			return text[gramCase]
 		}
-
-		// console.log('not last ruleProps')
 	}
 
-	console.log('Failed to conjugateText:', text)
-	console.log(rulePropsArray)
-	console.log()
+	util.log('Failed to conjugateText:', text, rulePropsArray)
 }
 
 function spliceTree(tree, sub, ruleProps) {

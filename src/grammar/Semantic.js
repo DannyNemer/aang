@@ -1,7 +1,5 @@
 var util = require('../util')
 
-// module.exports = Semantic
-
 exports.semantics = {}
 
 exports.Semantic = function (opts) {
@@ -83,9 +81,25 @@ exports.costOfSemantic = function (semantic) {
 	}, 0)
 }
 
+// rejected semantics:
+	// exact duplicats (accouting for sub-semantics)
+
+	// contradictions:
+	// returns empty-set: my male female friends, photos by me and my friends
+	// photos-of(), photos-of()
+
 // A and B both always exist
 exports.mergeRHS = function (A, B) {
-	if (dupSemantics(A, B)) return -1
+	// Check for duplicates
+	for (var i = A.length; i-- > 0;) {
+		var semanticA = A[i]
+
+		for (var j = B.length; j-- > 0;) {
+			if (semanticsMatch(semanticA, B[j])) {
+				return -1
+			}
+		}
+	}
 
 	// Do not need to sort because will be sorted when added to a LHS
 	// And every one with the RHS (being check for dup) has been added to RHS
@@ -94,19 +108,12 @@ exports.mergeRHS = function (A, B) {
 }
 
 // LHS and RHS both always defined
-exports.insertSemantic = function (LHS, RHS) {
-	if (RHS.length === 1 && LHS[0].intersect) return RHS
-
-	var newSemantic = insert(LHS, RHS)
-	if (!newSemantic) throw 'merge fail'
-
-	return newSemantic
-}
-
-
 // not slicing RHS here because did before
 // the LHS should always be empty, and last one - because of sorting we know it is not arguemnt
-function insert(LHS, RHS) {
+exports.insertSemantic = function (LHS, RHS) {
+	// If intersect with one semantic arg
+	if (RHS.length === 1 && LHS[0].intersect) return RHS
+
 	var lhsSemantic = LHS[0]
 	var semanticName = getSemanticName(lhsSemantic)
 	var maxParams = exports.semantics[semanticName].maxParams
@@ -158,13 +165,14 @@ function compareSemantics(a, b) {
 		if (aName < bName) return -1
 		if (aName > bName) return 1
 
+		// same semantic function (by name)
 		// compare semantic children
 		var aChildren = a[aName]
 		var bChildren = b[bName]
 		var returnVal = 0
 
-		for (var i = 0, minLength = Math.min(aChildren.length, bChildren.length); i < minLength; i++) {
-			var returnVal = compareSemantics(aChildren[i], bChildren[i])
+		for (var i = 0, minLength = Math.min(aChildren.length, bChildren.length); i < minLength; ++i) {
+			returnVal = compareSemantics(aChildren[i], bChildren[i])
 			if (returnVal) break
 		}
 
@@ -175,25 +183,6 @@ function compareSemantics(a, b) {
 	return a === b ? 0 : (a < b ? -1 : 1)
 }
 
-
-// rejected semantics:
-	// exact duplicats (accouting for sub-semantics)
-	// returns empty-set: my male female friends, photos by me and my friends
-	// photos-of(), photos-of()
-
-function dupSemantics(arrayA, semanticB) {
-	for (var a = arrayA.length; a-- > 0;) {
-		var semanticAItem = arrayA[a]
-
-		for (var b = semanticB.length; b-- > 0;) {
-			if (semanticsMatch(semanticAItem, semanticB[b])) {
-				return true
-			}
-		}
-	}
-
-	return false
-}
 
 function semanticsMatch(a, b) {
 	// entities
@@ -226,7 +215,9 @@ function semanticArraysMatch(a, b) {
 
 
 function getSemanticName(semantic) {
-	return Object.keys(semantic)[0]
+	for (var name in semantic) {
+		return name
+	}
 }
 
 exports.semanticToString = function (semanticArgs) {

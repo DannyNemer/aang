@@ -4,7 +4,8 @@
 //   Transposition - swapped RHS of nonterminal rules
 
 var util = require('../util')
-var insertSemanticBinary = require('./Semantic.js').insertSemanticBinary
+var insertSemantic = require('./Semantic.js').insertSemantic
+var mergeRHS = require('./Semantic.js').mergeRHS
 
 
 module.exports = function (grammar) {
@@ -32,7 +33,8 @@ function findTermRuleInsertions(grammar, insertions) {
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost,
 						insertedSyms: [ { symbol: termSym } ],
-						text: []
+						// [1-sg-poss-omissible] uses a blank to achieve an insertion cost of 0 on a base cost of 0
+						text: rule.text ? [ rule.text ] : []
 					})
 
 					// Remove empty-string term syms from grammar
@@ -61,8 +63,9 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 			grammar[nontermSym].forEach(function (rule) {
 				if (rule.RHS.length === 2 && /\+/.test(nontermSym)) return // TEMP
 				// if (rule.RHS.indexOf(nontermSym) !== -1) return
+				if (rule.hasOwnProperty('transpositionCost')) return
 
-				if (!rule.terminal && !rule.hasOwnProperty('transpositionCost') && RHSCanBeInserted(insertions, rule.RHS)) {
+				if (!rule.terminal && RHSCanBeInserted(insertions, rule.RHS)) {
 					rule.RHS.map(function (sym) {
 						// Create an array of every insertion for each RHS symbol
 						return insertions[sym].map(function (insertion) {
@@ -80,10 +83,17 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 
 						AInsertions.forEach(function (A) {
 							BInsertions.forEach(function (B) {
+								if (A.semantic && B.semantic) {
+									var semantic = mergeRHS(A.semantic, B.semantic)
+									if (semantic === -1) throw 'duplicate semantic'
+								} else {
+									var semantic = A.semantic || B.semantic
+								}
+
 								mergedInsertions.push({
 									cost: A.cost + B.cost,
 									text: A.text.concat(B.text),
-									semantic: A.semantic && B.semantic ? A.semantic.concat(B.semantic) : A.semantic || B.semantic,
+									semantic: semantic,
 									// Person-number only needed for 1st for 2 RHS syms: nominative case (verb precedes subject)
 									// Only used for conjugation of current rule
 									personNumber: A.personNumber,
@@ -98,8 +108,13 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 						// Add each insertion the can be produced from the RHS
 
 						// TEMP
-						var semantic = insertSemanticBinary(rule.semantic, insertion.semantic)
-						if (semantic === -1) return
+						// FIX: not checking for an insertect (or any open ended) on right
+						// no problems currently, but need checks
+						if (rule.semantic && insertion.semantic) {
+							var semantic = insertSemantic(rule.semantic, insertion.semantic)
+						} else {
+							var semantic = rule.semantic || insertion.semantic
+						}
 
 						// Temp hack:
 						var noConjugation = insertion.text.join(' ') === conjugateText(rule, insertion).join(' ')
@@ -171,6 +186,8 @@ function createRulesFromInsertions(grammar, insertions) {
 			if (RHS.length > 1) {
 				RHS.forEach(function (sym, symIdx) {
 					var otherSym = RHS[+!symIdx]
+
+					// if (/\+/.test(nontermSym) && /\+/.test(sym)) return
 
 					if (insertions.hasOwnProperty(sym) && otherSym !== nontermSym) {
 						insertions[sym].forEach(function (insertion) {
@@ -323,6 +340,7 @@ function conjugateText(rule, insertion) {
 }
 
 // Throw err if new rule generated from insertion(s), empty-string(s), or a transposition is a duplicate of an existing rule
+// If new rule has identical semantics and RHS but is cheaper than previous new rule, remove previous rule
 function ruleExists(rules, newRule) {
 	for (var r = rules.length; r-- > 0;) {
 		var existingRule = rules[r]
@@ -339,15 +357,16 @@ function ruleExists(rules, newRule) {
 				throw 'duplicate rule produced with edits'
 			}
 
-			if (existingRule.semantic === newRule.semantic && existingRule.insertedSemantic) {
+			// New rule and previously created rule have identical RHS and semantics
+			if (existingRule.insertedSemantic && existingRule.semantic === newRule.semantic) {
 				if (JSON.stringify(existingRule.insertedSemantic) === JSON.stringify(newRule.insertedSemantic)) {
-					if (existingRule.cost > newRule.cost) {
-						console.log('Err: new rule with identical semantic cheaper than previously added rule')
-						util.log(existingRule, newRule)
-						throw 'rules not added by increasing costs'
+					if (existingRule.cost < newRule.cost) {
+						return true
+					} else {
+						// New rule is cheaper -> remove existing rule
+						rules.splice(r, 1)
+						return false
 					}
-
-					return true
 				}
 			}
 		}

@@ -399,26 +399,27 @@ Parser.prototype.printStack = function () {
 	})
 }
 
-Parser.prototype.printNodeGraph = function (node, notRoot) {
+Parser.prototype.printNodeGraph = function (sub) {
+	var node = sub.node || sub
+
 	var newNode = {
 		symbol: node.sym.name,
-		ruleProps: node.ruleProps,
-		// paths: node.paths ? node.paths.length : undefined
+		ruleProps: sub.ruleProps
 	}
 
 	if (node.subs) {
 		newNode.subs = node.subs.map(function (sub) {
 			var children = []
 			for (; sub; sub = sub.next) {
-				children.push(this.printNodeGraph(sub.node, true))
+				children.push(this.printNodeGraph(sub))
 			}
 			return children
 		}, this)
 	}
 
-	if (notRoot) {
+	if (sub.node) {
 		return newNode
 	} else {
-		console.log(JSON.stringify(newNode, null, 1))
+		console.log(JSON.stringify(newNode, null, 1)) // Start node
 	}
 }
