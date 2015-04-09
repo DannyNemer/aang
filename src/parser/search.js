@@ -33,26 +33,36 @@ exports.search = function (startNode, K, buildTrees) {
 	while (heap.size() > 0) {
 		var item = heap.pop()
 
-		var lastNode = item.lastNode || item.nextNodes.pop()
-
-		while (lastNode && !lastNode.sym) {
-			// might not need to call conjugateTextArray every time
-			item.text = item.text.concat(conjugateTextArray(item, lastNode))
-			lastNode = item.nextNodes.pop()
-		}
+		var lastNode = item.lastNode
 
 		if (!lastNode) {
-			item.semantic = item.prevSemantics.pop().semantic
-			if (item.prevSemantics.length) throw 'prevSemantics remain'
+			for (var i = item.nextNodes.length; i-- > 0;) {
+				lastNode = item.nextNodes[i]
 
-			var semanticStr = JSON.stringify(item.semantic)
-			for (var t = trees.length; t-- > 0;) {
-				if (trees[t].semanticStr === semanticStr) break
+				if (lastNode.sym) break
+					// we are copying item.ruleProps every time, should only be once
+				item.text = item.text.concat(conjugateTextArray(item, lastNode))
 			}
-			item.semanticStr = semanticStr
 
-			if (t < 0 && trees.push(item) === K) break
-			continue
+			if (i < 0) {
+				item.semantic = item.prevSemantics.pop().semantic
+				if (item.prevSemantics.length) throw 'prevSemantics remain'
+
+				var semanticStr = JSON.stringify(item.semantic)
+				for (var t = trees.length; t-- > 0;) {
+					if (trees[t].semanticStr === semanticStr) break
+				}
+
+				if (t < 0) {
+					item.semanticStr = semanticStr
+					if (trees.push(item) === K) break
+				}
+
+				continue
+			} else {
+				// Copy nextNodes, excluding ones already used
+				item.nextNodes = item.nextNodes.slice(0, i)
+			}
 		}
 
 		var subs = lastNode.subs
@@ -261,9 +271,7 @@ function createItem(sub, item, ruleProps, buildTrees) {
 				newItem.ruleProps = newItem.ruleProps.concat(ruleProps)
 			}
 		} else {
-			// will pop on next shift, so copy
-			newItem.nextNodes = newItem.nextNodes.slice()
-
+			// end of branch
 			var text = ruleProps.text
 			if (text) {
 				if (text instanceof Object) {
