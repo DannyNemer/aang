@@ -74,6 +74,12 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	}
 
 	if (opts.hasOwnProperty('insertionCost')) {
+		// Prevent an insertion cost of 0 with a base cost of 0
+		// Otherwise, trees with and without the insertion would have the same cost
+		if (opts.insertionCost === 0 && this.rules.length === 0) {
+			ruleErr('Cannot have an insertion cost of 0 with a base cost of 0', this.name, opts.RHS)
+		}
+
 		newRule.insertionCost = opts.insertionCost
 	}
 
@@ -140,12 +146,15 @@ Symbol.prototype.calcCost = function (costPenalty) {
 
 // Print error when new rule is ill-formed
 function ruleErr(errMessage, name, RHS) {
-	RHS = RHS.map(function (sym) {
-		return sym instanceof Symbol ? sym.name : sym
-	})
+	if (Array.isArray(RHS)) {
+		RHS = RHS.map(function (sym) {
+			return sym instanceof Symbol ? sym.name : sym
+		})
+	}
 
 	console.log(util.getLine())
 	console.log('Err:', errMessage + ':')
 	console.log('\t' + name, '->', RHS)
+
 	throw 'ill-formed rule'
 }
