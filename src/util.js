@@ -1,6 +1,7 @@
 // Project-agnostic utility functions
 
 var fs = require('fs')
+var colors = require('colors/safe')
 
 
 // Checks if an opts Object matches a schema
@@ -75,9 +76,10 @@ function printOptsErr() {
 
 
 // Get line number of first item in stack trace preceding call of this function
-exports.getLine = function () {
+// If getCallingLine, return line of where this function was called
+exports.getLine = function (getCallingLine) {
 	var stack = (new Error()).stack.split('\n').slice(2)
-	var callingFileName
+	var callingFileName = null
 
 	for (var i = 0, stackLength = stack.length; i < stackLength; ++i) {
 		var line = stack[i]
@@ -85,15 +87,17 @@ exports.getLine = function () {
 		// 'line' must contain a file path
 		if (!/\//.test(line)) continue
 
-		if (!callingFileName) {
-			// Ignore if getLine() called from this file
-			if (line.indexOf(__filename) !== -1) continue
+		// Ignore if getLine() called from this file
+		if (line.indexOf(__filename) !== -1) continue
 
-			// Name of file from which getLine() was called (i.e., grammar.js)
-			callingFileName = line.slice(line.indexOf('/') + 1, line.indexOf(':'))
-		} else if (line.indexOf(callingFileName) === -1) {
-			// Remove parenthesis surrounding paths in trace for iTerm
+		// Remove parenthesis surrounding paths in trace for iTerm
+		if (getCallingLine || (callingFileName && line.indexOf(callingFileName) === -1)) {
 			return line.replace(/[()]/g, '').slice(line.lastIndexOf(' ') + 1)
+		}
+
+		// Name of file from which getLine() was called (i.e., grammar.js)
+		else {
+			callingFileName = line.slice(line.indexOf('/') + 1, line.indexOf(':'))
 		}
 	}
 
@@ -137,6 +141,11 @@ exports.log = function () {
 	})
 
 	console.log() // Print trailing blank line
+}
+
+// Print when function called to mark reaching its section
+exports.mark = function (msg) {
+	console.log(colors.red((msg || 'Reached') + ':'), exports.getLine(true))
 }
 
 // Write obj to JSON file at filepath
