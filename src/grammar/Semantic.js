@@ -217,12 +217,18 @@ exports.semanticArraysMatch = function (a, b) {
 }
 
 exports.semanticToString = function (semanticArray) {
-	return semanticArray.map(function (semanticNode) {
+	var str = ''
+
+	for (var s = 0, semanticArrayLen = semanticArray.length; s < semanticArrayLen; ++s) {
+		var semanticNode = semanticArray[s]
+		var semanticName = semanticNode.semantic.name
+
 		if (semanticNode.children) {
-			var semanticName = semanticNode.semantic.name
-			return semanticName + '(' + exports.semanticToString(semanticNode.children) + ')'
+			str += (s ? ',' : '') + semanticName + '(' + exports.semanticToString(semanticNode.children) + ')'
 		} else {
-			return semanticNode.semantic.name // number or string
+			str += (s ? ',' : '') + semanticName
 		}
-	}).join(',')
+	}
+
+	return str
 }
