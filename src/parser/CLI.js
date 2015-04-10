@@ -120,6 +120,9 @@ function runCommand(query) {
 		console.log('Deleted cache of modules')
 	} else if (query === '-st') {
 		stateTable.print()
+	} else if (query === '-ts') {
+		console.log('test queries:')
+		console.log(testQueries.join('\n'))
 	} else if (query === '-t') {
 		printTime = !printTime
 		console.log('print time:', printTime)
@@ -149,8 +152,9 @@ function runCommand(query) {
 		console.log('-k  K:', K)
 		console.log('-r  run test queries')
 		console.log('-rb rebuild grammar and state table')
-		console.log('-st print state table')
 		console.log('-d  delete module cache')
+		console.log('-st print state table')
+		console.log('-ts print test queries')
 		console.log('-t  print time:', printTime)
 		console.log('-q  print query:', printQuery)
 		console.log('-o  print output:', printOutput)
