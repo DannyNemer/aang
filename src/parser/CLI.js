@@ -5,12 +5,10 @@ while (/bin/.test(process.argv[0]) && process.uptime() < 1) {}
 var util = require('../util.js')
 
 var grammarPath = '../grammar.json'
-var stateTablePath = './StateTable.js'
+var semanticsPath = '../semantics.json'
 var parserNewPath = './Parser.js'
 var parserOldPath = './util/ParserBestFirst.js'
 var searchPath = './search.js'
-
-var semantics = require('../semantics.json')
 
 var stateTable = buildStateTable()
 
@@ -117,8 +115,6 @@ function runCommand(query) {
 		tryCatchWrapper(function () {
 			require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
 		})
-		// Remove previous grammar from cache
-		deleteCache(grammarPath, '../semantics.json')
 		// Rebuild state table
 		stateTable = buildStateTable()
 	} else if (query === '-d') {
@@ -179,6 +175,8 @@ function runCommand(query) {
 
 function buildStateTable() {
 	var grammar = require(grammarPath)
+	semantics = require(semanticsPath)
+
 	Object.keys(grammar).forEach(function (sym) {
 		grammar[sym].forEach(function (rule) {
 			if (rule.semantic) mapSemantic(rule.semantic)
@@ -187,9 +185,9 @@ function buildStateTable() {
 	})
 
 	// Build state table
-	var stateTable = new (require(stateTablePath))(grammar, '[start]')
+	var stateTable = new (require('./StateTable.js'))(grammar, '[start]')
 	// Remove grammar and semantics from cache
-	deleteCache(grammarPath, '../semantics.json')
+	deleteCache(grammarPath, semanticsPath)
 
 	return stateTable
 }
