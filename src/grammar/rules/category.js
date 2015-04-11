@@ -161,7 +161,9 @@ module.exports = function Category(catOpts) {
 	if (catOpts.entity) {
 		this.catSg = new g.Symbol(this.nameSg)
 		// (people) {user} (follows); (people who follow) {user}
-		this.catSg.addRule({ terminal: true, RHS: '{' + this.nameSg + '}' })
+		var catEntityStr = '{' + this.nameSg + '}'
+		var catSemanticArg = new g.Semantic({ name: catEntityStr, isArg: true, cost: 0 })
+		this.catSg.addRule({ terminal: true, RHS: catEntityStr, text: catEntityStr, semantic: catSemanticArg })
 
 		if (!catOpts.person) { // user does not use because obj/nom-users -> [user]
 			// (people who like) {repo}
