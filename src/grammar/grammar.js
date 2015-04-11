@@ -3,7 +3,9 @@ var util = require('../util')
 var grammar = {}
 
 // Empty-string
-exports.emptyTermSym = '<empty>'
+// Rules with <empty> optionalize their LHS symbols and subsequent unary reductions
+// Original rules with <empty> are omitted from output grammar
+exports.emptySymbol = '<empty>'
 
 exports.Symbol = require('./Symbol').bind(null, grammar)
 

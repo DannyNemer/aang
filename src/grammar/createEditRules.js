@@ -23,13 +23,13 @@ module.exports = function (grammar) {
 
 // Find all terminal rules with insertion costs or blanks
 function findTermRuleInsertions(grammar, insertions) {
-	var emptyTermSym = require('./grammar').emptyTermSym
+	var emptySymbol = require('./grammar').emptySymbol
 
 	Object.keys(grammar).forEach(function (nontermSym) {
 		grammar[nontermSym].forEach(function (rule, ruleIdx, symRules) {
 			if (rule.terminal) {
 				var termSym = rule.RHS[0]
-				if (termSym === emptyTermSym) { // Empty-string
+				if (termSym === emptySymbol) { // Empty-string
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost,
 						insertedSyms: [ { symbol: termSym } ],

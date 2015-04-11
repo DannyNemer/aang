@@ -227,7 +227,7 @@ g.addStopWord = function (opts) {
 	var stopWord = opts.symbol
 
 	// Accepted terminal symbol is an empty-string
-	stopWord.addRule({ terminal: true, RHS: g.emptyTermSym })
+	stopWord.addRule({ terminal: true, RHS: g.emptySymbol })
 
 	// All stop-word terminal symbols are rejected
 	opts.stopWords.forEach(function (termSym) {
@@ -253,7 +253,7 @@ g.addWord = function (opts) {
 		throw 'ill-formed word'
 	}
 
-	if (opts.accepted.indexOf(g.emptyTermSym) !== -1) {
+	if (opts.accepted.indexOf(g.emptySymbol) !== -1) {
 		console.log('Err: Words cannot have <empty> strings:', opts.name)
 		console.log('Only stop-words or opt-terms can have <empty> strings')
 		console.log(util.getLine())
@@ -271,7 +271,7 @@ g.addWord = function (opts) {
 
 	// Optional terminal rule -> rule can be omitted from input by accepting empty-string without penalty
 	if (opts.optional) {
-		word.addRule({ terminal: true, RHS: g.emptyTermSym })
+		word.addRule({ terminal: true, RHS: g.emptySymbol })
 	}
 
 	// Terminal symbols which are output when input (i.e., not substituted)

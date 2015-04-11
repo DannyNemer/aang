@@ -26,7 +26,7 @@ module.exports = function Category(catOpts) {
 	this.namePl = catOpts.pl
 
 	this.lhs = new g.Symbol(this.nameSg, 'lhs')
-	this.lhs.addRule({ terminal: true, RHS: g.emptyTermSym })
+	this.lhs.addRule({ terminal: true, RHS: g.emptySymbol })
 
 	// repos of [users]; followers
 	this.head = new g.Symbol(this.nameSg, 'head')
@@ -79,7 +79,7 @@ module.exports = function Category(catOpts) {
 
 
 	var rhs = new g.Symbol(this.nameSg, 'rhs')
-	rhs.addRule({ terminal: true, RHS: g.emptyTermSym })
+	rhs.addRule({ terminal: true, RHS: g.emptySymbol })
 	// (people) followed by me
 	rhs.addRule({ RHS: [ reduced ] })
 	// (people) I follow
