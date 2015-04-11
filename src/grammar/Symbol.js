@@ -97,7 +97,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 	}
 
 	if (opts.RHS.length > 2) {
-		ruleErr('Rules can only have 1 or 2 RHS symbols', this.name, opts.RHS)
+		ruleErr('Nonterminal rules can only have 1 or 2 RHS symbols', this.name, opts.RHS)
 	}
 
 	var newRule = {

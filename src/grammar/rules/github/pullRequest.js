@@ -25,7 +25,7 @@ var pullRequestCreatorsSemantic = new g.Semantic({ name: pullRequest.nameSg + '-
 // my pull requests
 pullRequest.noRelativePossessive.addRule({ RHS: [ poss.determiner, pullRequest.possessible ], semantic: pullRequestsCreatedSemantic })
 // pull requests of mine
-pullRequest.head.addRule({ RHS: [ pullRequest.headMayPoss, poss.ofPossUsers ], semantic: pullRequestsCreatedSemantic })
+pullRequest.head.addRule({ RHS: [ pullRequest.headMayPoss, poss.ofPossUsersPlus ], semantic: pullRequestsCreatedSemantic })
 
 
 // CREATED:
@@ -49,10 +49,10 @@ var mention = g.addWord({
 	accepted: [ 'mention' ]
 })
 
-var pullRequestsMentioned = new g.Semantic({ name: pullRequest.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })
+var pullRequestsMentionedSemantic = new g.Semantic({ name: pullRequest.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // (pull requests that) mention me
-pullRequest.subjFilter.addRule({ RHS: [ mention, user.objUsersPlus ], semantic: pullRequestsMentioned })
+pullRequest.subjFilter.addRule({ RHS: [ mention, user.objUsersPlus ], semantic: pullRequestsMentionedSemantic })
 
 var mentionedIn = g.addWord({
 	symbol: new g.Symbol('mentioned', 'in'),
@@ -65,4 +65,8 @@ beGeneralMentionedIn.addRule({ RHS: [ auxVerbs.beGeneral, mentionedIn ] })
 var preVerbStopWordsBeGeneralMentionedIn = new g.Symbol('pre', 'verb', 'stop', 'words', 'be', 'general', 'mentioned', 'in')
 preVerbStopWordsBeGeneralMentionedIn.addRule({ RHS: [ stopWords.preVerbStopWords, beGeneralMentionedIn ] })
 // (pull requests) I-am/{user}-is/[users]-are mentioned in
-pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPlus, preVerbStopWordsBeGeneralMentionedIn ], semantic: pullRequestsMentioned })
+pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPlus, preVerbStopWordsBeGeneralMentionedIn ], semantic: pullRequestsMentionedSemantic })
+
+var usersMentionedSemantic = new g.Semantic({ name: user.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })
+// (people) mentioned in [pull-requests+]; (people who are) mentioned in [pull-requests+]
+user.inner.addRule({ RHS: [ mentionedIn, pullRequest.catPlPlus ], semantic: usersMentionedSemantic })

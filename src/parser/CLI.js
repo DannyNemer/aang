@@ -60,6 +60,8 @@ function parse(query, K) {
 
 var testQueries = [
 	'repos I have liked',
+	'repos created by me and my followers',
+	'repos I and my followers created',
 	'people who like my repos liked by people who follow people I follow',
 	'people who like repos',
 	'repos been followers',
@@ -77,6 +79,10 @@ var testQueries = [
 	'repos liked by followers of followers of mine',
 	'repos liked by me and my followers',
 	'repos liked by me and my followers and people who like repos liked by me and my followers',
+	'my repos that are {language} repos',
+	'my {language} repos',
+	'repos that are written-in {language}',
+	'my {language} repos that are written-in {language}'
 	// 'followers of my followers who are followers of mine my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to follow',
 	// 'my followers who created pull-requests of mine created by my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to I am mentioned-in'
 	// 'my repos me people who follow my followers have been and', - BROKEN

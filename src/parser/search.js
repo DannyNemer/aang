@@ -166,6 +166,7 @@ function createItem(sub, item, ruleProps, buildTrees) {
 		if (sub.node.subs) {
 			// semantic args are getting here, but being marked as LHS
 			if (newSemantic) {
+				// Do not merge LHS early - cannot fail, but their RHS children can fail, then parse LHS after
 				// Semantic function (LHS)
 				// This is always true if sub.next (because unlikely to put a semantic argument on a fork)
 				if (newSemantic[0].constructor === Object) {
@@ -333,7 +334,7 @@ function conjugateText(rulePropsArray, text) {
 		}
 	}
 
-	util.log('Failed to conjugateText:', text, rulePropsArray)
+	util.log('Failed to conjugate:', text, rulePropsArray)
 }
 
 function spliceTree(tree, sub, ruleProps) {

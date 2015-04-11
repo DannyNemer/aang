@@ -14,8 +14,10 @@ this.plain = g.addPronoun({
 // my (repositories)
 this.poss = g.addWord({
 	symbol: new g.Symbol('1', 'sg', 'poss'),
+	insertionCost: 0,
 	accepted: [ 'my' ]
 })
+// this.poss.addRule({ terminal: true, RHS: g.emptyTermSym })
 
 // my (followers)
 // WRONG: Use <empty> to simulate an insertion cost of 0 with a base cost of 1e-6

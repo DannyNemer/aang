@@ -50,8 +50,8 @@ function ruleCount(grammar) {
 	}, 0)
 }
 
-// Write grammar to 'filepath'
-exports.writeGrammarToFile = function (filepath) {
-	util.writeJSONFile(filepath, grammar)
-	util.writeJSONFile('../semantics.json', require('./Semantic').semantics)
+// Write grammar and semantics to files
+exports.writeGrammarToFile = function (grammarPath, semanticsPath) {
+	util.writeJSONFile(grammarPath, grammar)
+	util.writeJSONFile(semanticsPath, Semantic.semantics)
 }

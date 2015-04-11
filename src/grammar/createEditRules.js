@@ -146,6 +146,8 @@ function RHSCanBeInserted(insertions, RHS) {
 function addInsertion(insertions, nontermSym, newInsertion) {
 	var symInsertions = insertions[nontermSym] || (insertions[nontermSym] = [])
 
+	// if (newInsertion.cost > 6) return false
+
 	if (!insertionExists(symInsertions, newInsertion)) {
 		symInsertions.push(newInsertion)
 		return true
@@ -218,8 +220,10 @@ function createRulesFromInsertions(grammar, insertions) {
 
 								// [followed] (by me) -> followed (by me)
 								// Currently needlessly saves for "[have] (liked)", where verbForm already conjugated "liked"
-								if (insertion.text.join(' ') === newRule.text.join(' ')) // No conjugation - temp hack
-								newRule.verbForm = rule.verbForm
+								// No conjugation - temp hack
+								if (insertion.text.join(' ') === newRule.text.join(' ')) {
+									newRule.verbForm = rule.verbForm
+								}
 							}
 
 							if (!ruleExists(symRules, newRule)) {

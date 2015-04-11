@@ -28,6 +28,7 @@ module.exports = function Category(catOpts) {
 	this.lhs = new g.Symbol(this.nameSg, 'lhs')
 	this.lhs.addRule({ terminal: true, RHS: g.emptyTermSym })
 
+	// repos of [users]; followers
 	this.head = new g.Symbol(this.nameSg, 'head')
 
 	if (!catOpts.person) {
@@ -45,7 +46,6 @@ module.exports = function Category(catOpts) {
 	// people (I follow); people (followed by me)
 	lhsHead.addRule({ RHS: [ this.lhs, this.head ], transpositionCost: 1 })
 
-
 	var passivePlus = new g.Symbol(this.nameSg, 'passive+')
 	// (people) followed by me
 	this.passive = new g.Symbol(this.nameSg, 'passive')
@@ -61,8 +61,11 @@ module.exports = function Category(catOpts) {
 
 
 	var reducedNoTense = new g.Symbol(this.nameSg, 'reduced', 'no', 'tense')
+	// (people) mentioned in [pull-requests+]; (people who are) mentioned in [pull-requests+]
+	this.inner = new g.Symbol(this.nameSg, 'inner')
+	reducedNoTense.addRule({ RHS: [ this.inner ] })
 	// (people) followed by me; (people who are) followed by me
-	reducedNoTense.addRule({ RHS: [ passivePlus ]})
+	reducedNoTense.addRule({ RHS: [ passivePlus ] })
 
 	var reduced = new g.Symbol(this.nameSg, 'reduced')
 	// (people) followed by me

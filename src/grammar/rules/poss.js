@@ -29,6 +29,8 @@ possUser.addRule({ terminal: true, RHS: 'mine', text: 'mine', semantic: oneSg.se
 var possUsers = new g.Symbol(possStr, 'users')
 // (repos of) {user}/mine
 possUsers.addRule({ RHS: [ possUser ] })
+// (repos of) followers of mine
+possUsers.addRule({ RHS: [ user.head ] })
 // (repos of) my followers
 possUsers.addRule({ RHS: [ user.noRelativePossessive ] })
 
@@ -36,10 +38,10 @@ var possUsersPlus = new g.Symbol(possStr, 'users+')
 possUsersPlus.addRule({ RHS: [ possUsers] })
 
 // (followers of) mine
-this.ofPossUsers = new g.Symbol('of', possStr, 'users')
-this.ofPossUsers.addRule({ RHS: [ preps.possessor, possUsersPlus ] })
+this.ofPossUsersPlus = new g.Symbol('of', possStr, 'users+')
+this.ofPossUsersPlus.addRule({ RHS: [ preps.possessor, possUsersPlus ] })
 
-// (repos of) mine
+// (repos of) mine - NOTE: not currently used
 // - No insertion for 'of'
-this.ofPossUsersSpecial = new g.Symbol('of', possStr, 'users', 'special')
-this.ofPossUsersSpecial.addRule({ RHS: [ preps.possessorSpecial, possUsersPlus ] })
+this.ofPossUsersPlusSpecial = new g.Symbol('of', possStr, 'users+', 'special')
+this.ofPossUsersPlusSpecial.addRule({ RHS: [ preps.possessorSpecial, possUsersPlus ] })

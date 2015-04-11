@@ -34,6 +34,7 @@ user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: follower
 
 var followersTerm = g.addWord({
 	symbol: new g.Symbol('followers', 'term'),
+	insertionCost: 1,
 	accepted: [ 'followers', 'subscribers' ]
 })
 
@@ -47,4 +48,4 @@ userFollowersPossessible.addRule({ RHS: [ user.lhs, userFollowersHead ], transpo
 user.noRelativePossessive.addRule({ RHS: [ poss.determinerOmissible, userFollowersPossessible ], semantic: followersSemantic })
 
 // followers of mine
-user.head.addRule({ RHS: [ userFollowersHead, poss.ofPossUsers ], semantic: followersSemantic })
+user.head.addRule({ RHS: [ userFollowersHead, poss.ofPossUsersPlus ], semantic: followersSemantic })
