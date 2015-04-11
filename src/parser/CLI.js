@@ -10,6 +10,7 @@ var parserNewPath = './Parser.js'
 var parserOldPath = './util/ParserBestFirst.js'
 var searchPath = './search.js'
 
+var semantics = null
 var stateTable = buildStateTable()
 
 var rl = require('readline').createInterface(process.stdin, process.stdout)
@@ -80,7 +81,11 @@ var testQueries = [
 	'my repos that are {language} repos',
 	'my {language} repos',
 	'repos that are written-in {language}',
-	'my {language} repos that are written-in {language}'
+	'my {language} repos that are written-in {language}',
+	'issues assigned-to me I opened and am mentioned-in',
+	'people who are assigned-to my issues and follow people who contributed-to repos I created and are mentioned-in pull-requests of mine',
+	'people who are mentioned-in my issues and pull-requests',
+	'people mentioned-in my issues and my pull-requests'
 	// 'followers of my followers who are followers of mine my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to follow',
 	// 'my followers who created pull-requests of mine created by my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to I am mentioned-in'
 	// 'my repos me people who follow my followers have been and', - BROKEN

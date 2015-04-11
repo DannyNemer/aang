@@ -5,10 +5,7 @@ var auxVerbs = require('./auxVerbs')
 var stopWords = require('./stopWords')
 var conjunctions = require('./conjunctions')
 
-// Start symbol
-var start = new g.Symbol('start')
-
-// Definition of accepted options for a Category
+// Schema for a Category
 var categoryOptsSchema = {
 	sg: String,
 	pl: String,
@@ -177,5 +174,5 @@ module.exports = function Category(catOpts) {
 		this.catPlPlus = conjunctions.addForSymbol(this.catPl)
 	}
 
-	start.addRule({ RHS: [ this.catPl ]})
+	g.startSymbol.addRule({ RHS: [ this.catPl ]})
 }

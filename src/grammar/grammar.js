@@ -9,6 +9,8 @@ exports.emptySymbol = '<empty>'
 
 exports.Symbol = require('./Symbol').bind(null, grammar)
 
+exports.startSymbol = new exports.Symbol('start')
+
 // Extend module with rule functions
 require('./ruleFunctions')
 

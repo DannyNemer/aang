@@ -158,7 +158,6 @@ g.addVerb = function (opts) {
 			// Insertion cost added to first terminal rule (though, inconsequential)
 			if (i === 0 && !opts.one && !opts.pl && opts.hasOwnProperty('insertionCost')) {
 				newRule.insertionCost = opts.insertionCost
-				assignedInsertionCost = true
 			}
 
 			verb.addRule(newRule)
@@ -303,11 +302,11 @@ g.addWord = function (opts) {
 // Create an optionalized version of an existing nonterminal symbol
 g.addNonterminalOpt = function (symbol) {
 	// Append 'opt' to original symbol name
-	var optSymbol = new g.Symbol(symbol.name.slice(1, -1), 'opt')
+	var symbolOpt = new g.Symbol(symbol.name.slice(1, -1), 'opt')
 
-	optSymbol.addRule({ RHS: [ symbol ] })
+	symbolOpt.addRule({ RHS: [ symbol ] })
 	// <empty> always last for optional nonterminal symbols
-	optSymbol.addRule({ terminal: true, RHS: g.emptyTermSym })
+	symbolOpt.addRule({ terminal: true, RHS: g.emptySymbol })
 
-	return optSymbol
+	return symbolOpt
 }
