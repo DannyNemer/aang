@@ -2,7 +2,7 @@ var g = require('../grammar')
 var Category = require('./Category')
 var oneSg = require('./oneSg')
 var preps = require('./prepositions')
-var operators = require('./operators')
+var conjunctions = require('./conjunctions')
 
 // Merges this module with 'user' category
 var user = module.exports = new Category({ sg: 'user', pl: 'users', person: true, entity: true })
@@ -29,7 +29,7 @@ user.nomUsers.addRule({ RHS: [ user.catSg ], personNumber: 'threeSg' })
 user.nomUsers.addRule({ RHS: [ oneSg.plain ], semantic: oneSg.semantic, gramCase: 'nom', personNumber: 'one' })
 
 // (people) I and/or {user} follow
-user.nomUsersPlus = operators.addConjunctions(user.nomUsers, { personNumber: 'pl' })
+user.nomUsersPlus = conjunctions.addForSymbol(user.nomUsers, { personNumber: 'pl' })
 
 
 var objUsers = new g.Symbol('obj', 'users')
@@ -41,7 +41,7 @@ objUsers.addRule({ RHS: [ user.catSg ] })
 objUsers.addRule({ RHS: [ oneSg.plain ], semantic: oneSg.semantic, gramCase: 'obj' })
 
 // (people who follow) me and/or {user}; (people followed by) me and/or {user}
-user.objUsersPlus = operators.addConjunctions(objUsers)
+user.objUsersPlus = conjunctions.addForSymbol(objUsers)
 
 // (people followed) by me; (repos liked) by me
 user.byObjUsersPlus = new g.Symbol('by', 'obj', 'users+')

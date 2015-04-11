@@ -3,7 +3,7 @@ var user = require('../user')
 var auxVerbs = require('../auxVerbs')
 var stopWords = require('../stopWords')
 var user = require('../user')
-var operators = require('../operators.js')
+var conjunctions = require('../conjunctions.js')
 
 
 var github = g.addWord({
@@ -58,7 +58,7 @@ var usersMentionedSemantic = new g.Semantic({ name: user.namePl + '-mentioned', 
 // (people mentioned) in [issues]/[pull-request]
 this.mentioners = new g.Symbol('mentioners')
 // (people mentioned) in [issues]/[pull-request] and/or [issues]/[pull-request]
-var mentionersPlus = operators.addConjunctions(this.mentioners)
+var mentionersPlus = conjunctions.addForSymbol(this.mentioners)
 // (people) mentioned in [mentioners+]; (people who are) mentioned in [mentioners+]
 user.inner.addRule({ RHS: [ mentionedIn, mentionersPlus ], semantic: usersMentionedSemantic })
 

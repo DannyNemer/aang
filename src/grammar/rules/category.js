@@ -3,7 +3,7 @@ var util = require('../../util')
 var relPronouns = require('./relativePronouns')
 var auxVerbs = require('./auxVerbs')
 var stopWords = require('./stopWords')
-var operators = require('./operators')
+var conjunctions = require('./conjunctions')
 
 // Start symbol
 var start = new g.Symbol('start')
@@ -49,7 +49,7 @@ module.exports = function Category(catOpts) {
 	// (people) followed by me
 	this.passive = new g.Symbol(this.nameSg, 'passive')
 	// (repos) liked by me and/or created by {user}
-	var passivePlus = operators.addConjunctions(this.passive)
+	var passivePlus = conjunctions.addForSymbol(this.passive)
 
 
 	var reducedNoTense = new g.Symbol(this.nameSg, 'reduced', 'no', 'tense')
@@ -70,7 +70,7 @@ module.exports = function Category(catOpts) {
 	// (people) I follow
 	this.objFilter = new g.Symbol(this.nameSg, 'obj', 'filter')
 	// (people) I follow and/or {user} follows
-	var objFilterPlus = operators.addConjunctions(this.objFilter)
+	var objFilterPlus = conjunctions.addForSymbol(this.objFilter)
 
 
 	var rhsExt = new g.Symbol(this.nameSg, 'rhs', 'ext')
@@ -124,18 +124,18 @@ module.exports = function Category(catOpts) {
 
 
 	// (people) who follow me and/or I follow
-	var filterPlus = operators.addConjunctions(filter)
+	var filterPlus = conjunctions.addForSymbol(filter)
 
 	var relPronounFilterPlus = new g.Symbol(catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
 	relPronounFilterPlus.addRule({ RHS: [ catOpts.person ? relPronouns.who : relPronouns.that, filterPlus ] })
 	// (people) who follow me and who I follow
 	var andRelPronounFilterPlus = new g.Symbol('and', catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
-	andRelPronounFilterPlus.addRule({ RHS: [ operators.and, relPronounFilterPlus ] })
+	andRelPronounFilterPlus.addRule({ RHS: [ conjunctions.and, relPronounFilterPlus ] })
 	filterPlus.addRule({ RHS: [ filter, andRelPronounFilterPlus ] })
 	// (people) who follow me or who I follow
 	var orRelPronounFilterPlus = new g.Symbol('or', catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
-	orRelPronounFilterPlus.addRule({ RHS: [ operators.union, relPronounFilterPlus ] })
-	filterPlus.addRule({ RHS: [ filter, orRelPronounFilterPlus ], semantic: operators.unionSemantic })
+	orRelPronounFilterPlus.addRule({ RHS: [ conjunctions.union, relPronounFilterPlus ] })
+	filterPlus.addRule({ RHS: [ filter, orRelPronounFilterPlus ], semantic: conjunctions.unionSemantic })
 
 
 	var relativeclause = new g.Symbol(this.nameSg, 'relativeclause')
@@ -150,9 +150,9 @@ module.exports = function Category(catOpts) {
 
 	this.plural = new g.Symbol(this.nameSg, 'plural')
 	// people followed by me
-	this.plural.addRule({ RHS: [ noRelative ], semantic: operators.intersectSemantic })
+	this.plural.addRule({ RHS: [ noRelative ], semantic: conjunctions.intersectSemantic })
 	// people who are followed by me
-	this.plural.addRule({ RHS: [ noRelative, relativeclause ], semantic: operators.intersectSemantic })
+	this.plural.addRule({ RHS: [ noRelative, relativeclause ], semantic: conjunctions.intersectSemantic })
 
 	this.catPl = new g.Symbol(this.namePl)
 	// (people who created) repos ...
@@ -172,7 +172,7 @@ module.exports = function Category(catOpts) {
 	// user does not use because obj/nom-users
 	if (!catOpts.person) {
 		// (people who like) my repos and/or {user}'s repos
-		this.catPlPlus = operators.addConjunctions(this.catPl)
+		this.catPlPlus = conjunctions.addForSymbol(this.catPl)
 	}
 
 	start.addRule({ RHS: [ this.catPl ]})
