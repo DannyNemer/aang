@@ -44,29 +44,10 @@ user.subjFilter.addRule({ RHS: [ auxVerbs.have, createdPullRequests ], semantic:
 
 
 // MENTION:
-var mention = g.addWord({
-	symbol: new g.Symbol('mention'),
-	accepted: [ 'mention' ]
-})
-
 var pullRequestsMentionedSemantic = new g.Semantic({ name: pullRequest.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })
-
 // (pull requests that) mention me
-pullRequest.subjFilter.addRule({ RHS: [ mention, user.objUsersPlus ], semantic: pullRequestsMentionedSemantic })
-
-var mentionedIn = g.addWord({
-	symbol: new g.Symbol('mentioned', 'in'),
-	insertionCost: 2,
-	accepted: [ 'mentioned-in' ]
-})
-
-var beGeneralMentionedIn = new g.Symbol('be', 'general', 'mentioned', 'in')
-beGeneralMentionedIn.addRule({ RHS: [ auxVerbs.beGeneral, mentionedIn ] })
-var preVerbStopWordsBeGeneralMentionedIn = new g.Symbol('pre', 'verb', 'stop', 'words', 'be', 'general', 'mentioned', 'in')
-preVerbStopWordsBeGeneralMentionedIn.addRule({ RHS: [ stopWords.preVerbStopWords, beGeneralMentionedIn ] })
+pullRequest.subjFilter.addRule({ RHS: [ github.mention, user.objUsersPlus ], semantic: pullRequestsMentionedSemantic })
 // (pull requests) I-am/{user}-is/[users]-are mentioned in
-pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPlus, preVerbStopWordsBeGeneralMentionedIn ], semantic: pullRequestsMentionedSemantic })
-
-var usersMentionedSemantic = new g.Semantic({ name: user.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })
-// (people) mentioned in [pull-requests+]; (people who are) mentioned in [pull-requests+]
-user.inner.addRule({ RHS: [ mentionedIn, pullRequest.catPlPlus ], semantic: usersMentionedSemantic })
+pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPlus, github.preVerbStopWordsBeGeneralMentionedIn ], semantic: pullRequestsMentionedSemantic })
+// (people mentioned in) [pull-requests]
+github.mentioners.addRule({ RHS: [ pullRequest.catPl ] })
