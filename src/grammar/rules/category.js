@@ -46,18 +46,10 @@ module.exports = function Category(catOpts) {
 	// people (I follow); people (followed by me)
 	lhsHead.addRule({ RHS: [ this.lhs, this.head ], transpositionCost: 1 })
 
-	var passivePlus = new g.Symbol(this.nameSg, 'passive+')
 	// (people) followed by me
 	this.passive = new g.Symbol(this.nameSg, 'passive')
-	passivePlus.addRule({ RHS: [ this.passive ] })
-	// (repos) liked by me and created by {user}
-	var andPassivePlus = new g.Symbol('and', this.nameSg, 'passive+')
-	andPassivePlus.addRule({ RHS: [ operators.and, passivePlus ] })
-	passivePlus.addRule({ RHS: [ this.passive, andPassivePlus ] })
-	// (repos) liked by me or created by {user}
-	var orPassivePlus = new g.Symbol('or', this.nameSg, 'passive+')
-	orPassivePlus.addRule({ RHS: [ operators.union, passivePlus ] })
-	passivePlus.addRule({ RHS: [ this.passive, orPassivePlus ], semantic: operators.unionSemantic })
+	// (repos) liked by me and/or created by {user}
+	var passivePlus = operators.addConjunctions(this.passive)
 
 
 	var reducedNoTense = new g.Symbol(this.nameSg, 'reduced', 'no', 'tense')
@@ -75,19 +67,10 @@ module.exports = function Category(catOpts) {
 	// (people who) follow me
 	this.subjFilter = new g.Symbol(this.nameSg, 'subj', 'filter')
 
-
-	var objFilterPlus = new g.Symbol(this.nameSg, 'obj', 'filter+')
 	// (people) I follow
 	this.objFilter = new g.Symbol(this.nameSg, 'obj', 'filter')
-	objFilterPlus.addRule({ RHS: [ this.objFilter ] })
-	// (people) I follow and {user} follows
-	var andObjFilterPlus = new g.Symbol('and', this.nameSg, 'obj', 'filter+')
-	andObjFilterPlus.addRule({ RHS: [ operators.and, objFilterPlus ] })
-	objFilterPlus.addRule({ RHS: [ this.objFilter, andObjFilterPlus ] })
-	// (people) I follow or {user} follows
-	var orObjFilterPlus = new g.Symbol('or', this.nameSg, 'obj', 'filter+')
-	orObjFilterPlus.addRule({ RHS: [ operators.union, objFilterPlus ] })
-	objFilterPlus.addRule({ RHS: [ this.objFilter, orObjFilterPlus ], semantic: operators.unionSemantic })
+	// (people) I follow and/or {user} follows
+	var objFilterPlus = operators.addConjunctions(this.objFilter)
 
 
 	var rhsExt = new g.Symbol(this.nameSg, 'rhs', 'ext')
@@ -140,24 +123,16 @@ module.exports = function Category(catOpts) {
 	filter.addRule({ RHS: [ auxVerbs.have, bePastReducedNoTense ], personNumber: 'pl' })
 
 
-	// (people who) follow me
-	var filterPlus = new g.Symbol(this.nameSg, 'filter+')
-	filterPlus.addRule({ RHS: [ filter ] })
-	// (people) who ... and I follow
-	var andFilterPlus = new g.Symbol('and', this.nameSg, 'filter+')
-	andFilterPlus.addRule({ RHS: [ operators.and, filterPlus ]})
-	filterPlus.addRule({ RHS: [ filter, andFilterPlus ] })
-	// (people) who ... and who I follow
+	// (people) who follow me and/or I follow
+	var filterPlus = operators.addConjunctions(filter)
+
 	var relPronounFilterPlus = new g.Symbol(catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
 	relPronounFilterPlus.addRule({ RHS: [ catOpts.person ? relPronouns.who : relPronouns.that, filterPlus ] })
+	// (people) who follow me and who I follow
 	var andRelPronounFilterPlus = new g.Symbol('and', catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
 	andRelPronounFilterPlus.addRule({ RHS: [ operators.and, relPronounFilterPlus ] })
 	filterPlus.addRule({ RHS: [ filter, andRelPronounFilterPlus ] })
-	// (people) who ... or I follow
-	var orFilterPlus = new g.Symbol('or', this.nameSg, 'filter+')
-	orFilterPlus.addRule({ RHS: [ operators.union, filterPlus ]})
-	filterPlus.addRule({ RHS: [ filter, orFilterPlus ], semantic: operators.unionSemantic })
-	// (people) who ... or who I follow
+	// (people) who follow me or who I follow
 	var orRelPronounFilterPlus = new g.Symbol('or', catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
 	orRelPronounFilterPlus.addRule({ RHS: [ operators.union, relPronounFilterPlus ] })
 	filterPlus.addRule({ RHS: [ filter, orRelPronounFilterPlus ], semantic: operators.unionSemantic })
@@ -194,18 +169,10 @@ module.exports = function Category(catOpts) {
 		}
 	}
 
-	if (!catOpts.person) { // user does not use because obj/nom-users
-		// (people who like) repos ...
-		this.catPlPlus = new g.Symbol(this.namePl + '+')
-		this.catPlPlus.addRule({ RHS: [ this.catPl ] })
-		// (people who like) my repos and {user}'s repos
-		var andCatPlPlus = new g.Symbol('and', this.namePl + '+')
-		andCatPlPlus.addRule({ RHS: [ operators.and, this.catPlPlus ] })
-		this.catPlPlus.addRule({ RHS: [ this.catPl, andCatPlPlus ] })
-		// (people who like) my repos or {user}'s repos
-		var orCatPlPlus = new g.Symbol('or', this.namePl + '+')
-		orCatPlPlus.addRule({ RHS: [ operators.union, this.catPlPlus ] })
-		this.catPlPlus.addRule({ RHS: [ this.catPl, orCatPlPlus ] })
+	// user does not use because obj/nom-users
+	if (!catOpts.person) {
+		// (people who like) my repos and/or {user}'s repos
+		this.catPlPlus = operators.addConjunctions(this.catPl)
 	}
 
 	start.addRule({ RHS: [ this.catPl ]})
