@@ -33,7 +33,7 @@ function findTermRuleInsertions(grammar, insertions) {
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost,
 						insertedSyms: [ { symbol: termSym } ],
-						// [1-sg-poss-omissible] uses a blank to achieve an insertion cost of 0 on a base cost of 0
+						// WRONG: [1-sg-poss-omissible] uses a blank to achieve an insertion cost of 0 on a base cost of 0
 						text: rule.text ? [ rule.text ] : []
 					})
 

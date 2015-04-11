@@ -73,12 +73,6 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	}
 
 	if (opts.hasOwnProperty('insertionCost')) {
-		// Prevent an insertion cost of 0 with a base cost of 0
-		// Otherwise, trees with and without the insertion would have the same cost
-		if (opts.insertionCost === 0 && this.rules.length === 0) {
-			ruleErr('Cannot have an insertion cost of 0 with a base cost of 0', this.name, opts.RHS)
-		}
-
 		newRule.insertionCost = opts.insertionCost
 	}
 
