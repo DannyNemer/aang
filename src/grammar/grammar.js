@@ -10,7 +10,9 @@ exports.Symbol = require('./Symbol').bind(null, grammar)
 // Extend module with rule functions
 require('./ruleFunctions')
 
-exports.Semantic = require('./Semantic').Semantic
+var Semantic = require('./Semantic')
+exports.Semantic = Semantic.Semantic
+exports.insertSemantic = Semantic.insertSemantic
 
 // Derive rules from insertion and transposition costs, and empty-strings
 exports.createEditRules = require('./createEditRules').bind(null, grammar)
