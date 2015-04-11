@@ -18,7 +18,11 @@ var semanticFuncOptsSchema = {
 	name: String,
 	cost: Number,
 	minParams: Number,
-	maxParams: Number
+	maxParams: Number,
+	// When a DB object can only have one value for a specific property (e.g., creator) prevent
+	// multiple instances of the corresponding semantic function within another semantic's arguments
+	// Otherwise, an intersection of objects with different values for this property will return an empty set
+	preventDups: { type: Boolean, optional: true }
 }
 
 // Create a new semantic function from passed opts
@@ -37,7 +41,8 @@ function newSemanticFunc(opts) {
 		name: opts.name,
 		cost: opts.cost,
 		minParams: opts.minParams,
-		maxParams: opts.maxParams
+		maxParams: opts.maxParams,
+		preventDups: opts.preventDups
 	}
 
 	return [ {
@@ -89,9 +94,17 @@ exports.mergeRHS = function (A, B) {
 	// Check for duplicates
 	for (var i = A.length; i-- > 0;) {
 		var semanticA = A[i]
+		var semanticAPreventsDups = semanticA.semantic.preventDups
 
 		for (var j = B.length; j-- > 0;) {
-			if (semanticsMatch(semanticA, B[j])) {
+			var semanticB = B[j]
+
+			// Prevent multiple instances of this function within a function's args (e.g., repos-by())
+			if (semanticAPreventsDups && semanticA.semantic === semanticB.semantic) {
+				return -1
+			}
+
+			if (semanticsMatch(semanticA, semanticB)) {
 				return -1
 			}
 		}
@@ -113,11 +126,28 @@ exports.insertSemantic = function (LHS, RHS) {
 	// If intersect with one semantic arg
 	if (RHSLen === 1 && lhsSemantic.name === 'intersect') return RHS
 
-	if (RHSLen > lhsSemantic.maxParams) {
+	if (RHSLen < lhsSemantic.minParams) {
+		// throw 'semantic problem: RHS.length < minParams'
+		return -1
+	} else if (RHSLen > lhsSemantic.maxParams) {
+		// Prevent multiple instances of this function within a RHS
+		// Only insert the first of the RHS, then merge with the remaining RHS
+		// - Ex: my {language} repos -> [ repos-created(me), repos-language({language}) ]
+		if (lhsSemantic.preventDups) {
+			var firstSemantic = [ {
+				semantic: lhsSemantic,
+				children: [ RHS[0] ]
+			} ]
+
+			return firstSemantic.concat(RHS.slice(1))
+		}
+
 		if (lhsSemantic.maxParams > 1) throw 'semantic problem'
 
-		var newLHS = []
+		// Copy LHS semantic for each RHS
 		// repos liked by me and my followers -> copy "repos-liked()" for each child
+		var newLHS = []
+
 		for (var s = 0; s < RHSLen; ++s) {
 			newLHS[s] = {
 				semantic: lhsSemantic,
@@ -126,9 +156,6 @@ exports.insertSemantic = function (LHS, RHS) {
 		}
 
 		return newLHS
-	} else if (RHSLen < lhsSemantic.minParams) {
-		// throw 'semantic problem: RHS.length < minParams'
-		return -1
 	} else {
 		return [ {
 			semantic: lhsSemantic,

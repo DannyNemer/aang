@@ -19,7 +19,7 @@ var repositoriesTerm = g.addWord({
 repository.headMayPoss.addRule({ RHS: [ github.termOpt, repositoriesTerm ] })
 
 
-var repositoriesCreatedSemantic = new g.Semantic({ name: repository.namePl + '-created', cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoriesCreatedSemantic = new g.Semantic({ name: repository.namePl + '-created', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
 var repositoryCreatorsSemantic = new g.Semantic({ name: repository.nameSg + '-creators', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my repos

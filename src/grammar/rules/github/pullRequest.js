@@ -19,7 +19,7 @@ var pullRequestsTerm = g.addWord({
 pullRequest.headMayPoss.addRule({ RHS: [ github.termOpt, pullRequestsTerm ] })
 
 
-var pullRequestsCreatedSemantic = new g.Semantic({ name: pullRequest.namePl + '-created', cost: 0.5, minParams: 1, maxParams: 1 })
+var pullRequestsCreatedSemantic = new g.Semantic({ name: pullRequest.namePl + '-created', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
 var pullRequestCreatorsSemantic = new g.Semantic({ name: pullRequest.nameSg + '-creators', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my pull requests
