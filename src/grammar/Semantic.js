@@ -9,7 +9,7 @@ exports.Semantic = function (opts) {
 		throw 'duplicate Semantic'
 	}
 
-	return opts.arg ? newSemanticArg(opts) : newSemanticFunc(opts)
+	return opts.isArg ? newSemanticArg(opts) : newSemanticFunc(opts)
 }
 
 
@@ -56,7 +56,7 @@ function newSemanticFunc(opts) {
 var semanticArgOptsSchema = {
 	name: String,
 	cost: Number,
-	arg: Boolean
+	isArg: Boolean
 }
 
 // Create a new semantic argument from passed opts
@@ -68,7 +68,7 @@ function newSemanticArg(opts) {
 	var semantic = exports.semantics[opts.name] = {
 		name: opts.name,
 		cost: opts.cost,
-		arg: true
+		isArg: true
 	}
 
 	return [ {
