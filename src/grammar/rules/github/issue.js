@@ -84,3 +84,13 @@ issue.objFilter.addRule({ RHS: [ user.nomUsersPlus, preVerbStopWordsBeGeneralAss
 issue.inner.addRule({ RHS: [ assignedTo, user.objUsersPlus ], semantic: issuesAssignedSemantic })
 // (people) assigned to [issues+]; (people who are) mentioned in [issues+]
 user.inner.addRule({ RHS: [ assignedTo, issue.catPlPlus ], semantic: usersAssignedSemantic })
+
+
+// OPEN/CLOSED:
+var issuesStateSemantic = new g.Semantic({ name: issue.namePl + '-state', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+// open issues
+var openStateSemanticArg = new g.Semantic({ name: 'open', isArg: true, cost: 0.5 })
+issue.adjective.addRule({ terminal: true, RHS: 'open', text: 'open', semantic: g.insertSemantic(issuesStateSemantic, openStateSemanticArg) })
+// closed issues
+var closedStateSemanticArg = new g.Semantic({ name: 'closed', isArg: true, cost: 0.5 })
+issue.adjective.addRule({ terminal: true, RHS: 'closed', text: 'closed', semantic: g.insertSemantic(issuesStateSemantic, closedStateSemanticArg) })

@@ -85,7 +85,15 @@ var testQueries = [
 	'issues assigned-to me I opened and am mentioned-in',
 	'people who are assigned-to my issues and follow people who contributed-to repos I created and are mentioned-in pull-requests of mine',
 	'people who are mentioned-in my issues and pull-requests',
-	'people mentioned-in my issues and my pull-requests'
+	'people mentioned-in my issues and my pull-requests',
+	'my {left-stop-words} repos',
+	'my {left-stop-words} {language} repos',
+	'my {language} {left-stop-words} repos',
+	'my {left-stop-words} {language} {left-stop-words} repos',
+	'my {left-stop-words} {left-stop-words} repos',
+	'open issues',
+	'issues that are open',
+	'people assigned-to my closed issues'
 	// 'followers of my followers who are followers of mine my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to follow',
 	// 'my followers who created pull-requests of mine created by my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to I am mentioned-in'
 	// 'my repos me people who follow my followers have been and', - BROKEN
