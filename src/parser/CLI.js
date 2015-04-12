@@ -77,7 +77,7 @@ var testQueries = [
 	'people pull-requests like repos I like',
 	'repos liked by followers of followers of mine',
 	'repos liked by me and my followers',
-	'repos liked by me and my followers and people who like repos liked by me and my followers',
+	'repos liked by me and my followers and people who like {language} repos liked by me and my followers',
 	'my repos that are {language} repos',
 	'my {language} repos',
 	'repos that are written-in {language}',
@@ -93,7 +93,14 @@ var testQueries = [
 	'my {left-stop-words} {left-stop-words} repos',
 	'open issues',
 	'issues that are open',
-	'people assigned-to my closed issues'
+	'people assigned-to my closed issues',
+	'contributors-to my repos and repos of mine',
+	'likers-of my repos',
+	'creators-of repos I like',
+	'likers-of repos I like and repos I contributed-to',
+	'creators-of repos I like and repos I contributed-to',
+	'creators-of repos I like and pull-requests I am mentioned-in',
+	'openers-of closed issues that mention people I and my followers follow'
 	// 'followers of my followers who are followers of mine my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to follow',
 	// 'my followers who created pull-requests of mine created by my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to I am mentioned-in'
 	// 'my repos me people who follow my followers have been and', - BROKEN

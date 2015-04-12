@@ -34,6 +34,12 @@ haveCreated.addRule({ RHS: [ auxVerbs.have, this.created ] })
 this.preVerbStopWordsHaveCreated = new g.Symbol('pre', 'verb', 'stop', 'words', 'have', 'created')
 this.preVerbStopWordsHaveCreated.addRule({ RHS: [ stopWords.preVerbStopWords, haveCreated ] })
 
+// creators of ([repositories]/[pull-requests])
+this.creatorsOf = g.addWord({
+	symbol: new g.Symbol('creators', 'of'),
+	accepted: [ 'creators-of' ]
+})
+
 
 // (pull-requests/issues that) mention ([obj-users+])
 this.mention = g.addWord({

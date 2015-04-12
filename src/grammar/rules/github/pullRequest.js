@@ -41,6 +41,8 @@ user.subjFilter.addRule({ RHS: [ github.created, pullRequest.catPl ], semantic: 
 var createdPullRequests = new g.Symbol('created', pullRequest.namePl)
 createdPullRequests.addRule({ RHS: [ github.created, pullRequest.catPl ] }) // not [pull-requests+] because 'by'
 user.subjFilter.addRule({ RHS: [ auxVerbs.have, createdPullRequests ], semantic: pullRequestCreatorsSemantic, personNumber: 'pl' })
+// creators of [pull-requests]
+user.head.addRule({ RHS: [ github.creatorsOf, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
 
 
 // MENTION:

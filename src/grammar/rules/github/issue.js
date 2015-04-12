@@ -53,6 +53,13 @@ var openedIssues = new g.Symbol('opened', issue.namePl)
 openedIssues.addRule({ RHS: [ opened, issue.catPl ] }) // not [issues+] because 'by'
 user.subjFilter.addRule({ RHS: [ auxVerbs.have, openedIssues ], semantic: issuesOpenersSemantic, personNumber: 'pl' })
 
+var openersOf = g.addWord({
+	symbol: new g.Symbol('openers', 'of'),
+	accepted: [ 'openers-of', 'creators-of' ] // should I use regexp? be seperate syms
+})
+// openers of [issues]
+user.head.addRule({ RHS: [ openersOf, issue.catPl ], semantic: issuesOpenersSemantic })
+
 
 // MENTION:
 var issuesRequestsMentionedSemantic = new g.Semantic({ name: issue.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })

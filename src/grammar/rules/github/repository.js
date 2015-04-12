@@ -41,6 +41,8 @@ user.subjFilter.addRule({ RHS: [ github.created, repository.catPl ], semantic: r
 var createdRepositories = new g.Symbol('created', repository.namePl)
 createdRepositories.addRule({ RHS: [ github.created, repository.catPl ] }) // not [repositories+] because 'by'
 user.subjFilter.addRule({ RHS: [ auxVerbs.have, createdRepositories ], semantic: repositoryCreatorsSemantic, personNumber: 'pl' })
+// creators of [repositories]
+user.head.addRule({ RHS: [ github.creatorsOf, repository.catPl ], semantic: repositoryCreatorsSemantic })
 
 
 // LIKE:
@@ -70,6 +72,13 @@ var likedRepos = new g.Symbol('liked', repository.namePl + '+')
 likedRepos.addRule({ RHS: [ like, repository.catPlPlus ], verbForm: 'past' })
 user.subjFilter.addRule({ RHS: [ auxVerbs.have, likedRepos ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
 
+var likersOf = g.addWord({
+	symbol: new g.Symbol('likers', 'of'),
+	accepted: [ 'likers-of' ] // should I use regexp? be seperate syms
+})
+// likers of [repositories+]
+user.head.addRule({ RHS: [ likersOf, repository.catPlPlus ], semantic: repositoryLikersSemantic })
+
 
 // CONTRIBUTE-TO:
 var contributeTo = g.addWord({
@@ -98,6 +107,12 @@ var contributeToRepos = new g.Symbol('contribute', 'to', repository.namePl + '+'
 contributeToRepos.addRule({ RHS: [ contributeTo, repository.catPlPlus ] })
 user.subjFilter.addRule({ RHS: [ auxVerbs.have, contributeToRepos ], semantic: repositoryContributorsSemantic, personNumber: 'pl' })
 
+var contributorsTo = g.addWord({
+	symbol: new g.Symbol('contributors', 'to'),
+	accepted: [ 'contributors-to', 'contributors-of' ] // should I use regexp? be seperate syms
+})
+// contributors to [repositories+]
+user.head.addRule({ RHS: [ contributorsTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 
 // LANGUAGE:
 var languageEntityStr = '{language}'
