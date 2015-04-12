@@ -22,8 +22,20 @@ module.exports = function Category(catOpts) {
 	this.nameSg = catOpts.sg
 	this.namePl = catOpts.pl
 
-	this.lhs = new g.Symbol(this.nameSg, 'lhs')
+	this.lhs = new g.Symbol(this.nameSg, 'lhs') // (NOTE: orig manually makes rules that would be from <empty>)
 	this.lhs.addRule({ terminal: true, RHS: g.emptySymbol })
+	// open/closed (issues)
+	this.adjective = new g.Symbol(this.nameSg, 'adjective')
+	this.lhs.addRule({ RHS: [ this.adjective ] })
+	// If multiple adjectives, or to combine with noun-modifer: recent profil photos
+	// But will create ambiguity with stop-words
+	// this.lhs.addRule({ RHS: [ this.adjective, this.lhs ] })
+	// {language} (repos)
+	this.nounModifier = new g.Symbol(this.nameSg, 'noun', 'modifier')
+	this.lhs.addRule({ RHS: [ this.nounModifier ] })
+	// {left-stop-words} (issues); {left-stop-words} [issue-adjective] (issues)
+	this.lhs.addRule({ RHS: [ this.lhs, stopWords.leftStopWords ], transpositionCost: 0 })
+
 
 	// repos of [users]; followers
 	this.head = new g.Symbol(this.nameSg, 'head')
@@ -58,7 +70,7 @@ module.exports = function Category(catOpts) {
 
 	var reduced = new g.Symbol(this.nameSg, 'reduced')
 	// (people) followed by me
-	reduced.addRule({ RHS: [ reducedNoTense ]})
+	reduced.addRule({ RHS: [ reducedNoTense ] })
 
 
 	// (people who) follow me
@@ -101,15 +113,19 @@ module.exports = function Category(catOpts) {
 
 	var filter = new g.Symbol(this.nameSg, 'filter')
 	// (people who) follow me
-	filter.addRule({ RHS: [ this.subjFilter ]})
+	filter.addRule({ RHS: [ this.subjFilter ] })
 	// (people who) I follow
-	filter.addRule({ RHS: [ this.objFilter ]})
+	filter.addRule({ RHS: [ this.objFilter ] })
 	// (people who) I follow <adverbial-stopword>
-	filter.addRule({ RHS: [ filter, stopWords.sentenceAdverbial ]})
+	filter.addRule({ RHS: [ filter, stopWords.sentenceAdverbial ] })
 	// (people who) are followers of mine
-	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, noRelative ]})
+	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, noRelative ] })
+	// (issues that) are open/closed (NOTE: orig has a seperate manually created rule without sentence-adverbial)
+	var sentenceAdverbialAdjective = new g.Symbol('sentence', 'adverbial', this.nameSg, 'adjective')
+	sentenceAdverbialAdjective.addRule({ RHS: [ stopWords.sentenceAdverbial, this.adjective ] })
+	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, sentenceAdverbialAdjective ] })
 	// (people who) are followed by me
-	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, reducedNoTense ]})
+	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, reducedNoTense ] })
 
 
 	var bePastReducedNoTense = new g.Symbol('be', 'past', this.nameSg, 'reduced', 'no', 'tense')
@@ -138,10 +154,10 @@ module.exports = function Category(catOpts) {
 	var relativeclause = new g.Symbol(this.nameSg, 'relativeclause')
 	if (catOpts.person) {
 		// (people) who are followed by me
-		relativeclause.addRule({ RHS: [ relPronouns.who, filterPlus ]})
+		relativeclause.addRule({ RHS: [ relPronouns.who, filterPlus ] })
 	} else {
 		// (repos) that are liked by me
-		relativeclause.addRule({ RHS: [ relPronouns.that, filterPlus ]})
+		relativeclause.addRule({ RHS: [ relPronouns.that, filterPlus ] })
 	}
 
 
@@ -174,5 +190,5 @@ module.exports = function Category(catOpts) {
 		this.catPlPlus = conjunctions.addForSymbol(this.catPl)
 	}
 
-	g.startSymbol.addRule({ RHS: [ this.catPl ]})
+	g.startSymbol.addRule({ RHS: [ this.catPl ] })
 }

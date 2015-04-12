@@ -15,5 +15,10 @@ this.preVerbStopWords = g.addStopWord({
 	symbol: new g.Symbol('pre', 'verb', 'stop', 'words'),
 	stopWords: [ 'like|liked|likes to', 'to' ]
 })
-
 this.preVerbStopWords.addRule({ RHS: [ this.sentenceAdverbial ] })
+
+// my <nearby>/<to> followers - appears to be acceptable to provide alternate suggestions
+this.leftStopWords = g.addStopWord({
+	symbol: new g.Symbol('left', 'stop', 'words'),
+	stopWords: [ '{left-stop-words}' ]
+})

@@ -104,18 +104,14 @@ var languageEntityStr = '{language}'
 var languageSemanticArg = new g.Semantic({ name: languageEntityStr, isArg: true, cost: 0 })
 var repositoriesLanguageSemantic = new g.Semantic({ name: repository.namePl + '-language', cost: 0.5, minParams: 1, maxParams: 1 })
 var language = new g.Symbol('language')
-// (my) {language} (repos); (repos that are) {language} (repos)
 language.addRule({
 	terminal: true,
 	RHS: languageEntityStr,
 	text: languageEntityStr,
 	semantic: g.insertSemantic(repositoriesLanguageSemantic, languageSemanticArg)
 })
-
-var repositoryAdjective = new g.Symbol(repository.nameSg, 'adjective')
-repository.lhs.addRule({ RHS: [ repositoryAdjective ]})
 // (my) {language} (repos); (repos that are) {language} (repos)
-repositoryAdjective.addRule({ RHS: [ language ]})
+repository.nounModifier.addRule({ RHS: [ language ] })
 
 var writtenIn = g.addWord({
 	symbol: new g.Symbol('written', 'in'),
