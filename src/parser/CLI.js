@@ -33,7 +33,7 @@ rl.on('line', function (line) {
 
 
 function parse(query, K) {
-	tryCatchWrapper(function () {
+	util.tryCatchWrapper(function () {
 		if (printQuery) console.log('\nquery:', query)
 		var parser = new (require(parserPath))(stateTable)
 
@@ -117,7 +117,7 @@ function runCommand(query) {
 	} else if (query === '-rb') {
 		console.log('Rebuild grammar and state table:')
 		// Rebuild grammar
-		tryCatchWrapper(function () {
+		util.tryCatchWrapper(function () {
 			require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
 		})
 		// Rebuild state table
@@ -192,7 +192,7 @@ function buildStateTable() {
 	// Build state table
 	var stateTable = new (require('./StateTable.js'))(grammar, '[start]')
 	// Remove grammar and semantics from cache
-	deleteCache(grammarPath, semanticsPath)
+	util.deleteCache(grammarPath, semanticsPath)
 
 	return stateTable
 }
@@ -206,29 +206,5 @@ function mapSemantic(semanticArray) {
 
 // Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
 function deleteModuleCache() {
-	deleteCache(parserPath, searchPath, './BinaryHeap.js', '../grammar/Semantic.js')
-}
-
-function deleteCache() {
-	Array.prototype.slice.call(arguments).forEach(function (filePath) {
-		delete require.cache[require.resolve(filePath)]
-	})
-}
-
-// Execute the anonymous function within a try-catch statement
-// Removes parentheses from error stack for iTerm open-file shortcut
-function tryCatchWrapper(func) {
-	try {
-		func()
-	} catch (e) {
-		console.log()
-
-		if (e.stack) {
-			e.stack.split('\n').forEach(function (stackLine) {
-				console.log(stackLine.replace(/[()]/g, ''))
-			})
-		} else {
-			console.log(e)
-		}
-	}
+	util.deleteCache(parserPath, searchPath, './BinaryHeap.js', '../grammar/Semantic.js')
 }

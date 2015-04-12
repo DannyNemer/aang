@@ -148,12 +148,37 @@ exports.mark = function (msg) {
 	console.log(colors.red((msg || 'Reached') + ':'), exports.getLine(true))
 }
 
-// Write obj to JSON file at filepath
-exports.writeJSONFile = function (filepath, obj) {
-	fs.writeFileSync(filepath, JSON.stringify(obj, function (key, val) {
+// Write obj to JSON file at path
+exports.writeJSONFile = function (path, obj) {
+	fs.writeFileSync(path, JSON.stringify(obj, function (key, val) {
 		// Convert RegExp to strings for JSON.stringify()
 		return val instanceof RegExp ? val.source : val
 	}, '\t'))
 
-	console.log('File saved:', fs.realpathSync(filepath))
+	console.log('File saved:', fs.realpathSync(path))
+}
+
+// Execute the passed function within a try-catch statement
+// Niclely removes parentheses from error stack for iTerm open-file shortcut
+exports.tryCatchWrapper = function (callback) {
+	try {
+		callback()
+	} catch (e) {
+		console.log()
+
+		if (e.stack) {
+			e.stack.split('\n').forEach(function (stackLine) {
+				console.log(stackLine.replace(/[()]/g, ''))
+			})
+		} else {
+			console.log(e)
+		}
+	}
+}
+
+// Delete modules (passed as paths) from cache
+exports.deleteCache = function () {
+	Array.prototype.slice.call(arguments).forEach(function (path) {
+		delete require.cache[fs.realpathSync(path)]
+	})
 }
