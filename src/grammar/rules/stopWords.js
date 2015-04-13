@@ -17,7 +17,15 @@ this.preVerb = g.addStopWord({
 })
 this.preVerb.addRule({ RHS: [ this.sentenceAdverbial ] })
 
-// my <nearby>/<to> followers - appears to be acceptable to provide alternate suggestions
+// [cat-filter] -> [stop] [cat-filter]; (repos that) <stop> (I like)
+this.preFilter = g.addStopWord({
+	symbol: new g.Symbol('pre', 'filter', 'stop', 'words'),
+	stopWords: [ '{pre-filter-stop-words}' ]
+})
+
+// [cat-lhs] -> [stop] [cat-lhs]; <stop> (issues); <stop> [issue-adjective] (issues)
+// [cat-no-relative] -> [stop] [cat-no-relative]; (repos) <stop> (I like)
+// [cat-filter] -> [stop] [cat-filter]; (repos that) <stop> (I like)
 this.left = g.addStopWord({
 	symbol: new g.Symbol('left', 'stop', 'words'),
 	stopWords: [ '{left-stop-words}' ]

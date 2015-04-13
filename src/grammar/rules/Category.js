@@ -34,7 +34,7 @@ module.exports = function Category(catOpts) {
 	this.nounModifier = new g.Symbol(this.nameSg, 'noun', 'modifier')
 	this.lhs.addRule({ RHS: [ this.nounModifier ] })
 	// <stop> (issues); <stop> [issue-adjective] (issues)
-	this.lhs.addRule({ RHS: [ this.lhs, stopWords.left ], transpositionCost: 0 })
+	this.lhs.addRule({ RHS: [ stopWords.left, this.lhs ], transpositionCost: 0 })
 
 
 	// repos of [users]; followers
@@ -106,9 +106,11 @@ module.exports = function Category(catOpts) {
 	var noRelative = new g.Symbol(this.nameSg, 'no', 'relative')
 	// people followed by me; people I follow
 	noRelative.addRule({ RHS: [ noRelativeBase ] })
-	// my followers
+	// my followers; (people who follow) my followers
 	this.noRelativePossessive = new g.Symbol(this.nameSg, 'no', 'relative', 'possessive')
 	noRelative.addRule({ RHS: [ this.noRelativePossessive, rhs ], transpositionCost: 1 })
+	// people <stop> I follow
+	noRelative.addRule({ RHS: [ stopWords.left, noRelative ] })
 
 
 	var filter = new g.Symbol(this.nameSg, 'filter')
@@ -116,24 +118,20 @@ module.exports = function Category(catOpts) {
 	filter.addRule({ RHS: [ this.subjFilter ] })
 	// (people who) I follow
 	filter.addRule({ RHS: [ this.objFilter ] })
-	// (people who) I follow <adverbial-stopword>
-	filter.addRule({ RHS: [ filter, stopWords.sentenceAdverbial ] })
+	// (people who) <stop> follow me, I follow
+	filter.addRule({ RHS: [ stopWords.preFilter, filter ] })
+	// (people who) <stop> follow me, I follow
+	filter.addRule({ RHS: [ stopWords.sentenceAdverbial, filter ], transpositionCost: 0 })
 	// (people who) are followers of mine
 	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, noRelative ] })
-	// (issues that) are open/closed (NOTE: orig has a seperate manually created rule without sentence-adverbial)
-	var sentenceAdverbialAdjective = new g.Symbol('sentence', 'adverbial', this.nameSg, 'adjective')
-	sentenceAdverbialAdjective.addRule({ RHS: [ stopWords.sentenceAdverbial, this.adjective ] })
-	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, sentenceAdverbialAdjective ] })
-	// (people who) are followed by me
-	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, reducedNoTense ] })
-
-
-	var bePastReducedNoTense = new g.Symbol('be', 'past', this.nameSg, 'reduced', 'no', 'tense')
-	// (people who have) been followed by me; (people who have) been following me
-	bePastReducedNoTense.addRule({ RHS: [ auxVerbs.bePast, reducedNoTense ] })
-	// (people who) have been folllowed by me; (people who) have been following me
-	// - personNumber exists to force [have] -> "have"
-	filter.addRule({ RHS: [ auxVerbs.have, bePastReducedNoTense ], personNumber: 'pl' })
+	// (issues that) are <stop> open/closed
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgSentenceAdverbial, this.adjective ] })
+	// (people who) are <stop> followed by me
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgSentenceAdverbial, reducedNoTense ] })
+	// (people who) have <stop> been folllowed by me; (people who) have <stop> been following me
+	filter.addRule({ RHS: [ auxVerbs.haveSentenceAdverbialBePast, reducedNoTense ] })
+	// (people who) <stop> follow me, I follow
+	filter.addRule({ RHS: [ stopWords.left, filter ] })
 	// (people who) do not follow me
 	filter.addRule({ RHS: [ auxVerbs.doNegation, this.subjFilter ], semantic: auxVerbs.notSemantic })
 	// (people who) are not followers of mine
