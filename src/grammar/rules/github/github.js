@@ -26,13 +26,13 @@ this.created = g.addWord({
 
 // (repos/pull-requests I) created
 this.preVerbStopWordsCreated = new g.Symbol('pre', 'verb', 'stop', 'words', 'created')
-this.preVerbStopWordsCreated.addRule({ RHS: [ stopWords.preVerbStopWords, this.created ] })
+this.preVerbStopWordsCreated.addRule({ RHS: [ stopWords.preVerb, this.created ] })
 
 // (repos/pull-requests I) have created
 var haveCreated = new g.Symbol('have', 'created')
 haveCreated.addRule({ RHS: [ auxVerbs.have, this.created ] })
 this.preVerbStopWordsHaveCreated = new g.Symbol('pre', 'verb', 'stop', 'words', 'have', 'created')
-this.preVerbStopWordsHaveCreated.addRule({ RHS: [ stopWords.preVerbStopWords, haveCreated ] })
+this.preVerbStopWordsHaveCreated.addRule({ RHS: [ stopWords.preVerb, haveCreated ] })
 
 // creators of ([repositories]/[pull-requests])
 this.creatorsOf = g.addWord({
@@ -57,7 +57,7 @@ var mentionedIn = g.addWord({
 var beGeneralMentionedIn = new g.Symbol('be', 'general', 'mentioned', 'in')
 beGeneralMentionedIn.addRule({ RHS: [ auxVerbs.beGeneral, mentionedIn ] })
 this.preVerbStopWordsBeGeneralMentionedIn = new g.Symbol('pre', 'verb', 'stop', 'words', 'be', 'general', 'mentioned', 'in')
-this.preVerbStopWordsBeGeneralMentionedIn.addRule({ RHS: [ stopWords.preVerbStopWords, beGeneralMentionedIn ] })
+this.preVerbStopWordsBeGeneralMentionedIn.addRule({ RHS: [ stopWords.preVerb, beGeneralMentionedIn ] })
 
 
 var usersMentionedSemantic = new g.Semantic({ name: user.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })

@@ -33,8 +33,8 @@ module.exports = function Category(catOpts) {
 	// {language} (repos)
 	this.nounModifier = new g.Symbol(this.nameSg, 'noun', 'modifier')
 	this.lhs.addRule({ RHS: [ this.nounModifier ] })
-	// {left-stop-words} (issues); {left-stop-words} [issue-adjective] (issues)
-	this.lhs.addRule({ RHS: [ this.lhs, stopWords.leftStopWords ], transpositionCost: 0 })
+	// <stop> (issues); <stop> [issue-adjective] (issues)
+	this.lhs.addRule({ RHS: [ this.lhs, stopWords.left ], transpositionCost: 0 })
 
 
 	// repos of [users]; followers

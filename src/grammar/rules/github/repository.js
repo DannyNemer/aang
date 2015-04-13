@@ -94,7 +94,7 @@ var repositoryContributorsSemantic = new g.Semantic({ name: repository.nameSg + 
 repository.passive.addRule({ RHS: [ contributeTo, user.byObjUsersPlus ], semantic: repositoriesContributedSemantic })
 // (repos) I contributed to
 var preVerbStopWordsContributeTo = new g.Symbol('pre', 'verb', 'stop', 'words', 'contribute', 'to')
-preVerbStopWordsContributeTo.addRule({ RHS: [ stopWords.preVerbStopWords, contributeTo ] })
+preVerbStopWordsContributeTo.addRule({ RHS: [ stopWords.preVerb, contributeTo ] })
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, preVerbStopWordsContributeTo ], semantic: repositoriesContributedSemantic })
 // (repos) I have contributed to
 var havePreVerbStopWordsContributeTo = new g.Symbol('have', 'pre', 'verb', 'stop', 'words', 'contribute', 'to')

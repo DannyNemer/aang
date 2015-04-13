@@ -38,13 +38,13 @@ var opened = g.addWord({
 issue.passive.addRule({ RHS: [ opened, user.byObjUsers ], semantic: issuesOpenedSemantic })
 // (repos) I opened
 var preVerbStopWordsOpened = new g.Symbol('pre', 'verb', 'stop', 'words', 'opened')
-preVerbStopWordsOpened.addRule({ RHS: [ stopWords.preVerbStopWords, opened ] })
+preVerbStopWordsOpened.addRule({ RHS: [ stopWords.preVerb, opened ] })
 issue.objFilter.addRule({ RHS: [ user.nomUsers, preVerbStopWordsOpened ], semantic: issuesOpenedSemantic })
 // (repos) I have opened
 var haveOpened = new g.Symbol('have', 'opened')
 haveOpened.addRule({ RHS: [ auxVerbs.have, opened ] })
 var preVerbStopWordsHaveOpened = new g.Symbol('pre', 'verb', 'stop', 'words', 'have', 'opened')
-preVerbStopWordsHaveOpened.addRule({ RHS: [ stopWords.preVerbStopWords, haveOpened ] })
+preVerbStopWordsHaveOpened.addRule({ RHS: [ stopWords.preVerb, haveOpened ] })
 issue.objFilter.addRule({ RHS: [ user.nomUsers, preVerbStopWordsHaveOpened ], semantic: issuesOpenedSemantic })
 // (people who) opened repos ...
 user.subjFilter.addRule({ RHS: [ opened, issue.catPl ], semantic: issuesOpenersSemantic })
@@ -84,7 +84,7 @@ var usersAssignedSemantic = new g.Semantic({ name: user.namePl + '-assigned', co
 var beGeneralAssignedTo = new g.Symbol('be', 'general', 'assigned', 'to')
 beGeneralAssignedTo.addRule({ RHS: [ auxVerbs.beGeneral, assignedTo ] })
 var preVerbStopWordsBeGeneralAssignedTo = new g.Symbol('pre', 'verb', 'stop', 'words', 'be', 'general', 'assigned', 'to')
-preVerbStopWordsBeGeneralAssignedTo.addRule({ RHS: [ stopWords.preVerbStopWords, beGeneralAssignedTo ] })
+preVerbStopWordsBeGeneralAssignedTo.addRule({ RHS: [ stopWords.preVerb, beGeneralAssignedTo ] })
 // (issues) I-am/{user}-is/[users]-are assigned to
 issue.objFilter.addRule({ RHS: [ user.nomUsersPlus, preVerbStopWordsBeGeneralAssignedTo ], semantic: issuesAssignedSemantic })
 // (issues) assigned to me
