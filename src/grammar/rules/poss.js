@@ -2,6 +2,7 @@ var g = require('../grammar')
 var oneSg = require('./oneSg')
 var preps = require('./prepositions')
 var user = require('./user')
+var conjunctions = require('./conjunctions')
 
 var possStr = 'poss'
 
@@ -27,6 +28,8 @@ possUser.addRule({ RHS: [ user.catSg ] })
 possUser.addRule({ terminal: true, RHS: 'mine', text: 'mine', semantic: oneSg.semantic })
 
 var possUsers = new g.Symbol(possStr, 'users')
+// (repos of) people who follow me
+possUsers.addRule({ RHS: [ user.plural ] })
 // (repos of) {user}/mine
 possUsers.addRule({ RHS: [ possUser ] })
 // (repos of) followers of mine
@@ -34,8 +37,7 @@ possUsers.addRule({ RHS: [ user.head ] })
 // (repos of) my followers
 possUsers.addRule({ RHS: [ user.noRelativePossessive ] })
 
-var possUsersPlus = new g.Symbol(possStr, 'users+')
-possUsersPlus.addRule({ RHS: [ possUsers] })
+var possUsersPlus = conjunctions.addForSymbol(possUsers)
 
 // (followers of) mine
 this.ofPossUsersPlus = new g.Symbol('of', possStr, 'users+')
