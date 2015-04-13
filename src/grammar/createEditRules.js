@@ -124,7 +124,8 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 							text: conjugateText(rule, insertion),
 							semantic: semantic,
 							// Person-number only traverses up for 1-to-1; person-number used on first 1-to-2
-							personNumber: rule.RHS.length === 1 ? (rule.personNumber || insertion.personNumber) : (noConjugation ? rule.personNumber : undefined),
+							// personNumber: rule.RHS.length === 1 ? (rule.personNumber || insertion.personNumber) : (noConjugation ? rule.personNumber : undefined),
+							personNumber: rule.personNumber || insertion.personNumber,
 							insertedSyms: insertion.insertedSyms
 						})
 					})
@@ -224,6 +225,8 @@ function createRulesFromInsertions(grammar, insertions) {
 								if (insertion.text.join(' ') === newRule.text.join(' ')) {
 									newRule.verbForm = rule.verbForm
 								}
+							} else {
+								newRule.personNumber = rule.personNumber
 							}
 
 							if (!ruleExists(symRules, newRule)) {

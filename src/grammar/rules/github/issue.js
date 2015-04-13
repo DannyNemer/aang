@@ -34,24 +34,18 @@ var opened = g.addWord({
 	accepted: [ 'opened', 'created' ]
 })
 
-// (repos) opened by me
+// (issues) opened by me
 issue.passive.addRule({ RHS: [ opened, user.byObjUsers ], semantic: issuesOpenedSemantic })
-// (repos) I opened
-var preVerbStopWordsOpened = new g.Symbol('pre', 'verb', 'stop', 'words', 'opened')
-preVerbStopWordsOpened.addRule({ RHS: [ stopWords.preVerb, opened ] })
-issue.objFilter.addRule({ RHS: [ user.nomUsers, preVerbStopWordsOpened ], semantic: issuesOpenedSemantic })
-// (repos) I have opened
+// (issues) I <stop> opened
+issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, opened ], semantic: issuesOpenedSemantic })
+// (issues) I <stop> have opened
 var haveOpened = new g.Symbol('have', 'opened')
 haveOpened.addRule({ RHS: [ auxVerbs.have, opened ] })
-var preVerbStopWordsHaveOpened = new g.Symbol('pre', 'verb', 'stop', 'words', 'have', 'opened')
-preVerbStopWordsHaveOpened.addRule({ RHS: [ stopWords.preVerb, haveOpened ] })
-issue.objFilter.addRule({ RHS: [ user.nomUsers, preVerbStopWordsHaveOpened ], semantic: issuesOpenedSemantic })
-// (people who) opened repos ...
+issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, haveOpened ], semantic: issuesOpenedSemantic })
+// (people who) opened issues ...
 user.subjFilter.addRule({ RHS: [ opened, issue.catPl ], semantic: issuesOpenersSemantic })
-// (people who) have opened repos ...
-var openedIssues = new g.Symbol('opened', issue.namePl)
-openedIssues.addRule({ RHS: [ opened, issue.catPl ] }) // not [issues+] because 'by'
-user.subjFilter.addRule({ RHS: [ auxVerbs.have, openedIssues ], semantic: issuesOpenersSemantic, personNumber: 'pl' })
+// (people who) have opened issues ... - not [issues+] because 'by'
+user.subjFilter.addRule({ RHS: [ haveOpened, issue.catPl ], semantic: issuesOpenersSemantic, personNumber: 'pl' })
 
 var openersOf = g.addWord({
 	symbol: new g.Symbol('openers', 'of'),
@@ -81,12 +75,10 @@ var assignedTo = g.addWord({
 var issuesAssignedSemantic = new g.Semantic({ name: issue.namePl + '-assigned', cost: 0.5, minParams: 1, maxParams: 1 })
 var usersAssignedSemantic = new g.Semantic({ name: user.namePl + '-assigned', cost: 0.5, minParams: 1, maxParams: 1 })
 
+// (issues) I-am/{user}-is/[users]-are assigned to
 var beGeneralAssignedTo = new g.Symbol('be', 'general', 'assigned', 'to')
 beGeneralAssignedTo.addRule({ RHS: [ auxVerbs.beGeneral, assignedTo ] })
-var preVerbStopWordsBeGeneralAssignedTo = new g.Symbol('pre', 'verb', 'stop', 'words', 'be', 'general', 'assigned', 'to')
-preVerbStopWordsBeGeneralAssignedTo.addRule({ RHS: [ stopWords.preVerb, beGeneralAssignedTo ] })
-// (issues) I-am/{user}-is/[users]-are assigned to
-issue.objFilter.addRule({ RHS: [ user.nomUsersPlus, preVerbStopWordsBeGeneralAssignedTo ], semantic: issuesAssignedSemantic })
+issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, beGeneralAssignedTo ], semantic: issuesAssignedSemantic })
 // (issues) assigned to me
 issue.inner.addRule({ RHS: [ assignedTo, user.objUsersPlus ], semantic: issuesAssignedSemantic })
 // (people) assigned to [issues+]; (people who are) mentioned in [issues+]

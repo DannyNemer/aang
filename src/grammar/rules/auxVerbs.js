@@ -42,6 +42,10 @@ this.have = g.addVerb({
 	substitutions: [ 'had' ]
 })
 
+// (repos I) have <stop> (contributed to)
+this.havePreVerbStopWords = new g.Symbol('have', 'pre', 'verb', 'stop', 'words')
+this.havePreVerbStopWords.addRule({ RHS: [ this.have, stopWords.preVerb ] })
+
 // (people who have) <stop> (been folllowed by me); (people who have) <stop> (been following me)
 var haveSentenceAdverbial = new g.Symbol('have', 'sentence', 'adverbial')
 haveSentenceAdverbial.addRule({ RHS: [ this.have, stopWords.sentenceAdverbial ], personNumber: 'pl' })
