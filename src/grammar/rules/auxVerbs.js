@@ -34,4 +34,31 @@ this.have = g.addVerb({
 	oneOrPl: [ 'have' ],
 	threeSg: [ 'has' ],
 	substitutions: [ 'had' ]
+})// NEGATION:
+this.notSemantic = new g.Semantic({ name: 'not', cost: 0.5, minParams: 1, maxParams: 1 })
+var negation = g.addWord({
+	symbol: new g.Symbol('negation'),
+	accepted: [ 'not' ],
+	substitutions: [ 'are|can|could|did|does|do|had|has|have|is|should|was|were|will|would not' ]
 })
+
+// (people who) do not (follow me)
+var doTerm = g.addWord({
+	symbol: new g.Symbol('do'),
+	insertionCost: 0.1,
+	accepted: [ 'do' ]
+})
+this.doNegation = new g.Symbol('do', 'negation')
+this.doNegation.addRule({ RHS: [ doTerm, negation ] })
+
+// (people who) are not followers of mine
+// (issues that) are not (open)
+// (people who) are not (follwed by me)
+this.beNon1SgNegation = new g.Symbol('be', 'non', '1', 'sg', 'negation')
+this.beNon1SgNegation.addRule({ RHS: [ this.beNon1Sg, negation ] })
+
+// (people who) have not been (follwed by me)
+var haveNegation = new g.Symbol('have', 'negation')
+haveNegation.addRule({ RHS: [ this.have, negation ] })
+this.haveNegationBePast = new g.Symbol('have', 'negation', 'be', 'past')
+this.haveNegationBePast.addRule({ RHS: [ haveNegation, this.bePast ] })

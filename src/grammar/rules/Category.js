@@ -134,6 +134,16 @@ module.exports = function Category(catOpts) {
 	// (people who) have been folllowed by me; (people who) have been following me
 	// - personNumber exists to force [have] -> "have"
 	filter.addRule({ RHS: [ auxVerbs.have, bePastReducedNoTense ], personNumber: 'pl' })
+	// (people who) do not follow me
+	filter.addRule({ RHS: [ auxVerbs.doNegation, this.subjFilter ], semantic: auxVerbs.notSemantic })
+	// (people who) are not followers of mine
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, noRelative ], semantic: auxVerbs.notSemantic })
+	// (issues that) are not open
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, this.adjective ], semantic: auxVerbs.notSemantic })
+	// (people who) are not follwed by me
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, reduced ], semantic: auxVerbs.notSemantic })
+	// (people who) have not been follwed by me
+	filter.addRule({ RHS: [ auxVerbs.haveNegationBePast, reduced ], semantic: auxVerbs.notSemantic })
 
 
 	// (people) who follow me and/or I follow
