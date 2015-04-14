@@ -161,7 +161,7 @@ exports.writeJSONFile = function (path, obj) {
 }
 
 // Execute the passed function within a try-catch statement
-// Niclely removes parentheses from error stack for iTerm open-file shortcut
+// Remove parentheses from error stack for iTerm open-file shortcut
 exports.tryCatchWrapper = function (callback) {
 	try {
 		callback()
@@ -176,6 +176,23 @@ exports.tryCatchWrapper = function (callback) {
 			console.log(e)
 		}
 	}
+}
+
+// Print stack track to current position
+// Remove parentheses from error stack for iTerm open-file shortcut
+exports.logTrace = function (msg) {
+	if (msg) {
+		console.log('Trace:', msg)
+	} else {
+		console.log('Trace')
+	}
+
+	// Remove lines for 'Error' and current file
+	var stack = (new Error()).stack.split('\n').slice(2)
+
+	stack.forEach(function (stackLine) {
+		console.log(stackLine.replace(/[()]/g, ''))
+	})
 }
 
 // Delete modules (passed as paths) from cache
