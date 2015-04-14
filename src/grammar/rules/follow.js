@@ -6,13 +6,14 @@ var poss = require('./poss')
 var followersSemantic = new g.Semantic({ name: 'followers', cost: 0.5, minParams: 1, maxParams: 1 })
 var usersFollowedSemantic = new g.Semantic({ name: user.namePl + '-followed', cost: 0.5, minParams: 1, maxParams: 1 })
 
-var follow = g.addVerb({
-	symbol: new g.Symbol('follow'),
+// (people) I follow
+var followVerb = g.addVerb({
+	symbol: new g.Symbol('follow', 'verb'),
 	insertionCost: 1,
 	oneOrPl: [ 'follow', 'subscribe to' ],
 	threeSg: [ 'follows' ],
-	past: [ 'followed' ],
 	substitutions: [
+		'followed',
 		'have followed', // No "have followed" becuase implies no longer following?
 		'following',
 		'have|has|had been following',
@@ -21,14 +22,46 @@ var follow = g.addVerb({
 	]
 })
 
-// (people) followed by me
-user.passive.addRule({ RHS: [ follow, user.byObjUsersPlus ], semantic: usersFollowedSemantic, verbForm: 'past' })
-// (people) I follow
-var preVerbStopWordsFollow = new g.Symbol('pre', 'verb', 'stop', 'words', 'follow')
-preVerbStopWordsFollow.addRule({ RHS: [ stopWords.preVerb, follow ] })
-user.objFilter.addRule({ RHS: [ user.nomUsersPlus, preVerbStopWordsFollow ], semantic: usersFollowedSemantic })
 // (people who) follow me
-user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: followersSemantic, personNumber: 'pl' })
+var followPlSubj = g.addWord({
+	symbol: new g.Symbol('follow', 'pl', 'subj'),
+	insertionCost: 1,
+	accepted: [ 'follow', 'subscribe to' ],
+	substitutions: [
+		'follows',
+		'followed',
+		'have followed',
+		'following',
+		'have|has|had been following',
+		'am|is|are|were|was|be following',
+		'subscribed to'
+	]
+})
+
+// (people) followed by me
+var followPast = g.addWord({
+	symbol: new g.Symbol('follow', 'past'),
+	insertionCost: 1,
+	accepted: [ 'followed' ],
+	substitutions: [
+		'follow',
+		'subscribe to',
+		'follows',
+		'have followed',
+		'following',
+		'have|has|had been following',
+		'am|is|are|were|was|be following',
+		'subscribed to'
+	]
+})
+
+
+// (people) followed by me
+user.passive.addRule({ RHS: [ followPast, user.byObjUsersPlus ], semantic: usersFollowedSemantic })
+// (people) I follow
+user.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, followVerb ], semantic: usersFollowedSemantic })
+// (people who) follow me
+user.subjFilter.addRule({ RHS: [ followPlSubj, user.objUsersPlus ], semantic: followersSemantic })
 
 
 

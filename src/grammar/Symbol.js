@@ -86,7 +86,6 @@ var nontermRuleOptsSchema = {
 	semantic: { type: Array, optional: true },
 	transpositionCost: { type: Number, optional: true },
 	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
-	verbForm: { type: [ 'past' ], optional: true },
 	personNumber: { type: [ 'one', 'threeSg', 'pl' ], optional: true }
 }
 
@@ -103,7 +102,6 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 	var newRule = {
 		RHS: opts.RHS.map(function (RHSSymbol) { return RHSSymbol.name }),
 		gramCase: opts.gramCase,
-		verbForm: opts.verbForm,
 		personNumber: opts.personNumber
 	}
 

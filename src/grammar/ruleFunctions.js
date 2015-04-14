@@ -59,7 +59,6 @@ var verbOptSchema = {
 	oneOrPl: { type: Array, arrayType: String, optional: true },
 	threeSg: { type: Array, arrayType: String, optional: true },
 	oneOrThreeSg: { type: Array, arrayType: String, optional: true },
-	past: { type: Array, arrayType: String, optional: true },
 	substitutions: { type: Array, arrayType: String, optional: true }
 }
 
@@ -102,19 +101,13 @@ g.addVerb = function (opts) {
 		threeSg: opts.threeSg ? opts.threeSg[0] : opts.oneOrThreeSg[0]
 	}
 
-	// Past tense is optional (e.g.: [have])
-	if (opts.past) {
-		defaultTextForms.past = opts.past[0] // "liked"
-	}
-
 	// Inflected forms for first-person (e.g., "am")
 	if (opts.one) {
 		opts.one.forEach(function (termSym, i) {
 			var newRule = { terminal: true, RHS: termSym, textForms: {
 				one: termSym,
 				pl: defaultTextForms.pl,
-				threeSg: defaultTextForms.threeSg,
-				past: defaultTextForms.past
+				threeSg: defaultTextForms.threeSg
 			} }
 
 			// Insertion cost added to first terminal rule (though, inconsequential)
@@ -132,8 +125,7 @@ g.addVerb = function (opts) {
 			var newRule = { terminal: true, RHS: termSym, textForms: {
 				one: defaultTextForms.one,
 				pl: termSym,
-				threeSg: defaultTextForms.threeSg,
-				past: defaultTextForms.past
+				threeSg: defaultTextForms.threeSg
 			} }
 
 			// Insertion cost added to first terminal rule (though, inconsequential)
@@ -151,8 +143,7 @@ g.addVerb = function (opts) {
 			var newRule = { terminal: true, RHS: termSym, textForms: {
 				one: termSym,
 				pl: termSym,
-				threeSg: defaultTextForms.threeSg,
-				past: defaultTextForms.past
+				threeSg: defaultTextForms.threeSg
 			} }
 
 			// Insertion cost added to first terminal rule (though, inconsequential)
@@ -170,8 +161,7 @@ g.addVerb = function (opts) {
 			verb.addRule({ terminal: true, RHS: termSym, textForms: {
 				one: defaultTextForms.one,
 				pl: defaultTextForms.pl,
-				threeSg: termSym,
-				past: defaultTextForms.past
+				threeSg: termSym
 			} })
 		})
 	}
@@ -182,20 +172,7 @@ g.addVerb = function (opts) {
 			verb.addRule({ terminal: true, RHS: termSym, textForms: {
 				one: termSym,
 				pl: defaultTextForms.pl,
-				threeSg: termSym,
-				past: defaultTextForms.past
-			} })
-		})
-	}
-
-	// Past tense - optional
-	if (opts.past) {
-		opts.past.forEach(function (termSym) {
-			verb.addRule({ terminal: true, RHS: termSym, textForms: {
-				one: defaultTextForms.one,
-				pl: defaultTextForms.pl,
-				threeSg: defaultTextForms.threeSg,
-				past: termSym
+				threeSg: termSym
 			} })
 		})
 	}

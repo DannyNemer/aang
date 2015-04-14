@@ -36,7 +36,7 @@ pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.hav
 // (people who) created pull requests ...
 user.subjFilter.addRule({ RHS: [ github.created, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
 // (people who) have created pull requests ... - not [pull-requests+] because 'by'
-user.subjFilter.addRule({ RHS: [ github.haveCreated, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ github.havePlSubjCreated, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
 // creators of [pull-requests]
 user.head.addRule({ RHS: [ github.creatorsOf, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
 

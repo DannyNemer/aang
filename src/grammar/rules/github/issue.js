@@ -45,7 +45,9 @@ issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, haveOpened ], se
 // (people who) opened issues ...
 user.subjFilter.addRule({ RHS: [ opened, issue.catPl ], semantic: issuesOpenersSemantic })
 // (people who) have opened issues ... - not [issues+] because 'by'
-user.subjFilter.addRule({ RHS: [ haveOpened, issue.catPl ], semantic: issuesOpenersSemantic, personNumber: 'pl' })
+var havePlSubjOpened = new g.Symbol('have', 'pl', 'subj', 'opened')
+havePlSubjOpened.addRule({ RHS: [ auxVerbs.havePlSubj, opened ] })
+user.subjFilter.addRule({ RHS: [ havePlSubjOpened, issue.catPl ], semantic: issuesOpenersSemantic })
 
 var openersOf = g.addWord({
 	symbol: new g.Symbol('openers', 'of'),
