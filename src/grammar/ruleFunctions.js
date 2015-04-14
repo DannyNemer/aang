@@ -11,7 +11,7 @@ var pronounOptsSchema = {
 	insertionCost: { type: Number, optional: true },
 	nom: { type: Array, arrayType: String },
 	obj: { type: Array, arrayType: String },
-	substitutions: { type: Array, arrayType: String, optional: true }
+	substitutions: { type: Array, arrayType: String }
 }
 
 // Add all terminal symbols for a pronoun to the grammar; e.g., "I" and "me"
@@ -21,42 +21,22 @@ g.addPronoun = function (opts) {
 		throw 'ill-formed pronoun'
 	}
 
-	var nomSymbol = new g.Symbol(opts.name, 'nom')
-	var objSymbol = new g.Symbol(opts.name, 'obj')
-
-	var correctedNomText = opts.nom[0]
-	var correctedObjText = opts.obj[0]
-
-	opts.nom.forEach(function (termSym, i) {
-		var newNomRule = { terminal: true, RHS: termSym, text: termSym }
-		var newObjRule = { terminal: true, RHS: termSym, text: correctedObjText }
-
-		if (i === 0 && opts.insertionCost !== undefined) {
-			newNomRule.insertionCost = opts.insertionCost
-			newObjRule.insertionCost = opts.insertionCost
-		}
-
-		nomSymbol.addRule(newNomRule)
-		objSymbol.addRule(newObjRule)
-	})
-
-	// same ordering in both
-	opts.obj.forEach(function (termSym) {
-		nomSymbol.addRule({ terminal: true, RHS: termSym, text: correctedNomText })
-		objSymbol.addRule({ terminal: true, RHS: termSym, text: termSym })
-	})
-
-	// Terminal symbols which are replaced when input
-	if (opts.substitutions) {
-		opts.substitutions.forEach(function (termSym) {
-			nomSymbol.addRule({ terminal: true, RHS: termSym, text: correctedNomText })
-			objSymbol.addRule({ terminal: true, RHS: termSym, text: correctedObjText })
-		})
-	}
-
 	return {
-		nom: nomSymbol,
-		obj: objSymbol
+		// Nominative case
+		nom: g.addWord({
+			symbol: new g.Symbol(opts.name, 'nom'),
+			insertionCost: opts.insertionCost,
+			accepted: opts.nom,
+			substitutions: opts.obj.concat(opts.substitutions)
+		}),
+
+		// Objective case
+		obj: g.addWord({
+			symbol: new g.Symbol(opts.name, 'obj'),
+			insertionCost: opts.insertionCost,
+			accepted: opts.obj,
+			substitutions: opts.nom.concat(opts.substitutions)
+		})
 	}
 }
 
@@ -126,16 +106,6 @@ g.addVerb = function (opts) {
 		threeSg: opts.threeSg ? opts.threeSg[0] : opts.oneOrThreeSg[0]
 	}
 
-	if (opts.past) {
-		var verbPast = new g.Symbol(opts.name, 'past')
-		var correctedPastText = opts.past[0]
-	}
-
-	if (!opts.singleSymbol) {
-		var verbPlSubj = new g.Symbol(opts.name, 'pl', 'subj')
-		var correctedPlSubjText = defaultTextForms.pl
-	}
-
 
 	// Inflected forms for first-person (e.g., "am")
 	if (opts.one) {
@@ -152,26 +122,6 @@ g.addVerb = function (opts) {
 			}
 
 			verbObj.addRule(newRule)
-
-			if (opts.past) {
-				var newPastRule = { terminal: true, RHS: termSym, text: correctedPastText }
-
-				if (i === 0 && opts.hasOwnProperty('insertionCost')) {
-					newPastRule.insertionCost = opts.insertionCost
-				}
-
-				verbPast.addRule(newPastRule)
-			}
-
-			if (!opts.singleSymbol) {
-				var newPlSubjRule = { terminal: true, RHS: termSym, text: correctedPlSubjText }
-
-				if (i === 0 && opts.hasOwnProperty('insertionCost')) {
-					newPlSubjRule.insertionCost = opts.insertionCost
-				}
-
-				verbPlSubj.addRule(newPlSubjRule)
-			}
 		})
 	}
 
@@ -190,26 +140,6 @@ g.addVerb = function (opts) {
 			}
 
 			verbObj.addRule(newRule)
-
-			if (opts.past) {
-				var newPastRule = { terminal: true, RHS: termSym, text: correctedPastText }
-
-				if (i === 0 && !opts.one && opts.hasOwnProperty('insertionCost')) {
-					newPastRule.insertionCost = opts.insertionCost
-				}
-
-				verbPast.addRule(newPastRule)
-			}
-
-			if (!opts.singleSymbol) {
-				var newPlSubjRule = { terminal: true, RHS: termSym, text: termSym }
-
-				if (i === 0 && !opts.one && opts.hasOwnProperty('insertionCost')) {
-					newPlSubjRule.insertionCost = opts.insertionCost
-				}
-
-				verbPlSubj.addRule(newPlSubjRule)
-			}
 		})
 	}
 
@@ -228,26 +158,6 @@ g.addVerb = function (opts) {
 			}
 
 			verbObj.addRule(newRule)
-
-			if (opts.past) {
-				var newPastRule = { terminal: true, RHS: termSym, text: correctedPastText }
-
-				if (i === 0 && !opts.one && !opts.pl && opts.hasOwnProperty('insertionCost')) {
-					newPastRule.insertionCost = opts.insertionCost
-				}
-
-				verbPast.addRule(newPastRule)
-			}
-
-			if (!opts.singleSymbol) {
-				var newPlSubjRule = { terminal: true, RHS: termSym, text: termSym }
-
-				if (i === 0 && !opts.one && !opts.pl && opts.hasOwnProperty('insertionCost')) {
-					newPlSubjRule.insertionCost = opts.insertionCost
-				}
-
-				verbPlSubj.addRule(newPlSubjRule)
-			}
 		})
 	}
 
@@ -259,14 +169,6 @@ g.addVerb = function (opts) {
 				pl: defaultTextForms.pl,
 				threeSg: termSym
 			} })
-
-			if (opts.past) {
-				verbPast.addRule({ terminal: true, RHS: termSym, text: correctedPastText })
-			}
-
-			if (!opts.singleSymbol) {
-				verbPlSubj.addRule({ terminal: true, RHS: termSym, text: correctedPlSubjText })
-			}
 		})
 	}
 
@@ -278,14 +180,6 @@ g.addVerb = function (opts) {
 				pl: defaultTextForms.pl,
 				threeSg: termSym
 			} })
-
-			if (opts.past) {
-				verbPast.addRule({ terminal: true, RHS: termSym, text: correctedPastText })
-			}
-
-			if (!opts.singleSymbol) {
-				verbPlSubj.addRule({ terminal: true, RHS: termSym, text: correctedPlSubjText })
-			}
 		})
 	}
 
@@ -293,14 +187,6 @@ g.addVerb = function (opts) {
 	if (opts.substitutions) {
 		opts.substitutions.forEach(function (termSym) {
 			verbObj.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
-
-			if (opts.past) {
-				verbPast.addRule({ terminal: true, RHS: termSym, text: correctedPastText })
-			}
-
-			if (!opts.singleSymbol) {
-				verbPlSubj.addRule({ terminal: true, RHS: termSym, text: correctedPlSubjText })
-			}
 		})
 	}
 
@@ -314,12 +200,23 @@ g.addVerb = function (opts) {
 		// Past tense terms also serve as substitutions for objective form
 		opts.past.forEach(function (termSym) {
 			verbObj.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
+		})
 
-			verbPast.addRule({ terminal: true, RHS: termSym, text: termSym })
-
-			verbPlSubj.addRule({ terminal: true, RHS: termSym, text: correctedPlSubjText })
+		var verbPast = g.addWord({
+			symbol: new g.Symbol(opts.name, 'past'),
+			insertionCost: opts.insertionCost,
+			accepted: opts.past,
+			substitutions: [].concat(opts.one, opts.pl, opts.oneOrPl, opts.threeSg, opts.oneOrThreeSg, opts.substitutions).filter(Boolean)
 		})
 	}
+
+	// Plural-subjective; e.g., "(people who) like ...""
+	var verbPlSubj = g.addWord({
+		symbol: new g.Symbol(opts.name, 'pl', 'subj'),
+		insertionCost: opts.insertionCost,
+		accepted: [].concat(opts.pl, opts.oneOrPl).filter(Boolean),
+		substitutions: [].concat(opts.one, opts.threeSg, opts.oneOrThreeSg, opts.past, opts.substitutions).filter(Boolean)
+	})
 
 	return {
 		obj: verbObj,
