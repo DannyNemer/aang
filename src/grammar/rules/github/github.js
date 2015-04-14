@@ -29,8 +29,8 @@ this.preVerbStopWordsCreated = new g.Symbol('pre', 'verb', 'stop', 'words', 'cre
 this.preVerbStopWordsCreated.addRule({ RHS: [ stopWords.preVerb, this.created ] })
 
 // (repos/pull-requests I) have created
-this.haveVerbCreated = new g.Symbol('have', 'verb', 'created')
-this.haveVerbCreated.addRule({ RHS: [ auxVerbs.haveVerb, this.created ] })
+this.haveObjCreated = new g.Symbol('have', 'obj', 'created')
+this.haveObjCreated.addRule({ RHS: [ auxVerbs.haveObj, this.created ] })
 
 // (people who) have created ([repos]/[pull-requests])
 this.havePlSubjCreated = new g.Symbol('have', 'pl', 'subj', 'created')

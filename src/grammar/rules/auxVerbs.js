@@ -44,13 +44,13 @@ var have = g.addVerb({
 })
 
 // (repos I) have (liked)
-this.haveVerb = have.verb
+this.haveObj = have.obj
 // (people who) have (been followed by me)
 this.havePlSubj = have.plSubj
 
 // (repos I) have <stop> (contributed to)
-this.haveVerbPreVerbStopWords = new g.Symbol('have', 'verb', 'pre', 'verb', 'stop', 'words')
-this.haveVerbPreVerbStopWords.addRule({ RHS: [ this.haveVerb, stopWords.preVerb ] })
+this.haveObjPreVerbStopWords = new g.Symbol('have', 'obj', 'pre', 'verb', 'stop', 'words')
+this.haveObjPreVerbStopWords.addRule({ RHS: [ this.haveObj, stopWords.preVerb ] })
 
 // (people who have) <stop> (been folllowed by me); (people who have) <stop> (been following me)
 var havePlSubjSentenceAdverbial = new g.Symbol('have', 'pl', 'subj', 'sentence', 'adverbial')

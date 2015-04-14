@@ -57,7 +57,7 @@ var verbOptSchema = {
 
 // Add all terminal symbols for a verb to the grammar
 // Only used in nominative case; ex: "people [nom-users] follow/follows"
-// Creates multiple symbols for different verb forms: verb, past, and pl-subj
+// Creates multiple symbols for different verb forms: objective, past, and pl-subj
 g.addVerb = function (opts) {
 	if (util.illFormedOpts(verbOptSchema, opts)) {
 		throw 'ill-formed verb'
@@ -91,9 +91,9 @@ g.addVerb = function (opts) {
 		}
 
 		// Only create one symbol; e.g., [be-general]
-		var verb = new g.Symbol(opts.name)
+		var verbObj = new g.Symbol(opts.name)
 	} else {
-		var verb = new g.Symbol(opts.name, 'verb')
+		var verbObj = new g.Symbol(opts.name, 'obj')
 	}
 
 	// Object of inflection forms for conjugation
@@ -121,7 +121,7 @@ g.addVerb = function (opts) {
 				newRule.insertionCost = opts.insertionCost
 			}
 
-			verb.addRule(newRule)
+			verbObj.addRule(newRule)
 		})
 	}
 
@@ -139,7 +139,7 @@ g.addVerb = function (opts) {
 				newRule.insertionCost = opts.insertionCost
 			}
 
-			verb.addRule(newRule)
+			verbObj.addRule(newRule)
 		})
 	}
 
@@ -157,14 +157,14 @@ g.addVerb = function (opts) {
 				newRule.insertionCost = opts.insertionCost
 			}
 
-			verb.addRule(newRule)
+			verbObj.addRule(newRule)
 		})
 	}
 
 	// Inflected forms for third-person-singular (e.g., "is", "has", "likes")
 	if (opts.threeSg) {
 		opts.threeSg.forEach(function (termSym) {
-			verb.addRule({ terminal: true, RHS: termSym, textForms: {
+			verbObj.addRule({ terminal: true, RHS: termSym, textForms: {
 				one: defaultTextForms.one,
 				pl: defaultTextForms.pl,
 				threeSg: termSym
@@ -175,7 +175,7 @@ g.addVerb = function (opts) {
 	// Inflected forms for third-person-singular or first-person (e.g., "was")
 	if (opts.oneOrThreeSg) {
 		opts.oneOrThreeSg.forEach(function (termSym) {
-			verb.addRule({ terminal: true, RHS: termSym, textForms: {
+			verbObj.addRule({ terminal: true, RHS: termSym, textForms: {
 				one: termSym,
 				pl: defaultTextForms.pl,
 				threeSg: termSym
@@ -186,20 +186,20 @@ g.addVerb = function (opts) {
 	// Terminal symbols which are replaced when input
 	if (opts.substitutions) {
 		opts.substitutions.forEach(function (termSym) {
-			verb.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
+			verbObj.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
 		})
 	}
 
 	// Only create one symbol; e.g., [be-general]
 	if (opts.singleSymbol) {
-		return verb
+		return verbObj
 	}
 
 	// Past tense is optional (e.g.: [have])
 	if (opts.past) {
-		// Past tense terms also serve as substitutions for verb form
+		// Past tense terms also serve as substitutions for objective form
 		opts.past.forEach(function (termSym) {
-			verb.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
+			verbObj.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
 		})
 
 		var verbPast = g.addWord({
@@ -219,7 +219,7 @@ g.addVerb = function (opts) {
 	})
 
 	return {
-		verb: verb,
+		obj: verbObj,
 		past: verbPast,
 		plSubj: verbPlSubj
 	}

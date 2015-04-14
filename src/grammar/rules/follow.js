@@ -24,7 +24,7 @@ var follow = g.addVerb({
 // (people) followed by me
 user.passive.addRule({ RHS: [ follow.past, user.byObjUsersPlus ], semantic: usersFollowedSemantic })
 // (people) I follow
-user.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, follow.verb ], semantic: usersFollowedSemantic })
+user.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, follow.obj ], semantic: usersFollowedSemantic })
 // (people who) follow me
 user.subjFilter.addRule({ RHS: [ follow.plSubj, user.objUsersPlus ], semantic: followersSemantic })
 
