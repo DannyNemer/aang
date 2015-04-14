@@ -2,30 +2,20 @@ var g = require('../grammar')
 
 this.semantic = new g.Semantic({ name: 'me', cost: 0.2, isArg: true })
 
-// (people) I (follow); (people followed by) me; (people who follow) me
-// this.plain = g.addPronoun({
-// 	symbol: new g.Symbol('1', 'sg'),
-// 	insertionCost: 0.5,
-// 	nom: 'I',
-// 	obj: 'me',
-// 	substitutions: [ 'myself' ]
-// })
+var oneSg = g.addPronoun({
+	name: '1-sg',
+	insertionCost: 0.5,
+	nom: [ 'I' ],
+	obj: [ 'me' ],
+	substitutions: [ 'myself' ]
+})
 
 // (people) I (follow)
-this.nom = g.addWord({
-	symbol: new g.Symbol('1', 'sg', 'nom'),
-	insertionCost: 0.5,
-	accepted: [ 'I' ],
-	substitutions: [ 'me' , 'myself' ]
-})
+this.nom = oneSg.nom
 
 // (people followed by) me; (people who follow) me
-this.obj = g.addWord({
-	symbol: new g.Symbol('1', 'sg', 'obj'),
-	insertionCost: 0.5,
-	accepted: [ 'me' ],
-	substitutions: [ 'I' , 'myself' ]
-})
+this.obj = oneSg.obj
+
 
 // my (repositories)
 this.poss = g.addWord({

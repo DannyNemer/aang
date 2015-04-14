@@ -7,46 +7,37 @@ var util = require('../util')
 
 // Schema for pronouns
 var pronounOptsSchema = {
-	symbol: Symbol,
+	name: String,
 	insertionCost: { type: Number, optional: true },
-	nom: String,
-	obj: String,
+	nom: { type: Array, arrayType: String },
+	obj: { type: Array, arrayType: String },
 	substitutions: { type: Array, arrayType: String }
 }
 
-// Add all terminal symbols for a pronoun to the grammar; ex: "I", "me"
+// Add all terminal symbols for a pronoun to the grammar; e.g., "I" and "me"
+// Creates seperate symbols for nominative and objective case
 g.addPronoun = function (opts) {
 	if (util.illFormedOpts(pronounOptsSchema, opts)) {
 		throw 'ill-formed pronoun'
 	}
 
-	var pronoun = opts.symbol
+	return {
+		// Nominative case
+		nom: g.addWord({
+			symbol: new g.Symbol(opts.name, 'nom'),
+			insertionCost: opts.insertionCost,
+			accepted: opts.nom,
+			substitutions: opts.obj.concat(opts.substitutions)
+		}),
 
-	// Object of inflection forms for conjugation
-	var textForms = {
-		nom: opts.nom, // "I"
-		obj: opts.obj // "me"
+		// Objective case
+		obj: g.addWord({
+			symbol: new g.Symbol(opts.name, 'obj'),
+			insertionCost: opts.insertionCost,
+			accepted: opts.obj,
+			substitutions: opts.nom.concat(opts.substitutions)
+		})
 	}
-
-	// Nominative case
-	var newRule = { terminal: true, RHS: opts.nom, textForms: textForms }
-
-	// Insertion cost added to first terminal rule (though, inconsequential)
-	if (opts.hasOwnProperty('insertionCost')) {
-		newRule.insertionCost = opts.insertionCost
-	}
-
-	pronoun.addRule(newRule)
-
-	// Objective case
-	pronoun.addRule({ terminal: true, RHS: opts.obj, textForms: textForms })
-
-	// Terminal symbols which are replaced when input
-	opts.substitutions.forEach(function (termSym) {
-		pronoun.addRule({ terminal: true, RHS: termSym, textForms: textForms })
-	})
-
-	return pronoun
 }
 
 
@@ -255,7 +246,7 @@ g.addWord = function (opts) {
 		var newRule = { terminal: true, RHS: termSym, text: termSym }
 
 		// Insertion cost added to first terminal rule (though, inconsequential)
-		if (i === 0 && opts.hasOwnProperty('insertionCost')) {
+		if (i === 0 && opts.insertionCost !== undefined) {
 			newRule.insertionCost = opts.insertionCost
 		}
 
