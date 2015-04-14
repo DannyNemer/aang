@@ -23,35 +23,34 @@ this.bePast = g.addWord({
 
 // (pull requests I/{user}/[nom-users]) am/is/are (mentioned in)
 this.beGeneral = g.addVerb({
-	symbol: new g.Symbol('be', 'general'),
+	name: 'be-general',
 	insertionCost: 1,
 	one: [ 'am' ],
 	pl: [ 'are', 'were' ],
 	oneOrPl: [ 'have-been' ],
 	threeSg: [ 'is', 'has-been' ],
-	oneOrThreeSg: [ 'was' ]
+	oneOrThreeSg: [ 'was' ],
+	singleSymbol: true
 })
 
-// (people who) have (been followed by me)
-// - No past tense ('had') because it implies semantic no longer true; "had liked" -> no longer liked
-this.have = g.addVerb({
-	symbol: new g.Symbol('have'),
+
+// No past tense ('had') because it implies semantic no longer true; "had liked" -> no longer liked
+var have = g.addVerb({
+	name: 'have',
 	insertionCost: 0.8,
 	oneOrPl: [ 'have' ],
 	threeSg: [ 'has' ],
 	substitutions: [ 'had' ]
 })
 
-// (repos I) have <stop> (contributed to)
-this.havePreVerbStopWords = new g.Symbol('have', 'pre', 'verb', 'stop', 'words')
-this.havePreVerbStopWords.addRule({ RHS: [ this.have, stopWords.preVerb ] })
+// (repos I) have (liked)
+this.haveVerb = have.verb
+// (people who) have (been followed by me)
+this.havePlSubj = have.plSubj
 
-this.havePlSubj = g.addWord({
-	symbol: new g.Symbol('have', 'pl', 'subj'),
-	insertionCost: 0.8,
-	accepted: [ 'have' ],
-	substitutions: [ 'has', 'had' ]
-})
+// (repos I) have <stop> (contributed to)
+this.haveVerbPreVerbStopWords = new g.Symbol('have', 'verb', 'pre', 'verb', 'stop', 'words')
+this.haveVerbPreVerbStopWords.addRule({ RHS: [ this.haveVerb, stopWords.preVerb ] })
 
 // (people who have) <stop> (been folllowed by me); (people who have) <stop> (been following me)
 var havePlSubjSentenceAdverbial = new g.Symbol('have', 'pl', 'subj', 'sentence', 'adverbial')

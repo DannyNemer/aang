@@ -43,18 +43,21 @@ g.addPronoun = function (opts) {
 
 // Schema for verbs
 var verbOptSchema = {
-	symbol: Symbol,
+	name: String,
 	insertionCost: { type: Number, optional: true },
 	one: { type: Array, arrayType: String, optional: true },
 	pl: { type: Array, arrayType: String, optional: true },
 	oneOrPl: { type: Array, arrayType: String, optional: true },
 	threeSg: { type: Array, arrayType: String, optional: true },
 	oneOrThreeSg: { type: Array, arrayType: String, optional: true },
-	substitutions: { type: Array, arrayType: String, optional: true }
+	past: { type: Array, arrayType: String, optional: true },
+	substitutions: { type: Array, arrayType: String, optional: true },
+	singleSymbol: { type: Boolean, optional: true }
 }
 
 // Add all terminal symbols for a verb to the grammar
 // Only used in nominative case; ex: "people [nom-users] follow/follows"
+// Creates multiple symbols for different verb forms: verb, past, and pl-subj
 g.addVerb = function (opts) {
 	if (util.illFormedOpts(verbOptSchema, opts)) {
 		throw 'ill-formed verb'
@@ -80,7 +83,18 @@ g.addVerb = function (opts) {
 		throw 'ill-formed verb'
 	}
 
-	var verb = opts.symbol
+	if (opts.singleSymbol) {
+		if (opts.past) {
+			console.log('Err: Verb with \'singleSymbol\' will not use \'past\' terms')
+			console.log(util.getLine())
+			throw 'ill-formed verb'
+		}
+
+		// Only create one symbol; e.g., [be-general]
+		var verb = new g.Symbol(opts.name)
+	} else {
+		var verb = new g.Symbol(opts.name, 'verb')
+	}
 
 	// Object of inflection forms for conjugation
 	var defaultTextForms = {
@@ -91,6 +105,7 @@ g.addVerb = function (opts) {
 		// "is", "was", "likes"
 		threeSg: opts.threeSg ? opts.threeSg[0] : opts.oneOrThreeSg[0]
 	}
+
 
 	// Inflected forms for first-person (e.g., "am")
 	if (opts.one) {
@@ -175,7 +190,39 @@ g.addVerb = function (opts) {
 		})
 	}
 
-	return verb
+	// Only create one symbol; e.g., [be-general]
+	if (opts.singleSymbol) {
+		return verb
+	}
+
+	// Past tense is optional (e.g.: [have])
+	if (opts.past) {
+		// Past tense terms also serve as substitutions for verb form
+		opts.past.forEach(function (termSym) {
+			verb.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
+		})
+
+		var verbPast = g.addWord({
+			symbol: new g.Symbol(opts.name, 'past'),
+			insertionCost: opts.insertionCost,
+			accepted: opts.past,
+			substitutions: [].concat(opts.one, opts.pl, opts.oneOrPl, opts.threeSg, opts.oneOrThreeSg, opts.substitutions).filter(Boolean)
+		})
+	}
+
+	// Plural-subjective; e.g., "(people who) like ...""
+	var verbPlSubj = g.addWord({
+		symbol: new g.Symbol(opts.name, 'pl', 'subj'),
+		insertionCost: opts.insertionCost,
+		accepted: [].concat(opts.pl, opts.oneOrPl).filter(Boolean),
+		substitutions: [].concat(opts.one, opts.threeSg, opts.oneOrThreeSg, opts.past, opts.substitutions).filter(Boolean)
+	})
+
+	return {
+		verb: verb,
+		past: verbPast,
+		plSubj: verbPlSubj
+	}
 }
 
 
