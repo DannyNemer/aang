@@ -1,6 +1,6 @@
+GITHUB:
 Perhaps have "github" leading before entity types that apply to many ('followers'), but not those specific to GitHub (repositories)
 
-Github:
 people I follow
 users I follow
 people I followed
@@ -35,3 +35,31 @@ repos I starred
 
 if you typed:
 people I follow: should it then show you all of your services?
+
+
+DROPBOX:
+files
+files named "presentation"
+powerpoint files
+deleted files
+files I deleted
+files larger than 1 mb
+files smaller than 1 gb
+recently modified files
+files that were edited recently
+files that are powerpoint files
+files that are powerpoint files
+image files
+images
+
+
+FLIGHTS:
+flights from X to X
+flights to X
+flights tomorrow to X
+flights tomorrow afternoon from X
+flights for less than $X
+flights with no stops
+Delta flights
+One-way flights
+flights this week to X on Delta
