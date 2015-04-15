@@ -7,7 +7,7 @@ var followersSemantic = new g.Semantic({ name: 'followers', cost: 0.5, minParams
 var usersFollowedSemantic = new g.Semantic({ name: user.namePl + '-followed', cost: 0.5, minParams: 1, maxParams: 1 })
 
 var follow = g.addVerb({
-	name: 'follow',
+	symbol: new g.Symbol('follow'),
 	insertionCost: 1,
 	oneOrPl: [ 'follow', 'subscribe to' ],
 	threeSg: [ 'follows' ],
@@ -22,11 +22,13 @@ var follow = g.addVerb({
 })
 
 // (people) followed by me
-user.passive.addRule({ RHS: [ follow.past, user.byObjUsersPlus ], semantic: usersFollowedSemantic })
+user.passive.addRule({ RHS: [ follow, user.byObjUsersPlus ], semantic: usersFollowedSemantic, verbForm: 'past' })
 // (people) I follow
-user.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, follow.obj ], semantic: usersFollowedSemantic })
+var preVerbStopWordsFollow = new g.Symbol('pre', 'verb', 'stop', 'words', 'follow')
+preVerbStopWordsFollow.addRule({ RHS: [ stopWords.preVerb, follow ] })
+user.objFilter.addRule({ RHS: [ user.nomUsersPlus, preVerbStopWordsFollow ], semantic: usersFollowedSemantic })
 // (people who) follow me
-user.subjFilter.addRule({ RHS: [ follow.plSubj, user.objUsersPlus ], semantic: followersSemantic })
+user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: followersSemantic, personNumber: 'pl' })
 
 
 

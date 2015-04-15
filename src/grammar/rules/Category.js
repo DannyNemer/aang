@@ -129,7 +129,7 @@ module.exports = function Category(catOpts) {
 	// (people who) are <stop> followed by me
 	filter.addRule({ RHS: [ auxVerbs.beNon1SgSentenceAdverbial, reducedNoTense ] })
 	// (people who) have <stop> been folllowed by me; (people who) have <stop> been following me
-	filter.addRule({ RHS: [ auxVerbs.havePlSubjSentenceAdverbialBePast, reducedNoTense ] })
+	filter.addRule({ RHS: [ auxVerbs.haveSentenceAdverbialBePast, reducedNoTense ] })
 	// (people who) <stop> follow me, I follow
 	filter.addRule({ RHS: [ stopWords.left, filter ] })
 	// (people who) do not follow me
@@ -141,7 +141,7 @@ module.exports = function Category(catOpts) {
 	// (people who) are not follwed by me
 	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, reduced ], semantic: auxVerbs.notSemantic })
 	// (people who) have not been follwed by me
-	filter.addRule({ RHS: [ auxVerbs.havePlSubjNegationBePast, reduced ], semantic: auxVerbs.notSemantic })
+	filter.addRule({ RHS: [ auxVerbs.haveNegationBePast, reduced ], semantic: auxVerbs.notSemantic })
 
 
 	// (people) who follow me and/or I follow

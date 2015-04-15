@@ -32,11 +32,11 @@ pullRequest.passive.addRule({ RHS: [ github.created, user.byObjUsers ], semantic
 // (pull requests) I <stop> created
 pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.created ], semantic: pullRequestsCreatedSemantic })
 // (pull requests) I <stop> have created
-pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.haveObjCreated ], semantic: pullRequestsCreatedSemantic })
+pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.haveCreated ], semantic: pullRequestsCreatedSemantic })
 // (people who) created pull requests ...
 user.subjFilter.addRule({ RHS: [ github.created, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
 // (people who) have created pull requests ... - not [pull-requests+] because 'by'
-user.subjFilter.addRule({ RHS: [ github.havePlSubjCreated, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
+user.subjFilter.addRule({ RHS: [ github.haveCreated, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic, personNumber: 'pl' })
 // creators of [pull-requests]
 user.head.addRule({ RHS: [ github.creatorsOf, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
 

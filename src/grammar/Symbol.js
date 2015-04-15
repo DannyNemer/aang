@@ -35,8 +35,6 @@ Symbol.prototype.addRule = function (opts) {
 	if (opts.semantic) {
 		newRule.semantic = opts.semantic
 		newRule.cost = this.calcCost(Semantic.costOfSemantic(opts.semantic))
-		// newRule.semantic = opts.semantic.function
-		// newRule.cost = this.calcCost(opts.semantic.cost)
 	} else {
 		newRule.cost = this.calcCost()
 	}
@@ -85,6 +83,8 @@ var nontermRuleOptsSchema = {
 	RHS: { type: Array, arrayType: Symbol },
 	semantic: { type: Array, optional: true },
 	transpositionCost: { type: Number, optional: true },
+	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
+	verbForm: { type: [ 'past' ], optional: true },
 	personNumber: { type: [ 'one', 'threeSg', 'pl' ], optional: true }
 }
 
@@ -100,6 +100,8 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 
 	var newRule = {
 		RHS: opts.RHS.map(function (RHSSymbol) { return RHSSymbol.name }),
+		gramCase: opts.gramCase,
+		verbForm: opts.verbForm,
 		personNumber: opts.personNumber
 	}
 

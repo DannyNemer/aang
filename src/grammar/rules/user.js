@@ -28,7 +28,7 @@ user.nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'pl' })
 // (people) {user} (follows)
 user.nomUsers.addRule({ RHS: [ user.catSg ], personNumber: 'threeSg' })
 // (people) I (follow)
-user.nomUsers.addRule({ RHS: [ oneSg.nom ], semantic: oneSg.semantic, personNumber: 'one' })
+user.nomUsers.addRule({ RHS: [ oneSg.plain ], semantic: oneSg.semantic, gramCase: 'nom', personNumber: 'one' })
 
 // (people) I and/or {user} follow
 user.nomUsersPlus = conjunctions.addForSymbol(user.nomUsers, { personNumber: 'pl' })
@@ -49,7 +49,7 @@ objUsers.addRule({ RHS: [ user.plural ] })
 // (people who follow) {user}; (people followed by) {user}
 objUsers.addRule({ RHS: [ user.catSg ] })
 // (people who follow) me; (people followed by) me
-objUsers.addRule({ RHS: [ oneSg.obj ], semantic: oneSg.semantic })
+objUsers.addRule({ RHS: [ oneSg.plain ], semantic: oneSg.semantic, gramCase: 'obj' })
 
 // (people who follow) me and/or {user}; (people followed by) me and/or {user}
 user.objUsersPlus = conjunctions.addForSymbol(objUsers)

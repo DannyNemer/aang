@@ -7,43 +7,52 @@ var util = require('../util')
 
 // Schema for pronouns
 var pronounOptsSchema = {
-	name: String,
+	symbol: Symbol,
 	insertionCost: { type: Number, optional: true },
-	nom: { type: Array, arrayType: String },
-	obj: { type: Array, arrayType: String },
+	nom: String,
+	obj: String,
 	substitutions: { type: Array, arrayType: String }
 }
 
-// Add all terminal symbols for a pronoun to the grammar; e.g., "I" and "me"
-// Creates seperate symbols for nominative and objective case
+// Add all terminal symbols for a pronoun to the grammar; ex: "I", "me"
 g.addPronoun = function (opts) {
 	if (util.illFormedOpts(pronounOptsSchema, opts)) {
 		throw 'ill-formed pronoun'
 	}
 
-	return {
-		// Nominative case
-		nom: g.addWord({
-			symbol: new g.Symbol(opts.name, 'nom'),
-			insertionCost: opts.insertionCost,
-			accepted: opts.nom,
-			substitutions: opts.obj.concat(opts.substitutions)
-		}),
+	var pronoun = opts.symbol
 
-		// Objective case
-		obj: g.addWord({
-			symbol: new g.Symbol(opts.name, 'obj'),
-			insertionCost: opts.insertionCost,
-			accepted: opts.obj,
-			substitutions: opts.nom.concat(opts.substitutions)
-		})
+	// Object of inflection forms for conjugation
+	var textForms = {
+		nom: opts.nom, // "I"
+		obj: opts.obj // "me"
 	}
+
+	// Nominative case
+	var newRule = { terminal: true, RHS: opts.nom, textForms: textForms }
+
+	// Insertion cost added to first terminal rule (though, inconsequential)
+	if (opts.hasOwnProperty('insertionCost')) {
+		newRule.insertionCost = opts.insertionCost
+	}
+
+	pronoun.addRule(newRule)
+
+	// Objective case
+	pronoun.addRule({ terminal: true, RHS: opts.obj, textForms: textForms })
+
+	// Terminal symbols which are replaced when input
+	opts.substitutions.forEach(function (termSym) {
+		pronoun.addRule({ terminal: true, RHS: termSym, textForms: textForms })
+	})
+
+	return pronoun
 }
 
 
 // Schema for verbs
 var verbOptSchema = {
-	name: String,
+	symbol: Symbol,
 	insertionCost: { type: Number, optional: true },
 	one: { type: Array, arrayType: String, optional: true },
 	pl: { type: Array, arrayType: String, optional: true },
@@ -51,13 +60,11 @@ var verbOptSchema = {
 	threeSg: { type: Array, arrayType: String, optional: true },
 	oneOrThreeSg: { type: Array, arrayType: String, optional: true },
 	past: { type: Array, arrayType: String, optional: true },
-	substitutions: { type: Array, arrayType: String, optional: true },
-	singleSymbol: { type: Boolean, optional: true }
+	substitutions: { type: Array, arrayType: String, optional: true }
 }
 
 // Add all terminal symbols for a verb to the grammar
 // Only used in nominative case; ex: "people [nom-users] follow/follows"
-// Creates multiple symbols for different verb forms: objective, past, and pl-subj
 g.addVerb = function (opts) {
 	if (util.illFormedOpts(verbOptSchema, opts)) {
 		throw 'ill-formed verb'
@@ -83,18 +90,7 @@ g.addVerb = function (opts) {
 		throw 'ill-formed verb'
 	}
 
-	if (opts.singleSymbol) {
-		if (opts.past) {
-			console.log('Err: Verb with \'singleSymbol\' will not use \'past\' terms')
-			console.log(util.getLine())
-			throw 'ill-formed verb'
-		}
-
-		// Only create one symbol; e.g., [be-general]
-		var verbObj = new g.Symbol(opts.name)
-	} else {
-		var verbObj = new g.Symbol(opts.name, 'obj')
-	}
+	var verb = opts.symbol
 
 	// Object of inflection forms for conjugation
 	var defaultTextForms = {
@@ -106,6 +102,10 @@ g.addVerb = function (opts) {
 		threeSg: opts.threeSg ? opts.threeSg[0] : opts.oneOrThreeSg[0]
 	}
 
+	// Past tense is optional (e.g.: [have])
+	if (opts.past) {
+		defaultTextForms.past = opts.past[0] // "liked"
+	}
 
 	// Inflected forms for first-person (e.g., "am")
 	if (opts.one) {
@@ -113,7 +113,8 @@ g.addVerb = function (opts) {
 			var newRule = { terminal: true, RHS: termSym, textForms: {
 				one: termSym,
 				pl: defaultTextForms.pl,
-				threeSg: defaultTextForms.threeSg
+				threeSg: defaultTextForms.threeSg,
+				past: defaultTextForms.past
 			} }
 
 			// Insertion cost added to first terminal rule (though, inconsequential)
@@ -121,7 +122,7 @@ g.addVerb = function (opts) {
 				newRule.insertionCost = opts.insertionCost
 			}
 
-			verbObj.addRule(newRule)
+			verb.addRule(newRule)
 		})
 	}
 
@@ -131,7 +132,8 @@ g.addVerb = function (opts) {
 			var newRule = { terminal: true, RHS: termSym, textForms: {
 				one: defaultTextForms.one,
 				pl: termSym,
-				threeSg: defaultTextForms.threeSg
+				threeSg: defaultTextForms.threeSg,
+				past: defaultTextForms.past
 			} }
 
 			// Insertion cost added to first terminal rule (though, inconsequential)
@@ -139,7 +141,7 @@ g.addVerb = function (opts) {
 				newRule.insertionCost = opts.insertionCost
 			}
 
-			verbObj.addRule(newRule)
+			verb.addRule(newRule)
 		})
 	}
 
@@ -149,7 +151,8 @@ g.addVerb = function (opts) {
 			var newRule = { terminal: true, RHS: termSym, textForms: {
 				one: termSym,
 				pl: termSym,
-				threeSg: defaultTextForms.threeSg
+				threeSg: defaultTextForms.threeSg,
+				past: defaultTextForms.past
 			} }
 
 			// Insertion cost added to first terminal rule (though, inconsequential)
@@ -157,17 +160,18 @@ g.addVerb = function (opts) {
 				newRule.insertionCost = opts.insertionCost
 			}
 
-			verbObj.addRule(newRule)
+			verb.addRule(newRule)
 		})
 	}
 
 	// Inflected forms for third-person-singular (e.g., "is", "has", "likes")
 	if (opts.threeSg) {
 		opts.threeSg.forEach(function (termSym) {
-			verbObj.addRule({ terminal: true, RHS: termSym, textForms: {
+			verb.addRule({ terminal: true, RHS: termSym, textForms: {
 				one: defaultTextForms.one,
 				pl: defaultTextForms.pl,
-				threeSg: termSym
+				threeSg: termSym,
+				past: defaultTextForms.past
 			} })
 		})
 	}
@@ -175,10 +179,23 @@ g.addVerb = function (opts) {
 	// Inflected forms for third-person-singular or first-person (e.g., "was")
 	if (opts.oneOrThreeSg) {
 		opts.oneOrThreeSg.forEach(function (termSym) {
-			verbObj.addRule({ terminal: true, RHS: termSym, textForms: {
+			verb.addRule({ terminal: true, RHS: termSym, textForms: {
 				one: termSym,
 				pl: defaultTextForms.pl,
-				threeSg: termSym
+				threeSg: termSym,
+				past: defaultTextForms.past
+			} })
+		})
+	}
+
+	// Past tense - optional
+	if (opts.past) {
+		opts.past.forEach(function (termSym) {
+			verb.addRule({ terminal: true, RHS: termSym, textForms: {
+				one: defaultTextForms.one,
+				pl: defaultTextForms.pl,
+				threeSg: defaultTextForms.threeSg,
+				past: termSym
 			} })
 		})
 	}
@@ -186,43 +203,11 @@ g.addVerb = function (opts) {
 	// Terminal symbols which are replaced when input
 	if (opts.substitutions) {
 		opts.substitutions.forEach(function (termSym) {
-			verbObj.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
+			verb.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
 		})
 	}
 
-	// Only create one symbol; e.g., [be-general]
-	if (opts.singleSymbol) {
-		return verbObj
-	}
-
-	// Past tense is optional (e.g.: [have])
-	if (opts.past) {
-		// Past tense terms also serve as substitutions for objective form
-		opts.past.forEach(function (termSym) {
-			verbObj.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
-		})
-
-		var verbPast = g.addWord({
-			symbol: new g.Symbol(opts.name, 'past'),
-			insertionCost: opts.insertionCost,
-			accepted: opts.past,
-			substitutions: [].concat(opts.one, opts.pl, opts.oneOrPl, opts.threeSg, opts.oneOrThreeSg, opts.substitutions).filter(Boolean)
-		})
-	}
-
-	// Plural-subjective; e.g., "(people who) like ...""
-	var verbPlSubj = g.addWord({
-		symbol: new g.Symbol(opts.name, 'pl', 'subj'),
-		insertionCost: opts.insertionCost,
-		accepted: [].concat(opts.pl, opts.oneOrPl).filter(Boolean),
-		substitutions: [].concat(opts.one, opts.threeSg, opts.oneOrThreeSg, opts.past, opts.substitutions).filter(Boolean)
-	})
-
-	return {
-		obj: verbObj,
-		past: verbPast,
-		plSubj: verbPlSubj
-	}
+	return verb
 }
 
 
@@ -293,7 +278,7 @@ g.addWord = function (opts) {
 		var newRule = { terminal: true, RHS: termSym, text: termSym }
 
 		// Insertion cost added to first terminal rule (though, inconsequential)
-		if (i === 0 && opts.insertionCost !== undefined) {
+		if (i === 0 && opts.hasOwnProperty('insertionCost')) {
 			newRule.insertionCost = opts.insertionCost
 		}
 

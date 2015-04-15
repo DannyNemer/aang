@@ -23,40 +23,34 @@ this.bePast = g.addWord({
 
 // (pull requests I/{user}/[nom-users]) am/is/are (mentioned in)
 this.beGeneral = g.addVerb({
-	name: 'be-general',
+	symbol: new g.Symbol('be', 'general'),
 	insertionCost: 1,
 	one: [ 'am' ],
 	pl: [ 'are', 'were' ],
 	oneOrPl: [ 'have-been' ],
 	threeSg: [ 'is', 'has-been' ],
-	oneOrThreeSg: [ 'was' ],
-	singleSymbol: true
+	oneOrThreeSg: [ 'was' ]
 })
 
-
-// No past tense ('had') because it implies semantic no longer true; "had liked" -> no longer liked
-var have = g.addVerb({
-	name: 'have',
+// (people who) have (been followed by me)
+// - No past tense ('had') because it implies semantic no longer true; "had liked" -> no longer liked
+this.have = g.addVerb({
+	symbol: new g.Symbol('have'),
 	insertionCost: 0.8,
 	oneOrPl: [ 'have' ],
 	threeSg: [ 'has' ],
 	substitutions: [ 'had' ]
 })
 
-// (repos I) have (liked)
-this.haveObj = have.obj
-// (people who) have (been followed by me)
-this.havePlSubj = have.plSubj
-
 // (repos I) have <stop> (contributed to)
-this.haveObjPreVerbStopWords = new g.Symbol('have', 'obj', 'pre', 'verb', 'stop', 'words')
-this.haveObjPreVerbStopWords.addRule({ RHS: [ this.haveObj, stopWords.preVerb ] })
+this.havePreVerbStopWords = new g.Symbol('have', 'pre', 'verb', 'stop', 'words')
+this.havePreVerbStopWords.addRule({ RHS: [ this.have, stopWords.preVerb ] })
 
 // (people who have) <stop> (been folllowed by me); (people who have) <stop> (been following me)
-var havePlSubjSentenceAdverbial = new g.Symbol('have', 'pl', 'subj', 'sentence', 'adverbial')
-havePlSubjSentenceAdverbial.addRule({ RHS: [ this.havePlSubj, stopWords.sentenceAdverbial ] })
-this.havePlSubjSentenceAdverbialBePast = new g.Symbol('have', 'pl', 'subj', 'sentence', 'adverbial', 'be', 'past')
-this.havePlSubjSentenceAdverbialBePast.addRule({ RHS: [ havePlSubjSentenceAdverbial, this.bePast ] })
+var haveSentenceAdverbial = new g.Symbol('have', 'sentence', 'adverbial')
+haveSentenceAdverbial.addRule({ RHS: [ this.have, stopWords.sentenceAdverbial ], personNumber: 'pl' })
+this.haveSentenceAdverbialBePast = new g.Symbol('have', 'sentence', 'adverbial', 'be', 'past')
+this.haveSentenceAdverbialBePast.addRule({ RHS: [ haveSentenceAdverbial, this.bePast ] })
 
 
 // NEGATION:
@@ -84,7 +78,7 @@ this.beNon1SgNegation = new g.Symbol('be', 'non', '1', 'sg', 'negation')
 this.beNon1SgNegation.addRule({ RHS: [ this.beNon1Sg, negation ] })
 
 // (people who) have not been (follwed by me)
-var havePlSubjNegation = new g.Symbol('have', 'pl', 'subj', 'negation')
-havePlSubjNegation.addRule({ RHS: [ this.havePlSubj, negation ] })
-this.havePlSubjNegationBePast = new g.Symbol('have', 'pl', 'subj', 'negation', 'be', 'past')
-this.havePlSubjNegationBePast.addRule({ RHS: [ havePlSubjNegation, this.bePast ] })
+var haveNegation = new g.Symbol('have', 'negation')
+haveNegation.addRule({ RHS: [ this.have, negation ], personNumber: 'pl' })
+this.haveNegationBePast = new g.Symbol('have', 'negation', 'be', 'past')
+this.haveNegationBePast.addRule({ RHS: [ haveNegation, this.bePast ] })

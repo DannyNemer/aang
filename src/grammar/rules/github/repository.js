@@ -33,11 +33,11 @@ repository.passive.addRule({ RHS: [ github.created, user.byObjUsers ], semantic:
 // (repos) I <stop> created
 repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.created ], semantic: repositoriesCreatedSemantic })
 // (repos) I <stop> have created
-repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.haveObjCreated ], semantic: repositoriesCreatedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.haveCreated ], semantic: repositoriesCreatedSemantic })
 // (people who) created repos ...
 user.subjFilter.addRule({ RHS: [ github.created, repository.catPl ], semantic: repositoryCreatorsSemantic })
 // (people who) have created repos ... - not [repositories+] because 'by'
-user.subjFilter.addRule({ RHS: [ github.havePlSubjCreated, repository.catPl ], semantic: repositoryCreatorsSemantic })
+user.subjFilter.addRule({ RHS: [ github.haveCreated, repository.catPl ], semantic: repositoryCreatorsSemantic, personNumber: 'pl' })
 // creators of [repositories]
 user.head.addRule({ RHS: [ github.creatorsOf, repository.catPl ], semantic: repositoryCreatorsSemantic })
 
@@ -47,7 +47,7 @@ var repositoriesLikedSemantic = new g.Semantic({ name: repository.namePl + '-lik
 var repositoryLikersSemantic = new g.Semantic({ name: repository.nameSg + '-likers', cost: 0.5, minParams: 1, maxParams: 1 })
 
 var like = g.addVerb({
-	name: 'like',
+	symbol: new g.Symbol('like'),
 	insertionCost: 0.8,
 	oneOrPl: [ 'like' ],
 	threeSg: [ 'likes' ],
@@ -55,19 +55,19 @@ var like = g.addVerb({
 })
 
 // (repos) liked by me
-repository.passive.addRule({ RHS: [ like.past, user.byObjUsersPlus ], semantic: repositoriesLikedSemantic })
+repository.passive.addRule({ RHS: [ like, user.byObjUsersPlus ], semantic: repositoriesLikedSemantic, verbForm: 'past' })
 // (repos) I like
-repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, like.obj ], semantic: repositoriesLikedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, like ], semantic: repositoriesLikedSemantic })
 // (repos) I have liked
-var haveObjLikePast = new g.Symbol('have', 'obj', 'like', 'past')
-haveObjLikePast.addRule({ RHS: [ auxVerbs.haveObj, like.past ] })
-repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, haveObjLikePast ], semantic: repositoriesLikedSemantic })
+var haveLiked = new g.Symbol('have', 'liked')
+haveLiked.addRule({ RHS: [ auxVerbs.have, like ], verbForm: 'past' })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, haveLiked ], semantic: repositoriesLikedSemantic })
 // (people who) like repos ...
-user.subjFilter.addRule({ RHS: [ like.plSubj, repository.catPlPlus ], semantic: repositoryLikersSemantic })
+user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
 // (people who) have liked repos ...
-var havePlSubjLikePast = new g.Symbol('have', 'pl', 'subj', 'like', 'past')
-havePlSubjLikePast.addRule({ RHS: [ auxVerbs.havePlSubj, like.past ] })
-user.subjFilter.addRule({ RHS: [ havePlSubjLikePast, repository.catPlPlus ], semantic: repositoryLikersSemantic })
+var likedRepos = new g.Symbol('liked', repository.namePl + '+')
+likedRepos.addRule({ RHS: [ like, repository.catPlPlus ], verbForm: 'past' })
+user.subjFilter.addRule({ RHS: [ auxVerbs.have, likedRepos ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
 
 var likersOf = g.addWord({
 	symbol: new g.Symbol('likers', 'of'),
@@ -91,16 +91,16 @@ var repositoryContributorsSemantic = new g.Semantic({ name: repository.nameSg + 
 repository.passive.addRule({ RHS: [ contributedTo, user.byObjUsersPlus ], semantic: repositoriesContributedSemantic })
 // (repos) I <stop> contributed to
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, contributedTo ], semantic: repositoriesContributedSemantic })
-// (repos) I have <stop> contributed to
-var haveObjPreVerbStopWordsContributedTo = new g.Symbol('have', 'obj', 'pre', 'verb', 'stop', 'words', 'contributed', 'to')
-haveObjPreVerbStopWordsContributedTo.addRule({ RHS: [ auxVerbs.haveObjPreVerbStopWords, contributedTo ] })
-repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, haveObjPreVerbStopWordsContributedTo ], semantic: repositoriesContributedSemantic })
+// (repos) I have contributed to
+var havePreVerbStopWordsContributedTo = new g.Symbol('have', 'pre', 'verb', 'stop', 'words', 'contributed', 'to')
+havePreVerbStopWordsContributedTo.addRule({ RHS: [ auxVerbs.havePreVerbStopWords, contributedTo ] })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, havePreVerbStopWordsContributedTo ], semantic: repositoriesContributedSemantic })
 // (people who) contributed to repos ...
 user.subjFilter.addRule({ RHS: [ contributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 // (people who) have contributed to repos ...
-var havePlSubjContributedTo = new g.Symbol('have', 'pl', 'subj', 'contributed', 'to')
-havePlSubjContributedTo.addRule({ RHS: [ auxVerbs.havePlSubj, contributedTo ] })
-user.subjFilter.addRule({ RHS: [ havePlSubjContributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
+var haveContributedTo = new g.Symbol('have', 'contributed', 'to')
+haveContributedTo.addRule({ RHS: [ auxVerbs.have, contributedTo ], personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ haveContributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 
 var contributorsTo = g.addWord({
 	symbol: new g.Symbol('contributors', 'to'),
