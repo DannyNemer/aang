@@ -18,8 +18,8 @@ var repositoriesTerm = g.addWord({
 repository.headMayPoss.addRule({ RHS: [ github.termOpt, repositoriesTerm ] })
 
 
-var repositoriesCreatedSemantic = new g.Semantic({ name: repository.namePl + '-created', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
-var repositoryCreatorsSemantic = new g.Semantic({ name: repository.nameSg + '-creators', cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoriesCreatedSemantic = g.newSemantic({ name: repository.namePl + '-created', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+var repositoryCreatorsSemantic = g.newSemantic({ name: repository.nameSg + '-creators', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my repos
 repository.noRelativePossessive.addRule({ RHS: [ poss.determiner, repository.possessible ], semantic: repositoriesCreatedSemantic })
@@ -43,8 +43,8 @@ user.head.addRule({ RHS: [ github.creatorsOf, repository.catPl ], semantic: repo
 
 
 // LIKE:
-var repositoriesLikedSemantic = new g.Semantic({ name: repository.namePl + '-liked', cost: 0.5, minParams: 1, maxParams: 1 })
-var repositoryLikersSemantic = new g.Semantic({ name: repository.nameSg + '-likers', cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoriesLikedSemantic = g.newSemantic({ name: repository.namePl + '-liked', cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoryLikersSemantic = g.newSemantic({ name: repository.nameSg + '-likers', cost: 0.5, minParams: 1, maxParams: 1 })
 
 var like = g.addVerb({
 	symbol: new g.Symbol('like'),
@@ -84,8 +84,8 @@ var contributedTo = g.addWord({
 	accepted: [ 'contributed-to' ]
 })
 
-var repositoriesContributedSemantic = new g.Semantic({ name: repository.namePl + '-contributed', cost: 0.5, minParams: 1, maxParams: 1 })
-var repositoryContributorsSemantic = new g.Semantic({ name: repository.nameSg + '-contributors', cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoriesContributedSemantic = g.newSemantic({ name: repository.namePl + '-contributed', cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoryContributorsSemantic = g.newSemantic({ name: repository.nameSg + '-contributors', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // (repos) contributed to by me
 repository.passive.addRule({ RHS: [ contributedTo, user.byObjUsersPlus ], semantic: repositoriesContributedSemantic })
@@ -111,8 +111,8 @@ user.head.addRule({ RHS: [ contributorsTo, repository.catPlPlus ], semantic: rep
 
 // LANGUAGE:
 var languageEntityStr = '{language}'
-var languageSemanticArg = new g.Semantic({ name: languageEntityStr, isArg: true, cost: 0 })
-var repositoriesLanguageSemantic = new g.Semantic({ name: repository.namePl + '-language', cost: 0.5, minParams: 1, maxParams: 1 })
+var languageSemanticArg = g.newSemantic({ name: languageEntityStr, isArg: true, cost: 0 })
+var repositoriesLanguageSemantic = g.newSemantic({ name: repository.namePl + '-language', cost: 0.5, minParams: 1, maxParams: 1 })
 var language = new g.Symbol('language')
 language.addRule({
 	terminal: true,

@@ -54,7 +54,7 @@ this.haveSentenceAdverbialBePast.addRule({ RHS: [ haveSentenceAdverbial, this.be
 
 
 // NEGATION:
-this.notSemantic = new g.Semantic({ name: 'not', cost: 0.5, minParams: 1, maxParams: 1 })
+this.notSemantic = g.newSemantic({ name: 'not', cost: 0.5, minParams: 1, maxParams: 1 })
 var negation = g.addWord({
 	symbol: new g.Symbol('negation'),
 	accepted: [ 'not' ],

@@ -2,7 +2,7 @@ var util = require('../util')
 
 exports.semantics = {}
 
-exports.Semantic = function (opts) {
+exports.newSemantic = function (opts) {
 	if (exports.semantics.hasOwnProperty(opts.name)) {
 		console.log('Err: Duplicate Semantic:', opts.name)
 		console.log(util.getLine())
@@ -19,8 +19,8 @@ var semanticFuncOptsSchema = {
 	cost: Number,
 	minParams: Number,
 	maxParams: Number,
-	// When a DB object can only have one value for a specific property (e.g., creator) prevent
-	// multiple instances of the corresponding semantic function within another semantic's arguments
+	// When a DB object can only have one value for a specific property (e.g., repos only created by 1 person)
+	// prevent multiple instances of the corresponding semantic function within another semantic's arguments
 	// Otherwise, an intersection of objects with different values for this property will return an empty set
 	preventDups: { type: Boolean, optional: true }
 }

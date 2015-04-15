@@ -2,21 +2,22 @@ var util = require('../util')
 
 var grammar = {}
 
+exports.Symbol = require('./Symbol').bind(null, grammar)
+
+exports.startSymbol = new exports.Symbol('start')
+
 // Empty-string
 // Rules with <empty> optionalize their LHS symbols and subsequent unary reductions
 // Original rules with <empty> are omitted from output grammar
 exports.emptySymbol = '<empty>'
 
-exports.Symbol = require('./Symbol').bind(null, grammar)
-
-exports.startSymbol = new exports.Symbol('start')
-
 // Extend module with rule functions
 require('./ruleFunctions')
 
-var Semantic = require('./Semantic')
-exports.Semantic = Semantic.Semantic
-exports.insertSemantic = Semantic.insertSemantic
+// Extend module with semantic functions
+var semantic = require('./semantic')
+exports.newSemantic = semantic.newSemantic
+exports.insertSemantic = semantic.insertSemantic
 
 // Derive rules from insertion and transposition costs, and empty-strings
 exports.createEditRules = require('./createEditRules').bind(null, grammar)
@@ -57,5 +58,5 @@ function ruleCount(grammar) {
 // Write grammar and semantics to files
 exports.writeGrammarToFile = function (grammarPath, semanticsPath) {
 	util.writeJSONFile(grammarPath, grammar)
-	util.writeJSONFile(semanticsPath, Semantic.semantics)
+	util.writeJSONFile(semanticsPath, semantic.semantics)
 }

@@ -18,8 +18,8 @@ var issuesTerm = g.addWord({
 issue.headMayPoss.addRule({ RHS: [ github.termOpt, issuesTerm ] })
 
 
-var issuesOpenedSemantic = new g.Semantic({ name: issue.namePl + '-opened', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
-var issuesOpenersSemantic = new g.Semantic({ name: issue.nameSg + '-openers', cost: 0.5, minParams: 1, maxParams: 1 })
+var issuesOpenedSemantic = g.newSemantic({ name: issue.namePl + '-opened', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+var issuesOpenersSemantic = g.newSemantic({ name: issue.nameSg + '-openers', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my issues
 issue.noRelativePossessive.addRule({ RHS: [ poss.determiner, issue.possessible ], semantic: issuesOpenedSemantic })
@@ -56,7 +56,7 @@ user.head.addRule({ RHS: [ openersOf, issue.catPl ], semantic: issuesOpenersSema
 
 
 // MENTION:
-var issuesRequestsMentionedSemantic = new g.Semantic({ name: issue.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })
+var issuesRequestsMentionedSemantic = g.newSemantic({ name: issue.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })
 // (issues that) mention me
 issue.subjFilter.addRule({ RHS: [ github.mention, user.objUsersPlus ], semantic: issuesRequestsMentionedSemantic })
 // (issues) I-am/{user}-is/[users]-are mentioned in
@@ -72,8 +72,8 @@ var assignedTo = g.addWord({
   accepted: [ 'assigned-to' ]
 })
 
-var issuesAssignedSemantic = new g.Semantic({ name: issue.namePl + '-assigned', cost: 0.5, minParams: 1, maxParams: 1 })
-var usersAssignedSemantic = new g.Semantic({ name: user.namePl + '-assigned', cost: 0.5, minParams: 1, maxParams: 1 })
+var issuesAssignedSemantic = g.newSemantic({ name: issue.namePl + '-assigned', cost: 0.5, minParams: 1, maxParams: 1 })
+var usersAssignedSemantic = g.newSemantic({ name: user.namePl + '-assigned', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // (issues) I-am/{user}-is/[users]-are assigned to
 var beGeneralAssignedTo = new g.Symbol('be', 'general', 'assigned', 'to')
@@ -86,10 +86,10 @@ user.inner.addRule({ RHS: [ assignedTo, issue.catPlPlus ], semantic: usersAssign
 
 
 // OPEN/CLOSED:
-var issuesStateSemantic = new g.Semantic({ name: issue.namePl + '-state', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+var issuesStateSemantic = g.newSemantic({ name: issue.namePl + '-state', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
 // open issues
-var openStateSemanticArg = new g.Semantic({ name: 'open', isArg: true, cost: 0.5 })
+var openStateSemanticArg = g.newSemantic({ name: 'open', isArg: true, cost: 0.5 })
 issue.adjective.addRule({ terminal: true, RHS: 'open', text: 'open', semantic: g.insertSemantic(issuesStateSemantic, openStateSemanticArg) })
 // closed issues
-var closedStateSemanticArg = new g.Semantic({ name: 'closed', isArg: true, cost: 0.5 })
+var closedStateSemanticArg = g.newSemantic({ name: 'closed', isArg: true, cost: 0.5 })
 issue.adjective.addRule({ terminal: true, RHS: 'closed', text: 'closed', semantic: g.insertSemantic(issuesStateSemantic, closedStateSemanticArg) })

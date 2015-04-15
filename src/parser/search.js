@@ -1,7 +1,7 @@
 var util = require('../util')
 var BinaryHeap = require('./BinaryHeap')
 
-var semantic = require('../grammar/Semantic')
+var semantic = require('../grammar/semantic')
 
 var testCounter = 0
 

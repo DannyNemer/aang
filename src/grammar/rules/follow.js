@@ -3,8 +3,8 @@ var user = require('./user')
 var stopWords = require('./stopWords')
 var poss = require('./poss')
 
-var followersSemantic = new g.Semantic({ name: 'followers', cost: 0.5, minParams: 1, maxParams: 1 })
-var usersFollowedSemantic = new g.Semantic({ name: user.namePl + '-followed', cost: 0.5, minParams: 1, maxParams: 1 })
+var followersSemantic = g.newSemantic({ name: 'followers', cost: 0.5, minParams: 1, maxParams: 1 })
+var usersFollowedSemantic = g.newSemantic({ name: user.namePl + '-followed', cost: 0.5, minParams: 1, maxParams: 1 })
 
 var follow = g.addVerb({
 	symbol: new g.Symbol('follow'),

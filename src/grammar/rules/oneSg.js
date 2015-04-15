@@ -1,6 +1,6 @@
 var g = require('../grammar')
 
-this.semantic = new g.Semantic({ name: 'me', cost: 0.2, isArg: true })
+this.semantic = g.newSemantic({ name: 'me', cost: 0.2, isArg: true })
 
 // (people) I (follow); (people followed by) me; (people who follow) me
 this.plain = g.addPronoun({
