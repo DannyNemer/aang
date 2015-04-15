@@ -120,6 +120,10 @@ var testQueries = [
 	'people followed by myself',
 	'people who follow I',
 	'people me follow',
+	'openers-of my closed issues that mention me people who follow me and my followers follow follow',
+	'repos people my followers follow like',
+	'people people {user} follows follow',
+	'repos people people {user} follows follow created {user} likes'
 	// 'followers of my followers who are followers of mine my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to follow',
 	// 'my followers who created pull-requests of mine created by my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed-to I am mentioned-in'
 	// 'my repos me people who follow my followers have been and', - BROKEN
@@ -141,13 +145,15 @@ function runCommand(query) {
 		if (!isNaN(args[1])) K = Number(args[1])
 		console.log('K:', K)
 	} else if (query === '-r') {
-		if (!printOutput) console.time('test')
+		if (printOutput) printQuery = true
+		else console.time('test')
 
 		testQueries.forEach(function (testQuery) {
 			parse(testQuery, 100)
 		})
 
-		if (!printOutput) console.timeEnd('test')
+		if (printOutput) printQuery = false
+		else console.timeEnd('test')
 	} else if (query === '-rb') {
 		console.log('Rebuild grammar and state table:')
 		// Rebuild grammar
@@ -240,5 +246,5 @@ function mapSemantic(semanticArray) {
 
 // Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
 function deleteModuleCache() {
-	util.deleteCache(parserPath, searchPath, './BinaryHeap.js', '../grammar/Semantic.js')
+	util.deleteCache(parserNewPath, parserOldPath, searchPath, '../parser/StateTable.js', './BinaryHeap.js', '../grammar/Semantic.js')
 }
