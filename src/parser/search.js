@@ -95,6 +95,8 @@ exports.search = function (startNode, K, buildTrees) {
 	}
 
 	console.log('heap size:', heap.size())
+	console.log('push:', heap.pushCount)
+	console.log('pop:', heap.popCount)
 	if (testCounter) console.log('testCounter:', testCounter)
 	return trees
 }

@@ -3,11 +3,14 @@ module.exports = BinaryHeap
 // Binary min heap
 function BinaryHeap() {
 	this.content = []
+	this.pushCount = 0
+	this.popCount = 0
 }
 
 BinaryHeap.prototype.push = function (element) {
 	// Add the new element to the end of the array
 	this.content.push(element)
+	this.pushCount++
 
 	// Allow it to upHeap
 	this.upHeap(this.content.length - 1)
@@ -16,6 +19,7 @@ BinaryHeap.prototype.push = function (element) {
 BinaryHeap.prototype.pop = function () {
 	// Store the first element so we can return it later
 	var result = this.content[0]
+	this.popCount++
 
 	// Get the element at the end of the array
 	var end = this.content.pop()
