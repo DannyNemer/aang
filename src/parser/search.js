@@ -1,94 +1,92 @@
 var util = require('../util')
 var BinaryHeap = require('./BinaryHeap')
-
 var semantic = require('../grammar/semantic')
 
-var testCounter = 0
+// Use K-best Dijkstra path search to find trees in parse forest returned by parser, beginning at start node
+exports.search = function (startNode, K, buildDebugTrees) {
 
-exports.search = function (startNode, K, buildTrees) {
-	var heap = new BinaryHeap
-	var trees = []
+	var heap = new BinaryHeap // Min-heap of all partially constructed trees
+	var trees = [] // Array of all completed
 
 	var newItem = {
-		lastNode: startNode,
-		ruleProps: [],
+		// When item popped, will look at node's subs for next steps
+		node: startNode,
+		// If no 'node', because reached end of branch, go to next branch - either node or text array
 		nextNodes: [],
+		// Number of elements in nextNodes, excluding text to append
+		// Used as marker of when can merge with LHS semantic -> have completed full branch
+		nextNodesLen: 0,
+		prevSemantics: [], // Semantics
+		ruleProps: [], // Properties for conjugation
 		text: [],
-		cost: 0,
-		prevSemantics: [],
+		cost: 0
 	}
 
-	if (buildTrees) {
+	// If buildDebugTrees option is true, construct and print the parse trees for debugging
+	if (buildDebugTrees) {
 		var tree = { symbol: startNode.sym.name, children: [] }
 		newItem.tree = { startNode: tree, prevNodes: [ tree ] }
 	}
 
 	heap.push(newItem)
 
-	// Might be able to save ruleProps as a single object - issue with ordering (array could be faster than creating new objects?)
-
 	while (heap.size() > 0) {
 		var item = heap.pop()
 
-		var lastNode = item.lastNode
+		var node = item.node
 
-		if (!lastNode) {
+		// Previously reached end of a branch
+		if (!node) {
 			for (var i = item.nextNodes.length; i-- > 0;) {
-				lastNode = item.nextNodes[i]
+				node = item.nextNodes[i]
 
-				if (lastNode.sym) break
-					// we are copying item.ruleProps every time, should only be once
-				item.text = item.text.concat(conjugateTextArray(item, lastNode))
+				// 'node' is a node
+				if (node.sym) break
+
+				// we are copying item.ruleProps every time, should only be once
+				item.text = item.text.concat(conjugateTextArray(item, node))
 			}
 
+			// No nodes remain; tree construction complete
 			if (i < 0) {
-				if (treeIsUnique(item, trees)) {
+				// Tree is unique - not semantically or textually identical to previous trees
+				// Discard tree if no unique
+				if (treeIsUnique(trees, item)) {
+					// Add new tree to array; stop parsing if is K-th tree
 					if (trees.push(item) === K) break
 				}
 
 				continue
 			} else {
-				// Copy nextNodes, excluding ones already used
+				// Copy nextNodes (because array shared by multiple items)
+				// Exclude copying items examined in above loop
 				item.nextNodes = item.nextNodes.slice(0, i)
+				item.nextNodesLen--
 			}
 		}
 
-		var subs = lastNode.subs
-		for (var s = 0, subsLen = subs.length; s < subsLen; ++s) {
+		// Loop through all possible children of this node
+		for (var s = 0, subs = node.subs, subsLen = subs.length; s < subsLen; ++s) {
 			var sub = subs[s]
 			var ruleProps = sub.ruleProps
 
+			// Array of multiple insertions
 			if (ruleProps instanceof Array) {
 				for (var p = 0, rulePropsLen = ruleProps.length; p < rulePropsLen; ++p) {
-					var newItem = createItem(sub, item, ruleProps[p], buildTrees)
-					if (newItem === -1) continue
+					var newItem = createItem(sub, item, ruleProps[p], buildDebugTrees)
+					if (newItem === -1) continue // semanticically illegal parse -> throw out
 					heap.push(newItem)
 				}
-			} else if (ruleProps.transposition) {
-				var newItem = {
-					cost: item.cost + ruleProps.cost,
-					lastNode: sub.next.node,
-					nextNodes: item.nextNodes.concat(sub.node),
-					text: item.text,
-					ruleProps: item.ruleProps
-				}
+			}
 
-				var newSemantic = ruleProps.semantic
+			// Tranposition
+			else if (ruleProps.transposition) {
+				heap.push(createItemTransposed(sub, item, ruleProps, buildDebugTrees))
+			}
 
-				if (newSemantic) {
-					newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
-				} else {
-					newItem.prevSemantics = item.prevSemantics
-				}
-
-				if (buildTrees) {
-					newItem.tree = spliceTree(item.tree, sub, ruleProps)
-				}
-
-				heap.push(newItem)
-			} else {
-				var newItem = createItem(sub, item, ruleProps, buildTrees)
-				if (newItem === -1) continue
+			else {
+				var newItem = createItem(sub, item, ruleProps, buildDebugTrees)
+				if (newItem === -1) continue // semanticically illegal parse -> throw out
 				heap.push(newItem)
 			}
 		}
@@ -97,35 +95,29 @@ exports.search = function (startNode, K, buildTrees) {
 	console.log('heap size:', heap.size())
 	console.log('push:', heap.pushCount)
 	console.log('pop:', heap.popCount)
-	if (testCounter) console.log('testCounter:', testCounter)
+
 	return trees
 }
 
-// don't count text
-// perhaps do similar thing as with semantics - mark next nodes count
-function nextNodesLen(item) {
-	return item.nextNodes.reduce(function (prev, cur) {
-		return prev + (cur.sym ? 1 : 0)
-	}, 0)
-}
-
-function createItem(sub, item, ruleProps, buildTrees) {
+// Create new item as an extension of current tree down this sub
+function createItem(sub, item, ruleProps, buildDebugTrees) {
 	var newItem = {
 		cost: item.cost + ruleProps.cost,
 		ruleProps: item.ruleProps,
-		nextNodes: item.nextNodes
+		nextNodes: item.nextNodes,
+		nextNodesLen: item.nextNodesLen
 	}
 
-	if (buildTrees) {
+	if (buildDebugTrees) {
 		newItem.tree = spliceTree(item.tree, sub, ruleProps)
 	}
 
 	var newSemantic = ruleProps.semantic
 
 	// Insertion
-	if (ruleProps.hasOwnProperty('insertionIdx')) {
+	if (ruleProps.insertionIdx !== undefined) {
 		if (newSemantic) {
-			newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
+			newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: item.nextNodesLen })
 			if (ruleProps.insertedSemantic) {
 				newItem.prevSemantics.push({ semantic: ruleProps.insertedSemantic })
 			}
@@ -145,7 +137,7 @@ function createItem(sub, item, ruleProps, buildTrees) {
 		}
 
 
-		newItem.lastNode = sub.node
+		newItem.node = sub.node
 
 		if (ruleProps.insertionIdx === 1) {
 			// cannot concat because will alter text array
@@ -171,8 +163,8 @@ function createItem(sub, item, ruleProps, buildTrees) {
 				// Do not merge LHS early - cannot fail, but their RHS children can fail, then parse LHS after
 				// Semantic function (LHS)
 				// This is always true if sub.next (because unlikely to put a semantic argument on a fork)
-				if (newSemantic[0].constructor === Object) {
-					newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: nextNodesLen(item) })
+				if (newSemantic[0].children) {
+					newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: item.nextNodesLen })
 				} else {
 					// should always be a LHS before
 					// semantic arg
@@ -199,7 +191,7 @@ function createItem(sub, item, ruleProps, buildTrees) {
 				}
 
 				// LHS after parsing the right-most branch that follows the semantic (completed the reduction)
-				else if (prevSemantic.nextNodesLen >= nextNodesLen(item)) {
+				else if (item.nextNodesLen <= prevSemantic.nextNodesLen) {
 					if (newSemantic) {
 						newSemantic = semantic.insertSemantic(prevSemantic.semantic, newSemantic)
 					} else {
@@ -222,12 +214,14 @@ function createItem(sub, item, ruleProps, buildTrees) {
 			}
 		}
 
+
 		if (sub.next) {
 			newItem.nextNodes = newItem.nextNodes.concat(sub.next.node)
+			newItem.nextNodesLen++
 		}
 
 		if (sub.node.subs) {
-			newItem.lastNode = sub.node
+			newItem.node = sub.node
 			newItem.text = item.text
 
 			// Can go before text conjugation because there won't be inflection properties on a terminal rule
@@ -238,7 +232,7 @@ function createItem(sub, item, ruleProps, buildTrees) {
 			// end of branch
 			var text = ruleProps.text
 			if (text) {
-				if (text instanceof Object) {
+				if (text.constructor === Object) {
 					newItem.ruleProps = newItem.ruleProps.slice()
 					text = conjugateText(newItem.ruleProps, text)
 				}
@@ -248,16 +242,47 @@ function createItem(sub, item, ruleProps, buildTrees) {
 				newItem.text = item.text // stop words
 			}
 		}
+
 	}
 
 	return newItem
 }
 
-function treeIsUnique(item, trees) {
+function createItemTransposed(sub, item, ruleProps, buildDebugTrees) {
+	var newItem = {
+		node: sub.next.node, // sub.next.node is examined before sub.node
+		nextNodes: item.nextNodes.concat(sub.node),
+		nextNodesLen: item.nextNodesLen + 1,
+		ruleProps: item.ruleProps,
+		text: item.text,
+		cost: item.cost + ruleProps.cost
+	}
+
+	if (ruleProps.semantic) {
+		newItem.prevSemantics = item.prevSemantics.concat({
+			LHS: true,
+			semantic: ruleProps.semantic,
+			nextNodesLen: item.nextNodesLen
+		})
+	} else {
+		newItem.prevSemantics = item.prevSemantics
+	}
+
+	if (buildDebugTrees) {
+		newItem.tree = spliceTree(item.tree, sub, ruleProps)
+	}
+
+	return newItem
+}
+
+// Determine if newly parsed tree has a unique semantic and unique display text
+// Return true if tree is unique
+function treeIsUnique(trees, item) {
 	item.semantic = item.prevSemantics[0].semantic
 	if (item.prevSemantics.length > 1) throw 'prevSemantics remain'
 
-	// Check for duplicate semantics
+	// Check for duplicate semantics by comparing semantic string representation
+	// Return false if new semantic is identical to previously constructed (and cheaper) tree
 	var semanticStr = semantic.semanticToString(item.semantic)
 	for (var t = trees.length; t-- > 0;) {
 		var tree = trees[t]
@@ -266,7 +291,8 @@ function treeIsUnique(item, trees) {
 	}
 
 	// Semantic is new
-	// Check is text string is new, if save to disambiguation of existing tree
+	// Check for duplicate display text
+	// If so, save new semantic to previous tree's disambiguation and return false to reject tree
 	var textStr = item.text.join(' ')
 	for (var t = trees.length; t-- > 0;) {
 		var tree = trees[t]
@@ -281,7 +307,7 @@ function treeIsUnique(item, trees) {
 		}
 	}
 
-	// Tree is new
+	// Tree is unique
 	item.semanticStr = semanticStr
 	item.text = textStr
 	return true
@@ -302,8 +328,8 @@ function conjugateTextArray(item, textArray) {
 
 			// FIX: if we are conjugating multiple things in the array, then we should not edit it after each
 			// should apply same rule to multiple objs
-			// If so, would need to iterate through textArray WITHIN ruleprops,
-			// maybe not, could lead to wrong ruleprops being applied
+			// If so, would need to iterate through textArray WITHIN ruleProps,
+			// maybe not, could lead to wrong ruleProps being applied
 			textArray[t] = conjugateText(item.ruleProps, text)
 		}
 	}
@@ -336,6 +362,7 @@ function conjugateText(rulePropsArray, text) {
 		}
 	}
 
+util.logTrace()
 	util.log('Failed to conjugate:', text, rulePropsArray)
 }
 
@@ -401,18 +428,23 @@ function cloneTree(node, lastNodes) {
 	return newNode
 }
 
-exports.print = function (trees, printTrees, printCost) {
-	trees.forEach(function (tree) {
-		console.log(tree.text, printCost ? tree.cost : '')
-		// util.log(tree.semantic)
-		console.log(' ', semantic.semanticToString(tree.semantic))
 
+// Print trees (passed from previous parse)
+exports.print = function (trees, printCost, printTrees) {
+	trees.forEach(function (tree) {
+		// Print display text (and cost)
+		console.log(tree.text, printCost ? tree.cost : '')
+		// Print semantic
+		console.log(' ', tree.semanticStr)
+
+		// Print additional semantics that produced identical display text
 		if (tree.disambiguation) {
 			tree.disambiguation.forEach(function (semanticStr) {
 				console.log(' ', semanticStr)
 			})
 		}
 
+		// Print trees (if constructed during parse forest search)
 		if (printTrees) util.log(tree.tree)
 	})
 }
