@@ -31,38 +31,47 @@ function clean(parentSub, subs) {
 		var ruleProps = sub.ruleProps
 
 		if (Array.isArray(parentRuleProps) || Array.isArray(ruleProps)) return
-
-		if (parentRuleProps.gramCase || ruleProps.gramCase) return
-		if (parentRuleProps.personNumber || ruleProps.personNumber) return
-		if (parentRuleProps.verbForm || ruleProps.verbForm) return
 		if (parentRuleProps.insertedSemantic || ruleProps.insertedSemantic) return
-		if (parentRuleProps.insertionIdx !== undefined || ruleProps.insertionIdx !== undefined) return
 		if (parentRuleProps.semantic && ruleProps.semantic) return
+		if (parentRuleProps.personNumber) return
+		if (parentRuleProps.verbForm || ruleProps.verbForm) return
+
+		if (ruleProps.insertionIdx === 0 && parentRuleProps.insertionIdx === 0) return
+		if (parentRuleProps.insertionIdx === 1 || ruleProps.insertionIdx === 1) return
 
 
-		var newRuleProps = {
+		parentSub.node = sub.node
+		var newRuleProps = parentSub.ruleProps = {
 			cost: parentRuleProps.cost + ruleProps.cost,
 			semantic: parentRuleProps.semantic || ruleProps.semantic
 		}
 
-		if (parentRuleProps.insertionIdx !== undefined || ruleProps.insertionIdx !== undefined) {
-			// only time both can have text
-			// where two semantics
+		if (ruleProps.personNumber) {
+			newRuleProps.personNumber = ruleProps.personNumber
 		}
 
-		// if (parentSub.next) {
-		// 	console.log(parentSub)
-		// 	console.log(sub)
-		// }
-
-
-		newRuleProps.text = parentRuleProps.text || ruleProps.text
-		parentSub.ruleProps = newRuleProps
-		parentSub.node = sub.node
-
-		// if (parentSub.next) {
-		// 	console.log(parentSub)
-		// 	console.log()
-		// }
+		var subText = ruleProps.text
+		var parentText = parentRuleProps.text
+		if (parentRuleProps.insertionIdx === 0) {
+			if (subText) {
+				newRuleProps.text = parentText.concat(subText)
+			} else {
+				newRuleProps.text = parentText
+			}
+		} else if (ruleProps.insertionIdx === 0) {
+			if (parentText) {
+				newRuleProps.text = subText.concat(parentText)
+			} else {
+				newRuleProps.text = subText
+			}
+		} else {
+			var parentGramCase = parentRuleProps.gramCase
+			if (parentGramCase && subText[parentGramCase]) {
+				newRuleProps.text = subText[parentGramCase]
+			} else {
+				if (ruleProps.gramCase) newRuleProps.gramCase = ruleProps.gramCase
+				newRuleProps.text = parentText || subText
+			}
+		}
 	}
 }

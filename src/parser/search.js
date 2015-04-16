@@ -1,10 +1,12 @@
 var util = require('../util')
 var BinaryHeap = require('./BinaryHeap')
 var semantic = require('../grammar/semantic')
+var reduceForest = require('./reduceForest')
+
 
 // Use K-best Dijkstra path search to find trees in parse forest returned by parser, beginning at start node
 exports.search = function (startNode, K, buildDebugTrees) {
-	require('./reduceForest')(startNode) // currently slows because of work to condense
+	reduceForest(startNode) // currently slows because of work to condense
 
 	var heap = new BinaryHeap // Min-heap of all partially constructed trees
 	var trees = [] // Array of all completed
@@ -223,27 +225,29 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 		if (sub.node.subs) {
 			newItem.node = sub.node
-			newItem.text = item.text
 
 			// Can go before text conjugation because there won't be inflection properties on a terminal rule
 			if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
 				newItem.ruleProps = newItem.ruleProps.concat(ruleProps)
 			}
-		} else {
-			// end of branch
-			var text = ruleProps.text
-			if (text) {
-				if (text.constructor === Object) {
-					newItem.ruleProps = newItem.ruleProps.slice()
-					text = conjugateText(newItem.ruleProps, text)
-				}
-
-				newItem.text = item.text.concat(text)
-			} else {
-				newItem.text = item.text // stop words
-			}
 		}
 
+		// end of branch
+		var text = ruleProps.text
+		if (text) {
+			if (text.constructor === Object) {
+				newItem.ruleProps = newItem.ruleProps.slice()
+				text = conjugateText(newItem.ruleProps, text)
+			}
+
+			else if (Array.isArray(text) && newItem.ruleProps.length) {
+				text = conjugateTextArray(newItem, text)
+			}
+
+			newItem.text = item.text.concat(text)
+		} else {
+			newItem.text = item.text // stop words
+		}
 	}
 
 	return newItem
