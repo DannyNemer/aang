@@ -45,7 +45,7 @@ function parse(query, K) {
 			var search = require(searchPath)
 			var trees = search.search(parser.startNode, K, printTrees)
 			if (printTime) console.timeEnd('parse')
-			if (printOutput) search.print(trees, printTrees, printCost)
+			if (printOutput) search.print(trees, printCost, printTrees)
 		} else {
 			console.log('Failed to reach start node')
 		}
@@ -119,7 +119,7 @@ var testQueries = [
 	'people who follow people',
 	'people followed by myself',
 	'people who follow I',
-	'people me follow',
+	'people me follows',
 	'openers-of my closed issues that mention me people who follow me and my followers follow follow',
 	'repos people my followers follow like',
 	'people people {user} follows follow',
@@ -149,7 +149,7 @@ function runCommand(query) {
 		else console.time('test')
 
 		testQueries.forEach(function (testQuery) {
-			parse(testQuery, 100)
+			parse(testQuery, 50)
 		})
 
 		if (printOutput) printQuery = false
@@ -246,5 +246,5 @@ function mapSemantic(semanticArray) {
 
 // Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
 function deleteModuleCache() {
-	util.deleteCache(parserNewPath, parserOldPath, searchPath, '../parser/StateTable.js', './BinaryHeap.js', '../grammar/Semantic.js')
+	util.deleteCache(parserNewPath, parserOldPath, searchPath, '../parser/StateTable.js', './BinaryHeap.js', '../grammar/Semantic.js', './reduceForest.js')
 }

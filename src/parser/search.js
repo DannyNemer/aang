@@ -4,6 +4,7 @@ var semantic = require('../grammar/semantic')
 
 // Use K-best Dijkstra path search to find trees in parse forest returned by parser, beginning at start node
 exports.search = function (startNode, K, buildDebugTrees) {
+	require('./reduceForest')(startNode) // currently slows because of work to condense
 
 	var heap = new BinaryHeap // Min-heap of all partially constructed trees
 	var trees = [] // Array of all completed
