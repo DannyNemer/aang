@@ -4,8 +4,7 @@
 //   Transposition - swapped RHS of nonterminal rules
 
 var util = require('../util')
-var insertSemantic = require('./Semantic.js').insertSemantic
-var mergeRHS = require('./Semantic.js').mergeRHS
+var semantic = require('./semantic')
 
 
 module.exports = function (grammar) {
@@ -83,17 +82,18 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 
 						AInsertions.forEach(function (A) {
 							BInsertions.forEach(function (B) {
+								var newSemantic
 								if (A.semantic && B.semantic) {
-									var semantic = mergeRHS(A.semantic, B.semantic)
-									if (semantic === -1) throw 'duplicate semantic'
+									newSemantic = semantic.mergeRHS(A.semantic, B.semantic)
+									if (newSemantic === -1) return
 								} else {
-									var semantic = A.semantic || B.semantic
+									newSemantic = A.semantic || B.semantic
 								}
 
 								mergedInsertions.push({
 									cost: A.cost + B.cost,
 									text: A.text.concat(B.text),
-									semantic: semantic,
+									semantic: newSemantic,
 									// Person-number only needed for 1st for 2 RHS syms: nominative case (verb precedes subject)
 									// Only used for conjugation of current rule
 									personNumber: A.personNumber,
@@ -110,10 +110,17 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 						// TEMP
 						// FIX: not checking for an insertect (or any open ended) on right
 						// no problems currently, but need checks
+						var newSemantic
 						if (rule.semantic && insertion.semantic) {
-							var semantic = insertSemantic(rule.semantic, insertion.semantic)
+							newSemantic = semantic.insertSemantic(rule.semantic, insertion.semantic)
+						} else if (rule.semantic) {
+							newSemantic = rule.semantic
+							// Only needed if allowing intersertions thorugh <empty> in transpositions
+							// A function without an arugment - currently can only be intersect()
+							// e.g., "issues opened by people"
+							if (newSemantic[0].children) return
 						} else {
-							var semantic = rule.semantic || insertion.semantic
+							newSemantic = insertion.semantic
 						}
 
 						// Temp hack:
@@ -122,7 +129,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 						addInsertion(insertions, nontermSym, {
 							cost: rule.cost + insertion.cost,
 							text: conjugateText(rule, insertion),
-							semantic: semantic,
+							semantic: newSemantic,
 							// Person-number only traverses up for 1-to-1; person-number used on first 1-to-2
 							// personNumber: rule.RHS.length === 1 ? (rule.personNumber || insertion.personNumber) : (noConjugation ? rule.personNumber : undefined),
 							personNumber: rule.personNumber || insertion.personNumber,
@@ -147,7 +154,7 @@ function RHSCanBeInserted(insertions, RHS) {
 function addInsertion(insertions, nontermSym, newInsertion) {
 	var symInsertions = insertions[nontermSym] || (insertions[nontermSym] = [])
 
-	// if (newInsertion.cost > 6) return false
+	if (newInsertion.cost > 5) return false
 
 	if (!insertionExists(symInsertions, newInsertion)) {
 		symInsertions.push(newInsertion)
@@ -182,7 +189,9 @@ function insertionExists(symInsertions, newInsertion) {
 // Add new rules from inserted terminal symbol productions and empty-string productions to grammar
 function createRulesFromInsertions(grammar, insertions) {
 	Object.keys(grammar).forEach(function (nontermSym) {
-		if (/\+/.test(nontermSym)) return // TEMP
+		// true for all except: [nom-users-or-author-pages+] [obj-users-penalize-1+] [user-filter+]
+		if (/\+/.test(nontermSym)) return
+		// if (/lhs]/.test(nontermSym)) return
 
 		grammar[nontermSym].forEach(function (rule, ruleIdx, symRules) {
 			var RHS = rule.RHS
@@ -226,6 +235,7 @@ function createRulesFromInsertions(grammar, insertions) {
 									newRule.verbForm = rule.verbForm
 								}
 							} else {
+								newRule.insertedSemantic = insertion.semantic
 								newRule.personNumber = rule.personNumber
 							}
 
@@ -348,7 +358,7 @@ function conjugateText(rule, insertion) {
 
 // Throw err if new rule generated from insertion(s), empty-string(s), or a transposition is a duplicate of an existing rule
 // If new rule has identical semantics and RHS but is cheaper than previous new rule, remove previous rule
-function ruleExists(rules, newRule) {
+function ruleExists(rules, newRule, LHS) {
 	for (var r = rules.length; r-- > 0;) {
 		var existingRule = rules[r]
 
@@ -360,7 +370,7 @@ function ruleExists(rules, newRule) {
 					console.log('Err: new rule produced with edits identical to original rule')
 				}
 
-				util.log(existingRule, newRule)
+				util.log(LHS, existingRule, newRule)
 				throw 'duplicate rule produced with edits'
 			}
 
