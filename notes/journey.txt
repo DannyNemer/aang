@@ -61,11 +61,35 @@
 
 - Most personal and significant work of my life. To start, I am only sharing it with a few people while it is in its infancy.
 
-- "The purpose of the wrist-mounted technology, what problems it might solve—that was something the Watch team would come up with slowly, during the process of inventing a bunch of new ways to interact with the device. But one thing was clear from the start: The Watch would succeed or fail on the strength of what’s prosaically called the user interface."
+- "The purpose of the wrist-mounted technology, what problems it might solve - that was something the Watch team would come up with slowly, during the process of inventing a bunch of new ways to interact with the device. But one thing was clear from the start: The Watch would succeed or fail on the strength of what's prosaically called the user interface."
 
 - Still unsure whether to construct the parse forest with shift-reduce and then use Dijkstra's on the forest from the start node, or whether to use k-best shift-reduce to construct the parse forest while constructing trees. Is the latter even possible? I have concluded it is not.
 - Reduced speed comes from insertion edits. Must optimize which to permit.
 
-- I do not think I can convey to Buhler the magnitude of the work that went into it. The Semantic parsing alone is an enormous amound of work.
+- I do not think I can convey to Buhler the magnitude of the work that went into it. The Semantic parsing alone is an enormous amount of work.
 
 - I can design and write/rewrite this whole system on paper, and know when it will or won't work.
+
+- Never think you are the only person who would use a product, or is the only person with your problem: mobile messaging, powerful desktop messaging application (i.e., Slack), continuous location tracking (i.e., Moves and whatever bigger comes later)
+
+- God saw all that he had made, and it was very good.
+
+- We had this idea to improve performance by removing conjugation operations on all instances except objective case, which can only be done at run time. This required making additional terminal rules that recognized the all the same terminal symbols, but accepted symbols specific to the case the rule is designed for. For example, '[like-past]' which recognizes the same terminal symbols as '[like]' but only accepts "liked". This, however, increased parse time.
+- Then had this idea to decrease K-best search time by combining 1-1 rules in the parse forest before traversing the forest. This did not bear much improvement.
+- Then we needed to change a rule for a specific semantic, replace '[of-poss-users+]' with '[of-poss-users]'. However, this significantly increased parse time. This demonstrated that there are certain rules that dramatically increase parse time, and I cannot determine which.
+- Then, we also discovered that there are additional insertion edits we can make that can dramatically slow parse time, yet the same k-best rules are created without these edits. Hence, there should be a way to do parsing differently, to not work toward these trees that never bear.
+- But, this optimization should come last. Work on the other stuff should be first.
+
+- I'm afraid this is a sad note. From age 17-21, I was extraoridarily confident about my dreams and that I will achieve them. While I am not a genius, I believed I would succeed because of character. Because of virtue. I would work past the difficulties where others had quit. I would stand up to challenges, people, and forces where others had cowered. No decision would be difficult, because I would always do what is objectively good, right, and true.
+- I suppose, now that I write this, it wasn't confidence in myself. Rather, confidence in this philosophy. Indeed, "Some rise by sin, and some by virtue fall". But I always believed good triumphed. Optimism always succeeds in the long run.
+- These beliefs used to invegorate me. Absolutely light me up.
+- I always feared when I grew older, I would one day wake up and find I have long lost this madness. This energy. That I had unknowlingly settled.
+- Honestly, it came from when I read. I didn't read much. I wasn't studying textbooks on physics or reading the history of great nations and leaders. Just reading articles online. Though, insightful analytical articles. But I saw I was knowledgable, and understood so much so well, and that I was capable.
+- Now I have nothing. No fire. No conidence.
+- My project will not work. While I can complete what I was building, and it dos something new, unqiue, and that demanded much effort, thre is no business there. There is no good value proposition.
+- I don't know what's coming. Or happening.
+- I don't see this working.
+- Patrick said it was I need to find an instance where people are already querying complex data. No one searched Facebook. I found uses for it, but not enough people did.
+- Start with a problem. And I've got a solution. I read this, but I didn't KNOW this deep in my bones, such that I would be able to throw out so much.
+
+- If we do apply somewhere, and we do use Aang, go through an enormous list of all the edge cases. Exhaust them with all of the examples.
