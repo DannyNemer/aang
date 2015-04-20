@@ -145,9 +145,32 @@ exports.log = function () {
 	console.log() // Print trailing blank line
 }
 
-// Print when function called to mark reaching its section
+// Print 'msg' when called, and line of where called, to mark reaching its section
 exports.mark = function (msg) {
 	console.log(colors.red((msg || 'Reached') + ':'), exports.getLine(true))
+}
+
+// Print like console.log(), but color first arugment red
+exports.printErr = function () {
+	arguments[0] = colors.red(arguments[0])
+	console.log.apply(null, arguments)
+}
+
+// Print stack track to current position
+// Remove parentheses from error stack for iTerm open-file shortcut
+exports.logTrace = function (msg) {
+	if (msg) {
+		console.log('Trace:', msg)
+	} else {
+		console.log('Trace')
+	}
+
+	// Remove lines for 'Error' and current file
+	var stack = (new Error()).stack.split('\n').slice(2)
+
+	stack.forEach(function (stackLine) {
+		console.log(stackLine.replace(/[()]/g, ''))
+	})
 }
 
 // Write obj to JSON file at path
@@ -176,23 +199,6 @@ exports.tryCatchWrapper = function (callback) {
 			console.log(e)
 		}
 	}
-}
-
-// Print stack track to current position
-// Remove parentheses from error stack for iTerm open-file shortcut
-exports.logTrace = function (msg) {
-	if (msg) {
-		console.log('Trace:', msg)
-	} else {
-		console.log('Trace')
-	}
-
-	// Remove lines for 'Error' and current file
-	var stack = (new Error()).stack.split('\n').slice(2)
-
-	stack.forEach(function (stackLine) {
-		console.log(stackLine.replace(/[()]/g, ''))
-	})
 }
 
 // Delete modules (passed as paths) from cache
