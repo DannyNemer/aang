@@ -126,19 +126,21 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 	if (ruleProps.insertionIdx !== undefined) {
 		if (newSemantic) {
 			newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: item.nextNodesLen })
+
 			if (ruleProps.insertedSemantic) {
-				newItem.prevSemantics.push({ semantic: ruleProps.insertedSemantic })
+				newItem.prevSemantics.push(ruleProps.insertedSemantic)
 			}
 		} else if (ruleProps.insertedSemantic) {
 			var prevSemantic = item.prevSemantics[item.prevSemantics.length - 1]
 
 			if (prevSemantic.LHS) {
-				newItem.prevSemantics = item.prevSemantics.concat({ semantic: ruleProps.insertedSemantic })
+				newItem.prevSemantics = item.prevSemantics.slice()
+				newItem.prevSemantics.push(ruleProps.insertedSemantic) // cannot concat because semantic is array
 			} else {
-				newSemantic = semantic.mergeRHS(prevSemantic.semantic, ruleProps.insertedSemantic)
+				newSemantic = semantic.mergeRHS(prevSemantic, ruleProps.insertedSemantic)
 				if (newSemantic === -1) return -1
 				newItem.prevSemantics = item.prevSemantics.slice(0, -1)
-				newItem.prevSemantics.push({ semantic: newSemantic })
+				newItem.prevSemantics.push(newSemantic)
 			}
 		} else {
 			newItem.prevSemantics = item.prevSemantics
@@ -178,7 +180,8 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 					// semantic arg
 					// Will be a 1 -> 1
 					// We are counting on there not being any semantics that come after this down the branch
-					newItem.prevSemantics = item.prevSemantics.concat({ semantic: newSemantic })
+					newItem.prevSemantics = item.prevSemantics.slice()
+					newItem.prevSemantics.push(newSemantic) // cannot concat because semantic is array
 				}
 			} else {
 				newItem.prevSemantics = item.prevSemantics
@@ -190,11 +193,11 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				// RHS
 				if (!prevSemantic.LHS) {
 					if (newSemantic) {
-						newSemantic = semantic.mergeRHS(prevSemantic.semantic, newSemantic)
+						newSemantic = semantic.mergeRHS(prevSemantic, newSemantic)
 						// Duplicates
 						if (newSemantic === -1) return -1
 					} else {
-						newSemantic = prevSemantic.semantic
+						newSemantic = prevSemantic
 					}
 				}
 
@@ -216,7 +219,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 			if (newSemantic) {
 				newItem.prevSemantics = item.prevSemantics.slice(0, p + 1)
-				newItem.prevSemantics.push({ semantic: newSemantic })
+				newItem.prevSemantics.push(newSemantic)
 			} else {
 				newItem.prevSemantics = item.prevSemantics
 			}
@@ -291,7 +294,7 @@ function createItemTransposed(sub, item, ruleProps, buildDebugTrees) {
 // Determine if newly parsed tree has a unique semantic and unique display text
 // Return true if tree is unique
 function treeIsUnique(trees, item) {
-	item.semantic = item.prevSemantics[0].semantic
+	item.semantic = item.prevSemantics[0]
 	if (item.prevSemantics.length > 1) throw 'prevSemantics remain'
 
 	// Check for duplicate semantics by comparing semantic string representation
