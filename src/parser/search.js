@@ -125,7 +125,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 	// Insertion
 	if (ruleProps.insertionIdx !== undefined) {
 		if (newSemantic) {
-			newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: item.nextNodesLen })
+			newItem.prevSemantics = item.prevSemantics.concat({ semantic: newSemantic, nextNodesLen: item.nextNodesLen })
 
 			if (ruleProps.insertedSemantic) {
 				newItem.prevSemantics.push(ruleProps.insertedSemantic)
@@ -133,7 +133,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 		} else if (ruleProps.insertedSemantic) {
 			var prevSemantic = item.prevSemantics[item.prevSemantics.length - 1]
 
-			if (prevSemantic.LHS) {
+			if (prevSemantic.constructor === Object) { // LHS
 				newItem.prevSemantics = item.prevSemantics.slice()
 				newItem.prevSemantics.push(ruleProps.insertedSemantic) // cannot concat because semantic is array
 			} else {
@@ -174,7 +174,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				// Semantic function (LHS)
 				// This is always true if sub.next (because unlikely to put a semantic argument on a fork)
 				if (newSemantic[0].children) {
-					newItem.prevSemantics = item.prevSemantics.concat({ LHS: true, semantic: newSemantic, nextNodesLen: item.nextNodesLen })
+					newItem.prevSemantics = item.prevSemantics.concat({ semantic: newSemantic, nextNodesLen: item.nextNodesLen })
 				} else {
 					// should always be a LHS before
 					// semantic arg
@@ -191,7 +191,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				var prevSemantic = item.prevSemantics[p]
 
 				// RHS
-				if (!prevSemantic.LHS) {
+				if (prevSemantic.constructor === Array) {
 					if (newSemantic) {
 						newSemantic = semantic.mergeRHS(prevSemantic, newSemantic)
 						// Duplicates
@@ -276,7 +276,6 @@ function createItemTransposed(sub, item, ruleProps, buildDebugTrees) {
 
 	if (ruleProps.semantic) {
 		newItem.prevSemantics = item.prevSemantics.concat({
-			LHS: true,
 			semantic: ruleProps.semantic,
 			nextNodesLen: item.nextNodesLen
 		})
