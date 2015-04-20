@@ -106,12 +106,14 @@ exports.search = function (startNode, K, buildDebugTrees) {
 
 // Create new item as an extension of current tree down this sub
 function createItem(sub, item, ruleProps, buildDebugTrees) {
+	var newCost = item.costSoFar + ruleProps.cost
+
 	var newItem = {
 		nextNodes: item.nextNodes,
 		nextNodesLen: item.nextNodesLen,
 		ruleProps: item.ruleProps,
-		costSoFar: item.costSoFar + ruleProps.cost,
-		cost: item.costSoFar + sub.minCost // minCost already incorporates newCost
+		costSoFar: newCost,
+		cost: newCost + sub.minCost
 	}
 
 	if (buildDebugTrees) {
@@ -257,14 +259,16 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 }
 
 function createItemTransposed(sub, item, ruleProps, buildDebugTrees) {
+	var newCost = item.costSoFar + ruleProps.cost
+
 	var newItem = {
 		node: sub.next.node, // sub.next.node is examined before sub.node
 		nextNodes: item.nextNodes.concat(sub.node),
 		nextNodesLen: item.nextNodesLen + 1,
 		ruleProps: item.ruleProps,
 		text: item.text,
-		costSoFar: item.costSoFar + ruleProps.cost,
-		cost: item.costSoFar + sub.minCost
+		costSoFar: newCost,
+		cost: newCost + sub.minCost
 	}
 
 	if (ruleProps.semantic) {
