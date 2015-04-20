@@ -66,12 +66,11 @@ function clean(parentSub, subs) {
 		if (parentRuleProps.insertionIdx === 1 || ruleProps.insertionIdx === 1) return
 
 		parentSub.node = sub.node
+		parentSub.minCost = sub.minCost
 		var newRuleProps = parentSub.ruleProps = {
 			cost: parentRuleProps.cost + ruleProps.cost,
 			semantic: parentRuleProps.semantic || ruleProps.semantic
 		}
-
-		parentSub.minCost -= ruleProps.cost // subtract the ruleProps.cost, which now belongs to parent
 
 		if (ruleProps.personNumber) {
 			newRuleProps.personNumber = ruleProps.personNumber
