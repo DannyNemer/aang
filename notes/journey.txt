@@ -80,16 +80,24 @@
 - Then, we also discovered that there are additional insertion edits we can make that can dramatically slow parse time, yet the same k-best rules are created without these edits. Hence, there should be a way to do parsing differently, to not work toward these trees that never bear.
 - But, this optimization should come last. Work on the other stuff should be first.
 
-- I'm afraid this is a sad note. From age 17-21, I was extraoridarily confident about my dreams and that I will achieve them. While I am not a genius, I believed I would succeed because of character. Because of virtue. I would work past the difficulties where others had quit. I would stand up to challenges, people, and forces where others had cowered. No decision would be difficult, because I would always do what is objectively good, right, and true.
+- I'm afraid this is a sad note. From age 17-21, I was extraordinarily confident about my dreams and that I will achieve them. While I am not a genius, I believed I would succeed because of character. Because of virtue. I would work past the difficulties where others had quit. I would stand up to challenges, people, and forces where others had cowered. No decision would be difficult, because I would always do what is objectively good, right, and true.
 - I suppose, now that I write this, it wasn't confidence in myself. Rather, confidence in this philosophy. Indeed, "Some rise by sin, and some by virtue fall". But I always believed good triumphed. Optimism always succeeds in the long run.
-- These beliefs used to invegorate me. Absolutely light me up.
-- I always feared when I grew older, I would one day wake up and find I have long lost this madness. This energy. That I had unknowlingly settled.
-- Honestly, it came from when I read. I didn't read much. I wasn't studying textbooks on physics or reading the history of great nations and leaders. Just reading articles online. Though, insightful analytical articles. But I saw I was knowledgable, and understood so much so well, and that I was capable.
-- Now I have nothing. No fire. No conidence.
-- My project will not work. While I can complete what I was building, and it dos something new, unqiue, and that demanded much effort, thre is no business there. There is no good value proposition.
+- These beliefs used to invigorate me. Absolutely light me up.
+- I always feared when I grew older, I would one day wake up and find I have long lost this madness. This energy. That I had unknowingly settled.
+- Honestly, it came from when I read. I didn't read much. I wasn't studying textbooks on physics or reading the history of great nations and leaders. Just reading articles. Though, insightful analytical articles. But I saw I was knowledgeable, and understood so much so well, and that I was capable.
+- Now I have nothing. No fire. No confidence.
+- My project will not work. While I can complete what I was building, and it dos something new, unique, and that demanded much effort, there is no business there. There is no good value proposition.
 - I don't know what's coming. Or happening.
 - I don't see this working.
 - Patrick said it was I need to find an instance where people are already querying complex data. No one searched Facebook. I found uses for it, but not enough people did.
 - Start with a problem. And I've got a solution. I read this, but I didn't KNOW this deep in my bones, such that I would be able to throw out so much.
 
 - If we do apply somewhere, and we do use Aang, go through an enormous list of all the edge cases. Exhaust them with all of the examples.
+
+- Unsure how can I do a paper. The graph search algorithm alone is a whole paper, with its unique semantic parsing and heuristic and forest reductions.
+
+- I don't know. Paul Graham said to live at the bleeding edge and build something interesting (i.e., is missing)
+
+- When Steven Sinofsky first saw Tanium software in action, he - along with the rest of a conference room full of Andreessen Horowitz partners - thought it was a trick. "It was too fast,"" says Sinofsky, who used to run Microsoft's Windows division. "To a person, we just assumed it was a mock-up. We asked how long it would take to build for real."
+- "I'd never seen anything like it," Sinofsky says nearly a year later. "It was a wild, surreal experience. We all knew this space - or so we thought - super-, super-well." "How the f- did you do that?"
+- Our system should be considered as fast relative to existing tech as Tanium is in its field.
