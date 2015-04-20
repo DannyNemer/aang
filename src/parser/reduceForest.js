@@ -37,7 +37,7 @@ function clean(parentSub, subs) {
 
 		// Get cost after calling clean() on children because of reductions
 		var subRuleProps = sub.ruleProps
-		var cost = sub.minCost + (Array.isArray(subRuleProps) ? subRuleProps[0].cost : subRuleProps.cost)
+		var cost = sub.minCost + (subRuleProps.constructor === Array ? subRuleProps[0].cost : subRuleProps.cost)
 
 		if (minCost === undefined || cost < minCost) {
 			minCost = cost
@@ -56,7 +56,7 @@ function clean(parentSub, subs) {
 		var parentRuleProps = parentSub.ruleProps
 		var ruleProps = sub.ruleProps
 
-		if (Array.isArray(parentRuleProps) || Array.isArray(ruleProps)) return
+		if (parentRuleProps.constructor === Array || ruleProps.constructor	=== Array) return
 		if (parentRuleProps.insertedSemantic || ruleProps.insertedSemantic) return
 		if (parentRuleProps.semantic && ruleProps.semantic) return
 		if (parentRuleProps.personNumber) return

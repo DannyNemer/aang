@@ -76,7 +76,7 @@ exports.search = function (startNode, K, buildDebugTrees) {
 			var ruleProps = sub.ruleProps
 
 			// Array of multiple insertions
-			if (ruleProps instanceof Array) {
+			if (ruleProps.constructor === Array) {
 				for (var p = 0, rulePropsLen = ruleProps.length; p < rulePropsLen; ++p) {
 					var newItem = createItem(sub, item, ruleProps[p], buildDebugTrees)
 					if (newItem === -1) continue // semanticically illegal parse -> throw out
@@ -245,7 +245,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				text = conjugateText(newItem.ruleProps, text)
 			}
 
-			else if (Array.isArray(text) && newItem.ruleProps.length) {
+			else if (text.constructor === Array && newItem.ruleProps.length) {
 				text = conjugateTextArray(newItem, text)
 			}
 
