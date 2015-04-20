@@ -22,6 +22,7 @@ exports.search = function (startNode, K, buildDebugTrees) {
 		prevSemantics: [], // Semantics
 		ruleProps: [], // Properties for conjugation
 		text: [],
+		costSoFar: 0,
 		cost: 0
 	}
 
@@ -33,7 +34,7 @@ exports.search = function (startNode, K, buildDebugTrees) {
 
 	heap.push(newItem)
 
-	while (heap.size() > 0) {
+	while (heap.content.length > 0) {
 		var item = heap.pop()
 
 		var node = item.node
@@ -67,6 +68,7 @@ exports.search = function (startNode, K, buildDebugTrees) {
 				item.nextNodesLen--
 			}
 		}
+
 
 		// Loop through all possible children of this node
 		for (var s = 0, subs = node.subs, subsLen = subs.length; s < subsLen; ++s) {
@@ -105,10 +107,11 @@ exports.search = function (startNode, K, buildDebugTrees) {
 // Create new item as an extension of current tree down this sub
 function createItem(sub, item, ruleProps, buildDebugTrees) {
 	var newItem = {
-		cost: item.cost + ruleProps.cost,
-		ruleProps: item.ruleProps,
 		nextNodes: item.nextNodes,
-		nextNodesLen: item.nextNodesLen
+		nextNodesLen: item.nextNodesLen,
+		ruleProps: item.ruleProps,
+		costSoFar: item.costSoFar + ruleProps.cost,
+		cost: item.costSoFar + sub.minCost // minCost already incorporates newCost
 	}
 
 	if (buildDebugTrees) {
@@ -260,7 +263,8 @@ function createItemTransposed(sub, item, ruleProps, buildDebugTrees) {
 		nextNodesLen: item.nextNodesLen + 1,
 		ruleProps: item.ruleProps,
 		text: item.text,
-		cost: item.cost + ruleProps.cost
+		costSoFar: item.costSoFar + ruleProps.cost,
+		cost: item.costSoFar + sub.minCost
 	}
 
 	if (ruleProps.semantic) {
@@ -367,7 +371,7 @@ function conjugateText(rulePropsArray, text) {
 		}
 	}
 
-util.logTrace()
+	util.logTrace()
 	util.log('Failed to conjugate:', text, rulePropsArray)
 }
 
@@ -438,7 +442,8 @@ function cloneTree(node, lastNodes) {
 exports.print = function (trees, printCost, printTrees) {
 	trees.forEach(function (tree) {
 		// Print display text (and cost)
-		console.log(tree.text, printCost ? tree.cost : '')
+		if (tree.cost !== tree.costSoFar) util.printErr('costs incorrect')
+		console.log(tree.text, printCost ? (tree.cost + ' ' + tree.costSoFar) : '')
 		// Print semantic
 		console.log(' ', tree.semanticStr)
 

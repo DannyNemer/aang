@@ -6,24 +6,45 @@ var util = require('../util')
 module.exports = function (startNode) {
 	for (var s = 0, subs = startNode.subs, subsLen = subs.length; s < subsLen; ++s) {
 		var sub = subs[s]
+
+		var subRuleProps = sub.ruleProps
+		sub.minCost = Array.isArray(subRuleProps) ? subRuleProps[0].cost : subRuleProps.cost
+
 		clean(sub, sub.node.subs)
 	}
 }
 
 function clean(parentSub, subs) {
+	var minCost
+
 	for (var s = 0, subsLen = subs.length; s < subsLen; ++s) {
 		var sub = subs[s]
 
-		var childSubs = sub.node.subs
-		if (childSubs) clean(sub, childSubs)
+		// Do not inspect same sub more than once (subs can be in more than one node)
+		if (sub.minCost === undefined) {
+			var subRuleProps = sub.ruleProps
+			sub.minCost = Array.isArray(subRuleProps) ? subRuleProps[0].cost : subRuleProps.cost
 
-		var subNext = sub.next
-		if (subNext) {
-			var nextChildSubs = sub.next.node.subs
-			if (nextChildSubs) clean(sub, nextChildSubs)
+			var childSubs = sub.node.subs
+			if (childSubs) {
+				clean(sub, childSubs)
+			}
+
+			var subNext = sub.next
+			if (subNext) {
+				var nextChildSubs = subNext.node.subs
+				if (nextChildSubs) {
+					clean(sub, nextChildSubs)
+				}
+			}
+		}
+
+		if (minCost === undefined || sub.minCost < minCost) {
+			minCost = sub.minCost
 		}
 	}
 
+	parentSub.minCost += minCost
 	if (subsLen === 1) {
 		if (parentSub.next || sub.next) return
 
