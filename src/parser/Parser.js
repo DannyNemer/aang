@@ -26,10 +26,7 @@ Parser.prototype.parse = function (query) {
 			var word = this.stateTable.symbolTab[nGram]
 			if (word) {
 				var arr = wordTab[j] || (wordTab[j] = [])
-				arr.push({
-					sym: word,
-					start: i // same as this.position - word.size
-				})
+				arr.push(word)
 			}
 		}
 	}
@@ -65,16 +62,16 @@ Parser.prototype.parse = function (query) {
 		this.nodeTabIdx = this.nodeTab.length
 
 		for (var w = words.length; w-- > 0;) {
-			var word = words[w]
-			var wordNode = this.addSub(word.sym)
+			var wordSym = words[w]
+			var wordNode = this.addSub(wordSym)
 
-			var oldVertTab = this.vertTabs[word.start]
+			var oldVertTab = this.vertTabs[this.position - wordSym.size]
 
 			// Loop through all term rules that produce term sym
-			for (var r = 0, rules = word.sym.rules, rulesLen = rules.length; r < rulesLen; ++r) {
+			for (var rules = wordSym.rules, r = rules.length; r-- > 0;) {
 				var rule = rules[r]
 				var sub = {
-					size: word.sym.size,  // size of literal
+					size: wordSym.size,  // size of literal
 					node: wordNode,
 					ruleProps: rule.ruleProps
 				}
@@ -89,7 +86,7 @@ Parser.prototype.parse = function (query) {
 	}
 
 	/* ACCEPT */
-	for (var v = 0, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
+	for (var v = this.vertTab.length; v-- > 0;) {
 		var vertex = this.vertTab[v]
 		if (vertex.state.isFinal) {
 			this.startNode = vertex.zNodes[0].node
