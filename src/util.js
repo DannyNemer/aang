@@ -151,6 +151,7 @@ exports.mark = function (msg) {
 }
 
 // Count number of instances a section of code is reached, identified by 'key'
+// 'key' is optional (e.g., if only need one counter)
 var counts = {}
 exports.count = function (key) {
 	if (counts.hasOwnProperty(key)) {
@@ -163,7 +164,7 @@ exports.count = function (key) {
 // Print count of 'key'
 exports.printCount = function (key) {
 	if (counts.hasOwnProperty(key)) {
-		console.log(key + ':', counts[key])
+		console.log((key || 'count') + ':', counts[key])
 		delete counts[key] // Reset count
 	} else {
 		exports.printErr('unrecognized counter key:', key)
