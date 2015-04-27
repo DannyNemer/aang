@@ -10,7 +10,7 @@ var pullRequest = new Category({ sg: 'pull-request', pl: 'pull-requests' })
 var pullRequestsTerm = g.addWord({
 	symbol: new g.Symbol(pullRequest.namePl, 'term'),
 	insertionCost: 3.5,
-	accepted: [ 'pull-requests' ]
+	accepted: [ 'pull requests' ]
 })
 
 // |Github pull requests (I created)

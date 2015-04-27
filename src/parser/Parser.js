@@ -7,59 +7,99 @@ function Parser(stateTable) {
 Parser.prototype.parse = function (query) {
 	var tokens = query.split(' ')
 
+	// could accelerate lookup by seperating terminal and nonterminal
+	// could use lunr, and then identify when the first word is a match before checking other words
+
+	// if we use a lunr thing for partial lookups, we can store the size of each terminal symbol, and know how much to check
+
+	var wordTab = []
+	this.vertTabs = []
+	this.nodeTabs = []
+
+	for (var i = 0, tokensLen = tokens.length; i < tokensLen; ++i) {
+		var nGram = ''
+		this.nodeTabs[i] = []
+
+		for (var j = i; j < tokensLen; ++j) {
+			nGram += (nGram ? ' ' : '') + tokens[j]
+
+			var word = this.stateTable.symbolTab[nGram]
+			if (word) {
+				var arr = wordTab[j] || (wordTab[j] = [])
+				arr.push({
+					sym: word,
+					start: i, // same as this.position - word.size
+					size: nGram.split(' ').length
+					// size: 1 + j - i
+				})
+			}
+		}
+	}
+
+	// console.log(wordTab)
+
+	this.vertTabs[tokensLen] = []
+	this.nodeTabs[tokensLen] = []
+
 	this.position = 0
 	this.reds = []
 	var redsIdx = 0
-	this.vertTab = []
-	this.vertTabIdx = 0
-	this.nodeTab = []
-	this.nodeTabIdx = 0
+	// this.nodeTab = []
+	// this.nodeTabIdx = 0
 
+	this.vertTab = this.vertTabs[this.position] = []
+	// this.nodeTab = this.nodeTabs[this.position] = []
 	this.addVertex(this.stateTable.shifts[0])
 
-	while (true) {
-		/* REDUCE */
+	for (var i = 0; i < tokensLen + 1; ++i) { // +1 to allow final reduction
+		var words = wordTab[i]
+		if (!words && i < tokensLen) {
+			// no token at index - either unrecognized word, or a multi-token term sym
+			this.vertTab = this.vertTabs[++this.position] = this.vertTab // do we not need the same for nodeTab
+			// this.nodeTab = this.nodeTabs[this.position] = this.nodeTab // do we not need the same for nodeTab
+			continue
+		}
+
 		while (redsIdx < this.reds.length) {
 			this.reduce(this.reds[redsIdx++])
 		}
 
-		/* SHIFT */
-		var token = tokens[this.position++]
-		if (!token) break
+		if (i === tokensLen) break
 
-		// Terminal symbol, with all of the rules that lead to it
-		var word = this.stateTable.lookUp(token, true)
+		this.position++
+		this.vertTab = this.vertTabs[this.position] = []
+		// this.nodeTab = this.nodeTabs[this.position] = []
+		// this.nodeTabIdx = this.nodeTab.length
 
-		if (word.rules.length === 0) {
-			console.log('unrecognized word:', token)
-			return
-		}
+		for (var w = words.length; w-- > 0;) {
+			var word = words[w]
+			this.nodeTab = this.nodeTabs[word.start] // uncertain if need to do this with nodeTabs
+			var wordNode = this.addSub(word.sym)
+			wordNode.start = word.start // no effect
 
-		var wordNode = this.addSub(word)
+			var oldVertTab = this.vertTabs[word.start]
+			this.nodeTab = this.nodeTabs[this.position]
 
-		var oldVertTabIdx = this.vertTabIdx
-		this.vertTabIdx = this.vertTab.length
-		this.nodeTabIdx = this.nodeTab.length
+			// Loop through all term rules that produce term sym
+			for (var r = 0, rules = word.sym.rules, rulesLen = rules.length; r < rulesLen; ++r) {
+				var rule = rules[r]
+				var sub = {
+					size: word.size,  // size of literal
+					node: wordNode,
+					ruleProps: rule.ruleProps
+				}
 
-		// Loop through all term rules that produce term sym
-		for (var r = 0, rules = word.rules, rulesLen = rules.length; r < rulesLen; ++r) {
-			var rule = rules[r]
-			var sub = {
-				size: 1,  // size of literal (why can't just use nodes? size?)
-				node: wordNode,
-				ruleProps: rule.ruleProps
-			}
+				var node = this.addSub(rule.RHS[0], sub) // FIX: rename prop - rule.RHS[0] is LHS for terms
 
-			var node = this.addSub(rule.RHS[0], sub) // FIX: rule.RHS[0] is LHS for terms
-
-			for (var v = oldVertTabIdx; v < this.vertTabIdx; ++v) {
-				this.addNode(node, this.vertTab[v])
+				for (var v = 0; v < oldVertTab.length; ++v) {
+					this.addNode(node, oldVertTab[v])
+				}
 			}
 		}
 	}
 
 	/* ACCEPT */
-	for (var v = this.vertTabIdx, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
+	for (var v = 0, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
 		var vertex = this.vertTab[v]
 		if (vertex.state.isFinal) {
 			this.startNode = vertex.zNodes[0].node
@@ -72,12 +112,16 @@ Parser.prototype.parse = function (query) {
 // sym is either term sym or nonterm sym
 Parser.prototype.addSub = function (sym, sub) {
 	var size = sym.isLiteral ? 1 : (sub ? sub.size : 0)
-	var node = null
+	var node
 
-	for (var n = this.nodeTabIdx, nodeTabLen = this.nodeTab.length; n < nodeTabLen; ++n) {
+	for (var n = 0, nodeTabLen = this.nodeTab.length; n < nodeTabLen; ++n) {
 		node = this.nodeTab[n]
 		if (node.sym === sym && node.size === size) break
 	}
+	// for (var n = this.nodeTabIdx, nodeTabLen = this.nodeTab.length; n < nodeTabLen; ++n) {
+	// 	node = this.nodeTab[n]
+	// 	if (node.sym === sym && node.size === size) break
+	// }
 
 	if (n === nodeTabLen) {
 		node = {
@@ -87,13 +131,13 @@ Parser.prototype.addSub = function (sym, sub) {
 		}
 
 		if (!sym.isLiteral) {
-			node.subs = []
+			node.subs = [ sub ]
 		}
 
 		this.nodeTab.push(node)
 	}
 
-	if (!sym.isLiteral && subIsNew(node.subs, sub)) {
+	else if (!sym.isLiteral && subIsNew(node.subs, sub)) {
 		node.subs.push(sub)
 
 		// Insertions are arrays of multiple ruleProps (or normal ruleProps if only insertion) - distinguish?
@@ -127,7 +171,7 @@ function subIsNew(existingSubs, newSub) {
 
 // one vertex for each state
 Parser.prototype.addVertex = function (state) {
-	for (var v = this.vertTabIdx, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
+	for (var v = 0, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
 		var vertex = this.vertTab[v]
 		if (vertex.state === state) return vertex
 	}
@@ -160,7 +204,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 
 	var vertex = this.addVertex(state)
 	var vertexZNodes = vertex.zNodes
-	var zNode = null
+	var zNode
 
 	for (var v = 0, vertexZNodesLen = vertexZNodes.length; v < vertexZNodesLen; ++v) {
 		var vertexZNode = vertexZNodes[v]
@@ -247,23 +291,25 @@ Parser.prototype.printForest = function () {
 		console.log('*' + printNode(this.startNode) + '.')
 	}
 
-	this.nodeTab.forEach(function (node) {
-		if (node.sym.isLiteral) return
+	this.nodeTabs.forEach(function (nodeTab) {
+		nodeTab.forEach(function (node) {
+			if (node.sym.isLiteral) return
 
-		var toPrint = printNode(node)
+			var toPrint = printNode(node)
 
-		if (node.subs.length > 0) {
-			if (node.subs[0].node.sym.isLiteral) toPrint += ':'
-			else toPrint += ' ='
-		}
+			if (node.subs.length > 0) {
+				if (node.subs[0].node.sym.isLiteral) toPrint += ':'
+				else toPrint += ' ='
+			}
 
-		node.subs.forEach(function (sub, S) {
-			if (S > 0) toPrint += ' |'
-			for (; sub; sub = sub.next)
-				toPrint += printNode(sub.node)
+			node.subs.forEach(function (sub, S) {
+				if (S > 0) toPrint += ' |'
+				for (; sub; sub = sub.next)
+					toPrint += printNode(sub.node)
+			})
+
+			console.log(toPrint + '.');
 		})
-
-		console.log(toPrint + '.');
 	})
 }
 
@@ -272,23 +318,25 @@ Parser.prototype.printStack = function () {
 
 	console.log("\nParse Stack:")
 
-	this.vertTab.forEach(function (vertex) {
-		var toPrint = ' v_' + vertex.start + '_' + shifts.indexOf(vertex.state)
+	this.vertTabs.forEach(function (vertTab) {
+		vertTab.forEach(function (vertex) {
+			var toPrint = ' v_' + vertex.start + '_' + shifts.indexOf(vertex.state)
 
-		if (vertex.zNodes.length > 0) toPrint += ' <=\t'
-		else console.log(toPrint)
+			if (vertex.zNodes.length > 0) toPrint += ' <=\t'
+			else console.log(toPrint)
 
-		vertex.zNodes.forEach(function (zNode, Z) {
-			if (Z > 0) toPrint += '\t\t'
+			vertex.zNodes.forEach(function (zNode, Z) {
+				if (Z > 0) toPrint += '\t\t'
 
-			toPrint += ' [' + printNode(zNode.node) + ' ] <='
+				toPrint += ' [' + printNode(zNode.node) + ' ] <='
 
-			zNode.vertices.forEach(function (subVertex) {
-				toPrint += ' v_' + subVertex.start + '_' + shifts.indexOf(subVertex.state)
+				zNode.vertices.forEach(function (subVertex) {
+					toPrint += ' v_' + subVertex.start + '_' + shifts.indexOf(subVertex.state)
+				})
+
+				if (Z === vertex.zNodes.length - 1) console.log(toPrint)
+				else toPrint += '\n'
 			})
-
-			if (Z === vertex.zNodes.length - 1) console.log(toPrint)
-			else toPrint += '\n'
 		})
 	})
 }

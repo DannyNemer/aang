@@ -36,7 +36,7 @@ this.haveCreated.addRule({ RHS: [ auxVerbs.have, this.created ] })
 // creators of ([repositories]/[pull-requests])
 this.creatorsOf = g.addWord({
 	symbol: new g.Symbol('creators', 'of'),
-	accepted: [ 'creators-of' ]
+	accepted: [ 'creators of' ]
 })
 
 
@@ -49,7 +49,7 @@ this.mention = g.addWord({
 var mentionedIn = g.addWord({
 	symbol: new g.Symbol('mentioned', 'in'),
 	insertionCost: 2,
-	accepted: [ 'mentioned-in' ]
+	accepted: [ 'mentioned in' ]
 })
 
 // (pull-requests/issues) I-am/{user}-is/[users]-are mentioned in

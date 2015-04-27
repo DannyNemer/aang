@@ -71,7 +71,7 @@ user.subjFilter.addRule({ RHS: [ auxVerbs.have, likedRepos ], semantic: reposito
 
 var likersOf = g.addWord({
 	symbol: new g.Symbol('likers', 'of'),
-	accepted: [ 'likers-of' ] // should I use regexp? be seperate syms
+	accepted: [ 'likers of' ] // should I use regexp? be seperate syms
 })
 // likers of [repositories+]
 user.head.addRule({ RHS: [ likersOf, repository.catPlPlus ], semantic: repositoryLikersSemantic })
@@ -81,7 +81,7 @@ user.head.addRule({ RHS: [ likersOf, repository.catPlPlus ], semantic: repositor
 var contributedTo = g.addWord({
 	symbol: new g.Symbol('contributed', 'to'),
 	insertionCost: 1.2,
-	accepted: [ 'contributed-to' ]
+	accepted: [ 'contributed to' ]
 })
 
 var repositoriesContributedSemantic = g.newSemantic({ name: repository.namePl + '-contributed', cost: 0.5, minParams: 1, maxParams: 1 })
@@ -104,7 +104,7 @@ user.subjFilter.addRule({ RHS: [ haveContributedTo, repository.catPlPlus ], sema
 
 var contributorsTo = g.addWord({
 	symbol: new g.Symbol('contributors', 'to'),
-	accepted: [ 'contributors-to', 'contributors-of' ] // should I use regexp? be seperate syms
+	accepted: [ 'contributors to', 'contributors of' ] // should I use regexp? be seperate syms
 })
 // contributors to [repositories+]
 user.head.addRule({ RHS: [ contributorsTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
@@ -125,7 +125,7 @@ repository.nounModifier.addRule({ RHS: [ language ] })
 
 var writtenIn = g.addWord({
 	symbol: new g.Symbol('written', 'in'),
-	accepted: [ 'written-in' ]
+	accepted: [ 'written in' ]
 })
 // (repos) written in {language}
 repository.passive.addRule({ RHS: [ writtenIn, language ] })

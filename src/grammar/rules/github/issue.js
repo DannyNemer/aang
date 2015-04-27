@@ -49,7 +49,7 @@ user.subjFilter.addRule({ RHS: [ haveOpened, issue.catPl ], semantic: issuesOpen
 
 var openersOf = g.addWord({
 	symbol: new g.Symbol('openers', 'of'),
-	accepted: [ 'openers-of', 'creators-of' ] // should I use regexp? be seperate syms
+	accepted: [ 'openers of', 'creators of' ] // should I use regexp? be seperate syms
 })
 // openers of [issues]
 user.head.addRule({ RHS: [ openersOf, issue.catPl ], semantic: issuesOpenersSemantic })
@@ -69,7 +69,7 @@ github.mentioners.addRule({ RHS: [ issue.catPl ] })
 var assignedTo = g.addWord({
   symbol: new g.Symbol('assigned', 'to'),
   insertionCost: 2,
-  accepted: [ 'assigned-to' ]
+  accepted: [ 'assigned to' ]
 })
 
 var issuesAssignedSemantic = g.newSemantic({ name: issue.namePl + '-assigned', cost: 0.5, minParams: 1, maxParams: 1 })
