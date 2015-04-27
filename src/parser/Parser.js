@@ -105,13 +105,12 @@ Parser.prototype.addSub = function (sym, sub) {
 	var size = sym.isLiteral ? 1 : (sub ? sub.size : 0)
 	var node
 
-	for (var n = this.nodeTabIdx, nodeTabLen = this.nodeTab.length; n < nodeTabLen; ++n) {
+	for (var n = this.nodeTab.length; n-- > this.nodeTabIdx;) {
 		node = this.nodeTab[n]
-		if (node.sym === sym && (node.isLiteral || node.size === size)) break
 		if (node.sym === sym && node.size === size) break
 	}
 
-	if (n === nodeTabLen) {
+	if (n < this.nodeTabIdx) {
 		node = {
 			sym: sym,
 			size: size, // 1 for termsym
@@ -159,7 +158,7 @@ function subIsNew(existingSubs, newSub) {
 
 // one vertex for each state
 Parser.prototype.addVertex = function (state) {
-	for (var v = 0, vertTabLen = this.vertTab.length; v < vertTabLen; ++v) {
+	for (var v = this.vertTab.length; v-- > 0;) {
 		var vertex = this.vertTab[v]
 		if (vertex.state === state) return vertex
 	}
@@ -194,7 +193,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 	var vertexZNodes = vertex.zNodes
 	var zNode
 
-	for (var v = 0, vertexZNodesLen = vertexZNodes.length; v < vertexZNodesLen; ++v) {
+	for (var v = vertexZNodes.length; v-- > 0;) {
 		var vertexZNode = vertexZNodes[v]
 		if (vertexZNode.node === node) {
 			zNode = vertexZNode
