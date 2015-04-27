@@ -79,25 +79,25 @@ exports.search = function (startNode, K, buildDebugTrees) {
 			if (ruleProps.constructor === Array) {
 				for (var p = 0, rulePropsLen = ruleProps.length; p < rulePropsLen; ++p) {
 					var newItem = createItem(sub, item, ruleProps[p], buildDebugTrees)
-					if (newItem === -1) continue // semanticically illegal parse -> throw out
+					if (newItem === -1) continue // semantically illegal parse -> throw out
 					heap.push(newItem)
 				}
 			}
 
-			// Tranposition
+			// Transposition
 			else if (ruleProps.transposition) {
 				heap.push(createItemTransposed(sub, item, ruleProps, buildDebugTrees))
 			}
 
 			else {
 				var newItem = createItem(sub, item, ruleProps, buildDebugTrees)
-				if (newItem === -1) continue // semanticically illegal parse -> throw out
+				if (newItem === -1) continue // semantically illegal parse -> throw out
 				heap.push(newItem)
 			}
 		}
 	}
 
-	console.log('heap size:', heap.size())
+	console.log('heap size:', heap.content.length)
 	console.log('push:', heap.pushCount)
 	console.log('pop:', heap.popCount)
 
@@ -207,7 +207,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 						newSemantic = semantic.insertSemantic(prevSemantic.semantic, newSemantic)
 					} else {
 						newSemantic = prevSemantic.semantic
-						// A function without an arugment - currently can only be intersect()
+						// A function without an argument - currently can only be intersect()
 						// This will need to be extended if we incorporate functions that don't require args
 						if (newSemantic[0].children) return -1
 					}
@@ -226,10 +226,6 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 		}
 
 
-		if (sub.next) {
-			newItem.nextNodes = newItem.nextNodes.concat(sub.next.node)
-			newItem.nextNodesLen++
-		}
 
 		if (sub.node.subs) {
 			newItem.node = sub.node
@@ -237,6 +233,12 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			// Can go before text conjugation because there won't be inflection properties on a terminal rule
 			if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
 				newItem.ruleProps = newItem.ruleProps.concat(ruleProps)
+			}
+
+			// All binary rules are nonterminal rules (hence, within sub.node.subs) - might change with reduceForest
+			if (sub.next) {
+				newItem.nextNodes = newItem.nextNodes.concat(sub.next.node)
+				newItem.nextNodesLen++
 			}
 		}
 
@@ -370,7 +372,7 @@ function conjugateText(rulePropsArray, text) {
 
 		var gramCase = ruleProps.gramCase
 		if (gramCase && text[gramCase]) {
-			// rule with gramCase either has personNumber for nomitive (so will be needed again), or doesn't have personNUmer (For obj) and can be deleted
+			// rule with gramCase either has personNumber for nominative (so will be needed again), or doesn't have personNUmer (For obj) and can be deleted
 			if (!personNumber) rulePropsArray.splice(r, 1)
 
 			return text[gramCase]
@@ -391,7 +393,7 @@ function spliceTree(tree, sub, ruleProps) {
 	prevNode.children.push(newNode)
 	prevNode.props = ruleProps
 
-	// Nonterm sym
+	// Nonterminal sym
 	if (sub.node.subs) {
 		prevNodes.push(newNode)
 		newNode.children = []

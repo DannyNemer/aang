@@ -8,7 +8,7 @@ var grammarPath = '../grammar.json'
 var semanticsPath = '../semantics.json'
 var parserNewPath = './Parser.js'
 var parserOldPath = './util/ParserBestFirst.js'
-var searchPath = './search.js'
+var forestSearchPath = './forestSearch.js'
 
 var semantics = null
 var stateTable = buildStateTable()
@@ -45,11 +45,11 @@ function parse(query, K) {
 		if (printStack) parser.printStack()
 
 		if (parser.startNode) {
-			var search = require(searchPath)
-			var trees = search.search(parser.startNode, K, printTrees)
+			var forestSearch = require(forestSearchPath)
+			var trees = forestSearch.search(parser.startNode, K, printTrees)
 			if (printTime) console.timeEnd('parse')
 			if (printForestGraph) parser.printNodeGraph(parser.startNode)
-			if (printOutput) search.print(trees, printCost, printTrees)
+			if (printOutput) forestSearch.print(trees, printCost, printTrees)
 		} else {
 			console.log('Failed to reach start node')
 		}
@@ -258,5 +258,5 @@ function mapSemantic(semanticArray) {
 
 // Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
 function deleteModuleCache() {
-	util.deleteCache(parserNewPath, parserOldPath, searchPath, '../parser/StateTable.js', './BinaryHeap.js', '../grammar/semantic.js', './reduceForest.js')
+	util.deleteCache(parserNewPath, parserOldPath, forestSearchPath, '../parser/StateTable.js', './BinaryHeap.js', '../grammar/semantic.js', './reduceForest.js')
 }
