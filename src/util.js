@@ -150,6 +150,26 @@ exports.mark = function (msg) {
 	console.log(colors.red((msg || 'Reached') + ':'), exports.getLine(true))
 }
 
+// Count number of instances a section of code is reached, identified by 'key'
+var counts = {}
+exports.count = function (key) {
+	if (counts.hasOwnProperty(key)) {
+		counts[key]++
+	} else {
+		counts[key] = 1
+	}
+}
+
+// Print count of 'key'
+exports.printCount = function (key) {
+	if (counts.hasOwnProperty(key)) {
+		console.log(key + ':', counts[key])
+		delete counts[key] // Reset count
+	} else {
+		exports.printErr('unrecognized counter key:', key)
+	}
+}
+
 // Print like console.log(), but color first arugment red
 exports.printErr = function () {
 	arguments[0] = colors.red(arguments[0])
