@@ -1,4 +1,5 @@
 module.exports = Parser
+var util = require('../util')
 
 function Parser(stateTable) {
 	this.stateTable = stateTable
@@ -9,16 +10,12 @@ Parser.prototype.parse = function (query) {
 
 	// could accelerate lookup by seperating terminal and nonterminal
 	// could use lunr, and then identify when the first word is a match before checking other words
-
 	// if we use a lunr thing for partial lookups, we can store the size of each terminal symbol, and know how much to check
 
 	var wordTab = []
-	this.vertTabs = []
-	this.nodeTabs = []
 
 	for (var i = 0, tokensLen = tokens.length; i < tokensLen; ++i) {
 		var nGram = ''
-		this.nodeTabs[i] = []
 
 		for (var j = i; j < tokensLen; ++j) {
 			nGram += (nGram ? ' ' : '') + tokens[j]
@@ -29,8 +26,7 @@ Parser.prototype.parse = function (query) {
 				arr.push({
 					sym: word,
 					start: i, // same as this.position - word.size
-					size: nGram.split(' ').length
-					// size: 1 + j - i
+					size: nGram.split(' ').length // could calculate in state tabe
 				})
 			}
 		}
@@ -38,25 +34,24 @@ Parser.prototype.parse = function (query) {
 
 	// console.log(wordTab)
 
-	this.vertTabs[tokensLen] = []
-	this.nodeTabs[tokensLen] = []
+	// if had seperate nodeTabs, could add wordNodes in loop and prevent duplicates
 
 	this.position = 0
 	this.reds = []
 	var redsIdx = 0
-	// this.nodeTab = []
-	// this.nodeTabIdx = 0
+	this.nodeTab = []
+	this.nodeTabIdx = 0
 
+	this.vertTabs = []
 	this.vertTab = this.vertTabs[this.position] = []
-	// this.nodeTab = this.nodeTabs[this.position] = []
 	this.addVertex(this.stateTable.shifts[0])
 
+	// could use this.position instead of 'i'
 	for (var i = 0; i < tokensLen + 1; ++i) { // +1 to allow final reduction
 		var words = wordTab[i]
 		if (!words && i < tokensLen) {
 			// no token at index - either unrecognized word, or a multi-token term sym
 			this.vertTab = this.vertTabs[++this.position] = this.vertTab // do we not need the same for nodeTab
-			// this.nodeTab = this.nodeTabs[this.position] = this.nodeTab // do we not need the same for nodeTab
 			continue
 		}
 
@@ -68,17 +63,13 @@ Parser.prototype.parse = function (query) {
 
 		this.position++
 		this.vertTab = this.vertTabs[this.position] = []
-		// this.nodeTab = this.nodeTabs[this.position] = []
-		// this.nodeTabIdx = this.nodeTab.length
+		this.nodeTabIdx = this.nodeTab.length
 
 		for (var w = words.length; w-- > 0;) {
 			var word = words[w]
-			this.nodeTab = this.nodeTabs[word.start] // uncertain if need to do this with nodeTabs
 			var wordNode = this.addSub(word.sym)
-			wordNode.start = word.start // no effect
 
 			var oldVertTab = this.vertTabs[word.start]
-			this.nodeTab = this.nodeTabs[this.position]
 
 			// Loop through all term rules that produce term sym
 			for (var r = 0, rules = word.sym.rules, rulesLen = rules.length; r < rulesLen; ++r) {
@@ -114,14 +105,11 @@ Parser.prototype.addSub = function (sym, sub) {
 	var size = sym.isLiteral ? 1 : (sub ? sub.size : 0)
 	var node
 
-	for (var n = 0, nodeTabLen = this.nodeTab.length; n < nodeTabLen; ++n) {
+	for (var n = this.nodeTabIdx, nodeTabLen = this.nodeTab.length; n < nodeTabLen; ++n) {
 		node = this.nodeTab[n]
+		if (node.sym === sym && (node.isLiteral || node.size === size)) break
 		if (node.sym === sym && node.size === size) break
 	}
-	// for (var n = this.nodeTabIdx, nodeTabLen = this.nodeTab.length; n < nodeTabLen; ++n) {
-	// 	node = this.nodeTab[n]
-	// 	if (node.sym === sym && node.size === size) break
-	// }
 
 	if (n === nodeTabLen) {
 		node = {
@@ -291,25 +279,23 @@ Parser.prototype.printForest = function () {
 		console.log('*' + printNode(this.startNode) + '.')
 	}
 
-	this.nodeTabs.forEach(function (nodeTab) {
-		nodeTab.forEach(function (node) {
-			if (node.sym.isLiteral) return
+	this.nodeTab.forEach(function (node) {
+		if (node.sym.isLiteral) return
 
-			var toPrint = printNode(node)
+		var toPrint = printNode(node)
 
-			if (node.subs.length > 0) {
-				if (node.subs[0].node.sym.isLiteral) toPrint += ':'
-				else toPrint += ' ='
-			}
+		if (node.subs.length > 0) {
+			if (node.subs[0].node.sym.isLiteral) toPrint += ':'
+			else toPrint += ' ='
+		}
 
-			node.subs.forEach(function (sub, S) {
-				if (S > 0) toPrint += ' |'
-				for (; sub; sub = sub.next)
-					toPrint += printNode(sub.node)
-			})
-
-			console.log(toPrint + '.');
+		node.subs.forEach(function (sub, S) {
+			if (S > 0) toPrint += ' |'
+			for (; sub; sub = sub.next)
+				toPrint += printNode(sub.node)
 		})
+
+		console.log(toPrint + '.');
 	})
 }
 
