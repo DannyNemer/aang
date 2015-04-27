@@ -12,6 +12,9 @@ Parser.prototype.parse = function (query) {
 	// could use lunr, and then identify when the first word is a match before checking other words
 	// if we use a lunr thing for partial lookups, we can store the size of each terminal symbol, and know how much to check
 
+	// To consider deletions, might need to create wordNodes in loop and check if can span entire query
+	// Might require array of nodeTabs - or not, might not even need to add to nodeTab
+
 	var wordTab = []
 
 	for (var i = 0, tokensLen = tokens.length; i < tokensLen; ++i) {
@@ -25,16 +28,13 @@ Parser.prototype.parse = function (query) {
 				var arr = wordTab[j] || (wordTab[j] = [])
 				arr.push({
 					sym: word,
-					start: i, // same as this.position - word.size
-					size: nGram.split(' ').length // could calculate in state tabe
+					start: i // same as this.position - word.size
 				})
 			}
 		}
 	}
 
 	// console.log(wordTab)
-
-	// if had seperate nodeTabs, could add wordNodes in loop and prevent duplicates
 
 	this.position = 0
 	this.reds = []
@@ -46,12 +46,12 @@ Parser.prototype.parse = function (query) {
 	this.vertTab = this.vertTabs[this.position] = []
 	this.addVertex(this.stateTable.shifts[0])
 
-	// could use this.position instead of 'i'
-	for (var i = 0; i < tokensLen + 1; ++i) { // +1 to allow final reduction
-		var words = wordTab[i]
-		if (!words && i < tokensLen) {
-			// no token at index - either unrecognized word, or a multi-token term sym
-			this.vertTab = this.vertTabs[++this.position] = this.vertTab // do we not need the same for nodeTab
+	while (true) {
+		var words = wordTab[this.position]
+
+		// no token at index - either unrecognized word, or a multi-token term sym
+		if (!words && this.position < tokensLen) {
+			this.vertTab = this.vertTabs[++this.position] = this.vertTab
 			continue
 		}
 
@@ -59,10 +59,9 @@ Parser.prototype.parse = function (query) {
 			this.reduce(this.reds[redsIdx++])
 		}
 
-		if (i === tokensLen) break
+		if (this.position === tokensLen) break
 
-		this.position++
-		this.vertTab = this.vertTabs[this.position] = []
+		this.vertTab = this.vertTabs[++this.position] = []
 		this.nodeTabIdx = this.nodeTab.length
 
 		for (var w = words.length; w-- > 0;) {
@@ -75,7 +74,7 @@ Parser.prototype.parse = function (query) {
 			for (var r = 0, rules = word.sym.rules, rulesLen = rules.length; r < rulesLen; ++r) {
 				var rule = rules[r]
 				var sub = {
-					size: word.size,  // size of literal
+					size: word.sym.size,  // size of literal
 					node: wordNode,
 					ruleProps: rule.ruleProps
 				}
@@ -102,7 +101,7 @@ Parser.prototype.parse = function (query) {
 // no sub for term syms
 // sym is either term sym or nonterm sym
 Parser.prototype.addSub = function (sym, sub) {
-	var size = sym.isLiteral ? 1 : (sub ? sub.size : 0)
+	var size = sub ? sub.size : sym.size // no sub -> literal
 	var node
 
 	for (var n = this.nodeTab.length; n-- > this.nodeTabIdx;) {
@@ -113,18 +112,20 @@ Parser.prototype.addSub = function (sym, sub) {
 	if (n < this.nodeTabIdx) {
 		node = {
 			sym: sym,
-			size: size, // 1 for termsym
-			start: sym.isLiteral ? (this.position - 1) : (sub ? sub.node.start : this.position)
+			size: size
 		}
 
-		if (!sym.isLiteral) {
+		if (sub) { // nonterminal
+			node.start = sub.node.start
 			node.subs = [ sub ]
+		} else {
+			node.start = this.position - size
 		}
 
 		this.nodeTab.push(node)
 	}
 
-	else if (!sym.isLiteral && subIsNew(node.subs, sub)) {
+	else if (sub && subIsNew(node.subs, sub)) { // existing nonterminal
 		node.subs.push(sub)
 
 		// Insertions are arrays of multiple ruleProps (or normal ruleProps if only insertion) - distinguish?

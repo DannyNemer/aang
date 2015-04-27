@@ -37,6 +37,7 @@ StateTable.prototype.lookUp = function (name, isLiteral) {
 
 	if (isLiteral) {
 		sym.isLiteral = true
+		sym.size = name.split(' ').length
 	}
 
 	return sym
