@@ -1,7 +1,7 @@
 // Create nonterminal symbols and add production rules to grammar
 
 var util = require('../util')
-var Semantic = require('./Semantic')
+var semantic = require('./semantic')
 
 module.exports = Symbol
 
@@ -34,7 +34,7 @@ Symbol.prototype.addRule = function (opts) {
 
 	if (opts.semantic) {
 		newRule.semantic = opts.semantic
-		newRule.cost = this.calcCost(Semantic.costOfSemantic(opts.semantic))
+		newRule.cost = this.calcCost(semantic.costOfSemantic(opts.semantic))
 	} else {
 		newRule.cost = this.calcCost()
 	}
@@ -127,7 +127,7 @@ Symbol.prototype.ruleExists = function (newRule) {
 // Calculate cost of new rule
 // Could have a cost penalty, especially for term rules, but need a mechanism for determining this cost
 Symbol.prototype.calcCost = function (costPenalty) {
-	// Cost penalty is cost of Semantic on nonterminal rules (if present)
+	// Cost penalty is cost of semantic on nonterminal rules (if present)
 	var costPenalty = costPenalty || 0
 
 	// Cost of rules for each sym are incremented by 1e-7

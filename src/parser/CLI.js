@@ -258,5 +258,5 @@ function mapSemantic(semanticArray) {
 
 // Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
 function deleteModuleCache() {
-	util.deleteCache(parserNewPath, parserOldPath, searchPath, '../parser/StateTable.js', './BinaryHeap.js', '../grammar/Semantic.js', './reduceForest.js')
+	util.deleteCache(parserNewPath, parserOldPath, searchPath, '../parser/StateTable.js', './BinaryHeap.js', '../grammar/semantic.js', './reduceForest.js')
 }

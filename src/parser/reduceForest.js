@@ -1,6 +1,6 @@
 // Might be able to be accomplished in search.js, but here we are proving accuracy and performance improvements
 
-var semantic = require('../grammar/Semantic')
+var semantic = require('../grammar/semantic')
 var util = require('../util')
 
 module.exports = function (startNode) {
