@@ -18,16 +18,18 @@ Parser.prototype.parse = function (query) {
 	var wordTab = []
 
 	for (var i = 0, tokensLen = tokens.length; i < tokensLen; ++i) {
-		var nGram = ''
-
-		for (var j = i; j < tokensLen; ++j) {
-			nGram += (nGram ? ' ' : '') + tokens[j]
-
-			var word = this.stateTable.symbolTab[nGram]
-			if (word) {
+		var nGram = tokens[i]
+		var j = i
+		while (true) {
+			var wordSym = this.stateTable.symbolTab[nGram]
+			if (wordSym) {
 				var arr = wordTab[j] || (wordTab[j] = [])
-				arr.push(word)
+				arr.push(wordSym)
 			}
+
+			if (++j === tokensLen) break
+
+			nGram += ' ' + tokens[j]
 		}
 	}
 
