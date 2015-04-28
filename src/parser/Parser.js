@@ -48,17 +48,14 @@ Parser.prototype.parse = function (query) {
 	while (true) {
 		var words = wordTab[this.position]
 
-		// no token at index - either unrecognized word, or a multi-token term sym
-		if (!words && this.position < tokensLen) {
+		if (!words) {
+			// scanned entire input
+			if (this.position === tokensLen) break
+
+			// no token at index - either unrecognized word, or a multi-token term sym
 			this.vertTab = this.vertTabs[++this.position] = this.vertTab
 			continue
 		}
-
-		while (redsIdx < this.reds.length) {
-			this.reduce(this.reds[redsIdx++])
-		}
-
-		if (this.position === tokensLen) break
 
 		this.vertTab = this.vertTabs[++this.position] = []
 		this.nodeTabIdx = this.nodeTab.length
@@ -84,6 +81,11 @@ Parser.prototype.parse = function (query) {
 					this.addNode(node, oldVertTab[v])
 				}
 			}
+		}
+
+		// REDUCE
+		while (redsIdx < this.reds.length) {
+			this.reduce(this.reds[redsIdx++])
 		}
 	}
 
