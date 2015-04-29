@@ -5,18 +5,22 @@ function Parser(stateTable) {
 	this.stateTable = stateTable
 }
 
-// Look up termianl symbol matches in input
+// Look up terminal symbol matches in input
 Parser.prototype.matchTerminalRules = function (query) {
 	var tokens = query.split(' ')
 	this.tokensLen = tokens.length
 	var wordTab = []
+
+	// Create semantic arguments for input matches to '<int>'
+	// Prevent making duplicate semantic arguments to detect duplicity by Object reference (not semantic name)
+	var newSemanticArgs = {}
 
 	for (; this.position < this.tokensLen; ++this.position) {
 		var nGram = tokens[this.position]
 		this.nodeTab = this.nodeTabs[this.position] = []
 
 		if (isNaN(nGram)) {
-			// Check every ossible n-gram for multi-word terminal symbols
+			// Check every possible n-gram for multi-word terminal symbols
 			var j = this.position
 			while (true) {
 				// this.nodeTab = this.nodeTabs[j] // should I be doing this?
@@ -59,11 +63,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 			// create node with terminal symbol
 			var wordNode = this.addSub(wordSym)
 
-			var semanticArg = [ {
-				semantic: {
-					name: nGram
-				}
-			} ]
+			var semanticArg = newSemanticArgs[nGram] || (newSemanticArgs[nGram] = [ { semantic: { name: nGram } } ])
 
 			// Loop through all term rules that produce term sym
 			var wordNodes = []
