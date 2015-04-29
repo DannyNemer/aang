@@ -78,21 +78,14 @@ function newSemanticArg(opts) {
 
 
 exports.costOfSemantic = function (semanticArray) {
-	if (semanticArray.constructor === String) {
-		var semanticDef = exports.semantics[semanticArray]
-		if (semanticDef) return semanticDef.cost
-		else {
-			console.log(semanticArray)
-		}
-	}
 	return semanticArray.reduce(function (accum, cur) {
 		return accum + cur.semantic.cost + (cur.children ? exports.costOfSemantic(cur.children) : 0)
 	}, 0)
 }
 
-// Check for duplicates
 // A and B both always exist
 exports.mergeRHS = function (A, B) {
+	// Check for duplicates
 	for (var i = A.length; i-- > 0;) {
 		var semanticA = A[i]
 		var semanticAPreventsDups = semanticA.semantic.preventDups
@@ -100,11 +93,13 @@ exports.mergeRHS = function (A, B) {
 		for (var j = B.length; j-- > 0;) {
 			var semanticB = B[j]
 
-			if (semanticA.semantic === semanticB.semantic) {
-				// Prevent multiple instances of this function within a function's args (e.g., repos-by())
-				if (semanticAPreventsDups) return -1
+			// Prevent multiple instances of this function within a function's args (e.g., repos-by())
+			if (semanticAPreventsDups && semanticA.semantic === semanticB.semantic) {
+				return -1
+			}
 
-				if (semanticA.children === semanticB.children) return -1
+			if (semanticsMatch(semanticA, semanticB)) {
+				return -1
 			}
 		}
 	}
@@ -113,6 +108,36 @@ exports.mergeRHS = function (A, B) {
 	// And every one with the RHS (being check for dup) has been added to RHS
 
 	return A.concat(B)
+}
+
+function semanticsMatch(a, b) {
+	// entities
+	if (a === b) return true
+
+	if (a.semantic !== b.semantic) return false
+
+	if (a.children && b.children) {
+		return semanticArraysMatch(a.children, b.children)
+	}
+
+	return true // args with same name
+}
+
+function semanticArraysMatch(a, b) {
+	// Same entity arrays
+	if (a === b) return true
+
+	// One of two is undefined (different semantics)
+	if (!a || !b) return false
+
+	var i = a.length
+	if (i !== b.length) return false
+
+	while (i-- > 0) {
+		if (semanticsMatch(a[i], b[i])) return true
+	}
+
+	return false
 }
 
 // LHS and RHS both always defined
@@ -135,10 +160,9 @@ exports.insertSemantic = function (LHS, RHS) {
 		if (lhsSemantic.preventDups) {
 			var firstSemantic = [ {
 				semantic: lhsSemantic,
-				children: toString(RHS[0])
+				children: [ RHS[0] ]
 			} ]
 
-			// keep children untouched, already in format
 			return firstSemantic.concat(RHS.slice(1))
 		}
 
@@ -147,40 +171,84 @@ exports.insertSemantic = function (LHS, RHS) {
 		// Copy LHS semantic for each RHS
 		// repos liked by me and my followers -> copy "repos-liked()" for each child
 		var newLHS = []
+
 		for (var s = 0; s < RHSLen; ++s) {
 			newLHS[s] = {
 				semantic: lhsSemantic,
-				children: toString(RHS[s]) // could put parentehsis around (or later if this proves illegal)
+				children: [ RHS[s] ]
 			}
 		}
 
 		return newLHS
 	} else {
-		// remove array?
-		var RHSCopy = []
-		for (var r = RHSLen; r-- > 0;) {
-			RHSCopy[r] = toString(RHS[r])
-		}
-
 		return [ {
 			semantic: lhsSemantic,
-			children: RHSCopy.sort().join(',') // could join here, or later (later might me additional work, but saved for working on lost causes)
+			children: RHS.sort(compareSemantics)
 		} ]
 	}
+
+	return newLHS
+}
+
+
+// arguments before functions, functions sorted alphabtetically, arugments sorted by oreder they appear, identical functions sorted by their arguments
+// if returns less than 0, sort a to a lower index than b
+// if returns greater than 0, sort b to a lower index than a
+// if returns 0, leave a and b unchanged with respect to each other
+function compareSemantics(a, b) {
+	var aIsObject = a.children !== undefined
+	var bIsObject = b.children !== undefined
+
+	// arg, func()
+	if (!aIsObject && bIsObject) {
+		return -1
+	}
+
+	// func(), arg
+	if (aIsObject && !bIsObject) {
+		return 1
+	}
+
+	// func(), func()
+	if (aIsObject && bIsObject) {
+		var aName = a.semantic.name
+		var bName = b.semantic.name
+
+		if (aName < bName) return -1
+		if (aName > bName) return 1
+
+		// same semantic function (by name)
+		// compare semantic children
+		var aChildren = a.children
+		var bChildren = b.children
+		var returnVal = 0
+
+		for (var i = 0, minLength = Math.min(aChildren.length, bChildren.length); i < minLength; ++i) {
+			returnVal = compareSemantics(aChildren[i], bChildren[i])
+			if (returnVal) break
+		}
+
+		return returnVal
+	}
+
+	// Strings: semantic argument, numeric id, or number
+	return a.semantic === b.semantic ? 0 : (a.semantic.name < b.semantic.name ? -1 : 1)
+	// return a === b ? 0 : (a < b ? -1 : 1) // might be able to compare a == b
 }
 
 exports.semanticToString = function (semanticArray) {
-	if (semanticArray.length > 1) throw 'semanticArray.length > 1'
+	var str = ''
 
-	return toString(semanticArray[0])
-}
+	for (var s = 0, semanticArrayLen = semanticArray.length; s < semanticArrayLen; ++s) {
+		var semanticNode = semanticArray[s]
+		var semanticName = semanticNode.semantic.name
 
-function toString(semanticNode) {
-	var semanticName = semanticNode.semantic.name
-
-	if (semanticNode.children) {
-		return semanticName + '(' + semanticNode.children + ')'
-	} else {
-		return semanticName
+		if (semanticNode.children) {
+			str += (s ? ',' : '') + semanticName + '(' + exports.semanticToString(semanticNode.children) + ')'
+		} else {
+			str += (s ? ',' : '') + semanticName
+		}
 	}
+
+	return str
 }

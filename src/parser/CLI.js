@@ -252,7 +252,7 @@ function buildStateTable() {
 function mapSemantic(semanticArray) {
 	semanticArray.forEach(function (semanticNode) {
 		semanticNode.semantic = semantics[semanticNode.semantic.name]
-		// if (semanticNode.children) mapSemantic(semanticNode.children)
+		if (semanticNode.children) mapSemantic(semanticNode.children)
 	})
 }
 
