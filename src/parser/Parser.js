@@ -15,6 +15,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 		var nGram = tokens[this.position]
 		this.nodeTab = this.nodeTabs[this.position] = []
 
+		if (isNaN(nGram)) {
 			// Check every ossible n-gram for multi-word terminal symbols
 			var j = this.position
 			while (true) {
@@ -50,8 +51,44 @@ Parser.prototype.matchTerminalRules = function (query) {
 
 				nGram += ' ' + tokens[j]
 			}
+		}
 
+		// If unigram is a number, match with rules with '<int>' term symbol, using unigram as entity
+		else {
+			var wordSym = this.stateTable.symbolTab['<int>']
+			// create node with terminal symbol
+			var wordNode = this.addSub(wordSym)
 
+			var semanticArg = [ {
+				semantic: {
+					name: nGram
+				}
+			} ]
+
+			// Loop through all term rules that produce term sym
+			var wordNodes = []
+			var wordSize = wordSym.size
+			for (var rules = wordSym.rules, r = rules.length; r-- > 0;) {
+				var rule = rules[r]
+				var sub = {
+					size: wordSize, // size of literal
+					node: wordNode,
+					ruleProps: {
+						cost: rule.ruleProps.cost,
+						semantic: semanticArg,
+						text: nGram
+					}
+				}
+
+				// create node with LHS of terminal rule
+				wordNodes.push(this.addSub(rule.RHS[0], sub)) // FIX: rename prop - rule.RHS[0] is LHS for terms
+			}
+
+			// will only be one term sym match (<int>) and only of length 1
+			wordTab[this.position] = [ {
+				start: this.position,
+				nodes: wordNodes
+			} ]
 		}
 	}
 
