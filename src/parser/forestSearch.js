@@ -4,7 +4,7 @@ var semantic = require('../grammar/semantic')
 var reduceForest = require('./reduceForest')
 
 
-// Use K-best Dijkstra path search to find trees in parse forest returned by parser, beginning at start node
+// Use A* path search to find trees in parse forest returned by parser, beginning at start node
 exports.search = function (startNode, K, buildDebugTrees) {
 	reduceForest(startNode) // currently slows because of work to condense
 
@@ -41,8 +41,8 @@ exports.search = function (startNode, K, buildDebugTrees) {
 
 		// Previously reached end of a branch
 		if (!node) {
-			for (var i = item.nextNodes.length; i-- > 0;) {
-				node = item.nextNodes[i]
+			for (var n = item.nextNodes.length; n-- > 0;) {
+				node = item.nextNodes[n]
 
 				// 'node' is a node
 				if (node.sym) break
@@ -52,7 +52,7 @@ exports.search = function (startNode, K, buildDebugTrees) {
 			}
 
 			// No nodes remain; tree construction complete
-			if (i < 0) {
+			if (n < 0) {
 				// Tree is unique - not semantically or textually identical to previous trees
 				// Discard tree if no unique
 				if (treeIsUnique(trees, item)) {
@@ -64,7 +64,7 @@ exports.search = function (startNode, K, buildDebugTrees) {
 			} else {
 				// Copy nextNodes (because array shared by multiple items)
 				// Exclude copying items examined in above loop
-				item.nextNodes = item.nextNodes.slice(0, i)
+				item.nextNodes = item.nextNodes.slice(0, n)
 				item.nextNodesLen--
 			}
 		}
@@ -125,7 +125,10 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 	// Insertion
 	if (ruleProps.insertionIdx !== undefined) {
 		if (newSemantic) {
-			newItem.prevSemantics = item.prevSemantics.concat({ semantic: newSemantic, nextNodesLen: item.nextNodesLen })
+			newItem.prevSemantics = item.prevSemantics.concat({
+				semantic: newSemantic,
+				nextNodesLen: item.nextNodesLen
+			})
 
 			if (ruleProps.insertedSemantic) {
 				newItem.prevSemantics.push(ruleProps.insertedSemantic)
@@ -168,23 +171,33 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 	else {
 		if (sub.node.subs) {
-			// semantic args are getting here, but being marked as LHS
 			if (newSemantic) {
-				// Do not merge LHS early - cannot fail, but their RHS children can fail, then parse LHS after
-				// Semantic function (LHS)
-				// This is always true if sub.next (because unlikely to put a semantic argument on a fork)
-				if (newSemantic[0].children) {
-					newItem.prevSemantics = item.prevSemantics.concat({ semantic: newSemantic, nextNodesLen: item.nextNodesLen })
-				} else {
-					// should always be a LHS before
-					// semantic arg
-					// Will be a 1 -> 1
-					// We are counting on there not being any semantics that come after this down the branch
+				// A RHS semantic not at the base of the branch because of forestReduction
+				if (ruleProps.semanticIsRHS) {
 					newItem.prevSemantics = item.prevSemantics.slice()
 					newItem.prevSemantics.push(newSemantic) // cannot concat because semantic is array
+				} else {
+					newItem.prevSemantics = item.prevSemantics.concat({
+						semantic: newSemantic,
+						nextNodesLen: item.nextNodesLen
+					})
 				}
 			} else {
 				newItem.prevSemantics = item.prevSemantics
+			}
+
+
+			newItem.node = sub.node
+
+			// Can go before text conjugation because there won't be inflection properties on a terminal rule
+			if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
+				newItem.ruleProps = newItem.ruleProps.concat(ruleProps)
+			}
+
+			// All binary rules are nonterminal rules (hence, within sub.node.subs) - might change with reduceForest
+			if (sub.next) {
+				newItem.nextNodes = newItem.nextNodes.concat(sub.next.node)
+				newItem.nextNodesLen++
 			}
 		} else {
 			for (var p = item.prevSemantics.length; p-- > 0;) {
@@ -226,23 +239,6 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 		}
 
 
-
-		if (sub.node.subs) {
-			newItem.node = sub.node
-
-			// Can go before text conjugation because there won't be inflection properties on a terminal rule
-			if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
-				newItem.ruleProps = newItem.ruleProps.concat(ruleProps)
-			}
-
-			// All binary rules are nonterminal rules (hence, within sub.node.subs) - might change with reduceForest
-			if (sub.next) {
-				newItem.nextNodes = newItem.nextNodes.concat(sub.next.node)
-				newItem.nextNodesLen++
-			}
-		}
-
-		// end of branch
 		var text = ruleProps.text
 		if (text) {
 			if (text.constructor === Object) {
@@ -250,6 +246,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				text = conjugateText(newItem.ruleProps, text)
 			}
 
+			// Originally insertion text move in forest reduction
 			else if (text.constructor === Array && newItem.ruleProps.length) {
 				text = conjugateTextArray(newItem, text)
 			}

@@ -1,4 +1,6 @@
-// Might be able to be accomplished in search.js, but here we are proving accuracy and performance improvements
+// Might be able to be accomplsih reduction in search.js, but here we are proving accuracy and performance improvements
+// At last check, reductions applied here save 10% from parse time
+
 
 var semantic = require('../grammar/semantic')
 var util = require('../util')
@@ -8,11 +10,11 @@ module.exports = function (startNode) {
 		var sub = subs[s]
 
 		sub.minCost = 0 // initialize to 0 to add for sub and sub.next
-		clean(sub, sub.node.subs)
+		reduce(sub, sub.node.subs)
 	}
 }
 
-function clean(parentSub, subs) {
+function reduce(parentSub, subs) {
 	var minCost
 
 	for (var s = 0, subsLen = subs.length; s < subsLen; ++s) {
@@ -24,18 +26,18 @@ function clean(parentSub, subs) {
 
 			var childSubs = sub.node.subs
 			if (childSubs) {
-				clean(sub, childSubs)
+				reduce(sub, childSubs)
 
 				// Only nonterminal rules are binary (hence, within childSubs check)
 				var subNext = sub.next
 				if (subNext) {
 					// sub.next will never be terminal (because all binary rules are nonterminal)
-					clean(sub, subNext.node.subs)
+					reduce(sub, subNext.node.subs)
 				}
 			}
 		}
 
-		// Get cost after calling clean() on children because of reductions
+		// Get cost after calling reduce() on children because of reductions
 		var subRuleProps = sub.ruleProps
 		var cost = sub.minCost + (subRuleProps.constructor === Array ? subRuleProps[0].cost : subRuleProps.cost)
 
@@ -47,44 +49,63 @@ function clean(parentSub, subs) {
 	// Add for cost of sub and sub.next
 	parentSub.minCost += minCost
 
-
 	// We are handling the same parentSub more than once, but unsure how
 	// Could be there are duplicates because of different 'position' in query (diff nodeTab)
 	if (subsLen === 1) {
 		if (parentSub.next || sub.next) return
 
 		var parentRuleProps = parentSub.ruleProps
-		var ruleProps = sub.ruleProps
 
-		if (parentRuleProps.constructor === Array || ruleProps.constructor	=== Array) return
-		if (parentRuleProps.insertedSemantic || ruleProps.insertedSemantic) return
-		if (parentRuleProps.semantic && ruleProps.semantic) return
+		if (parentRuleProps.constructor === Array || subRuleProps.constructor	=== Array) return
+		if (parentRuleProps.insertedSemantic && subRuleProps.insertedSemantic) return
+		if (parentRuleProps.semantic && subRuleProps.semantic) return
 		if (parentRuleProps.personNumber) return
-		if (parentRuleProps.verbForm || ruleProps.verbForm) return
-
-		if (ruleProps.insertionIdx === 0 && parentRuleProps.insertionIdx === 0) return
-		if (parentRuleProps.insertionIdx === 1 || ruleProps.insertionIdx === 1) return
+		if (parentRuleProps.insertionIdx === 0 && subRuleProps.insertionIdx === 0) return
+		if (parentRuleProps.insertionIdx === 1 || subRuleProps.insertionIdx === 1) return
 
 		parentSub.node = sub.node
 		parentSub.minCost = sub.minCost
 		var newRuleProps = parentSub.ruleProps = {
-			cost: parentRuleProps.cost + ruleProps.cost,
-			semantic: parentRuleProps.semantic || ruleProps.semantic
+			cost: parentRuleProps.cost + subRuleProps.cost
 		}
 
-		if (ruleProps.personNumber) {
-			newRuleProps.personNumber = ruleProps.personNumber
+		var insertedSemantic = parentRuleProps.insertedSemantic || subRuleProps.insertedSemantic
+		if (insertedSemantic) {
+			newRuleProps.semanticIsRHS = true
+
+			if (parentRuleProps.semantic) {
+				newRuleProps.semantic = semantic.insertSemantic(parentRuleProps.semantic, insertedSemantic)
+			} else if (subRuleProps.semantic) {
+				newRuleProps.semantic = semantic.insertSemantic(subRuleProps.semantic, insertedSemantic)
+			} else {
+				newRuleProps.semantic = insertedSemantic
+			}
+		} else if (subRuleProps.semantic) {
+			newRuleProps.semanticIsRHS = subRuleProps.semanticIsRHS
+			newRuleProps.semantic = subRuleProps.semantic
+		} else if (parentRuleProps.semantic) {
+			newRuleProps.semantic = parentRuleProps.semantic
 		}
 
-		var subText = ruleProps.text
+		if (subRuleProps.personNumber) {
+			newRuleProps.personNumber = subRuleProps.personNumber
+		}
+
+		var subText = subRuleProps.text
 		var parentText = parentRuleProps.text
 		if (parentRuleProps.insertionIdx === 0) {
 			if (subText) {
-				newRuleProps.text = parentText.concat(subText)
+				var verbForm = parentRuleProps.verbForm
+				if (verbForm && subText[verbForm]) {
+					newRuleProps.text = parentText.concat(subText[verbForm])
+				} else {
+					if (verbForm) newRuleProps.verbForm = verbForm
+					newRuleProps.text = parentText.concat(subText)
+				}
 			} else {
 				newRuleProps.text = parentText
 			}
-		} else if (ruleProps.insertionIdx === 0) {
+		} else if (subRuleProps.insertionIdx === 0) {
 			if (parentText) {
 				newRuleProps.text = subText.concat(parentText)
 			} else {
@@ -95,7 +116,7 @@ function clean(parentSub, subs) {
 			if (parentGramCase && subText[parentGramCase]) {
 				newRuleProps.text = subText[parentGramCase]
 			} else {
-				if (ruleProps.gramCase) newRuleProps.gramCase = ruleProps.gramCase
+				if (subRuleProps.gramCase) newRuleProps.gramCase = subRuleProps.gramCase
 				newRuleProps.text = parentText || subText
 			}
 		}
