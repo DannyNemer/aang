@@ -5,41 +5,70 @@ function Parser(stateTable) {
 	this.stateTable = stateTable
 }
 
-Parser.prototype.parse = function (query) {
+// Look up termianl symbol matches in input
+Parser.prototype.matchTerminalRules = function (query) {
 	var tokens = query.split(' ')
-
-	// could accelerate lookup by seperating terminal and nonterminal
-	// could use lunr, and then identify when the first word is a match before checking other words
-	// if we use a lunr thing for partial lookups, we can store the size of each terminal symbol, and know how much to check
-
-	// To consider deletions, might need to create wordNodes in loop and check if can span entire query
-	// Might require array of nodeTabs - or not, might not even need to add to nodeTab
-
+	this.tokensLen = tokens.length
 	var wordTab = []
 
-	for (var i = 0, tokensLen = tokens.length; i < tokensLen; ++i) {
-		var nGram = tokens[i]
-		var j = i
-		while (true) {
-			var wordSym = this.stateTable.symbolTab[nGram]
-			if (wordSym) {
-				var arr = wordTab[j] || (wordTab[j] = [])
-				arr.push(wordSym)
+	for (; this.position < this.tokensLen; ++this.position) {
+		var nGram = tokens[this.position]
+		this.nodeTab = this.nodeTabs[this.position] = []
+
+			// Check every ossible n-gram for multi-word terminal symbols
+			var j = this.position
+			while (true) {
+				// this.nodeTab = this.nodeTabs[j] // should I be doing this?
+				var wordSym = this.stateTable.symbolTab[nGram]
+				if (wordSym) {
+					// create node with terminal symbol
+					var wordNode = this.addSub(wordSym)
+
+					// Loop through all term rules that produce term sym
+					var wordNodes = []
+					var wordSize = wordSym.size
+					for (var rules = wordSym.rules, r = rules.length; r-- > 0;) {
+						var rule = rules[r]
+						var sub = {
+							size: wordSize, // size of literal
+							node: wordNode,
+							ruleProps: rule.ruleProps
+						}
+
+						// create node with LHS of terminal rule
+						wordNodes.push(this.addSub(rule.RHS[0], sub)) // FIX: rename prop - rule.RHS[0] is LHS for terms
+					}
+
+					var words = wordTab[j] || (wordTab[j] = [])
+					words.push({
+						start: this.position,
+						nodes: wordNodes
+					})
+				}
+
+				if (++j === this.tokensLen) break
+
+				nGram += ' ' + tokens[j]
 			}
 
-			if (++j === tokensLen) break
 
-			nGram += ' ' + tokens[j]
 		}
 	}
 
 	// console.log(wordTab)
 
+	this.position = 0 // reset
+
+	return wordTab
+}
+
+Parser.prototype.parse = function (query) {
+	this.nodeTabs = []
 	this.position = 0
+	var wordTab = this.matchTerminalRules(query)
+
 	this.reds = []
 	var redsIdx = 0
-	this.nodeTab = []
-	this.nodeTabIdx = 0
 
 	this.vertTabs = []
 	this.vertTab = this.vertTabs[this.position] = []
@@ -50,33 +79,23 @@ Parser.prototype.parse = function (query) {
 
 		if (!words) {
 			// scanned entire input
-			if (this.position === tokensLen) break
+			if (this.position === this.tokensLen) break
 
 			// no token at index - either unrecognized word, or a multi-token term sym
 			this.vertTab = this.vertTabs[++this.position] = this.vertTab
 			continue
 		}
 
+		this.nodeTab = this.nodeTabs[this.position]
 		this.vertTab = this.vertTabs[++this.position] = []
-		this.nodeTabIdx = this.nodeTab.length
 
 		for (var w = words.length; w-- > 0;) {
-			var wordSym = words[w]
-			var wordNode = this.addSub(wordSym)
-
-			var oldVertTab = this.vertTabs[this.position - wordSym.size]
+			var word = words[w]
+			var oldVertTab = this.vertTabs[word.start]
 
 			// Loop through all term rules that produce term sym
-			for (var rules = wordSym.rules, r = rules.length; r-- > 0;) {
-				var rule = rules[r]
-				var sub = {
-					size: wordSym.size,  // size of literal
-					node: wordNode,
-					ruleProps: rule.ruleProps
-				}
-
-				var node = this.addSub(rule.RHS[0], sub) // FIX: rename prop - rule.RHS[0] is LHS for terms
-
+			for (var nodes = word.nodes, n = nodes.length; n-- > 0;) {
+				var node = nodes[n]
 				for (var v = 0; v < oldVertTab.length; ++v) {
 					this.addNode(node, oldVertTab[v])
 				}
@@ -105,12 +124,12 @@ Parser.prototype.addSub = function (sym, sub) {
 	var size = sub ? sub.size : sym.size // no sub -> literal
 	var node
 
-	for (var n = this.nodeTab.length; n-- > this.nodeTabIdx;) {
+	for (var n = this.nodeTab.length; n-- > 0;) {
 		node = this.nodeTab[n]
 		if (node.sym === sym && node.size === size) break
 	}
 
-	if (n < this.nodeTabIdx) {
+	if (n < 0) {
 		node = {
 			sym: sym,
 			size: size
@@ -280,23 +299,25 @@ Parser.prototype.printForest = function () {
 		console.log('*' + printNode(this.startNode) + '.')
 	}
 
-	this.nodeTab.forEach(function (node) {
-		if (node.sym.isLiteral) return
+	this.nodeTabs.forEach(function (nodeTab) {
+		nodeTab.forEach(function (node) {
+			if (node.sym.isLiteral) return
 
-		var toPrint = printNode(node)
+			var toPrint = printNode(node)
 
-		if (node.subs.length > 0) {
-			if (node.subs[0].node.sym.isLiteral) toPrint += ':'
-			else toPrint += ' ='
-		}
+			if (node.subs.length > 0) {
+				if (node.subs[0].node.sym.isLiteral) toPrint += ':'
+				else toPrint += ' ='
+			}
 
-		node.subs.forEach(function (sub, S) {
-			if (S > 0) toPrint += ' |'
-			for (; sub; sub = sub.next)
-				toPrint += printNode(sub.node)
+			node.subs.forEach(function (sub, S) {
+				if (S > 0) toPrint += ' |'
+				for (; sub; sub = sub.next)
+					toPrint += printNode(sub.node)
+			})
+
+			console.log(toPrint + '.');
 		})
-
-		console.log(toPrint + '.');
 	})
 }
 
