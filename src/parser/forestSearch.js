@@ -451,7 +451,7 @@ exports.print = function (trees, printCost, printTrees) {
 	trees.forEach(function (tree) {
 		// Print display text (and cost)
 		if (tree.cost !== tree.costSoFar) util.printErr('costs incorrect')
-		console.log(tree.text, printCost ? (tree.cost + ' ' + tree.costSoFar) : '')
+		console.log(tree.text, printCost ? tree.cost : '')
 		// Print semantic
 		console.log(' ', tree.semanticStr)
 
