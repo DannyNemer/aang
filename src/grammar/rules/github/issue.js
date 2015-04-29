@@ -5,6 +5,8 @@ var poss = require('../poss')
 var user = require('../user')
 var auxVerbs = require('../auxVerbs')
 var stopWords = require('../stopWords')
+var preps = require('../prepositions')
+var conjunctions = require('../conjunctions')
 
 var issue = new Category({ sg: 'issue', pl: 'issues' })
 
@@ -93,3 +95,66 @@ issue.adjective.addRule({ terminal: true, RHS: 'open', text: 'open', semantic: g
 // closed issues
 var closedStateSemanticArg = g.newSemantic({ name: 'closed', isArg: true, cost: 0.5 })
 issue.adjective.addRule({ terminal: true, RHS: 'closed', text: 'closed', semantic: g.insertSemantic(issuesStateSemantic, closedStateSemanticArg) })
+
+
+// WITH N COMMENTS:
+var issuesCommentsSemantic = g.newSemantic({ name: issue.namePl + '-comments', cost: 0.5, minParams: 1, maxParams: 2 })
+var issuesCommentsOverSemantic = g.newSemantic({ name: issue.namePl + '-comments-over', cost: 0.5, minParams: 1, maxParams: 1 })
+var issuesCommentsUnderSemantic = g.newSemantic({ name: issue.namePl + '-comments-under', cost: 0.5, minParams: 1, maxParams: 1 })
+
+var number = new g.Symbol('number')
+number.addRule({ terminal: true, RHS: '<int>' })
+
+var comments = g.addWord({
+  symbol: new g.Symbol('comments'),
+  accepted: [ 'comments' ]
+})
+
+// (issues) with <int> comments
+var commentsCount = new g.Symbol('comments', 'count')
+issue.inner.addRule({ RHS: [ preps.possessed, commentsCount ] })
+
+var numberComments = new g.Symbol('number', 'comments')
+numberComments.addRule({ RHS: [ number, comments ] })
+var numberCommentsOpt = new g.Symbol('number', 'comments', 'opt')
+numberCommentsOpt.addRule({ RHS: [ number, g.addNonterminalOpt(comments) ] })
+
+// (issues with) <int> comments
+// issues-comments(n2)
+commentsCount.addRule({ RHS: [ numberComments ], semantic: issuesCommentsSemantic })
+// (issues with) under <int> comments
+// issues-comments-under(n)
+commentsCount.addRule({ RHS: [ preps.under, numberComments ], semantic: issuesCommentsUnderSemantic })
+// (issues with) over <int> comments
+// issues-comments-over(n)
+commentsCount.addRule({ RHS: [ preps.over, numberComments ], semantic: issuesCommentsOverSemantic })
+// (issues with) under <int> comments and over <int> comments
+// issues-comments-over(n1), issues-comments-under(n2) - exclusive
+var prepUnderNumberCommentsOpt = new g.Symbol('prep', 'under', 'number', 'comments', 'opt')
+prepUnderNumberCommentsOpt.addRule({ RHS: [ preps.under, numberCommentsOpt ], semantic: issuesCommentsUnderSemantic })
+var prepUnderNumberCommentsOptAnd = new g.Symbol('prep', 'under', 'number', 'comments', 'opt', 'and')
+prepUnderNumberCommentsOptAnd.addRule({ RHS: [ prepUnderNumberCommentsOpt, conjunctions.and ] })
+var prepOverNumberComments = new g.Symbol('prep', 'over', 'number', 'comments')
+prepOverNumberComments.addRule({ RHS: [ preps.over, numberComments ], semantic: issuesCommentsOverSemantic })
+commentsCount.addRule({ RHS: [ prepUnderNumberCommentsOptAnd, prepOverNumberComments ] })
+// (issues with) over <int> comments and under <int> comments
+// issues-comments-over(n1), issues-comments-under(n2) - exclusive
+var prepOverNumberCommentsOpt = new g.Symbol('prep', 'over', 'number', 'comments', 'opt')
+prepOverNumberCommentsOpt.addRule({ RHS: [ preps.over, numberCommentsOpt ], semantic: issuesCommentsOverSemantic })
+var prepOverNumberCommentsOptAnd = new g.Symbol('prep', 'over', 'number', 'comments', 'opt', 'and')
+prepOverNumberCommentsOptAnd.addRule({ RHS: [ prepOverNumberCommentsOpt, conjunctions.and ] })
+var prepUnderNumberComments = new g.Symbol('prep', 'under', 'number', 'comments')
+prepUnderNumberComments.addRule({ RHS: [ preps.under, numberComments ], semantic: issuesCommentsUnderSemantic })
+commentsCount.addRule({ RHS: [ prepOverNumberCommentsOptAnd, prepUnderNumberComments ] })
+// (issues with) <int> comments to <int> comments
+// issues-comments(n1, n2) - inclusive
+var numberCommentsOptPrepEnd = new g.Symbol('number', 'comments', 'opt', 'prep', 'end')
+numberCommentsOptPrepEnd.addRule({ RHS: [ numberCommentsOpt, preps.end ] })
+commentsCount.addRule({ RHS: [ numberCommentsOptPrepEnd, numberComments ], semantic: issuesCommentsSemantic })
+// (issues with) between <int> comments and <int> comments
+// issues-comments(n1, n2) - inclusive
+var prepBetweenNumberCommmentsOpt = new g.Symbol('prep', 'between', 'number', 'comments', 'opt')
+prepBetweenNumberCommmentsOpt.addRule({ RHS: [ preps.between, numberCommentsOpt ] })
+var prepBetweenNumberCommmentsOptAnd = new g.Symbol('prep', 'between', 'number', 'comments', 'opt', 'and')
+prepBetweenNumberCommmentsOptAnd.addRule({ RHS: [ prepBetweenNumberCommmentsOpt, conjunctions.and ] })
+commentsCount.addRule({ RHS: [ prepBetweenNumberCommmentsOptAnd, numberComments ], semantic: issuesCommentsSemantic })

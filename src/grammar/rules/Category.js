@@ -65,6 +65,8 @@ module.exports = function Category(catOpts) {
 	// (people) mentioned in [pull-requests+]; (people who are) mentioned in [pull-requests+]
 	this.inner = new g.Symbol(this.nameSg, 'inner')
 	reducedNoTense.addRule({ RHS: [ this.inner ] })
+	// (issues) with <int> comments assigned to me
+	reducedNoTense.addRule({ RHS: [ this.inner, reducedNoTense ], transpositionCost: 0.1 })
 	// (people) followed by me; (people who are) followed by me
 	reducedNoTense.addRule({ RHS: [ passivePlus ] })
 

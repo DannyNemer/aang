@@ -127,6 +127,14 @@ var testQueries = [
 	'repos danny by me danny', // intentionally wrong
 	'repos liked contributed to by me', // intentionally wrong
 	'repos by me', // should insert 'liked'
+	'issues opened by me assigned to me', // transposition
+	'issues with 22 comments',
+	'issues assigned to me with 22 comments',
+	'issues with 20 to 34 comments I opened',
+	'issues that are with between 20 comments and 34 comments',
+	'issues with 3 comments to 3 comments',
+	'issues with 3 to 3 comments',
+	'issues with less than 2 > 4 comments',
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
 	// 'my followers who created pull requests of mine my followers who created repositories followers of mine mentioned in issues of my followers who I follow like that are repos created by me I contributed to am mentioned in that I am mentioned in'
 	// 'my repos me people who follow my followers have been and', - BROKEN
