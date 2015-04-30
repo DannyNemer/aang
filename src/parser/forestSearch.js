@@ -84,11 +84,6 @@ exports.search = function (startNode, K, buildDebugTrees) {
 				}
 			}
 
-			// Transposition
-			else if (ruleProps.transposition) {
-				heap.push(createItemTransposed(sub, item, ruleProps, buildDebugTrees))
-			}
-
 			else {
 				var newItem = createItem(sub, item, ruleProps, buildDebugTrees)
 				if (newItem === -1) continue // semantically illegal parse -> throw out
@@ -255,35 +250,6 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 		} else {
 			newItem.text = item.text // stop words
 		}
-	}
-
-	return newItem
-}
-
-function createItemTransposed(sub, item, ruleProps, buildDebugTrees) {
-	var newCost = item.costSoFar + ruleProps.cost
-
-	var newItem = {
-		node: sub.next.node, // sub.next.node is examined before sub.node
-		nextNodes: item.nextNodes.concat(sub.node),
-		nextNodesLen: item.nextNodesLen + 1,
-		ruleProps: item.ruleProps,
-		text: item.text,
-		costSoFar: newCost,
-		cost: newCost + sub.minCost
-	}
-
-	if (ruleProps.semantic) {
-		newItem.prevSemantics = item.prevSemantics.concat({
-			semantic: ruleProps.semantic,
-			nextNodesLen: item.nextNodesLen
-		})
-	} else {
-		newItem.prevSemantics = item.prevSemantics
-	}
-
-	if (buildDebugTrees) {
-		newItem.tree = spliceTree(item.tree, sub, ruleProps)
 	}
 
 	return newItem

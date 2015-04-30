@@ -289,16 +289,32 @@ Parser.prototype.reduce = function (red) {
 	}
 
 	if (red.binary) {
+		var isTransposition = red.ruleProps.transposition
+
 		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
 			var vertexZNodes = vertices[v].zNodes
 
 			for (var z = 0, vertexZNodesLen = vertexZNodes.length; z < vertexZNodesLen; ++z) {
 				var zNode = vertexZNodes[z]
-				var subNew = {
-					node: zNode.node,
-					size: zNode.node.size + sub.size,
-					next: sub,
-					ruleProps: red.ruleProps
+				var subNew
+
+				if (isTransposition) { // Flip RHS for transposition
+					subNew = {
+						node: sub.node,
+						size: zNode.node.size + sub.size,
+						next: {
+							node: zNode.node,
+							size: zNode.node.size
+						},
+						ruleProps: red.ruleProps
+					}
+				} else {
+					subNew = {
+						node: zNode.node,
+						size: zNode.node.size + sub.size,
+						next: sub,
+						ruleProps: red.ruleProps
+					}
 				}
 
 				var node = this.addSub(red.LHS, subNew)
