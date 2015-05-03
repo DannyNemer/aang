@@ -34,7 +34,7 @@
 		font-family: monospace;
 	}
 
-	.selected {
+	#selected {
 		background-color: lightsteelblue;
 	}
 
@@ -72,7 +72,7 @@ queryInput.onkeydown = function (e) {
 		var trees = treeContainer.childNodes
 		for (var t = 0; t < trees.length; ++t) {
 			var tree = trees[t]
-			if (tree.className === 'selected') {
+			if (tree.id === 'selected') {
 				var querySuggestion = tree.childNodes[0].textContent
 				queryInput.value = querySuggestion
 				sendQuery(querySuggestion)
@@ -88,10 +88,10 @@ queryInput.onkeydown = function (e) {
 		var trees = treeContainer.childNodes
 		for (var t = 0; t < trees.length; ++t) {
 			var tree = trees[t]
-			if (tree.className === 'selected') {
-				tree.className = ''
+			if (tree.id === 'selected') {
+				tree.id = ''
 				var prevTreeIdx = t === 0 ? trees.length - 1 : t - 1
-				trees[prevTreeIdx].className = 'selected'
+				trees[prevTreeIdx].id = 'selected'
 				break
 			}
 		}
@@ -104,15 +104,26 @@ queryInput.onkeydown = function (e) {
 		var trees = treeContainer.childNodes
 		for (var t = 0; t < trees.length; ++t) {
 			var tree = trees[t]
-			if (tree.className === 'selected') {
-				tree.className = ''
+			if (tree.id === 'selected') {
+				tree.id = ''
 				var nextTreeIdx = t === trees.length - 1 ? 0 : t + 1
-				trees[nextTreeIdx].className = 'selected'
+				trees[nextTreeIdx].id = 'selected'
 				break
 			}
 		}
 	}
 }
+
+treeContainer.onmouseover = function (e) {
+	var target = e.target
+	if (target.className === 'tree' && target.id !== 'selected') {
+		var selectedTree = document.getElementById('selected')
+		selectedTree.id = ''
+
+		target.id = 'selected'
+	}
+}
+
 
 function sendQuery(query) {
 	var start = Date.now()
@@ -136,6 +147,7 @@ function sendQuery(query) {
 				} else {
 					response.trees.forEach(function (tree, i) {
 						var div = treeContainer.appendChild(document.createElement('div'))
+						div.className = 'tree'
 
 						var textSpan = div.appendChild(document.createElement('span'))
 						textSpan.textContent = tree.text
@@ -144,7 +156,7 @@ function sendQuery(query) {
 						costSpan.textContent = ' - ' + tree.cost.toFixed(7)
 
 						if (i === 0) {
-							div.className = 'selected'
+							div.id = 'selected'
 						}
 
 						addSemantic(div, tree.semantic)
