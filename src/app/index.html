@@ -1,0 +1,179 @@
+<style>
+	body {
+		margin: 0 auto;
+		width: 800px;
+	}
+
+	input {
+		font-size: 18pt;
+	}
+
+	input:focus {
+		outline: none;
+	}
+
+	#query {
+		width: 700px;
+	}
+
+	#k {
+		width: 50px;
+	}
+
+	#time {
+		font-family: monospace;
+		position: absolute;
+		top: 0px;
+	}
+
+	#treeContainer {
+		width: 700px;
+	}
+
+	.semantic {
+		font-family: monospace;
+	}
+
+	.selected {
+		background-color: lightsteelblue;
+	}
+
+</style>
+<body>
+
+<input id="query" autocomplete="off">
+<input id="k" type="number" min="1" value="7" autocomplete="off">
+<span id="time"></span>
+<div id="treeContainer"></div>
+
+<script>
+var treeContainer = document.getElementById('treeContainer')
+var time = document.getElementById('time')
+var queryInput = document.getElementById('query')
+var kInput = document.getElementById('k')
+
+queryInput.focus()
+
+kInput.oninput = queryInput.oninput = function () {
+	var query = queryInput.value.trim()
+	if (query) sendQuery(query)
+}
+
+// Prevent non-numeric input for K
+kInput.onkeypress = function (e) {
+	if (e.which < 48 || e.which > 57) e.preventDefault()
+}
+
+queryInput.onkeydown = function (e) {
+	// TAB
+	if (e.which === 9) {
+		e.preventDefault() // Prevent switching inputs
+
+		var trees = treeContainer.childNodes
+		for (var t = 0; t < trees.length; ++t) {
+			var tree = trees[t]
+			if (tree.className === 'selected') {
+				var querySuggestion = tree.childNodes[0].textContent
+				queryInput.value = querySuggestion
+				sendQuery(querySuggestion)
+				break
+			}
+		}
+	}
+
+	// UP
+	else if (e.which === 38) {
+		e.preventDefault() // Prevent moving cursor to start
+
+		var trees = treeContainer.childNodes
+		for (var t = 0; t < trees.length; ++t) {
+			var tree = trees[t]
+			if (tree.className === 'selected') {
+				tree.className = ''
+				var prevTreeIdx = t === 0 ? trees.length - 1 : t - 1
+				trees[prevTreeIdx].className = 'selected'
+				break
+			}
+		}
+	}
+
+	// DOWN
+	else if (e.which === 40) {
+		e.preventDefault() // Prevent moving cursor to end
+
+		var trees = treeContainer.childNodes
+		for (var t = 0; t < trees.length; ++t) {
+			var tree = trees[t]
+			if (tree.className === 'selected') {
+				tree.className = ''
+				var nextTreeIdx = t === trees.length - 1 ? 0 : t + 1
+				trees[nextTreeIdx].className = 'selected'
+				break
+			}
+		}
+	}
+}
+
+function sendQuery(query) {
+	var start = Date.now()
+	var xhr = new XMLHttpRequest()
+
+	xhr.onload = function (e) {
+		if (xhr.readyState === 4) {
+			if (xhr.status === 200) {
+				var response = JSON.parse(xhr.responseText)
+
+				time.innerHTML = 'Parse: ' + response.parseTime + ' ms' + '<br>'
+				time.innerHTML += 'RTT: ' + (Date.now() - start) + ' ms'
+
+				while (treeContainer.firstChild) {
+					treeContainer.removeChild(treeContainer.firstChild)
+				}
+
+				if (response.message) {
+					var p = treeContainer.appendChild(document.createElement('p'))
+					p.textContent = response.message
+				} else {
+					response.trees.forEach(function (tree, i) {
+						var div = treeContainer.appendChild(document.createElement('div'))
+
+						var textSpan = div.appendChild(document.createElement('span'))
+						textSpan.textContent = tree.text
+
+						var costSpan = div.appendChild(document.createElement('span'))
+						costSpan.textContent = ' - ' + tree.cost.toFixed(7)
+
+						if (i === 0) {
+							div.className = 'selected'
+						}
+
+						addSemantic(div, tree.semantic)
+
+						if (tree.disambiguation) {
+							tree.disambiguation.forEach(function (semantic) {
+								addSemantic(div, semantic)
+							})
+						}
+
+						div.appendChild(document.createElement('br'))
+					})
+				}
+			}
+		}
+	}
+
+	xhr.open('POST', '/query', true)
+	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+	xhr.send(JSON.stringify({
+		query: query,
+		k: kInput.value
+	}))
+}
+
+function addSemantic(div, semantic) {
+	var semanticDiv = div.appendChild(document.createElement('div'))
+	semanticDiv.className = 'semantic'
+	semanticDiv.innerText = semantic
+}
+</script>
+</body>
