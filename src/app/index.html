@@ -12,18 +12,28 @@
 		outline: none;
 	}
 
+	ul {
+		width: inherit;
+		margin-top: -20px;
+		margin-bottom: 40px;
+	}
+
+	#inputContainer {
+		display: flex;
+	}
+
 	#query {
-		width: 700px;
+		width: 650px;
+		display: table-cell;
 	}
 
 	#k {
 		width: 50px;
+		display: table-cell;
 	}
 
 	#time {
 		font-family: monospace;
-		position: absolute;
-		top: 0px;
 	}
 
 	#treeContainer {
@@ -40,10 +50,20 @@
 
 </style>
 <body>
+<span>
+<h4>Instructions:</h4>
+<ul>
+	<li>Type your query in the input box below. The NLI currently supports a limited grammar designed for searching GitHub. Try typing the following: "repos", "users", "pull requests", "issues".</li>
+	<li>The <i>K</i>-best suggestions are output below. Change the value of <i>K</i> in the input box on the right.</li>
+	<li>Use arrow keys to navigate suggestions, and the <i>tab</i> key to build off a suggestion.</li>
+</ul>
+</span>
 
+<div id='inputContainer'>
 <input id="query" autocomplete="off">
 <input id="k" type="number" min="1" value="7" autocomplete="off">
 <span id="time"></span>
+</div>
 <div id="treeContainer"></div>
 
 <script>
