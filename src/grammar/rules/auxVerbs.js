@@ -27,8 +27,8 @@ this.beGeneral = g.addVerb({
 	insertionCost: 1,
 	one: [ 'am' ],
 	pl: [ 'are', 'were' ],
-	oneOrPl: [ 'have-been' ],
-	threeSg: [ 'is', 'has-been' ],
+	oneOrPl: [ 'have been' ],
+	threeSg: [ 'is', 'has been' ],
 	oneOrThreeSg: [ 'was' ]
 })
 
