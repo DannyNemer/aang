@@ -76,7 +76,13 @@ queryInput.focus()
 
 kInput.oninput = queryInput.oninput = function () {
 	var query = queryInput.value.trim()
-	if (query) sendQuery(query)
+	if (query) {
+		sendQuery(query)
+	} else {
+		while (treeContainer.firstChild) {
+			treeContainer.removeChild(treeContainer.firstChild)
+		}
+	}
 }
 
 // Prevent non-numeric input for K
