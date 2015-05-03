@@ -149,7 +149,15 @@ Parser.prototype.parse = function (query) {
 	for (var v = this.vertTab.length; v-- > 0;) {
 		var vertex = this.vertTab[v]
 		if (vertex.state.isFinal) {
-			this.startNode = vertex.zNodes[0].node
+			var zNodes = vertex.zNodes
+			for (var z = zNodes.length; z-- > 0;) {
+				var node = zNodes[z].node
+				if (node.size === this.tokensLen) {
+					this.startNode = node
+					break
+				}
+			}
+
 			break
 		}
 	}

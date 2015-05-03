@@ -123,8 +123,8 @@ var testQueries = [
 	'followers of my followers who are followers of mine my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed to follow',
 	'repos contributed to by me',
 	'repos to by me', // intentionally wrong
-	'repos danny by me', // intentionally wrong
-	'repos danny by me danny', // intentionally wrong
+	// 'repos danny by me', // intentionally wrong - requires implementation of deletions
+	// 'repos danny by me danny', // intentionally wrong - requires implementation of deletions
 	'repos liked contributed to by me', // intentionally wrong
 	'repos by me', // should insert 'liked'
 	'issues opened by me assigned to me', // transposition
