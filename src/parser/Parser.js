@@ -92,8 +92,6 @@ Parser.prototype.matchTerminalRules = function (query) {
 		}
 	}
 
-	// console.log(wordTab)
-
 	this.position = 0 // reset
 
 	return wordTab
@@ -129,11 +127,12 @@ Parser.prototype.parse = function (query) {
 		for (var w = words.length; w-- > 0;) {
 			var word = words[w]
 			var oldVertTab = this.vertTabs[word.start]
+			var oldVertTabLen = oldVertTab.length
 
 			// Loop through all term rules that produce term sym
 			for (var nodes = word.nodes, n = nodes.length; n-- > 0;) {
 				var node = nodes[n]
-				for (var v = 0; v < oldVertTab.length; ++v) {
+				for (var v = oldVertTabLen; v-- > 0;) {
 					this.addNode(node, oldVertTab[v])
 				}
 			}
@@ -260,20 +259,17 @@ Parser.prototype.addNode = function (node, oldVertex) {
 	var zNode
 
 	for (var v = vertexZNodes.length; v-- > 0;) {
-		var vertexZNode = vertexZNodes[v]
-		if (vertexZNode.node === node) {
-			zNode = vertexZNode
-			break
-		}
+		zNode = vertexZNodes[v]
+		if (zNode.node === node) break
 	}
 
-	if (!zNode) {
+	if (v < 0) {
 		// vertices are those which lead to this zNode
-		zNode = { node: node, vertices: [] }
+		zNode = { node: node, vertices: [ oldVertex ] }
 		vertexZNodes.push(zNode)
 
 		var stateReds = state.reds
-		for (var r = 0, stateRedsLen = stateReds.length; r < stateRedsLen; ++r) {
+		for (var r = stateReds.length; r-- > 0;) {
 			var red = stateReds[r]
 			this.reds.push({
 				zNode: zNode,
@@ -284,7 +280,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 		}
 	}
 
-	if (zNode.vertices.indexOf(oldVertex) === -1) {
+	else if (zNode.vertices.indexOf(oldVertex) === -1) {
 		zNode.vertices.push(oldVertex)
 	}
 }
@@ -299,10 +295,10 @@ Parser.prototype.reduce = function (red) {
 	if (red.binary) {
 		var isTransposition = red.ruleProps.transposition
 
-		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
+		for (var v = vertices.length; v-- > 0;) {
 			var vertexZNodes = vertices[v].zNodes
 
-			for (var z = 0, vertexZNodesLen = vertexZNodes.length; z < vertexZNodesLen; ++z) {
+			for (var z = vertexZNodes.length; z-- > 0;) {
 				var zNode = vertexZNodes[z]
 				var subNew
 
@@ -328,7 +324,7 @@ Parser.prototype.reduce = function (red) {
 				var node = this.addSub(red.LHS, subNew)
 
 				var zNodeVertices = zNode.vertices
-				for (var v2 = 0, zNodeVerticesLen = zNodeVertices.length; v2 < zNodeVerticesLen; ++v2) {
+				for (var v2 = zNodeVertices.length; v2-- > 0;) {
 					this.addNode(node, zNodeVertices[v2])
 				}
 			}
@@ -337,7 +333,7 @@ Parser.prototype.reduce = function (red) {
 		sub.ruleProps = red.ruleProps
 		var node = this.addSub(red.LHS, sub)
 
-		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
+		for (var v = vertices.length; v-- > 0;) {
 			this.addNode(node, vertices[v])
 		}
 	}
