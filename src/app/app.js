@@ -3,10 +3,17 @@ var fs = require('fs')
 var port = process.env.PORT || 5000
 
 http.createServer(function (req, res) {
-	if (req.method === 'GET') {
+	if (req.method === 'GET' && req.url === '/') {
 		fs.readFile(__dirname + '/index.html', function (err, file) {
 			res.end(err ? err + '\n' : file)
 		})
+
+		// Email request headers when someone other than myself visits the site
+		if (req.socket.remoteAddress !== '::ffff:128.252.25.27') {
+			req.headers.remoteAddress = req.socket.remoteAddress
+			var cmd = "echo '" + JSON.stringify(req.headers, null, 2) + "' | /usr/bin/mail -s 'Connection to Aang' danny.nemer@me.com"
+			require('child_process').exec(cmd, { stdio: 'inherit' })
+		}
 	} else if (req.method === 'POST' && req.url === '/query') {
 		var data = ''
 		req.on('data', function (chunk) {
