@@ -17,6 +17,7 @@ require('./ruleFunctions')
 // Extend module with semantic functions
 var semantic = require('./semantic')
 exports.newSemantic = semantic.newSemantic
+exports.hyphenate = semantic.hyphenate
 exports.insertSemantic = semantic.insertSemantic
 
 // Derive rules from insertion and transposition costs, and empty-strings

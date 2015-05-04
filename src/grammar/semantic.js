@@ -12,6 +12,18 @@ exports.newSemantic = function (opts) {
 	return opts.isArg ? newSemanticArg(opts) : newSemanticFunc(opts)
 }
 
+// Concatenate variadic arguments with hyphens
+exports.hyphenate = function () {
+	var chunks = Array.prototype.slice.call(arguments)
+
+	if (chunks.indexOf(undefined) !== -1) {
+		console.log('Err: undefined String in Semantic name:', chunks)
+		console.log(util.getLine())
+		throw 'ill-formed Semantic name'
+	}
+
+	return chunks.join('-')
+}
 
 // Schema for semantic functions
 var semanticFuncOptsSchema = {

@@ -135,6 +135,7 @@ var testQueries = [
 	'issues with 3 comments to 3 comments',
 	'issues with 3 to 3 comments',
 	'issues with less than 2 > 4 comments',
+	'repos with between 22 and 23 likes',
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
 	// 'my followers who created pull requests of mine my followers who created repositories followers of mine mentioned in issues of my followers who I follow like that are repos created by me I contributed to am mentioned in that I am mentioned in'
 	// 'my repos me people who follow my followers have been and', - BROKEN

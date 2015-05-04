@@ -2,6 +2,8 @@ var g = require('../grammar')
 var user = require('./user')
 var stopWords = require('./stopWords')
 var poss = require('./poss')
+var count = require('./count')
+
 
 var followersSemantic = g.newSemantic({ name: 'followers', cost: 0.5, minParams: 1, maxParams: 1 })
 var usersFollowedSemantic = g.newSemantic({ name: user.namePl + '-followed', cost: 0.5, minParams: 1, maxParams: 1 })
@@ -32,7 +34,6 @@ user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: follower
 
 var followersTerm = g.addWord({
 	symbol: new g.Symbol('followers', 'term'),
-	insertionCost: 1,
 	accepted: [ 'followers', 'subscribers' ]
 })
 
@@ -47,3 +48,12 @@ user.noRelativePossessive.addRule({ RHS: [ poss.determinerOmissible, userFollowe
 
 // followers of mine
 user.head.addRule({ RHS: [ userFollowersHead, poss.ofPossUsersPlus ], semantic: followersSemantic })
+
+
+// users with <int> followers
+var followers = g.addWord({
+	symbol: new g.Symbol('followers'),
+	insertionCost: 2.5,
+	accepted: [ 'followers', 'subscribers' ]
+})
+count.addForCategoryItems(user, followers)

@@ -4,6 +4,7 @@ var github = require('./github')
 var poss = require('../poss')
 var user = require('../user')
 var auxVerbs = require('../auxVerbs')
+var count = require('../count')
 
 
 var repository = new Category({ sg: 'repository', pl: 'repositories', entity: true })
@@ -129,3 +130,23 @@ var writtenIn = g.addWord({
 })
 // (repos) written in {language}
 repository.passive.addRule({ RHS: [ writtenIn, language ] })
+// WITH N STARS:
+var stars = g.addWord({
+  symbol: new g.Symbol('stars'),
+  insertionCost: 3,
+  accepted: [ 'stars' ],
+  substitutions: [ 'likes' ]
+})
+
+// repos with <int> stars
+count.addForCategoryItems(repository, stars)
+
+// WITH N FORKS:
+var forks = g.addWord({
+  symbol: new g.Symbol('forks'),
+  insertionCost: 3.25,
+  accepted: [ 'forks' ]
+})
+
+// repos with <int> forks
+count.addForCategoryItems(repository, forks)
