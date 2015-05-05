@@ -13,7 +13,6 @@
 	}
 
 	ul {
-		width: inherit;
 		margin-top: -20px;
 		margin-bottom: 40px;
 	}
@@ -23,21 +22,19 @@
 	}
 
 	#query {
-		width: 650px;
-		display: table-cell;
+		width: 100%;
 	}
 
 	#k {
 		width: 50px;
-		display: table-cell;
 	}
 
 	#time {
 		font-family: monospace;
-	}
-
-	#treeContainer {
-		width: 700px;
+		float: right;
+		width: 133px;
+		margin-right: -135px;
+		margin-top: -32px;
 	}
 
 	.semantic {
@@ -60,10 +57,10 @@
 </span>
 
 <div id='inputContainer'>
-<input id="query" autocomplete="off">
-<input id="k" type="number" min="1" value="7" autocomplete="off">
-<span id="time"></span>
+	<input id="query" autocomplete="off">
+	<input id="k" type="number" min="1" value="7" autocomplete="off">
 </div>
+<span id="time"></span>
 <div id="treeContainer"></div>
 
 <script>
@@ -71,6 +68,8 @@ var treeContainer = document.getElementById('treeContainer')
 var time = document.getElementById('time')
 var queryInput = document.getElementById('query')
 var kInput = document.getElementById('k')
+
+var cache = {}
 
 queryInput.focus()
 
@@ -152,50 +151,29 @@ treeContainer.onmouseover = function (e) {
 
 
 function sendQuery(query) {
+	var kVal = kInput.value
+
+	var kCache = cache[kVal]
+	if (kCache) {
+		var cachedResponse = kCache[query]
+		if (cachedResponse) {
+			handleResponse(cachedResponse)
+			time.innerHTML += 'RTT: 0 ms (cache)'
+			return
+		}
+	} else {
+		kCache = cache[kVal] = {}
+	}
+
 	var start = Date.now()
 	var xhr = new XMLHttpRequest()
 
 	xhr.onload = function (e) {
 		if (xhr.readyState === 4) {
 			if (xhr.status === 200) {
-				var response = JSON.parse(xhr.responseText)
-
-				time.innerHTML = 'Parse: ' + response.parseTime + ' ms' + '<br>'
+				var response = kCache[query] = JSON.parse(xhr.responseText)
+				handleResponse(response)
 				time.innerHTML += 'RTT: ' + (Date.now() - start) + ' ms'
-
-				while (treeContainer.firstChild) {
-					treeContainer.removeChild(treeContainer.firstChild)
-				}
-
-				if (response.message) {
-					var p = treeContainer.appendChild(document.createElement('p'))
-					p.textContent = response.message
-				} else {
-					response.trees.forEach(function (tree, i) {
-						var div = treeContainer.appendChild(document.createElement('div'))
-						div.className = 'tree'
-
-						var textSpan = div.appendChild(document.createElement('span'))
-						textSpan.textContent = tree.text
-
-						var costSpan = div.appendChild(document.createElement('span'))
-						costSpan.textContent = ' - ' + tree.cost.toFixed(7)
-
-						if (i === 0) {
-							div.id = 'selected'
-						}
-
-						addSemantic(div, tree.semantic)
-
-						if (tree.disambiguation) {
-							tree.disambiguation.forEach(function (semantic) {
-								addSemantic(div, semantic)
-							})
-						}
-
-						div.appendChild(document.createElement('br'))
-					})
-				}
 			}
 		}
 	}
@@ -204,8 +182,46 @@ function sendQuery(query) {
 	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
 	xhr.send(JSON.stringify({
 		query: query,
-		k: kInput.value
+		k: kVal
 	}))
+}
+
+function handleResponse(response) {
+	time.innerHTML = 'Parse: ' + response.parseTime + ' ms' + '<br>'
+
+	while (treeContainer.firstChild) {
+		treeContainer.removeChild(treeContainer.firstChild)
+	}
+
+	if (response.message) {
+		var p = treeContainer.appendChild(document.createElement('p'))
+		p.textContent = response.message
+	} else {
+		response.trees.forEach(function (tree, i) {
+			var div = treeContainer.appendChild(document.createElement('div'))
+			div.className = 'tree'
+
+			var textSpan = div.appendChild(document.createElement('span'))
+			textSpan.textContent = tree.text
+
+			var costSpan = div.appendChild(document.createElement('span'))
+			costSpan.textContent = ' - ' + tree.cost.toFixed(7)
+
+			if (i === 0) {
+				div.id = 'selected'
+			}
+
+			addSemantic(div, tree.semantic)
+
+			if (tree.disambiguation) {
+				tree.disambiguation.forEach(function (semantic) {
+					addSemantic(div, semantic)
+				})
+			}
+
+			div.appendChild(document.createElement('br'))
+		})
+	}
 }
 
 function addSemantic(div, semantic) {
