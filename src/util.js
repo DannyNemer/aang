@@ -68,9 +68,7 @@ exports.illFormedOpts = function (schema, opts) {
 
 // Prints error message (concatenation of arguments) and line from which the parent function was called
 function printOptsErr() {
-	console.log.apply(null, Array.prototype.slice.call(arguments).map(function (arg) {
-		return arg.constructor === String ? colors.red(arg) : arg
-	}))
+	exports.printErr.apply(null, arguments)
 	console.log(exports.getLine())
 
 	return true
