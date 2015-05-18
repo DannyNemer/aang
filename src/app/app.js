@@ -7,13 +7,6 @@ http.createServer(function (req, res) {
 		fs.readFile(__dirname + '/index.html', function (err, file) {
 			res.end(err ? err + '\n' : file)
 		})
-
-		// Email request headers when someone other than myself visits the site
-		if (req.socket.remoteAddress !== '::ffff:128.252.25.27') {
-			req.headers.remoteAddress = req.socket.remoteAddress
-			var cmd = "echo '" + JSON.stringify(req.headers, null, 2) + "' | /usr/bin/mail -s 'Connection to Aang' danny.nemer@me.com"
-			require('child_process').exec(cmd, { stdio: 'inherit' })
-		}
 	} else if (req.method === 'POST' && req.url === '/query') {
 		var data = ''
 		req.on('data', function (chunk) {
@@ -29,25 +22,22 @@ http.createServer(function (req, res) {
 
 			if (startNode) {
 				var trees = forestSearch.search(startNode, Number(data.k))
-				var parseTime = Date.now() - startTime
+
+				response = {
+					parseTime: Date.now() - startTime
+				}
 
 				if (trees.length) {
-					response = {
-						parseTime: parseTime,
-						trees: trees.map(function (tree) {
-							return {
-								text: tree.text,
-								semantic: tree.semanticStr,
-								disambiguation: tree.disambiguation,
-								cost: tree.cost
-							}
-						})
-					}
+					response.trees = trees.map(function (tree) {
+						return {
+							text: tree.text,
+							semantic: tree.semanticStr,
+							disambiguation: tree.disambiguation,
+							cost: tree.cost
+						}
+					})
 				} else {
-					response = {
-						parseTime: parseTime,
-						message: 'Failed to find legal parse trees'
-					}
+					response.message = 'Failed to find legal parse trees'
 				}
 			} else {
 				response = {
