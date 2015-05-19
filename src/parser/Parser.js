@@ -1,5 +1,6 @@
 module.exports = Parser
 var util = require('../util')
+var intSymbol = require('../grammar/grammar').intSymbol
 
 function Parser(stateTable) {
 	this.stateTable = stateTable
@@ -62,7 +63,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 
 		// If unigram is a number, match with rules with '<int>' term symbol, using unigram as entity
 		else {
-			var wordSym = this.stateTable.symbolTab['<int>']
+			var wordSym = this.stateTable.symbolTab[intSymbol]
 			// create node with terminal symbol
 			var wordNode = this.addSub(wordSym)
 

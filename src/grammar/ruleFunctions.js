@@ -314,13 +314,15 @@ var intOptsSchema = {
 	max: { type: Number, optional: true }
 }
 
-var intSymbol = '<int>'
+g.intSymbol = '<int>'
 
+// Created a terminal rule to for integers within an accepted range
 g.addInt = function (opts) {
 	if (util.illFormedOpts(intOptsSchema, opts)) {
 		throw 'ill-formed <int> symbol'
 	}
 
+	// If defined, maximum value must be greater than minimum value
 	if (opts.min >= opts.max) {
 		util.printErrWithLine('<int> max value must be greater than min value:', 'min: ' + opts.min + ', max: ' + opts.max)
 		throw 'ill-formed <int> symbol'
@@ -328,8 +330,10 @@ g.addInt = function (opts) {
 
 	opts.symbol.addRule({
 		terminal: true,
-		RHS: intSymbol,
+		RHS: g.intSymbol,
 		intMin: opts.min,
+		// If maximum value unedfined, set to Number.MAX_SAFE_INTEGER
+		// - Infinity unrecognized in JSON.stringify() and will accept 'Infinity' in input
 		intMax: opts.max !== undefined ? opts.max : Number.MAX_SAFE_INTEGER
 	})
 
