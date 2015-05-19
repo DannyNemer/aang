@@ -104,10 +104,14 @@ function createRuleProps(origRule) {
 
 	if (origRule.hasOwnProperty('semantic')) {
 		ruleProps.semantic = origRule.semantic
+	if (origRule.hasOwnProperty('intMin')) {
+		ruleProps.intMin = origRule.intMin
 	}
 
 	if (origRule.hasOwnProperty('insertedSemantic')) {
 		ruleProps.insertedSemantic = origRule.insertedSemantic
+	if (origRule.hasOwnProperty('intMax')) {
+		ruleProps.intMax = origRule.intMax
 	}
 
 	if (origRule.transposition) {

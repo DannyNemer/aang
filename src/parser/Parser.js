@@ -73,18 +73,22 @@ Parser.prototype.matchTerminalRules = function (query) {
 			var wordSize = wordSym.size
 			for (var rules = wordSym.rules, r = rules.length; r-- > 0;) {
 				var rule = rules[r]
-				var sub = {
-					size: wordSize, // size of literal
-					node: wordNode,
-					ruleProps: {
-						cost: rule.ruleProps.cost,
-						semantic: semanticArg,
-						text: nGram
-					}
-				}
+				var ruleProps = rule.ruleProps
 
-				// create node with LHS of terminal rule
-				wordNodes.push(this.addSub(rule.RHS[0], sub)) // FIX: rename prop - rule.RHS[0] is LHS for terms
+				if (nGram <= ruleProps.intMax && nGram >= ruleProps.intMin) {
+					var sub = {
+						size: wordSize, // size of literal
+						node: wordNode,
+						ruleProps: {
+							cost: ruleProps.cost,
+							semantic: semanticArg,
+							text: nGram
+						}
+					}
+
+					// create node with LHS of terminal rule
+					wordNodes.push(this.addSub(rule.RHS[0], sub)) // FIX: rename prop - rule.RHS[0] is LHS for terms
+				}
 			}
 
 			// will only be one term sym match (<int>) and only of length 1
