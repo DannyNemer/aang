@@ -73,20 +73,17 @@ g.addVerb = function (opts) {
 	// Must have an inflected form for every person-number combination in nominative case:
 	// - first-person, third-person-singular, plural
 	if (!opts.oneOrPl && !opts.oneOrThreeSg && !opts.one) {
-		console.log('Err: Missing inflected verb form for first-person')
-		console.log(util.getLine())
+		util.printErrWithLine('Missing inflected verb form for first-person')
 		throw 'ill-formed verb'
 	}
 
 	if (!opts.oneOrPl && !opts.pl) {
-		console.log('Err: Missing inflected verb form for plural')
-		console.log(util.getLine())
+		util.printErrWithLine('Missing inflected verb form for plural')
 		throw 'ill-formed verb'
 	}
 
 	if (!opts.oneOrThreeSg && !opts.threeSg) {
-		console.log('Err: Missing inflected verb form for third-person-singular')
-		console.log(util.getLine())
+		util.printErrWithLine('Missing inflected verb form for third-person-singular')
 		throw 'ill-formed verb'
 	}
 
@@ -253,7 +250,7 @@ g.addWord = function (opts) {
 	}
 
 	if (opts.accepted.indexOf(g.emptySymbol) !== -1) {
-		console.log('Err: Words cannot have <empty> strings:', opts.name)
+		util.PrintErr('Words cannot have <empty> strings:', opts.name)
 		console.log('Only stop-words or opt-terms can have <empty> strings')
 		console.log(util.getLine())
 		throw 'ill-formed word'
@@ -261,8 +258,7 @@ g.addWord = function (opts) {
 
 	// Opt-words cannot have insertion costs
 	if (opts.optional && opts.hasOwnProperty('insertionCost')) {
-		console.log('Err: Optional words cannot have insertion costs:', opts.name)
-		console.log(util.getLine())
+		util.printErrWithLine('Optional words cannot have insertion costs:', opts.name)
 		throw 'ill-formed opt-word'
 	}
 

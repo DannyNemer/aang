@@ -364,9 +364,9 @@ function ruleExists(rules, newRule, LHS) {
 		if (util.arraysMatch(existingRule.RHS, newRule.RHS)) {
 			if (util.arraysMatch(existingRule.text, newRule.text)) {
 				if (existingRule.insertedSyms) {
-					console.log('Err: two identical rules produced by insertion(s)')
+					util.printErr('Two identical rules produced by insertion(s)')
 				} else {
-					console.log('Err: new rule produced with edits identical to original rule')
+					util.printErr('New rule produced with edits identical to original rule')
 				}
 
 				util.log(LHS, existingRule, newRule)

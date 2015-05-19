@@ -4,8 +4,7 @@ exports.semantics = {}
 
 exports.newSemantic = function (opts) {
 	if (exports.semantics.hasOwnProperty(opts.name)) {
-		console.log('Err: Duplicate Semantic:', opts.name)
-		console.log(util.getLine())
+		util.printErrWithLine('Duplicate Semantic:', opts.name)
 		throw 'duplicate Semantic'
 	}
 
@@ -17,8 +16,7 @@ exports.hyphenate = function () {
 	var chunks = Array.prototype.slice.call(arguments)
 
 	if (chunks.indexOf(undefined) !== -1) {
-		console.log('Err: undefined String in Semantic name:', chunks)
-		console.log(util.getLine())
+		util.printErrWithLine('undefined String in Semantic name:', chunks)
 		throw 'ill-formed Semantic name'
 	}
 
@@ -44,8 +42,7 @@ function newSemanticFunc(opts) {
 	}
 
 	if (opts.minParams > opts.maxParams) {
-		console.log('Err: Semantic minParams > maxParams:', opts)
-		console.log(util.getLine())
+		util.printErrWithLine('Semantic minParams > maxParams:', opts)
 		throw 'ill-formed Semantic function'
 	}
 
