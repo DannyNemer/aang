@@ -37,10 +37,10 @@ exports.sortGrammar = function () {
 exports.printRuleCount = function (oldGrammarPath) {
 	var fs = require('fs')
 
-	var newRuleCount = ruleCount(grammar)
+	var newRuleCount = exports.ruleCount(grammar)
 
 	if (fs.existsSync(oldGrammarPath)) {
-		var oldRuleCount = ruleCount(require(fs.realpathSync(oldGrammarPath)))
+		var oldRuleCount = exports.ruleCount(require(fs.realpathSync(oldGrammarPath)))
 		if (oldRuleCount !== newRuleCount) {
 			console.log('Rules:', oldRuleCount, '->', newRuleCount)
 			return
@@ -50,7 +50,8 @@ exports.printRuleCount = function (oldGrammarPath) {
 	console.log('Rules:', newRuleCount)
 }
 
-function ruleCount(grammar) {
+// Return number of rules in grammar
+exports.ruleCount = function (grammar) {
 	return Object.keys(grammar).reduce(function (prev, cur) {
 		return prev + grammar[cur].length
 	}, 0)

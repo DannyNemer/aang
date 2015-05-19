@@ -2,8 +2,10 @@
 //   Empty-string - rules that produce empty-strings (i.e., optional)
 //   Insertions - inserting terminal symbols
 //   Transposition - swapped RHS of nonterminal rules
+// Recursively remove nonterminal symbols with no productions, rules whose RHS contain those symbols or the <empty> symbol, and any production-less symbols that result
 
 var util = require('../util')
+var g = require('./grammar')
 var semantic = require('./semantic')
 
 
@@ -18,26 +20,23 @@ module.exports = function (grammar) {
 	createRulesFromInsertions(grammar, insertions)
 
 	createRulesFromTranspositions(grammar)
+
+	removeNullNonterminalSymbols(grammar)
 }
 
 // Find all terminal rules with insertion costs or blanks
 function findTermRuleInsertions(grammar, insertions) {
-	var emptySymbol = require('./grammar').emptySymbol
-
 	Object.keys(grammar).forEach(function (nontermSym) {
-		grammar[nontermSym].forEach(function (rule, ruleIdx, symRules) {
+		grammar[nontermSym].forEach(function (rule) {
 			if (rule.terminal) {
 				var termSym = rule.RHS[0]
-				if (termSym === emptySymbol) { // Empty-string
+				if (termSym === g.emptySymbol) { // Empty-string
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost,
 						insertedSyms: [ { symbol: termSym } ],
 						// WRONG: [1-sg-poss-omissible] uses a blank to achieve an insertion cost of 0 on a base cost of 0
 						text: rule.text ? [ rule.text ] : []
 					})
-
-					// Remove empty-string term syms from grammar
-					symRules.splice(ruleIdx, 1)
 				} else if (rule.hasOwnProperty('insertionCost')) {
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost + rule.insertionCost,
@@ -390,4 +389,44 @@ function ruleExists(rules, newRule, LHS) {
 	}
 
 	return false
+}
+
+
+// Recursively remove nonterminal symbols with no productions, rules whose RHS contain those symbols or the <empty> symbol, and any production-less symbols that result
+function removeNullNonterminalSymbols(grammar) {
+	var curRuleCount = g.ruleCount(grammar)
+	var prevRuleCount
+
+	// Loop until no new production-less symbols are found
+	do {
+		prevRuleCount = curRuleCount
+
+		for (var nontermSym in grammar) {
+			var rules = grammar[nontermSym]
+
+			// Nonterminal symbol has no productions
+			if (rules.length === 0) {
+				delete grammar[nontermSym]
+			} else {
+				for (var r = 0; r < rules.length; ++r) {
+					var rule = rules[r]
+					if (rule.terminal) {
+						// Remove rules that produce the <empty> symbol
+						// Will only find any on first loop through grammar
+						if (rule.RHS[0] === g.emptySymbol) {
+							rules.splice(r, 1)
+							r--
+						}
+					} else for (var RHS = rule.RHS, s = RHS.length; s-- > 0;) {
+						// Nonterminal RHS contains previously deleted symbol which had no productions
+						if (!grammar.hasOwnProperty(RHS[s])) {
+							rules.splice(r, 1)
+							r--
+							break
+						}
+					}
+				}
+			}
+		}
+	} while (prevRuleCount !== (curRuleCount = g.ruleCount(grammar)))
 }
