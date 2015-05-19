@@ -306,3 +306,32 @@ g.addNonterminalOpt = function (symbol) {
 
 	return symbolOpt
 }
+
+
+var intOptsSchema = {
+	symbol: Symbol,
+	min: Number,
+	max: { type: Number, optional: true }
+}
+
+var intSymbol = '<int>'
+
+g.addInt = function (opts) {
+	if (util.illFormedOpts(intOptsSchema, opts)) {
+		throw 'ill-formed <int> symbol'
+	}
+
+	if (opts.min >= opts.max) {
+		util.printErrWithLine('<int> max value must be greater than min value:', 'min: ' + opts.min + ', max: ' + opts.max)
+		throw 'ill-formed <int> symbol'
+	}
+
+	opts.symbol.addRule({
+		terminal: true,
+		RHS: intSymbol,
+		intMin: opts.min,
+		intMax: opts.max !== undefined ? opts.max : Number.MAX_SAFE_INTEGER
+	})
+
+	return opts.symbol
+}

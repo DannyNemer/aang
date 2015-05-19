@@ -52,7 +52,9 @@ var termRuleOptsSchema = {
 	semantic: { type: Array, optional: true },
 	insertionCost: { type: Number, optional: true },
 	textForms: { type: Object, optional: true },
-	text: { type: String, optional: true }
+	text: { type: String, optional: true },
+	intMin: { type: Number, optional: true },
+	intMax: { type: Number, optional: true }
 }
 
 // Create a new terminal rule from passed opts
@@ -65,7 +67,9 @@ Symbol.prototype.newTerminalRule = function (opts) {
 		RHS: [ opts.RHS ],
 		terminal: true,
 		// String for terminal symbols, or Object of inflected forms for conjugation
-		text: opts.text || opts.textForms
+		text: opts.text || opts.textForms,
+		intMin: opts.intMin,
+		intMax: opts.intMax
 	}
 
 	if (opts.hasOwnProperty('insertionCost')) {
