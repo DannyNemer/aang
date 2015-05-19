@@ -34,17 +34,17 @@ function parse(query, K) {
 		var parser = new (require(parserPath))(stateTable)
 
 		if (printTime) console.time('parse')
-		parser.parse(query)
+		var startNode = parser.parse(query)
 		if (printTime) console.timeEnd('parse')
 
-		if (printForest) parser.printForest()
+		if (printForest) parser.printForest(startNode)
 		if (printStack) parser.printStack()
 
-		if (parser.startNode) {
+		if (startNode) {
 			var forestSearch = require(forestSearchPath)
-			var trees = forestSearch.search(parser.startNode, K, printTrees)
+			var trees = forestSearch.search(startNode, K, printTrees)
 			if (printTime) console.timeEnd('parse')
-			if (printForestGraph) parser.printNodeGraph(parser.startNode)
+			if (printForestGraph) parser.printNodeGraph(startNode)
 			if (printOutput) forestSearch.print(trees, printCost, printTrees)
 		} else {
 			console.log('Failed to reach start node')

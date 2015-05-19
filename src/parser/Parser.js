@@ -157,14 +157,13 @@ Parser.prototype.parse = function (query) {
 			for (var z = zNodes.length; z-- > 0;) {
 				var node = zNodes[z].node
 				if (node.size === this.tokensLen) {
-					this.startNode = node
-					break
+					return node
 				}
 			}
-
-			break
 		}
 	}
+
+	return null
 }
 
 // no sub for term syms
@@ -357,8 +356,8 @@ function printNode(node) {
 Parser.prototype.printForest = function () {
 	console.log("\nParse Forest:")
 
-	if (this.startNode) {
-		console.log('*' + printNode(this.startNode) + '.')
+	if (startNode) {
+		console.log('*' + printNode(startNode) + '.')
 	}
 
 	this.nodeTabs.forEach(function (nodeTab) {
