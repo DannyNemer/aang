@@ -2,8 +2,8 @@ var g = require('../grammar')
 var stopWords = require('./stopWords')
 
 // (people who) are (followed by me)
-this.beNon1Sg = g.addWord({
-	symbol: new g.Symbol('be', 'non', '1', 'sg'),
+this.beNon1Sg = new g.Symbol('be', 'non', '1', 'sg')
+this.beNon1Sg.addWord({
 	insertionCost: 1,
 	accepted: [ 'are', 'were' ],
 	substitutions: [ 'is|are|be being', 'being|been' ]
@@ -15,15 +15,15 @@ this.beNon1SgSentenceAdverbial = new g.Symbol('be', 'non', '1', 'sg', 'sentence'
 this.beNon1SgSentenceAdverbial.addRule({ RHS: [ this.beNon1Sg, stopWords.sentenceAdverbial ] })
 
 // (people who have) been (followed by me)
-this.bePast = g.addWord({
-	symbol: new g.Symbol('be', 'past'),
+this.bePast = new g.Symbol('be', 'past')
+this.bePast.addWord({
 	insertionCost: 1,
 	accepted: [ 'been' ]
 })
 
 // (pull requests I/{user}/[nom-users]) am/is/are (mentioned in)
-this.beGeneral = g.addVerb({
-	symbol: new g.Symbol('be', 'general'),
+this.beGeneral = new g.Symbol('be', 'general')
+this.beGeneral.addVerb({
 	insertionCost: 1,
 	one: [ 'am' ],
 	pl: [ 'are', 'were' ],
@@ -34,8 +34,8 @@ this.beGeneral = g.addVerb({
 
 // (people who) have (been followed by me)
 // - No past tense ('had') because it implies semantic no longer true; "had liked" -> no longer liked
-this.have = g.addVerb({
-	symbol: new g.Symbol('have'),
+this.have = new g.Symbol('have')
+this.have.addVerb({
 	insertionCost: 0.8,
 	oneOrPl: [ 'have' ],
 	threeSg: [ 'has' ],
@@ -55,15 +55,15 @@ this.haveSentenceAdverbialBePast.addRule({ RHS: [ haveSentenceAdverbial, this.be
 
 // NEGATION:
 this.notSemantic = g.newSemantic({ name: 'not', cost: 0.5, minParams: 1, maxParams: 1 })
-var negation = g.addWord({
-	symbol: new g.Symbol('negation'),
+var negation = new g.Symbol('negation')
+negation.addWord({
 	accepted: [ 'not' ],
 	substitutions: [ 'are|can|could|did|does|do|had|has|have|is|should|was|were|will|would not' ]
 })
 
 // (people who) do not (follow me)
-var doTerm = g.addWord({
-	symbol: new g.Symbol('do'),
+var doTerm = new g.Symbol('do')
+doTerm.addWord({
 	insertionCost: 0.2,
 	accepted: [ 'do' ],
 	substitutions: [ 'did', 'does' ]

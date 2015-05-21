@@ -9,8 +9,8 @@ var count = require('../count')
 
 var repository = new Category({ sg: 'repository', pl: 'repositories', entity: true })
 
-var repositoriesTerm = g.addWord({
-	symbol: new g.Symbol(repository.namePl, 'term'),
+var repositoriesTerm = new g.Symbol(repository.namePl, 'term')
+repositoriesTerm.addWord({
 	insertionCost: 3.5,
 	accepted: [ repository.namePl, 'repos' ]
 })
@@ -47,8 +47,8 @@ user.head.addRule({ RHS: [ github.creatorsOf, repository.catPl ], semantic: repo
 var repositoriesLikedSemantic = g.newSemantic({ name: repository.namePl + '-liked', cost: 0.5, minParams: 1, maxParams: 1 })
 var repositoryLikersSemantic = g.newSemantic({ name: repository.nameSg + '-likers', cost: 0.5, minParams: 1, maxParams: 1 })
 
-var like = g.addVerb({
-	symbol: new g.Symbol('like'),
+var like = new g.Symbol('like')
+like.addVerb({
 	insertionCost: 0.8,
 	oneOrPl: [ 'like' ],
 	threeSg: [ 'likes' ],
@@ -70,8 +70,8 @@ var likedRepos = new g.Symbol('liked', repository.namePl + '+')
 likedRepos.addRule({ RHS: [ like, repository.catPlPlus ], verbForm: 'past' })
 user.subjFilter.addRule({ RHS: [ auxVerbs.have, likedRepos ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
 
-var likersOf = g.addWord({
-	symbol: new g.Symbol('likers', 'of'),
+var likersOf = new g.Symbol('likers', 'of')
+likersOf.addWord({
 	accepted: [ 'likers of' ] // should I use regexp? be seperate syms
 })
 // likers of [repositories+]
@@ -79,8 +79,8 @@ user.head.addRule({ RHS: [ likersOf, repository.catPlPlus ], semantic: repositor
 
 
 // CONTRIBUTED-TO:
-var contributedTo = g.addWord({
-	symbol: new g.Symbol('contributed', 'to'),
+var contributedTo = new g.Symbol('contributed', 'to')
+contributedTo.addWord({
 	insertionCost: 1.2,
 	accepted: [ 'contributed to' ]
 })
@@ -103,8 +103,8 @@ var haveContributedTo = new g.Symbol('have', 'contributed', 'to')
 haveContributedTo.addRule({ RHS: [ auxVerbs.have, contributedTo ], personNumber: 'pl' })
 user.subjFilter.addRule({ RHS: [ haveContributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 
-var contributorsTo = g.addWord({
-	symbol: new g.Symbol('contributors', 'to'),
+var contributorsTo = new g.Symbol('contributors', 'to')
+contributorsTo.addWord({
 	accepted: [ 'contributors to', 'contributors of' ] // should I use regexp? be seperate syms
 })
 // contributors to [repositories+]
@@ -124,15 +124,16 @@ language.addRule({
 // (my) {language} (repos); (repos that are) {language} (repos)
 repository.nounModifier.addRule({ RHS: [ language ] })
 
-var writtenIn = g.addWord({
-	symbol: new g.Symbol('written', 'in'),
-	accepted: [ 'written in' ]
+var writtenIn = new g.Symbol('written', 'in')
+writtenIn.addWord({
+	accepted: [ 'written in' ],
+	// substitutions: [ 'in' ]
 })
 // (repos) written in {language}
 repository.passive.addRule({ RHS: [ writtenIn, language ] })
 // WITH N STARS:
-var stars = g.addWord({
-  symbol: new g.Symbol('stars'),
+var stars = new g.Symbol('stars')
+stars.addWord({
   insertionCost: 3,
   accepted: [ 'stars' ],
   substitutions: [ 'likes' ]
@@ -142,8 +143,8 @@ var stars = g.addWord({
 count.addForCategoryItems(repository, stars)
 
 // WITH N FORKS:
-var forks = g.addWord({
-  symbol: new g.Symbol('forks'),
+var forks = new g.Symbol('forks')
+forks.addWord({
   insertionCost: 3.25,
   accepted: [ 'forks' ]
 })

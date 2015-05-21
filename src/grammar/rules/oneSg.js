@@ -3,8 +3,8 @@ var g = require('../grammar')
 this.semantic = g.newSemantic({ name: 'me', cost: 0.2, isArg: true })
 
 // (people) I (follow); (people followed by) me; (people who follow) me
-this.plain = g.addPronoun({
-	symbol: new g.Symbol('1', 'sg'),
+this.plain = new g.Symbol('1', 'sg')
+this.plain.addPronoun({
 	insertionCost: 0.5,
 	nom: 'I',
 	obj: 'me',
@@ -12,8 +12,8 @@ this.plain = g.addPronoun({
 })
 
 // my (repositories)
-this.poss = g.addWord({
-	symbol: new g.Symbol('1', 'sg', 'poss'),
+this.poss = new g.Symbol('1', 'sg', 'poss')
+this.poss.addWord({
 	insertionCost: 0,
 	accepted: [ 'my' ]
 })
@@ -25,7 +25,6 @@ this.poss = g.addWord({
 // Still unsure why
 this.possOmissible = new g.Symbol('1', 'sg', 'poss', 'omissible'),
 this.possOmissible.addRule({ terminal: true, RHS: g.emptySymbol, text: 'my' })
-g.addWord({
-	symbol: this.possOmissible,
+this.possOmissible.addWord({
 	accepted: [ 'my' ]
 })

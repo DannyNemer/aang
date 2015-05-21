@@ -5,6 +5,9 @@ var semantic = require('./semantic')
 
 module.exports = Symbol
 
+// Extend module with rule functions
+require('./ruleFunctions')
+
 // Constructor for nonterminal symbols
 // Concatenates arguments after 0th index as Symbol's name
 function Symbol(grammar) {
@@ -42,6 +45,8 @@ Symbol.prototype.addRule = function (opts) {
 	}
 
 	this.rules.push(newRule)
+
+	return this
 }
 
 

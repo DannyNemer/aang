@@ -4,7 +4,7 @@ var conjunctions = require('./conjunctions')
 
 
 var number = new g.Symbol('number')
-number.addRule({ terminal: true, RHS: '<int>' })
+number.addInt({ min: 0 })
 
 // (issues with under <int> comments) and over (<int> comments)
 var andPrepOver = new g.Symbol('and', 'prep', 'over')
@@ -49,7 +49,7 @@ exports.addForCategoryItems = function (category, itemsSymbol) {
 	numberItems.addRule({ RHS: [ number, itemsSymbol ] })
 	// (issues with between) <int> /comments/ (and <int> comments)
 	var numberItemsOpt = new g.Symbol('number', itemsName, 'opt')
-	numberItemsOpt.addRule({ RHS: [ number, g.addNonterminalOpt(itemsSymbol) ] })
+	numberItemsOpt.addRule({ RHS: [ number, itemsSymbol.createNonterminalOpt() ] })
 
 
 	// (issues with) <int> comments

@@ -7,8 +7,8 @@ var user = require('../user')
 
 var pullRequest = new Category({ sg: 'pull-request', pl: 'pull-requests' })
 
-var pullRequestsTerm = g.addWord({
-	symbol: new g.Symbol(pullRequest.namePl, 'term'),
+var pullRequestsTerm = new g.Symbol(pullRequest.namePl, 'term')
+pullRequestsTerm.addWord({
 	insertionCost: 3.5,
 	accepted: [ 'pull requests' ]
 })

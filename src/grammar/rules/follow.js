@@ -8,8 +8,8 @@ var count = require('./count')
 var followersSemantic = g.newSemantic({ name: 'followers', cost: 0.5, minParams: 1, maxParams: 1 })
 var usersFollowedSemantic = g.newSemantic({ name: user.namePl + '-followed', cost: 0.5, minParams: 1, maxParams: 1 })
 
-var follow = g.addVerb({
-	symbol: new g.Symbol('follow'),
+var follow = new g.Symbol('follow')
+follow.addVerb({
 	insertionCost: 1,
 	oneOrPl: [ 'follow', 'subscribe to' ],
 	threeSg: [ 'follows' ],
@@ -31,15 +31,15 @@ user.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, follow ], sem
 user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: followersSemantic, personNumber: 'pl' })
 
 
-
-var followersTerm = g.addWord({
-	symbol: new g.Symbol('followers', 'term'),
+// No insertion
+var followersTermSpecial = new g.Symbol('followers', 'term', 'special')
+followersTermSpecial.addWord({
 	accepted: [ 'followers', 'subscribers' ]
 })
 
 // (my) followers; followers (of mine)
 var userFollowersHead = new g.Symbol(user.nameSg, 'followers', 'head')
-userFollowersHead.addRule({ RHS: [ user.companyOpt, followersTerm ] })
+userFollowersHead.addRule({ RHS: [ user.companyOpt, followersTermSpecial ] })
 
 // my followers
 var userFollowersPossessible = new g.Symbol(user.nameSg, 'followers', 'possessible')
@@ -51,9 +51,9 @@ user.head.addRule({ RHS: [ userFollowersHead, poss.ofPossUsersPlus ], semantic: 
 
 
 // users with <int> followers
-var followers = g.addWord({
-	symbol: new g.Symbol('followers'),
+var followersTerm = new g.Symbol('followers', 'term')
+followersTerm.addWord({
 	insertionCost: 2.5,
 	accepted: [ 'followers', 'subscribers' ]
 })
-count.addForCategoryItems(user, followers)
+count.addForCategoryItems(user, followersTerm)

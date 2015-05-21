@@ -11,8 +11,9 @@ exports.startSymbol = new exports.Symbol('start')
 // Original rules with <empty> are omitted from output grammar
 exports.emptySymbol = '<empty>'
 
-// Extend module with rule functions
-require('./ruleFunctions')
+// Integers in input
+// Terminal rules with <int> are assigned minimum and maximum values
+exports.intSymbol = '<int>'
 
 // Extend module with semantic functions
 var semantic = require('./semantic')

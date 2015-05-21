@@ -9,16 +9,16 @@ var stopWords = require('./stopWords')
 // Merges this module with 'user' category
 var user = module.exports = new Category({ sg: 'user', pl: 'users', person: true, entity: true })
 
-var peopleTerm = g.addWord({
-	symbol: new g.Symbol('people', 'term'),
+var usersTerm = new g.Symbol('users', 'term')
+usersTerm.addWord({
 	insertionCost: 2.5,
 	accepted: [ 'people', 'users' ]
 })
 
 // |Github users (I follow)
 user.company = new g.Symbol('company')
-user.companyOpt = g.addNonterminalOpt(user.company)
-user.head.addRule({ RHS: [ user.companyOpt, peopleTerm ] })
+user.companyOpt = user.company.createNonterminalOpt()
+user.head.addRule({ RHS: [ user.companyOpt, usersTerm ] })
 
 
 // Person-number property only exists for nominative case

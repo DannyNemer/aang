@@ -10,8 +10,8 @@ var count = require('../count')
 
 var issue = new Category({ sg: 'issue', pl: 'issues' })
 
-var issuesTerm = g.addWord({
-	symbol: new g.Symbol(issue.namePl, 'term'),
+var issuesTerm = new g.Symbol(issue.namePl, 'term')
+issuesTerm.addWord({
 	insertionCost: 3.5,
 	accepted: [ issue.namePl ]
 })
@@ -30,8 +30,8 @@ issue.head.addRule({ RHS: [ issue.headMayPoss, poss.ofPossUsersPlus ], semantic:
 
 
 // OPENED:
-var opened = g.addWord({
-	symbol: new g.Symbol('opened'),
+var opened = new g.Symbol('opened')
+opened.addWord({
 	insertionCost: 1,
 	accepted: [ 'opened', 'created' ]
 })
@@ -49,8 +49,8 @@ user.subjFilter.addRule({ RHS: [ opened, issue.catPl ], semantic: issuesOpenersS
 // (people who) have opened issues ... - not [issues+] because 'by'
 user.subjFilter.addRule({ RHS: [ haveOpened, issue.catPl ], semantic: issuesOpenersSemantic, personNumber: 'pl' })
 
-var openersOf = g.addWord({
-	symbol: new g.Symbol('openers', 'of'),
+var openersOf = new g.Symbol('openers', 'of')
+openersOf.addWord({
 	accepted: [ 'openers of', 'creators of' ] // should I use regexp? be seperate syms
 })
 // openers of [issues]
@@ -68,8 +68,8 @@ github.mentioners.addRule({ RHS: [ issue.catPl ] })
 
 
 // ASSIGNED-TO:
-var assignedTo = g.addWord({
-  symbol: new g.Symbol('assigned', 'to'),
+var assignedTo = new g.Symbol('assigned', 'to')
+assignedTo.addWord({
   insertionCost: 2,
   accepted: [ 'assigned to' ]
 })
@@ -98,8 +98,8 @@ issue.adjective.addRule({ terminal: true, RHS: 'closed', text: 'closed', semanti
 
 
 // WITH N COMMENTS:
-var comments = g.addWord({
-  symbol: new g.Symbol('comments'),
+var comments = new g.Symbol('comments')
+comments.addWord({
   insertionCost: 3,
   accepted: [ 'comments' ]
 })

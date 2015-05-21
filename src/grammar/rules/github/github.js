@@ -6,20 +6,20 @@ var user = require('../user')
 var conjunctions = require('../conjunctions.js')
 
 
-var github = g.addWord({
-	symbol: new g.Symbol('github'),
+var github = new g.Symbol('github')
+github.addWord({
 	accepted: [ 'GitHub' ]
 })
 
 // (my) |GitHub (repos)
-this.termOpt = g.addNonterminalOpt(github)
+this.termOpt = github.createNonterminalOpt()
 
-// GitHub (users I follow)
+// GitHub (users I follow); (my) GitHub (followers)
 user.company.addRule({ RHS: [ github ] })
 
 
-this.created = g.addWord({
-	symbol: new g.Symbol('created'),
+this.created = new g.Symbol('created')
+this.created.addWord({
 	insertionCost: 0.5,
 	accepted: [ 'created' ]
 })
@@ -34,20 +34,20 @@ this.haveCreated = new g.Symbol('have', 'created')
 this.haveCreated.addRule({ RHS: [ auxVerbs.have, this.created ] })
 
 // creators of ([repositories]/[pull-requests])
-this.creatorsOf = g.addWord({
-	symbol: new g.Symbol('creators', 'of'),
+this.creatorsOf = new g.Symbol('creators', 'of')
+this.creatorsOf.addWord({
 	accepted: [ 'creators of' ]
 })
 
 
 // (pull-requests/issues that) mention ([obj-users+])
-this.mention = g.addWord({
-	symbol: new g.Symbol('mention'),
+this.mention = new g.Symbol('mention')
+this.mention.addWord({
 	accepted: [ 'mention' ]
 })
 
-var mentionedIn = g.addWord({
-	symbol: new g.Symbol('mentioned', 'in'),
+var mentionedIn = new g.Symbol('mentioned', 'in')
+mentionedIn.addWord({
 	insertionCost: 2,
 	accepted: [ 'mentioned in' ]
 })

@@ -7,7 +7,6 @@ var util = require('../util')
 
 // Schema for pronouns
 var pronounOptsSchema = {
-	symbol: Symbol,
 	insertionCost: { type: Number, optional: true },
 	nom: String,
 	obj: String,
@@ -15,7 +14,7 @@ var pronounOptsSchema = {
 }
 
 // Add all terminal symbols for a pronoun to the grammar; ex: "I", "me"
-g.addPronoun = function (opts) {
+Symbol.prototype.addPronoun = function (opts) {
 	if (util.illFormedOpts(pronounOptsSchema, opts)) {
 		throw 'ill-formed pronoun'
 	}
@@ -36,23 +35,22 @@ g.addPronoun = function (opts) {
 		newRule.insertionCost = opts.insertionCost
 	}
 
-	pronoun.addRule(newRule)
+	this.addRule(newRule)
 
 	// Objective case
-	pronoun.addRule({ terminal: true, RHS: opts.obj, textForms: textForms })
+	this.addRule({ terminal: true, RHS: opts.obj, textForms: textForms })
 
 	// Terminal symbols which are replaced when input
 	opts.substitutions.forEach(function (termSym) {
-		pronoun.addRule({ terminal: true, RHS: termSym, textForms: textForms })
-	})
+		this.addRule({ terminal: true, RHS: termSym, textForms: textForms })
+	}, this)
 
-	return pronoun
+	return this
 }
 
 
 // Schema for verbs
 var verbOptSchema = {
-	symbol: Symbol,
 	insertionCost: { type: Number, optional: true },
 	one: { type: Array, arrayType: String, optional: true },
 	pl: { type: Array, arrayType: String, optional: true },
@@ -65,7 +63,7 @@ var verbOptSchema = {
 
 // Add all terminal symbols for a verb to the grammar
 // Only used in nominative case; ex: "people [nom-users] follow/follows"
-g.addVerb = function (opts) {
+Symbol.prototype.addVerb = function (opts) {
 	if (util.illFormedOpts(verbOptSchema, opts)) {
 		throw 'ill-formed verb'
 	}
@@ -86,8 +84,6 @@ g.addVerb = function (opts) {
 		util.printErrWithLine('Missing inflected verb form for third-person-singular')
 		throw 'ill-formed verb'
 	}
-
-	var verb = opts.symbol
 
 	// Object of inflection forms for conjugation
 	var defaultTextForms = {
@@ -119,8 +115,8 @@ g.addVerb = function (opts) {
 				newRule.insertionCost = opts.insertionCost
 			}
 
-			verb.addRule(newRule)
-		})
+			this.addRule(newRule)
+		}, this)
 	}
 
 	// Inflected forms for plural (e.g., "are", "were")
@@ -138,8 +134,8 @@ g.addVerb = function (opts) {
 				newRule.insertionCost = opts.insertionCost
 			}
 
-			verb.addRule(newRule)
-		})
+			this.addRule(newRule)
+		}, this)
 	}
 
 	// Inflected forms for first-person or plural (e.g., "have", "like")
@@ -157,86 +153,82 @@ g.addVerb = function (opts) {
 				newRule.insertionCost = opts.insertionCost
 			}
 
-			verb.addRule(newRule)
-		})
+			this.addRule(newRule)
+		}, this)
 	}
 
 	// Inflected forms for third-person-singular (e.g., "is", "has", "likes")
 	if (opts.threeSg) {
 		opts.threeSg.forEach(function (termSym) {
-			verb.addRule({ terminal: true, RHS: termSym, textForms: {
+			this.addRule({ terminal: true, RHS: termSym, textForms: {
 				one: defaultTextForms.one,
 				pl: defaultTextForms.pl,
 				threeSg: termSym,
 				past: defaultTextForms.past
 			} })
-		})
+		}, this)
 	}
 
 	// Inflected forms for third-person-singular or first-person (e.g., "was")
 	if (opts.oneOrThreeSg) {
 		opts.oneOrThreeSg.forEach(function (termSym) {
-			verb.addRule({ terminal: true, RHS: termSym, textForms: {
+			this.addRule({ terminal: true, RHS: termSym, textForms: {
 				one: termSym,
 				pl: defaultTextForms.pl,
 				threeSg: termSym,
 				past: defaultTextForms.past
 			} })
-		})
+		}, this)
 	}
 
 	// Past tense - optional
 	if (opts.past) {
 		opts.past.forEach(function (termSym) {
-			verb.addRule({ terminal: true, RHS: termSym, textForms: {
+			this.addRule({ terminal: true, RHS: termSym, textForms: {
 				one: defaultTextForms.one,
 				pl: defaultTextForms.pl,
 				threeSg: defaultTextForms.threeSg,
 				past: termSym
 			} })
-		})
+		}, this)
 	}
 
 	// Terminal symbols which are replaced when input
 	if (opts.substitutions) {
 		opts.substitutions.forEach(function (termSym) {
-			verb.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
-		})
+			this.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
+		}, this)
 	}
 
-	return verb
+	return this
 }
 
 
 // Schema for stop-words
 var stopWordOptSchema = {
-	symbol: Symbol,
 	stopWords: { type: Array, arrayType: String }
 }
 
 // Add a stop-word to the grammar - replaces terminal symbols with an empty-string
-g.addStopWord = function (opts) {
+Symbol.prototype.addStopWord = function (opts) {
 	if (util.illFormedOpts(stopWordOptSchema, opts)) {
 		throw 'ill-formed stop-word'
 	}
 
-	var stopWord = opts.symbol
-
 	// Accepted terminal symbol is an empty-string
-	stopWord.addRule({ terminal: true, RHS: g.emptySymbol })
+	this.addRule({ terminal: true, RHS: g.emptySymbol })
 
 	// All stop-word terminal symbols are rejected
 	opts.stopWords.forEach(function (termSym) {
-		stopWord.addRule({ terminal: true, RHS: termSym })
-	})
+		this.addRule({ terminal: true, RHS: termSym })
+	}, this)
 
-	return stopWord
+	return this
 }
 
 
 // Schema for other words
 var wordOptsSchema = {
-	symbol: Symbol,
 	optional: { type: Boolean, optional: true },
 	insertionCost: { type: Number, optional: true },
 	accepted: { type: Array, arrayType: String },
@@ -244,7 +236,7 @@ var wordOptsSchema = {
 }
 
 // Add a set of terminal symbols to the grammar
-g.addWord = function (opts) {
+Symbol.prototype.addWord = function (opts) {
 	if (util.illFormedOpts(wordOptsSchema, opts)) {
 		throw 'ill-formed word'
 	}
@@ -262,11 +254,9 @@ g.addWord = function (opts) {
 		throw 'ill-formed opt-word'
 	}
 
-	var word = opts.symbol
-
 	// Optional terminal rule -> rule can be omitted from input by accepting empty-string without penalty
 	if (opts.optional) {
-		word.addRule({ terminal: true, RHS: g.emptySymbol })
+		this.addRule({ terminal: true, RHS: g.emptySymbol })
 	}
 
 	// Terminal symbols which are output when input (i.e., not substituted)
@@ -278,8 +268,8 @@ g.addWord = function (opts) {
 			newRule.insertionCost = opts.insertionCost
 		}
 
-		word.addRule(newRule)
-	})
+		this.addRule(newRule)
+	}, this)
 
 	// Terminal symbols which are replaced when input
 	if (opts.substitutions) {
@@ -287,37 +277,22 @@ g.addWord = function (opts) {
 		var correctedText = opts.accepted[0]
 
 		opts.substitutions.forEach(function (termSym) {
-			word.addRule({ terminal: true, RHS: termSym, text: correctedText })
-		})
+			this.addRule({ terminal: true, RHS: termSym, text: correctedText })
+		}, this)
 	}
 
-	return word
+	return this
 }
 
 
-// Create an optionalized version of an existing nonterminal symbol
-g.addNonterminalOpt = function (symbol) {
-	// Append 'opt' to original symbol name
-	var symbolOpt = new g.Symbol(symbol.name.slice(1, -1), 'opt')
-
-	symbolOpt.addRule({ RHS: [ symbol ] })
-	// <empty> always last for optional nonterminal symbols
-	symbolOpt.addRule({ terminal: true, RHS: g.emptySymbol })
-
-	return symbolOpt
-}
-
-
+// Schema for <int>
 var intOptsSchema = {
-	symbol: Symbol,
 	min: Number,
 	max: { type: Number, optional: true }
 }
 
-g.intSymbol = '<int>'
-
 // Created a terminal rule to for integers within an accepted range
-g.addInt = function (opts) {
+Symbol.prototype.addInt = function (opts) {
 	if (util.illFormedOpts(intOptsSchema, opts)) {
 		throw 'ill-formed <int> symbol'
 	}
@@ -328,7 +303,7 @@ g.addInt = function (opts) {
 		throw 'ill-formed <int> symbol'
 	}
 
-	opts.symbol.addRule({
+	this.addRule({
 		terminal: true,
 		RHS: g.intSymbol,
 		intMin: opts.min,
@@ -337,5 +312,19 @@ g.addInt = function (opts) {
 		intMax: opts.max !== undefined ? opts.max : Number.MAX_SAFE_INTEGER
 	})
 
-	return opts.symbol
+	return this
+}
+
+
+// Create an optionalized version of an existing nonterminal symbol
+// Returns a new Symbol
+Symbol.prototype.createNonterminalOpt = function () {
+	// Append 'opt' to original symbol name
+	var symbolOpt = new g.Symbol(this.name.slice(1, -1), 'opt')
+
+	symbolOpt.addRule({ RHS: [ this ] })
+	// <empty> always last for optional nonterminal symbols
+	symbolOpt.addRule({ terminal: true, RHS: g.emptySymbol })
+
+	return symbolOpt
 }
