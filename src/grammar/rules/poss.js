@@ -24,7 +24,7 @@ this.determinerOmissible.addRule({ RHS: [ oneSg.possOmissible ], semantic: oneSg
 var possUser = new g.Symbol(possStr, 'user')
 // (followers of) {user}
 possUser.addRule({ RHS: [ user.catSg ] })
-// (followers of) mine - manually add text here because [poss-user] will also produce nonterminal rules
+// (followers of) mine
 possUser.addRule({ terminal: true, RHS: 'mine', text: 'mine', semantic: oneSg.semantic })
 
 var possUsers = new g.Symbol(possStr, 'users')
@@ -39,9 +39,15 @@ possUsers.addRule({ RHS: [ user.noRelativePossessive ] })
 
 var possUsersPlus = conjunctions.addForSymbol(possUsers)
 
+
 // (followers of) mine
 this.ofPossUsersPlus = new g.Symbol('of', possStr, 'users+')
 this.ofPossUsersPlus.addRule({ RHS: [ preps.possessor, possUsersPlus ] })
+
+// (repos of) mine - must use possessorSpecial, otherwise the insertion is too slow
+// For categories that a semantic function for possession that limits to one argument: repositories-created()
+this.ofPossUsers = new g.Symbol('of', possStr, 'users')
+this.ofPossUsers.addRule({ RHS: [ preps.possessorSpecial, possUsers ] })
 
 // (repos of) mine - NOTE: not currently used
 // - No insertion for 'of'

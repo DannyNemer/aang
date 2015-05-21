@@ -26,7 +26,7 @@ var issuesOpenersSemantic = g.newSemantic({ name: issue.nameSg + '-openers', cos
 // my issues
 issue.noRelativePossessive.addRule({ RHS: [ poss.determiner, issue.possessible ], semantic: issuesOpenedSemantic })
 // issues of mine
-issue.head.addRule({ RHS: [ issue.headMayPoss, poss.ofPossUsersPlus ], semantic: issuesOpenedSemantic })
+issue.head.addRule({ RHS: [ issue.headMayPoss, poss.ofPossUsers ], semantic: issuesOpenedSemantic })
 
 
 // OPENED:
