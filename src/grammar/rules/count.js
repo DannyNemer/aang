@@ -91,7 +91,7 @@ exports.addForCategoryItems = function (category, itemsSymbol) {
 	// issues-comments(n1, n2) - inclusive
 	var prepBetweenNumberItemsOpt = new g.Symbol('prep', 'between', 'number', itemsName, 'opt')
 	prepBetweenNumberItemsOpt.addRule({ RHS: [ preps.between, numberItemsOpt ] })
-	var prepBetweenNumberItemsOptAnd = new g.Symbol('prep', 'between', 'number', itemsName, 'opt', 'and')
-	prepBetweenNumberItemsOptAnd.addRule({ RHS: [ prepBetweenNumberItemsOpt, conjunctions.and ] })
-	itemsCount.addRule({ RHS: [ prepBetweenNumberItemsOptAnd, numberItems ], semantic: catPlItemsSemantic })
+	var andNumberItems = new g.Symbol('and', 'number', itemsName)
+	andNumberItems.addRule({ RHS: [ conjunctions.and, numberItems ] })
+	itemsCount.addRule({ RHS: [ prepBetweenNumberItemsOpt, andNumberItems ], semantic: catPlItemsSemantic })
 }

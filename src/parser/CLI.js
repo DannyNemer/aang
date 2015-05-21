@@ -136,6 +136,15 @@ var testQueries = [
 	'issues with 3 to 3 comments',
 	'issues with less than 2 > 4 comments',
 	'repos with between 22 and 23 likes',
+	'repos created in 2014',
+	'repos created 2014',
+	'repos created in June 2014',
+	'repos created in June 24 2014',
+	'repos created this year',
+	'repos created after this year',
+	'repos created between last year and this year',
+	'repos created from 2012 to 2014',
+	'repos created before June 20 2000 and after this year',
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
 	// 'my followers who created pull requests of mine my followers who created repositories followers of mine mentioned in issues of my followers who I follow like that are repos created by me I contributed to am mentioned in that I am mentioned in'
 	// 'my repos me people who follow my followers have been and', - BROKEN

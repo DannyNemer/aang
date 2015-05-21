@@ -4,9 +4,9 @@ var g = require('../grammar')
 
 // Phrase having the same function as an adverb
 // (people I follow) <stop>
-	stopWords: [ 'never' ]
 this.sentenceAdverbial = new g.Symbol('sentence', 'adverbial')
 this.sentenceAdverbial.addStopWord({
+	stopWords: [ 'never', 'this|the morning|afternoon|evening|weekend|week|month|year' ]
 })
 
 // Stopwords that preceed verbs

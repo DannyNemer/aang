@@ -5,6 +5,7 @@ var poss = require('../poss')
 var user = require('../user')
 var auxVerbs = require('../auxVerbs')
 var count = require('../count')
+var date = require('../date')
 
 
 var repository = new Category({ sg: 'repository', pl: 'repositories', entity: true })
@@ -151,3 +152,8 @@ forks.addWord({
 
 // repos with <int> forks
 count.addForCategoryItems(repository, forks)
+
+// DATE:
+// Unsure about maxParams, and questioning when to duplicate at all, but will become clearer once making backend
+var catPlSemantic = g.newSemantic({ name: repository.namePl, cost: 0.5, minParams: 1, maxParams: 2 })
+repository.inner.addRule({ RHS: [ github.created, date.general ], semantic: catPlSemantic })
