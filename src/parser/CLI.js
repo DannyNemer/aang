@@ -167,6 +167,9 @@ function runCommand(query) {
 		if (!isNaN(args[1])) K = Number(args[1])
 		console.log('K:', K)
 	} else if (query === '-r') {
+		var prevSettingPrintTrees = printTrees
+		printTrees = false
+
 		if (printOutput) printQuery = true
 		else console.time('test')
 
@@ -176,6 +179,8 @@ function runCommand(query) {
 
 		if (printOutput) printQuery = false
 		else console.timeEnd('test')
+
+		printTrees = prevSettingPrintTrees
 	} else if (query === '-rb') {
 		console.log('Rebuild grammar and state table:')
 		// Rebuild grammar
