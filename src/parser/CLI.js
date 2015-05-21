@@ -6,7 +6,6 @@ var parserNewPath = './Parser.js'
 var parserOldPath = './util/ParserBestFirst.js'
 var forestSearchPath = './forestSearch.js'
 
-var semantics = null
 var stateTable = buildStateTable()
 
 var rl = require('readline').createInterface(process.stdin, process.stdout)
@@ -251,12 +250,12 @@ function runCommand(query) {
 
 function buildStateTable() {
 	var grammar = require(grammarPath)
-	semantics = require(semanticsPath)
+	var semantics = require(semanticsPath)
 
 	Object.keys(grammar).forEach(function (sym) {
 		grammar[sym].forEach(function (rule) {
-			if (rule.semantic) mapSemantic(rule.semantic)
-			if (rule.insertedSemantic) mapSemantic(rule.insertedSemantic)
+			if (rule.semantic) mapSemantic(semantics, rule.semantic)
+			if (rule.insertedSemantic) mapSemantic(semantics, rule.insertedSemantic)
 		})
 	})
 
@@ -268,10 +267,10 @@ function buildStateTable() {
 	return stateTable
 }
 
-function mapSemantic(semanticArray) {
+function mapSemantic(semantics, semanticArray) {
 	semanticArray.forEach(function (semanticNode) {
 		semanticNode.semantic = semantics[semanticNode.semantic.name]
-		if (semanticNode.children) mapSemantic(semanticNode.children)
+		if (semanticNode.children) mapSemantic(semantics, semanticNode.children)
 	})
 }
 
