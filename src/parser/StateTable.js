@@ -28,7 +28,7 @@ function StateTable(inputGrammar, startSymbol) {
 // Unclear about use of Index property - might need to wait until grammar is larger to properly test
 StateTable.prototype.lookUp = function (name, isLiteral) {
 	var sym = this.symbolTab[name]
-	if (sym && sym.isLiteral === isLiteral && sym.name === name)
+	if (sym && sym.isLiteral === isLiteral)
 		return sym
 
 	sym = this.symbolTab[name] = {
