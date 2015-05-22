@@ -24,13 +24,15 @@ function StateTable(inputGrammar, startSymbol) {
 	this.generate(this.lookUp(startSymbol))
 }
 
+// Could seperate term/nonterm symbol tabs for faster term symbol lookup
+// Unclear about use of Index property - might need to wait until grammar is larger to properly test
 StateTable.prototype.lookUp = function (name, isLiteral) {
 	var sym = this.symbolTab[name]
 	if (sym && sym.isLiteral === isLiteral && sym.name === name)
 		return sym
 
 	sym = this.symbolTab[name] = {
-		name: name,
+		name: name, // Not needed in production (only debugging)
 		index: Object.keys(this.symbolTab).length,
 		rules: []
 	}
@@ -90,6 +92,14 @@ function createRuleProps(origRule) {
 		ruleProps.insertionIdx = origRule.insertionIdx
 	}
 
+	if (origRule.hasOwnProperty('semantic')) {
+		ruleProps.semantic = origRule.semantic
+	}
+
+	if (origRule.hasOwnProperty('insertedSemantic')) {
+		ruleProps.insertedSemantic = origRule.insertedSemantic
+	}
+
 	if (origRule.hasOwnProperty('verbForm')) {
 		ruleProps.verbForm = origRule.verbForm
 	}
@@ -102,14 +112,10 @@ function createRuleProps(origRule) {
 		ruleProps.gramCase = origRule.gramCase
 	}
 
-	if (origRule.hasOwnProperty('semantic')) {
-		ruleProps.semantic = origRule.semantic
 	if (origRule.hasOwnProperty('intMin')) {
 		ruleProps.intMin = origRule.intMin
 	}
 
-	if (origRule.hasOwnProperty('insertedSemantic')) {
-		ruleProps.insertedSemantic = origRule.insertedSemantic
 	if (origRule.hasOwnProperty('intMax')) {
 		ruleProps.intMax = origRule.intMax
 	}
@@ -150,6 +156,7 @@ function addState(ruleSets, newRuleSet) {
 		}
 	}
 
+	// Subtract 1 to get index of newRuleSet
 	return ruleSets.push(newRuleSet) - 1
 }
 

@@ -44,6 +44,11 @@ module.exports = function Category(catOpts) {
 	if (!catOpts.person) {
 		this.headMayPoss = new g.Symbol(this.nameSg, 'head', 'may', 'poss')
 
+		// [head] -> [head-may-poss] is likely used for reducing frequency of "my" insertions
+		// my/[user's] -> [head-may-poss] is seperate and will not create duplicates
+		// Unable to determine how accomplished because cost of this additional rule is higher,
+		// so all rules with a matching semantic will already have been accepted
+
 		// |Github repos (I starred)
 		this.head.addRule({ RHS: [ this.headMayPoss ] })
 

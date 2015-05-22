@@ -89,6 +89,7 @@ var testQueries = [
 	'open issues',
 	'issues that are open',
 	'people assigned to my closed issues',
+	'contributors to my repos',
 	'contributors to my repos and repos of mine',
 	'likers of my repos',
 	'creators of repos I like',
@@ -134,6 +135,7 @@ var testQueries = [
 	'issues with 3 comments to 3 comments',
 	'issues with 3 to 3 comments',
 	'issues with less than 2 > 4 comments',
+	'{language} repos liked by me and my followers',
 	'repos with between 22 and 23 likes',
 	'repos created in 2014',
 	'repos created 2014',
@@ -146,6 +148,9 @@ var testQueries = [
 	'repos created before June 20 2000 and after this year',
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
 	// 'my followers who created pull requests of mine my followers who created repositories followers of mine mentioned in issues of my followers who I follow like that are repos created by me I contributed to am mentioned in that I am mentioned in'
+	// illegal, but takes a long time for search to fail (produce no results):
+	// 'my repositories people who created my repos created'
+	// 'people who like my repos liked by people who follow me that people I follow created'
 	// 'my repos me people who follow my followers have been and', - BROKEN
 ]
 

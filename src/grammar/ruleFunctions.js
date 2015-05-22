@@ -291,7 +291,7 @@ var intOptsSchema = {
 	max: { type: Number, optional: true }
 }
 
-// Created a terminal rule to for integers within an accepted range
+// Create a terminal rule to for integers within an accepted range
 Symbol.prototype.addInt = function (opts) {
 	if (util.illFormedOpts(intOptsSchema, opts)) {
 		throw 'ill-formed <int> symbol'

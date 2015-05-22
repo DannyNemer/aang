@@ -45,7 +45,7 @@ this.ofPossUsersPlus = new g.Symbol('of', possStr, 'users+')
 this.ofPossUsersPlus.addRule({ RHS: [ preps.possessor, possUsersPlus ] })
 
 // (repos of) mine - must use possessorSpecial, otherwise the insertion is too slow
-// For categories that a semantic function for possession that limits to one argument: repositories-created()
+// For categories that a semantic function for possession that limits to one argument; ex: repositories-created()
 this.ofPossUsers = new g.Symbol('of', possStr, 'users')
 this.ofPossUsers.addRule({ RHS: [ preps.possessorSpecial, possUsers ] })
 

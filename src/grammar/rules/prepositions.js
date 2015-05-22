@@ -23,7 +23,7 @@ this.possessorSpecial.addWord({
 	accepted: [ 'of' ]
 })
 
-// (repos created) in (2012)
+// (repos created) in ([year])
 this.container = new g.Symbol(prepStr, 'container')
 this.container.addWord({
 	insertionCost: 0.5,
@@ -46,14 +46,14 @@ this.before.addWord({
 	accepted: [ 'before', 'earlier than', 'prior|up to', '<' ]
 })
 
-// (repos created) after (2012)
+// (repos created) after ([year])
 this.after = new g.Symbol(prepStr, 'after')
 this.after.addWord({
 	insertionCost: 0.5,
 	accepted: [ 'after', 'later than', 'subsequent to', '>' ]
 })
 
-// (repos created) from (2012 to 2014)
+// (repos created) from ([year] to [year])
 this.start = new g.Symbol(prepStr, 'start')
 this.start.addWord({
 	insertionCost: 0.8,
@@ -61,15 +61,15 @@ this.start.addWord({
 	substitutions: [ 'in' ]
 })
 
-// (repos created from 2012) to (2014)
-// (issues with n) to (i comments)
+// (repos created from [year]) to ([year])
+// (issues with <int>) to (<int> comments)
 this.end = new g.Symbol(prepStr, 'end')
 this.end.addWord({
 	insertionCost: 0.5,
 	accepted: [ 'to' ]
 })
 
-// (issues) with (n comments)
+// (issues) with (<int> comments)
 this.possessed = new g.Symbol(prepStr, 'possessed')
 this.possessed.addWord({
 	insertionCost: 0.5,
@@ -77,21 +77,21 @@ this.possessed.addWord({
 	substitutions: [ 'have|having|containing' ]
 })
 
-// (issues with) between (n and i comments)
+// (issues with) between (<int> and <int> comments)
 this.between = new g.Symbol(prepStr, 'between')
 this.between.addWord({
 	insertionCost: 2,
 	accepted: [ 'between' ]
 })
 
-// (issues with) over (n comments)
+// (issues with) over (<int> comments)
 this.over = new g.Symbol(prepStr, 'over')
 this.over.addWord({
 	insertionCost: 0.5,
 	accepted: [ 'over', 'above|beyond', 'more than', '>' ]
 })
 
-// (issues with) under (n comments)
+// (issues with) under (<int> comments)
 this.under = new g.Symbol(prepStr, 'under')
 this.under.addWord({
 	insertionCost: 0.5,
