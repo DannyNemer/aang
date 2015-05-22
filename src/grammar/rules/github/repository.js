@@ -158,5 +158,12 @@ repository.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(
 
 // DATE:
 // Unsure about maxParams, and questioning when to duplicate at all, but will become clearer once making backend
+// (repos) created in [year]
 var catPlSemantic = g.newSemantic({ name: repository.namePl, cost: 0.5, minParams: 1, maxParams: 2 })
 repository.inner.addRule({ RHS: [ github.created, date.general ], semantic: catPlSemantic })
+
+// (repos) pushed in [year]
+var pushed = new g.Symbol('pushed')
+pushed.addWord({ accepted: [ 'pushed' ] })
+var repositoriesPushedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'pushed'), cost: 0.5, minParams: 1, maxParams: 2 })
+repository.inner.addRule({ RHS: [ pushed, date.general ], semantic: repositoriesPushedSemantic })
