@@ -27,16 +27,18 @@ yearTerm.addWord({
   accepted: [ 'year' ]
 })
 
+var yearPhrase = new g.Symbol('year', 'phrase')
 // (repos created) this year
-datePhrase.addRule({
+yearPhrase.addRule({
   RHS: [ thisDate, yearTerm ],
   semantic: g.newSemantic({ name: g.hyphenate('this', 'year'), cost: 0.5, isArg: true })
 })
 // (repos created) last year
-datePhrase.addRule({
+yearPhrase.addRule({
   RHS: [ lastDate, yearTerm ],
   semantic: g.newSemantic({ name: g.hyphenate('last', 'last'), cost: 0.5, isArg: true })
 })
+datePhrase.addRule({ RHS: [ yearPhrase ] })
 
 var monthTerm = new g.Symbol('month', 'term')
 monthTerm.addWord({
@@ -87,11 +89,10 @@ datePhrase.addRule({
 
 
 // VALUE
-var dateValue = new g.Symbol('date', 'value')
-
 // (repos created in) [year]
-var year = (new g.Symbol('year')).addInt({ min: 1950, max: 2050 })
-dateValue.addRule({ RHS: [ year ] })
+var year = new g.Symbol('year')
+year.addInt({ min: 1950, max: 2050 })
+year.addRule({ RHS: [ yearPhrase ] })
 
 var month = new g.Symbol('month')
 month.addRule({
@@ -143,31 +144,38 @@ month.addRule({
   semantic: g.newSemantic({ name: 'dec', cost: 0.5, isArg: true })
 })
 // (repos created in) [month] [year]
-dateValue.addRule({ RHS: [ month, year ] })
+var monthYear = new g.Symbol('month', 'year')
+monthYear.addRule({ RHS: [ month, year ], transpositionCost: 0.1 })
 
 var day = new g.Symbol('day')
 day.addInt({ min: 1, max: 31 })
 var monthDay = new g.Symbol('month', 'day')
-monthDay.addRule({ RHS: [ month, day ] })
-// (repos created in) [month] [day] [year]
-dateValue.addRule({ RHS: [ monthDay, year ] })
+monthDay.addRule({ RHS: [ month, day ], transpositionCost: 0.1 })
+var monthDayYear = new g.Symbol('month', 'day', 'year')
+monthDayYear.addRule({ RHS: [ monthDay, year ], transpositionCost: 0.1 })
 
 
 // STRICT
-var dateSemantic = g.newSemantic({ name: 'date', minParams: 1, maxParams: 3, cost: 0.5 })
-
 var dateStrict = new g.Symbol('date', 'strict')
 // (repos created) this/last month/year
-dateStrict.addRule({ RHS: [ datePhrase ], semantic: dateSemantic })
-// (repos created) in [year], [month] [year]
-dateStrict.addRule({ RHS: [ preps.container, dateValue ], semantic: dateSemantic })
+dateStrict.addRule({ RHS: [ datePhrase ] })
+// (repos created) in [year]
+dateStrict.addRule({ RHS: [ preps.container, year ] })
+// (repos created) in [month] [year]
+dateStrict.addRule({ RHS: [ preps.container, monthYear ] })
+// (repos created) on [month] [day] [year]
+dateStrict.addRule({ RHS: [ preps.surface, monthDayYear ] })
 
 // INTERVAL
-var dateValueOrPhrase = new g.Symbol('date', 'value', 'or', 'phrase')
-// (repos created before/after) [year], [month] [year]
-dateValueOrPhrase.addRule({ RHS: [ dateValue ] })
+var dateValueOrPhrase = new g.Symbol('date', 'phrase', 'or', 'value')
 // (repos created before/after) this/last month/year
 dateValueOrPhrase.addRule({ RHS: [ datePhrase ] })
+// (repos created before/after) [year]
+dateValueOrPhrase.addRule({ RHS: [ year ] })
+// (repos created before/after) [month] [year]
+dateValueOrPhrase.addRule({ RHS: [ monthYear ] })
+// (repos created before/after) [month] [day] [year]
+dateValueOrPhrase.addRule({ RHS: [ monthDayYear ] })
 
 
 var dateBeforeSemantic = g.newSemantic({ name: g.hyphenate('date', 'before'), minParams: 1, maxParams: 3, cost: 0.5 })
@@ -237,6 +245,7 @@ dateInterval.addRule({ RHS: [ prepBetweenDatePresentOrPhrase, andDatePresentOrPh
 
 this.general = new g.Symbol('date', 'general')
 // (repos created) this year, in [year], in [month] [year]
-this.general.addRule({ RHS: [ dateStrict ] })
+var dateSemantic = g.newSemantic({ name: 'date', minParams: 1, maxParams: 3, cost: 0.5 })
+this.general.addRule({ RHS: [ dateStrict ], semantic: dateSemantic })
 // (repos created) before/after [year], from [year] to [year], between [year] and [year]
 this.general.addRule({ RHS: [ dateInterval ] })

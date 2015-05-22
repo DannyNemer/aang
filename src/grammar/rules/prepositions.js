@@ -27,10 +27,19 @@ this.possessorSpecial.addWord({
 this.container = new g.Symbol(prepStr, 'container')
 this.container.addWord({
 	insertionCost: 0.5,
-	accepted: [ 'in', 'within', 'during' ]
+	accepted: [ 'in', 'within', 'during' ],
+	substitutions: [ 'on' ]
 })
 
-// (repos created) before (2012)
+// (repos created) on ([month] [day] [year])
+this.surface = new g.Symbol(prepStr, 'surface')
+this.surface.addWord({
+	insertionCost: 0.5,
+	accepted: [ 'on' ],
+	substitutions: [ 'in', 'within', 'during' ]
+})
+
+// (repos created) before ([year])
 this.before = new g.Symbol(prepStr, 'before')
 this.before.addWord({
 	insertionCost: 1,
