@@ -13,6 +13,7 @@ var categoryOptsSchema = {
 	entity: { type: Boolean, optional: true }
 }
 
+
 // Create the rules every must category
 module.exports = function Category(catOpts) {
 	if (util.illFormedOpts(categoryOptsSchema, catOpts)) {
@@ -31,8 +32,8 @@ module.exports = function Category(catOpts) {
 	// But will create ambiguity with stop-words
 	// this.lhs.addRule({ RHS: [ this.adjective, this.lhs ] })
 	// {language} (repos)
-	this.nounModifier = new g.Symbol(this.nameSg, 'noun', 'modifier')
-	this.lhs.addRule({ RHS: [ this.nounModifier ] })
+	this.preModifier = new g.Symbol(this.nameSg, 'pre', 'modifier')
+	this.lhs.addRule({ RHS: [ this.preModifier ] })
 	// <stop> (issues); <stop> [issue-adjective] (issues)
 	this.lhs.addRule({ RHS: [ stopWords.left, this.lhs ], transpositionCost: 0 })
 
@@ -140,10 +141,15 @@ module.exports = function Category(catOpts) {
 	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, noRelative ], semantic: auxVerbs.notSemantic })
 	// (issues that) are not open
 	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, this.adjective ], semantic: auxVerbs.notSemantic })
-	// (people who) are not follwed by me
+	// (people who) are not followed by me
 	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, reduced ], semantic: auxVerbs.notSemantic })
-	// (people who) have not been follwed by me
+	// (people who) have not been followed by me
 	filter.addRule({ RHS: [ auxVerbs.haveNegationBePast, reduced ], semantic: auxVerbs.notSemantic })
+	// (repos that) are 22 KB
+	this.postModifer = new g.Symbol(this.nameSg, 'post', 'modifier')
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgSentenceAdverbial, this.postModifer ] })
+	// (repos that) are not 22 KB
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, this.postModifer ], semantic: auxVerbs.notSemantic })
 
 
 	// (people) who follow me and/or I follow
