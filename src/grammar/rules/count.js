@@ -15,7 +15,7 @@ var andPrepUnder = new g.Symbol('and', 'prep', 'under')
 andPrepUnder.addRule({ RHS: [ conjunctions.and, preps.under ] })
 
 
-exports.addForCategoryItems = function (category, itemsSymbol) {
+exports.createForCategoryItems = function (category, itemsSymbol) {
 	var itemsName = itemsSymbol.name.slice(1, -1)
 
 	var catPlItemsSemantic = g.newSemantic({
@@ -39,10 +39,8 @@ exports.addForCategoryItems = function (category, itemsSymbol) {
 		maxParams: 1
 	})
 
-	// (issues) with <int> comments
-	var itemsCount = new g.Symbol(itemsName, 'count')
-	category.inner.addRule({ RHS: [ preps.possessed, itemsCount ] })
 
+	var itemsCount = new g.Symbol(itemsName, 'count')
 
 	// (issues with) <int> comments
 	var numberItems = new g.Symbol('number', itemsName)
@@ -94,4 +92,6 @@ exports.addForCategoryItems = function (category, itemsSymbol) {
 	var andNumberItems = new g.Symbol('and', 'number', itemsName)
 	andNumberItems.addRule({ RHS: [ conjunctions.and, numberItems ] })
 	itemsCount.addRule({ RHS: [ prepBetweenNumberItemsOpt, andNumberItems ], semantic: catPlItemsSemantic })
+
+	return itemsCount
 }

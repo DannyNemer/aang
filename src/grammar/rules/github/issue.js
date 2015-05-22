@@ -5,6 +5,7 @@ var poss = require('../poss')
 var user = require('../user')
 var auxVerbs = require('../auxVerbs')
 var stopWords = require('../stopWords')
+var preps = require('../prepositions')
 var count = require('../count')
 
 
@@ -105,4 +106,4 @@ comments.addWord({
 })
 
 // issues with <int> comment
-count.addForCategoryItems(issue, comments)
+issue.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(issue, comments) ] })

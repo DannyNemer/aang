@@ -5,6 +5,7 @@ var poss = require('../poss')
 var user = require('../user')
 var auxVerbs = require('../auxVerbs')
 var count = require('../count')
+var preps = require('../prepositions')
 var date = require('../date')
 
 
@@ -111,6 +112,7 @@ contributorsTo.addWord({
 // contributors to [repositories+]
 user.head.addRule({ RHS: [ contributorsTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 
+
 // LANGUAGE:
 var languageEntityStr = '{language}'
 var languageSemanticArg = g.newSemantic({ name: languageEntityStr, isArg: true, cost: 0 })
@@ -140,8 +142,8 @@ stars.addWord({
   substitutions: [ 'likes' ]
 })
 
-// repos with <int> stars
-count.addForCategoryItems(repository, stars)
+// (repos) with <int> stars
+repository.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(repository, stars) ] })
 
 // WITH N FORKS:
 var forks = new g.Symbol('forks')
@@ -150,8 +152,9 @@ forks.addWord({
   accepted: [ 'forks' ]
 })
 
-// repos with <int> forks
-count.addForCategoryItems(repository, forks)
+// (repos) with <int> forks
+repository.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(repository, forks) ] })
+
 
 // DATE:
 // Unsure about maxParams, and questioning when to duplicate at all, but will become clearer once making backend
