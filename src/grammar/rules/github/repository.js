@@ -155,6 +155,14 @@ forks.addWord({
 // (repos) with <int> forks
 repository.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(repository, forks) ] })
 
+var size = new g.Symbol('size')
+size.addWord({
+	insertionCost: 3.5,
+	accepted: [ 'KB' ]
+})
+// (repos that are) <int> KB
+repository.postModifer.addRule({ RHS: [ count.createForCategoryItems(repository, size) ] })
+
 
 // DATE:
 // Unsure about maxParams, and questioning when to duplicate at all, but will become clearer once making backend
