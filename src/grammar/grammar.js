@@ -1,8 +1,7 @@
 var util = require('../util')
 
 var grammar = {}
-
-exports.Symbol = require('./Symbol').bind(null, grammar)
+exports.Symbol = require('./Symbol')(grammar)
 
 exports.startSymbol = new exports.Symbol('start')
 
@@ -14,6 +13,9 @@ exports.emptySymbol = '<empty>'
 // Integers in input
 // Terminal rules with <int> are assigned minimum and maximum values
 exports.intSymbol = '<int>'
+
+// Extend Symbol with rule functions
+require('./ruleFunctions')
 
 // Extend module with semantic functions
 var semantic = require('./semantic')

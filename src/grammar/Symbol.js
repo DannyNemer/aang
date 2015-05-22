@@ -3,15 +3,18 @@
 var util = require('../util')
 var semantic = require('./semantic')
 
-module.exports = Symbol
+var grammar
 
-// Extend module with rule functions
-require('./ruleFunctions')
+module.exports = function (externalGrammar) {
+	grammar = externalGrammar
+
+	return Symbol
+}
 
 // Constructor for nonterminal symbols
 // Concatenates arguments after 0th index as Symbol's name
-function Symbol(grammar) {
-	var symNameChunks = Array.prototype.slice.call(arguments, 1)
+function Symbol() {
+	var symNameChunks = Array.prototype.slice.call(arguments)
 
 	if (symNameChunks.indexOf(undefined) !== -1) {
 		util.printErrWithLine('undefined String in Symbol name:', symNameChunks)
