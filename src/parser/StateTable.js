@@ -248,6 +248,11 @@ StateTable.prototype.generate = function (startSym) {
 
 		this.shifts.push(newState)
 	}
+
+	// Remove 'index' property from because no longer needed
+	for (var symName in this.symbolTab) {
+		delete this.symbolTab[symName].index
+	}
 }
 
 StateTable.prototype.print = function () {
