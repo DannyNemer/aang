@@ -7,6 +7,7 @@ var auxVerbs = require('../auxVerbs')
 var stopWords = require('../stopWords')
 var preps = require('../prepositions')
 var count = require('../count')
+var date = require('../date')
 
 
 var issue = new Category({ sg: 'issue', pl: 'issues' })
@@ -107,3 +108,18 @@ comments.addWord({
 
 // issues with <int> comment
 issue.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(issue, comments) ] })
+
+
+// DATE:
+var updated = new g.Symbol('updated')
+updated.addWord({
+	insertionCost: 3,
+	accepted: [ 'updated' ]
+})
+
+// Are we correct to use that semantic? because there is a date semantic which has a cost and the updated semantic only for the date
+// (issues) updated in [year]
+issue.inner.addRule({
+	RHS: [ updated, date.general ],
+	semantic: g.newSemantic({ name: g.hyphenate(issue.namePl, 'updated'), cost: 0.5, minParams: 1, maxParams: 2 })
+})
