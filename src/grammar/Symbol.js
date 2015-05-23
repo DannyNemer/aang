@@ -80,7 +80,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 		intMax: opts.intMax
 	}
 
-	if (opts.hasOwnProperty('insertionCost')) {
+	if (opts.insertionCost !== undefined) {
 		newRule.insertionCost = opts.insertionCost
 	}
 
@@ -115,7 +115,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 		personNumber: opts.personNumber
 	}
 
-	if (opts.hasOwnProperty('transpositionCost')) {
+	if (opts.transpositionCost !== undefined) {
 		if (opts.RHS.length !== 2) {
 			ruleErr('Nonterminal rules with transposition-costs must have 2 RHS symbols', this.name, opts.RHS)
 		}

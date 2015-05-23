@@ -37,7 +37,7 @@ function findTermRuleInsertions(grammar, insertions) {
 						// WRONG: [1-sg-poss-omissible] uses a blank to achieve an insertion cost of 0 on a base cost of 0
 						text: rule.text ? [ rule.text ] : []
 					})
-				} else if (rule.hasOwnProperty('insertionCost')) {
+				} else if (rule.insertionCost !== undefined) {
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost + rule.insertionCost,
 						insertedSyms: [ { symbol: termSym } ],
@@ -61,7 +61,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 			grammar[nontermSym].forEach(function (rule) {
 				if (rule.RHS.length === 2 && /\+/.test(nontermSym)) return // TEMP
 				// if (rule.RHS.indexOf(nontermSym) !== -1) return
-				if (rule.hasOwnProperty('transpositionCost')) return
+				if (rule.transpositionCost !== undefined) return
 
 				if (!rule.terminal && RHSCanBeInserted(insertions, rule.RHS)) {
 					rule.RHS.map(function (sym) {
@@ -253,7 +253,7 @@ function createRulesFromInsertions(grammar, insertions) {
 function createRulesFromTranspositions(grammar) {
 	Object.keys(grammar).forEach(function (nontermSym) {
 		grammar[nontermSym].forEach(function (rule, ruleIdx, symRules) {
-			if (rule.hasOwnProperty('transpositionCost')) {
+			if (rule.transpositionCost !== undefined) {
 				var newRule = {
 					RHS: rule.RHS.slice().reverse(),
 					cost: rule.cost + rule.transpositionCost,

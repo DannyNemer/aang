@@ -84,39 +84,39 @@ function createRuleProps(origRule) {
 		cost: origRule.cost // All rules have a cost
 	}
 
-	if (origRule.hasOwnProperty('text')) {
+	if (origRule.text !== undefined) {
 		ruleProps.text = origRule.text
 	}
 
-	if (origRule.hasOwnProperty('insertionIdx')) {
+	if (origRule.insertionIdx !== undefined) {
 		ruleProps.insertionIdx = origRule.insertionIdx
 	}
 
-	if (origRule.hasOwnProperty('semantic')) {
+	if (origRule.semantic !== undefined) {
 		ruleProps.semantic = origRule.semantic
 	}
 
-	if (origRule.hasOwnProperty('insertedSemantic')) {
+	if (origRule.insertedSemantic !== undefined) {
 		ruleProps.insertedSemantic = origRule.insertedSemantic
 	}
 
-	if (origRule.hasOwnProperty('verbForm')) {
+	if (origRule.verbForm !== undefined) {
 		ruleProps.verbForm = origRule.verbForm
 	}
 
-	if (origRule.hasOwnProperty('personNumber')) {
+	if (origRule.personNumber !== undefined) {
 		ruleProps.personNumber = origRule.personNumber
 	}
 
-	if (origRule.hasOwnProperty('gramCase')) {
+	if (origRule.gramCase !== undefined) {
 		ruleProps.gramCase = origRule.gramCase
 	}
 
-	if (origRule.hasOwnProperty('intMin')) {
+	if (origRule.intMin !== undefined) {
 		ruleProps.intMin = origRule.intMin
 	}
 
-	if (origRule.hasOwnProperty('intMax')) {
+	if (origRule.intMax !== undefined) {
 		ruleProps.intMax = origRule.intMax
 	}
 

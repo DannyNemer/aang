@@ -260,7 +260,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 				action: action,
 				vertex: oldVertex,
 				cost: this.cost + (action.red.ruleProps instanceof Array ? action.red.ruleProps[0].cost : action.red.ruleProps.cost),
-				position: action.hasOwnProperty('position') ? action.position : this.position
+				position: action.position !== undefined ? action.position : this.position
 			})
 		}
 	}

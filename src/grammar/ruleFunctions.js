@@ -31,7 +31,7 @@ Symbol.prototype.addPronoun = function (opts) {
 	var newRule = { terminal: true, RHS: opts.nom, textForms: textForms }
 
 	// Insertion cost added to first terminal rule (though, inconsequential)
-	if (opts.hasOwnProperty('insertionCost')) {
+	if (opts.insertionCost !== undefined) {
 		newRule.insertionCost = opts.insertionCost
 	}
 
@@ -111,7 +111,7 @@ Symbol.prototype.addVerb = function (opts) {
 			} }
 
 			// Insertion cost added to first terminal rule (though, inconsequential)
-			if (i === 0 && opts.hasOwnProperty('insertionCost')) {
+			if (i === 0 && opts.insertionCost !== undefined) {
 				newRule.insertionCost = opts.insertionCost
 			}
 
@@ -130,7 +130,7 @@ Symbol.prototype.addVerb = function (opts) {
 			} }
 
 			// Insertion cost added to first terminal rule (though, inconsequential)
-			if (i === 0 && !opts.one && opts.hasOwnProperty('insertionCost')) {
+			if (i === 0 && !opts.one && opts.insertionCost !== undefined) {
 				newRule.insertionCost = opts.insertionCost
 			}
 
@@ -149,7 +149,7 @@ Symbol.prototype.addVerb = function (opts) {
 			} }
 
 			// Insertion cost added to first terminal rule (though, inconsequential)
-			if (i === 0 && !opts.one && !opts.pl && opts.hasOwnProperty('insertionCost')) {
+			if (i === 0 && !opts.one && !opts.pl && opts.insertionCost !== undefined) {
 				newRule.insertionCost = opts.insertionCost
 			}
 
@@ -249,7 +249,7 @@ Symbol.prototype.addWord = function (opts) {
 	}
 
 	// Opt-words cannot have insertion costs
-	if (opts.optional && opts.hasOwnProperty('insertionCost')) {
+	if (opts.optional && opts.insertionCost !== undefined) {
 		util.printErrWithLine('Optional words cannot have insertion costs:', opts.name)
 		throw 'ill-formed opt-word'
 	}
@@ -264,7 +264,7 @@ Symbol.prototype.addWord = function (opts) {
 		var newRule = { terminal: true, RHS: termSym, text: termSym }
 
 		// Insertion cost added to first terminal rule (though, inconsequential)
-		if (i === 0 && opts.hasOwnProperty('insertionCost')) {
+		if (i === 0 && opts.insertionCost !== undefined) {
 			newRule.insertionCost = opts.insertionCost
 		}
 
