@@ -12,37 +12,37 @@ github.addWord({
 })
 
 // (my) |GitHub (repos)
-this.termOpt = github.createNonterminalOpt()
+exports.termOpt = github.createNonterminalOpt()
 
 // GitHub (users I follow); (my) GitHub (followers)
 user.company.addRule({ RHS: [ github ] })
 
 
-this.created = new g.Symbol('created')
-this.created.addWord({
+exports.created = new g.Symbol('created')
+exports.created.addWord({
 	insertionCost: 0.5,
 	accepted: [ 'created' ]
 })
 
 // (repos/pull-requests I) created
-this.preVerbStopWordsCreated = new g.Symbol('pre', 'verb', 'stop', 'words', 'created')
-this.preVerbStopWordsCreated.addRule({ RHS: [ stopWords.preVerb, this.created ] })
+exports.preVerbStopWordsCreated = new g.Symbol('pre', 'verb', 'stop', 'words', 'created')
+exports.preVerbStopWordsCreated.addRule({ RHS: [ stopWords.preVerb, exports.created ] })
 
 // (repos/pull-requests I) have created
 // (people who) have created ([repos]/[pull-requests])
-this.haveCreated = new g.Symbol('have', 'created')
-this.haveCreated.addRule({ RHS: [ auxVerbs.have, this.created ] })
+exports.haveCreated = new g.Symbol('have', 'created')
+exports.haveCreated.addRule({ RHS: [ auxVerbs.have, exports.created ] })
 
 // creators of ([repositories]/[pull-requests])
-this.creatorsOf = new g.Symbol('creators', 'of')
-this.creatorsOf.addWord({
+exports.creatorsOf = new g.Symbol('creators', 'of')
+exports.creatorsOf.addWord({
 	accepted: [ 'creators of' ]
 })
 
 
 // (pull-requests/issues that) mention ([obj-users+])
-this.mention = new g.Symbol('mention')
-this.mention.addWord({
+exports.mention = new g.Symbol('mention')
+exports.mention.addWord({
 	accepted: [ 'mention' ]
 })
 
@@ -55,15 +55,15 @@ mentionedIn.addWord({
 // (pull-requests/issues) I-am/{user}-is/[users]-are mentioned in
 var beGeneralMentionedIn = new g.Symbol('be', 'general', 'mentioned', 'in')
 beGeneralMentionedIn.addRule({ RHS: [ auxVerbs.beGeneral, mentionedIn ] })
-this.preVerbStopWordsBeGeneralMentionedIn = new g.Symbol('pre', 'verb', 'stop', 'words', 'be', 'general', 'mentioned', 'in')
-this.preVerbStopWordsBeGeneralMentionedIn.addRule({ RHS: [ stopWords.preVerb, beGeneralMentionedIn ] })
+exports.preVerbStopWordsBeGeneralMentionedIn = new g.Symbol('pre', 'verb', 'stop', 'words', 'be', 'general', 'mentioned', 'in')
+exports.preVerbStopWordsBeGeneralMentionedIn.addRule({ RHS: [ stopWords.preVerb, beGeneralMentionedIn ] })
 
 
 var usersMentionedSemantic = g.newSemantic({ name: user.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })
 // (people mentioned) in [issues]/[pull-request]
-this.mentioners = new g.Symbol('mentioners')
+exports.mentioners = new g.Symbol('mentioners')
 // (people mentioned) in [issues]/[pull-request] and/or [issues]/[pull-request]
-var mentionersPlus = conjunctions.addForSymbol(this.mentioners)
+var mentionersPlus = conjunctions.addForSymbol(exports.mentioners)
 // (people) mentioned in [mentioners+]; (people who are) mentioned in [mentioners+]
 user.inner.addRule({ RHS: [ mentionedIn, mentionersPlus ], semantic: usersMentionedSemantic })
 

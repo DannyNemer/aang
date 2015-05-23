@@ -2,19 +2,19 @@
 
 var g = require('../grammar')
 
-this.intersectSemantic = g.newSemantic({ name: 'intersect', cost: 0, minParams: 1, maxParams: 100 })
-this.unionSemantic = g.newSemantic({ name: 'union', cost: 0.5, minParams: 1, maxParams: 100 })
+exports.intersectSemantic = g.newSemantic({ name: 'intersect', cost: 0, minParams: 1, maxParams: 100 })
+exports.unionSemantic = g.newSemantic({ name: 'union', cost: 0.5, minParams: 1, maxParams: 100 })
 
 // conjunction
-this.and = new g.Symbol('and')
-this.and.addWord({
+exports.and = new g.Symbol('and')
+exports.and.addWord({
 	insertionCost: 2,
 	accepted: [ 'and' ]
 })
 
 // disjunction
-this.union = new g.Symbol('union')
-this.union.addWord({
+exports.union = new g.Symbol('union')
+exports.union.addWord({
 	accepted: [ 'or' ]
 })
 

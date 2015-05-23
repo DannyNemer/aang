@@ -10,13 +10,13 @@ var possDeterminerSg = new g.Symbol(possStr, 'determiner', 'sg')
 // my (repositories)
 possDeterminerSg.addRule({ RHS: [ oneSg.poss ], semantic: oneSg.semantic })
 
-this.determiner = new g.Symbol(possStr, 'determiner')
+exports.determiner = new g.Symbol(possStr, 'determiner')
 // my (repositories)
-this.determiner.addRule({ RHS: [ possDeterminerSg ] })
+exports.determiner.addRule({ RHS: [ possDeterminerSg ] })
 
-this.determinerOmissible = new g.Symbol(possStr, 'determiner', 'omissible')
+exports.determinerOmissible = new g.Symbol(possStr, 'determiner', 'omissible')
 // my (followers)
-this.determinerOmissible.addRule({ RHS: [ oneSg.possOmissible ], semantic: oneSg.semantic })
+exports.determinerOmissible.addRule({ RHS: [ oneSg.possOmissible ], semantic: oneSg.semantic })
 
 
 // Seperate [poss-user] from [poss-users] if want rules (functions) limited to single people
@@ -41,15 +41,15 @@ var possUsersPlus = conjunctions.addForSymbol(possUsers)
 
 
 // (followers of) mine
-this.ofPossUsersPlus = new g.Symbol('of', possStr, 'users+')
-this.ofPossUsersPlus.addRule({ RHS: [ preps.possessor, possUsersPlus ] })
+exports.ofPossUsersPlus = new g.Symbol('of', possStr, 'users+')
+exports.ofPossUsersPlus.addRule({ RHS: [ preps.possessor, possUsersPlus ] })
 
 // (repos of) mine - must use possessorSpecial, otherwise the insertion is too slow
 // For categories that a semantic function for possession that limits to one argument; ex: repositories-created()
-this.ofPossUsers = new g.Symbol('of', possStr, 'users')
-this.ofPossUsers.addRule({ RHS: [ preps.possessorSpecial, possUsers ] })
+exports.ofPossUsers = new g.Symbol('of', possStr, 'users')
+exports.ofPossUsers.addRule({ RHS: [ preps.possessorSpecial, possUsers ] })
 
 // (repos of) mine - NOTE: not currently used
 // - No insertion for 'of'
-this.ofPossUsersPlusSpecial = new g.Symbol('of', possStr, 'users+', 'special')
-this.ofPossUsersPlusSpecial.addRule({ RHS: [ preps.possessorSpecial, possUsersPlus ] })
+exports.ofPossUsersPlusSpecial = new g.Symbol('of', possStr, 'users+', 'special')
+exports.ofPossUsersPlusSpecial.addRule({ RHS: [ preps.possessorSpecial, possUsersPlus ] })

@@ -2,8 +2,8 @@ var g = require('../grammar')
 var stopWords = require('./stopWords')
 
 // (people who) are (followed by me)
-this.beNon1Sg = new g.Symbol('be', 'non', '1', 'sg')
-this.beNon1Sg.addWord({
+exports.beNon1Sg = new g.Symbol('be', 'non', '1', 'sg')
+exports.beNon1Sg.addWord({
 	insertionCost: 1,
 	accepted: [ 'are', 'were' ],
 	substitutions: [ 'is|are|be being', 'being|been' ]
@@ -11,19 +11,19 @@ this.beNon1Sg.addWord({
 
 // (issues that are) <stop> (open/closed)
 // (people who are) <stop> (followed by me)
-this.beNon1SgSentenceAdverbial = new g.Symbol('be', 'non', '1', 'sg', 'sentence', 'adverbial')
-this.beNon1SgSentenceAdverbial.addRule({ RHS: [ this.beNon1Sg, stopWords.sentenceAdverbial ] })
+exports.beNon1SgSentenceAdverbial = new g.Symbol('be', 'non', '1', 'sg', 'sentence', 'adverbial')
+exports.beNon1SgSentenceAdverbial.addRule({ RHS: [ exports.beNon1Sg, stopWords.sentenceAdverbial ] })
 
 // (people who have) been (followed by me)
-this.bePast = new g.Symbol('be', 'past')
-this.bePast.addWord({
+exports.bePast = new g.Symbol('be', 'past')
+exports.bePast.addWord({
 	insertionCost: 1,
 	accepted: [ 'been' ]
 })
 
 // (pull requests I/{user}/[nom-users]) am/is/are (mentioned in)
-this.beGeneral = new g.Symbol('be', 'general')
-this.beGeneral.addVerb({
+exports.beGeneral = new g.Symbol('be', 'general')
+exports.beGeneral.addVerb({
 	insertionCost: 1,
 	one: [ 'am' ],
 	pl: [ 'are', 'were' ],
@@ -34,8 +34,8 @@ this.beGeneral.addVerb({
 
 // (people who) have (been followed by me)
 // - No past tense ('had') because it implies semantic no longer true; "had liked" -> no longer liked
-this.have = new g.Symbol('have')
-this.have.addVerb({
+exports.have = new g.Symbol('have')
+exports.have.addVerb({
 	insertionCost: 0.8,
 	oneOrPl: [ 'have' ],
 	threeSg: [ 'has' ],
@@ -43,18 +43,18 @@ this.have.addVerb({
 })
 
 // (repos I) have <stop> (contributed to)
-this.havePreVerbStopWords = new g.Symbol('have', 'pre', 'verb', 'stop', 'words')
-this.havePreVerbStopWords.addRule({ RHS: [ this.have, stopWords.preVerb ] })
+exports.havePreVerbStopWords = new g.Symbol('have', 'pre', 'verb', 'stop', 'words')
+exports.havePreVerbStopWords.addRule({ RHS: [ exports.have, stopWords.preVerb ] })
 
 // (people who have) <stop> (been folllowed by me); (people who have) <stop> (been following me)
 var haveSentenceAdverbial = new g.Symbol('have', 'sentence', 'adverbial')
-haveSentenceAdverbial.addRule({ RHS: [ this.have, stopWords.sentenceAdverbial ], personNumber: 'pl' })
-this.haveSentenceAdverbialBePast = new g.Symbol('have', 'sentence', 'adverbial', 'be', 'past')
-this.haveSentenceAdverbialBePast.addRule({ RHS: [ haveSentenceAdverbial, this.bePast ] })
+haveSentenceAdverbial.addRule({ RHS: [ exports.have, stopWords.sentenceAdverbial ], personNumber: 'pl' })
+exports.haveSentenceAdverbialBePast = new g.Symbol('have', 'sentence', 'adverbial', 'be', 'past')
+exports.haveSentenceAdverbialBePast.addRule({ RHS: [ haveSentenceAdverbial, exports.bePast ] })
 
 
 // NEGATION:
-this.notSemantic = g.newSemantic({ name: 'not', cost: 0.5, minParams: 1, maxParams: 1 })
+exports.notSemantic = g.newSemantic({ name: 'not', cost: 0.5, minParams: 1, maxParams: 1 })
 var negation = new g.Symbol('negation')
 negation.addWord({
 	accepted: [ 'not' ],
@@ -68,17 +68,17 @@ doTerm.addWord({
 	accepted: [ 'do' ],
 	substitutions: [ 'did', 'does' ]
 })
-this.doNegation = new g.Symbol('do', 'negation')
-this.doNegation.addRule({ RHS: [ doTerm, negation ] })
+exports.doNegation = new g.Symbol('do', 'negation')
+exports.doNegation.addRule({ RHS: [ doTerm, negation ] })
 
 // (people who) are not followers of mine
 // (issues that) are not (open)
 // (people who) are not (follwed by me)
-this.beNon1SgNegation = new g.Symbol('be', 'non', '1', 'sg', 'negation')
-this.beNon1SgNegation.addRule({ RHS: [ this.beNon1Sg, negation ] })
+exports.beNon1SgNegation = new g.Symbol('be', 'non', '1', 'sg', 'negation')
+exports.beNon1SgNegation.addRule({ RHS: [ exports.beNon1Sg, negation ] })
 
 // (people who) have not been (follwed by me)
 var haveNegation = new g.Symbol('have', 'negation')
-haveNegation.addRule({ RHS: [ this.have, negation ], personNumber: 'pl' })
-this.haveNegationBePast = new g.Symbol('have', 'negation', 'be', 'past')
-this.haveNegationBePast.addRule({ RHS: [ haveNegation, this.bePast ] })
+haveNegation.addRule({ RHS: [ exports.have, negation ], personNumber: 'pl' })
+exports.haveNegationBePast = new g.Symbol('have', 'negation', 'be', 'past')
+exports.haveNegationBePast.addRule({ RHS: [ haveNegation, exports.bePast ] })

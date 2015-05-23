@@ -243,9 +243,9 @@ andDatePresentOrPhrase.addRule({ RHS: [ conjunctions.and, dateValueOrPhrase ], s
 dateInterval.addRule({ RHS: [ prepBetweenDatePresentOrPhrase, andDatePresentOrPhrase ] })
 
 
-this.general = new g.Symbol('date', 'general')
+exports.general = new g.Symbol('date', 'general')
 // (repos created) this year, in [year], in [month] [year]
 var dateSemantic = g.newSemantic({ name: 'date', minParams: 1, maxParams: 3, cost: 0.5 })
-this.general.addRule({ RHS: [ dateStrict ], semantic: dateSemantic })
+exports.general.addRule({ RHS: [ dateStrict ], semantic: dateSemantic })
 // (repos created) before/after [year], from [year] to [year], between [year] and [year]
-this.general.addRule({ RHS: [ dateInterval ] })
+exports.general.addRule({ RHS: [ dateInterval ] })

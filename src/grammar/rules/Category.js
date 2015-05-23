@@ -13,7 +13,6 @@ var categoryOptsSchema = {
 	entity: { type: Boolean, optional: true }
 }
 
-
 // Create the rules every must category
 module.exports = function Category(catOpts) {
 	if (util.illFormedOpts(categoryOptsSchema, catOpts)) {
