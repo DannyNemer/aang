@@ -83,8 +83,8 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 							BInsertions.forEach(function (B) {
 								var newSemantic
 								if (A.semantic && B.semantic) {
-									newSemantic = semantic.mergeRHS(A.semantic, B.semantic)
-									if (newSemantic === -1) return
+									// To reduce possible insertions, prevent semantic functions with > 1 arguments
+									return
 								} else {
 									newSemantic = A.semantic || B.semantic
 								}
