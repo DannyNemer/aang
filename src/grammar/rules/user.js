@@ -70,3 +70,17 @@ user.apostropheS.addRule({
 	terminal: true,
 	RHS: g.newEntityCategory({ name: user.nameSg + ':\'s', entities: [ 'Danny\'s'] })
 })
+
+
+// GENDER:
+var usersGenderSemantic = g.newSemantic({ name: g.hyphenate(user.namePl, 'gender'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+// female (followers of mine); (people who are) female
+user.adjective.addRule({
+	terminal: true, RHS: 'female', text: 'female',
+	semantic: g.insertSemantic(usersGenderSemantic, g.newSemantic({ name: 'female', isArg: true, cost: 0.5 }))
+})
+// male (followers of mine); (people who are) male
+user.adjective.addRule({
+	terminal: true, RHS: 'male', text: 'male',
+	semantic: g.insertSemantic(usersGenderSemantic, g.newSemantic({ name: 'male', isArg: true, cost: 0.5 }))
+})
