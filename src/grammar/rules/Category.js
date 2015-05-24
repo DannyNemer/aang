@@ -9,18 +9,18 @@ var conjunctions = require('./conjunctions')
 var categoryOptsSchema = {
 	sg: String,
 	pl: String,
-	person: { type: Boolean, optional: true }, // "that" vs. "who" for relative pronoun
+	isPerson: { type: Boolean, optional: true }, // "that" vs. "who" for relative pronoun
 	entities: { type: Array, arrayType: String, optional: true }
 }
 
 // Create the rules every must category
-module.exports = function Category(catOpts) {
-	if (util.illFormedOpts(categoryOptsSchema, catOpts)) {
+module.exports = function Category(opts) {
+	if (util.illFormedOpts(categoryOptsSchema, opts)) {
 		throw 'ill-formed Category'
 	}
 
-	this.nameSg = catOpts.sg
-	this.namePl = catOpts.pl
+	this.nameSg = opts.sg
+	this.namePl = opts.pl
 
 	this.lhs = new g.Symbol(this.nameSg, 'lhs') // (NOTE: orig manually makes rules that would be from <empty>)
 	this.lhs.addRule({ terminal: true, RHS: g.emptySymbol })
@@ -40,7 +40,7 @@ module.exports = function Category(catOpts) {
 	// repos of [users]; followers
 	this.head = new g.Symbol(this.nameSg, 'head')
 
-	if (!catOpts.person) {
+	if (!opts.isPerson) {
 		this.headMayPoss = new g.Symbol(this.nameSg, 'head', 'may', 'poss')
 
 		// [head] -> [head-may-poss] is likely used for reducing frequency of "my" insertions
@@ -159,20 +159,20 @@ module.exports = function Category(catOpts) {
 	// (people) who follow me and/or I follow
 	var filterPlus = conjunctions.addForSymbol(filter)
 
-	var relPronounFilterPlus = new g.Symbol(catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
-	relPronounFilterPlus.addRule({ RHS: [ catOpts.person ? relPronouns.who : relPronouns.that, filterPlus ] })
+	var relPronounFilterPlus = new g.Symbol(opts.isPerson ? 'who' : 'that', this.nameSg, 'filter+')
+	relPronounFilterPlus.addRule({ RHS: [ opts.isPerson ? relPronouns.who : relPronouns.that, filterPlus ] })
 	// (people) who follow me and who I follow
-	var andRelPronounFilterPlus = new g.Symbol('and', catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
+	var andRelPronounFilterPlus = new g.Symbol('and', opts.isPerson ? 'who' : 'that', this.nameSg, 'filter+')
 	andRelPronounFilterPlus.addRule({ RHS: [ conjunctions.and, relPronounFilterPlus ] })
 	filterPlus.addRule({ RHS: [ filter, andRelPronounFilterPlus ] })
 	// (people) who follow me or who I follow
-	var orRelPronounFilterPlus = new g.Symbol('or', catOpts.person ? 'who' : 'that', this.nameSg, 'filter+')
+	var orRelPronounFilterPlus = new g.Symbol('or', opts.isPerson ? 'who' : 'that', this.nameSg, 'filter+')
 	orRelPronounFilterPlus.addRule({ RHS: [ conjunctions.union, relPronounFilterPlus ] })
 	filterPlus.addRule({ RHS: [ filter, orRelPronounFilterPlus ], semantic: conjunctions.unionSemantic })
 
 
 	var relativeclause = new g.Symbol(this.nameSg, 'relativeclause')
-	if (catOpts.person) {
+	if (opts.isPerson) {
 		// (people) who are followed by me
 		relativeclause.addRule({ RHS: [ relPronouns.who, filterPlus ] })
 	} else {
@@ -191,20 +191,20 @@ module.exports = function Category(catOpts) {
 	// (people who created) repos ...
 	this.catPl.addRule({ RHS: [ this.plural ] })
 
-	if (catOpts.entities) {
+	if (opts.entities) {
 		this.catSg = new g.Symbol(this.nameSg)
 		// (people) {user} (follows); (people who follow) {user}
-		var entity = g.newEntityCategory({ name: this.nameSg, entities: catOpts.entities })
+		var entity = g.newEntityCategory({ name: this.nameSg, entities: opts.entities })
 		this.catSg.addRule({ terminal: true, RHS: entity })
 
-		if (!catOpts.person) { // user does not use because obj/nom-users -> [user]
+		if (!opts.isPerson) { // user does not use because obj/nom-users -> [user]
 			// (people who like) {repo}
 			this.catPl.addRule({ RHS: [ this.catSg ] })
 		}
 	}
 
 	// user does not use because obj/nom-users
-	if (!catOpts.person) {
+	if (!opts.isPerson) {
 		// (people who like) my repos and/or {user}'s repos
 		this.catPlPlus = conjunctions.addForSymbol(this.catPl)
 	}

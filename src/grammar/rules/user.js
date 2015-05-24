@@ -7,7 +7,7 @@ var stopWords = require('./stopWords')
 
 
 // Merges this module with 'user' category
-var user = module.exports = new Category({ sg: 'user', pl: 'users', person: true, entities: [ 'Danny' ] })
+var user = module.exports = new Category({ sg: 'user', pl: 'users', isPerson: true, entities: [ 'Danny' ] })
 
 var usersTerm = new g.Symbol('users', 'term')
 usersTerm.addWord({
