@@ -25,7 +25,8 @@ exports.newEntityCategory = function (opts) {
 	exports.entityCategories[categoryName] = opts.entities.map(function (entity) {
 		return {
 			name: entity,
-			id: entityCount++
+			// Save id as String for semantic arguments ordering
+			id: String(entityCount++)
 		}
 	})
 

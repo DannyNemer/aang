@@ -9,7 +9,7 @@ var preps = require('../prepositions')
 var date = require('../date')
 
 
-var repository = new Category({ sg: 'repository', pl: 'repositories', entity: true })
+var repository = new Category({ sg: 'repository', pl: 'repositories', entities: [ 'node', 'd3', 'Linux' ] })
 
 var repositoriesTerm = new g.Symbol(repository.namePl, 'term')
 repositoriesTerm.addWord({
