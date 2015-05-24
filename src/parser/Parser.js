@@ -9,6 +9,56 @@ function Parser(stateTable) {
 	// this.matchTerminalRules = require('./util/matchTerminalRulesWithSearchIndex')(this)
 }
 
+// Check if nGram is an entity
+// This simple entity resolution implementation will be replaced by language models for each category
+Parser.prototype.entityLookup = function (wordTab, j, newSemanticArgs, text) {
+	var entityCategories = require('../entities.json')
+	var semantic = require('../grammar/semantic')
+
+	for (var categoryName in entityCategories) {
+		var entities = entityCategories[categoryName]
+
+		for (var e = entities.length; e-- > 0;) {
+			var entity = entities[e]
+			if (entity.name === text) {
+				var wordSym = this.stateTable.symbolTab[categoryName]
+				// create node with terminal symbol
+				var wordNode = this.addSub(wordSym)
+
+				var entityId = entity.id
+				var semanticArg = newSemanticArgs[entityId] || (newSemanticArgs[entityId] = [ { semantic: { name: entityId } } ])
+
+				// Loop through all term rules that produce term sym
+				var wordNodes = []
+				var wordSize = wordSym.size
+				for (var rules = wordSym.rules, r = rules.length; r-- > 0;) {
+					var rule = rules[r]
+					var ruleProps = rule.ruleProps
+
+					var sub = {
+						size: wordSize, // size of literal
+						node: wordNode,
+						ruleProps: {
+							cost: ruleProps.cost,
+							semantic: semantic.insertSemantic(ruleProps.semantic, semanticArg),
+							text: text
+						}
+					}
+
+					// create node with LHS of terminal rule
+					wordNodes.push(this.addSub(rule.RHS[0], sub)) // FIX: rename prop - rule.RHS[0] is LHS for terms
+				}
+
+				var words = wordTab[j] || (wordTab[j] = [])
+				words.push({
+					start: this.position,
+					nodes: wordNodes
+				})
+			}
+		}
+	}
+}
+
 // Look up terminal symbol matches in input
 Parser.prototype.matchTerminalRules = function (query) {
 	var tokens = query.split(' ')
@@ -27,6 +77,8 @@ Parser.prototype.matchTerminalRules = function (query) {
 			// Check every possible n-gram for multi-word terminal symbols
 			var j = this.position
 			while (true) {
+				this.entityLookup(wordTab, j, newSemanticArgs, nGram)
+
 				// this.nodeTab = this.nodeTabs[j] // should I be doing this?
 				var wordSym = this.stateTable.symbolTab[nGram]
 				if (wordSym) {

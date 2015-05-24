@@ -6,11 +6,12 @@ require('./rules/github/github')
 
 var grammarPath = '../grammar.json'
 var semanticsPath = '../semantics.json'
+var entitiesPath = '../entities.json'
 
 g.createEditRules()
 g.sortGrammar()
 g.printRuleCount(grammarPath)
-g.writeGrammarToFile(grammarPath, semanticsPath)
+g.writeGrammarToFile(grammarPath, semanticsPath, entitiesPath)
 
 
 /*

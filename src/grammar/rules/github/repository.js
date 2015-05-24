@@ -114,18 +114,19 @@ user.head.addRule({ RHS: [ contributorsTo, repository.catPlPlus ], semantic: rep
 
 
 // LANGUAGE:
-var languageEntityStr = '{language}'
-var languageSemanticArg = g.newSemantic({ name: languageEntityStr, isArg: true, cost: 0 })
-var repositoriesLanguageSemantic = g.newSemantic({ name: repository.namePl + '-language', cost: 0.5, minParams: 1, maxParams: 1 })
+var languageEntity = g.newEntityCategory({
+	name: 'language',
+	entities: [ 'ActionScript', 'C', 'C#', 'C++', 'Clojure', 'CoffeeScript', 'CSS', 'Go', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lua', 'Matlab', 'Objective-C', 'Perl', 'PHP', 'Python', 'R', 'Ruby', 'Scala', 'Shell', 'Swift', 'TeX', 'VimL' ]
+})
+
 var language = new g.Symbol('language')
 language.addRule({
 	terminal: true,
-	RHS: languageEntityStr,
-	text: languageEntityStr,
-	semantic: g.insertSemantic(repositoriesLanguageSemantic, languageSemanticArg)
+	RHS: languageEntity,
+	semantic: g.newSemantic({ name: repository.namePl + '-language', cost: 0.5, minParams: 1, maxParams: 1 })
 })
 // (my) {language} (repos); (repos that are) {language} (repos)
-repository.nounModifier.addRule({ RHS: [ language ] })
+repository.preModifier.addRule({ RHS: [ language ] })
 
 var writtenIn = new g.Symbol('written', 'in')
 writtenIn.addWord({
@@ -134,6 +135,8 @@ writtenIn.addWord({
 })
 // (repos) written in {language}
 repository.passive.addRule({ RHS: [ writtenIn, language ] })
+
+
 // WITH N STARS:
 var stars = new g.Symbol('stars')
 stars.addWord({

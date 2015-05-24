@@ -23,6 +23,10 @@ exports.newSemantic = semantic.newSemantic
 exports.hyphenate = semantic.hyphenate
 exports.insertSemantic = semantic.insertSemantic
 
+// Extend module with entity-category functions
+var entityCategory = require('./entityCategory')
+exports.newEntityCategory = entityCategory.newEntityCategory
+
 // Derive rules from insertion and transposition costs, and empty-strings
 exports.createEditRules = require('./createEditRules').bind(null, grammar)
 
@@ -61,7 +65,8 @@ exports.ruleCount = function (grammar) {
 }
 
 // Write grammar and semantics to files
-exports.writeGrammarToFile = function (grammarPath, semanticsPath) {
+exports.writeGrammarToFile = function (grammarPath, semanticsPath, entitiesPath) {
 	util.writeJSONFile(grammarPath, grammar)
 	util.writeJSONFile(semanticsPath, semantic.semantics)
+	util.writeJSONFile(entitiesPath, entityCategory.entityCategories)
 }
