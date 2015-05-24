@@ -120,7 +120,6 @@ exports.mergeRHS = function (A, B) {
 }
 
 function semanticsMatch(a, b) {
-	// entities
 	if (a === b) return true
 
 	if (a.semantic !== b.semantic) return false
@@ -200,7 +199,7 @@ exports.insertSemantic = function (LHS, RHS) {
 }
 
 
-// arguments before functions, functions sorted alphabtetically, arugments sorted by oreder they appear, identical functions sorted by their arguments
+// arguments before functions, functions and arguments separately sorted alphabetically, identical functions sorted by their arguments
 // if returns less than 0, sort a to a lower index than b
 // if returns greater than 0, sort b to a lower index than a
 // if returns 0, leave a and b unchanged with respect to each other
@@ -226,23 +225,22 @@ function compareSemantics(a, b) {
 		if (aName < bName) return -1
 		if (aName > bName) return 1
 
-		// same semantic function (by name)
-		// compare semantic children
+		// Same semantic function (by name)
+		// Compare semantic children
 		var aChildren = a.children
 		var bChildren = b.children
 		var returnVal = 0
 
 		for (var i = 0, minLength = Math.min(aChildren.length, bChildren.length); i < minLength; ++i) {
-			returnVal = compareSemantics(aChildren[i], bChildren[i])
+			returnVal = compareSemantics(aChildren[i], bChildren[i], a, b)
 			if (returnVal) break
 		}
 
 		return returnVal
 	}
 
-	// Strings: semantic argument, numeric id, or number
-	return a.semantic === b.semantic ? 0 : (a.semantic.name < b.semantic.name ? -1 : 1)
-	// return a === b ? 0 : (a < b ? -1 : 1) // might be able to compare a == b
+	// Semantic argument, numeric id, or input-number
+	return a === b ? 0 : (a.semantic.name < b.semantic.name ? -1 : 1)
 }
 
 exports.semanticToString = function (semanticArray) {

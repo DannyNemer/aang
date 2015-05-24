@@ -5,6 +5,7 @@ var semanticsPath = '../semantics.json'
 var parserNewPath = './Parser.js'
 var parserOldPath = './util/ParserBestFirst.js'
 var forestSearchPath = './forestSearch.js'
+var stateTablePath = './StateTable.js'
 
 var stateTable = buildStateTable()
 
@@ -147,7 +148,8 @@ var testQueries = [
 	'repos created from 2012 to 2014',
 	'repos created before June 20 2000 and after this year',
 	'people I and Danny follows', // intentionally incorrect
-	'people people Danny follow and Danny follows' // intentionally incorrect
+	'people people Danny follow and Danny follows', // intentionally incorrect
+	'likers of my repos I contributed to that I like and my repos I contributed to'
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
 	// 'my followers who created pull requests of mine my followers who created repositories followers of mine mentioned in issues of my followers who I follow like that are repos created by me I contributed to am mentioned in that I am mentioned in'
 	// illegal, but takes a long time for search to fail (produce no results):
@@ -258,30 +260,38 @@ function runCommand(query) {
 function buildStateTable() {
 	var grammar = require(grammarPath)
 	var semantics = require(semanticsPath)
+	var semanticArgNodes = {}
 
 	Object.keys(grammar).forEach(function (sym) {
 		grammar[sym].forEach(function (rule) {
-			if (rule.semantic) mapSemantic(semantics, rule.semantic)
-			if (rule.insertedSemantic) mapSemantic(semantics, rule.insertedSemantic)
+			if (rule.semantic) mapSemantic(rule.semantic)
+			if (rule.insertedSemantic) mapSemantic(rule.insertedSemantic)
 		})
 	})
 
+	function mapSemantic(semanticArray) {
+		semanticArray.forEach(function (semanticNode, i) {
+			if (semanticNode.children) {
+				semanticNode.semantic = semantics[semanticNode.semantic.name]
+				mapSemantic(semanticNode.children)
+			} else {
+				// Share nodes for semantic arguments (no 'children' property to differentiate)
+				var name = semanticNode.semantic.name
+				semanticArray[i] = semanticArgNodes[name] || (semanticArgNodes[name] = { semantic: semantics[name] })
+			}
+		})
+	}
+
 	// Build state table
-	var stateTable = new (require('./StateTable.js'))(grammar, '[start]')
+	var stateTable = new (require(stateTablePath))(grammar, '[start]')
 	// Remove grammar and semantics from cache
 	util.deleteCache(grammarPath, semanticsPath)
 
 	return stateTable
 }
 
-function mapSemantic(semantics, semanticArray) {
-	semanticArray.forEach(function (semanticNode) {
-		semanticNode.semantic = semantics[semanticNode.semantic.name]
-		if (semanticNode.children) mapSemantic(semantics, semanticNode.children)
-	})
-}
 
 // Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
 function deleteModuleCache() {
-	util.deleteCache(parserNewPath, parserOldPath, forestSearchPath, '../parser/StateTable.js', './BinaryHeap.js', '../grammar/semantic.js', './reduceForest.js')
+	util.deleteCache(parserNewPath, parserOldPath, forestSearchPath, stateTablePath, './BinaryHeap.js', '../grammar/semantic.js', './reduceForest.js')
 }
