@@ -9,19 +9,25 @@ var possStr = 'poss'
 var possDeterminerSg = new g.Symbol(possStr, 'determiner', 'sg')
 // my (repositories)
 possDeterminerSg.addRule({ RHS: [ oneSg.poss ], semantic: oneSg.semantic })
+// {user:'s} (repositories)
+possDeterminerSg.addRule({ RHS: [ user.apostropheS ] })
 
 exports.determiner = new g.Symbol(possStr, 'determiner')
-// my (repositories)
+// my/{user:'s} (repositories)
 exports.determiner.addRule({ RHS: [ possDeterminerSg ] })
 
 exports.determinerOmissible = new g.Symbol(possStr, 'determiner', 'omissible')
 // my (followers)
 exports.determinerOmissible.addRule({ RHS: [ oneSg.possOmissible ], semantic: oneSg.semantic })
+// {user:'s} (followers)
+exports.determinerOmissible.addRule({ RHS: [ possDeterminerSg ] })
 
 
 // Seperate [poss-user] from [poss-users] if want rules (functions) limited to single people
 // Primarily exists, instead of just using [obj-users] to limit functions and "mine"
 var possUser = new g.Symbol(possStr, 'user')
+// (followers of) {user:'s}
+possUser.addRule({ RHS: [ user.apostropheS ] })
 // (followers of) {user}
 possUser.addRule({ RHS: [ user.catSg ] })
 // (followers of) mine

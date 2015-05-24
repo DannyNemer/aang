@@ -151,6 +151,8 @@ var testQueries = [
 	'people I and Danny follows', // intentionally incorrect
 	'people people Danny follow and Danny follows', // intentionally incorrect
 	'likers of my repos I contributed to that I like and my repos I contributed to'
+	'repos of Danny\'s',
+	'Danny\'s followers',
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
 	// 'my followers who created pull requests of mine my followers who created repositories followers of mine mentioned in issues of my followers who I follow like that are repos created by me I contributed to am mentioned in that I am mentioned in'
 	// illegal, but takes a long time for search to fail (produce no results):

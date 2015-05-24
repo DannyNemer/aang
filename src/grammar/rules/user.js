@@ -61,3 +61,12 @@ user.byObjUsersPlus.addRule({ RHS: [ preps.agent, user.objUsersPlus ] })
 // (repos created) by me
 user.byObjUsers = new g.Symbol('by', 'obj', user.namePl)
 user.byObjUsers.addRule({ RHS: [ preps.agent, objUsers ] })
+
+
+// {user:'s} (repositories); followers of {user:'s}
+// Temporary solution
+user.apostropheS = new g.Symbol(user.nameSg + ':\'s')
+user.apostropheS.addRule({
+	terminal: true,
+	RHS: g.newEntityCategory({ name: user.nameSg + ':\'s', entities: [ 'Danny\'s'] })
+})
