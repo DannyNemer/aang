@@ -4,14 +4,12 @@ require('./rules/user')
 require('./rules/follow')
 require('./rules/github/github')
 
-var grammarPath = '../grammar.json'
-var semanticsPath = '../semantics.json'
-var entitiesPath = '../entities.json'
+var outputPath = __dirname + '/../'
 
 g.createEditRules()
 g.sortGrammar()
-g.printRuleCount(grammarPath)
-g.writeGrammarToFile(grammarPath, semanticsPath, entitiesPath)
+g.printRuleCount(outputPath)
+g.writeGrammarToFile(outputPath)
 
 
 /*

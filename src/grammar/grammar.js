@@ -41,8 +41,9 @@ exports.sortGrammar = function () {
 
 // Print the total count of rules in the grammar
 // Print change if 'oldGrammarPath' passed
-exports.printRuleCount = function (oldGrammarPath) {
+exports.printRuleCount = function (outputPath) {
 	var fs = require('fs')
+	var oldGrammarPath = outputPath + 'grammar.json'
 
 	var newRuleCount = exports.ruleCount(grammar)
 
@@ -65,8 +66,8 @@ exports.ruleCount = function (grammar) {
 }
 
 // Write grammar and semantics to files
-exports.writeGrammarToFile = function (grammarPath, semanticsPath, entitiesPath) {
-	util.writeJSONFile(grammarPath, grammar)
-	util.writeJSONFile(semanticsPath, semantic.semantics)
-	util.writeJSONFile(entitiesPath, entityCategory.entityCategories)
+exports.writeGrammarToFile = function (outputPath) {
+	util.writeJSONFile(outputPath + 'grammar.json', grammar)
+	util.writeJSONFile(outputPath + 'semantics.json', semantic.semantics)
+	util.writeJSONFile(outputPath + 'entities.json', entityCategory.entityCategories)
 }
