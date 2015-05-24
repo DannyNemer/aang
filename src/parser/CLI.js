@@ -2,6 +2,7 @@ var util = require('../util.js')
 
 var grammarPath = '../grammar.json'
 var semanticsPath = '../semantics.json'
+var entitiesPath = '../entities.json'
 var parserNewPath = './Parser.js'
 var parserOldPath = './util/ParserBestFirst.js'
 var forestSearchPath = './forestSearch.js'
@@ -285,7 +286,7 @@ function buildStateTable() {
 	// Build state table
 	var stateTable = new (require(stateTablePath))(grammar, '[start]')
 	// Remove grammar and semantics from cache
-	util.deleteCache(grammarPath, semanticsPath)
+	util.deleteCache(grammarPath, semanticsPath, entitiesPath)
 
 	return stateTable
 }

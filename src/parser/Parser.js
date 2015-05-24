@@ -2,6 +2,9 @@ module.exports = Parser
 var util = require('../util')
 var intSymbol = require('../grammar/grammar').intSymbol
 
+var entityCategories = require('../entities.json')
+var semantic = require('../grammar/semantic')
+
 function Parser(stateTable) {
 	this.stateTable = stateTable
 
@@ -12,9 +15,6 @@ function Parser(stateTable) {
 // Check if nGram is an entity
 // This simple entity resolution implementation will be replaced by language models for each category
 Parser.prototype.entityLookup = function (wordTab, j, newSemanticArgs, text) {
-	var entityCategories = require('../entities.json')
-	var semantic = require('../grammar/semantic')
-
 	for (var categoryName in entityCategories) {
 		var entities = entityCategories[categoryName]
 
