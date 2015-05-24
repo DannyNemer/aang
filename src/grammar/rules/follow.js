@@ -51,10 +51,20 @@ user.noRelativePossessive.addRule({ RHS: [ poss.determinerOmissible, userFollowe
 user.head.addRule({ RHS: [ userFollowersHead, poss.ofPossUsersPlus ], semantic: followersSemantic })
 
 
-// users with <int> followers
 var followersTerm = new g.Symbol('followers', 'term')
 followersTerm.addWord({
 	insertionCost: 2.5,
 	accepted: [ 'followers', 'subscribers' ]
 })
+// users with <int> followers
 user.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(user, followersTerm) ] })
+
+
+var followersApostropheTerm = new g.Symbol('followers\'', 'term')
+followersApostropheTerm.addWord({
+	accepted: [ 'followers\'', 'subscribers\'' ]
+})
+// my followers' repos; my {left-stop-words} followers' repos
+poss.determinerPl.addRule({ RHS: [ poss.oneSgPossUserLhs, followersApostropheTerm ], semantic: followersSemantic })
+// {user:'s} followers' repos; {user:'s} {left-stop-words} followers' repos
+poss.determinerPl.addRule({ RHS: [ poss.userApostropheSUserLhs, followersApostropheTerm ], semantic: followersSemantic })

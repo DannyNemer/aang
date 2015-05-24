@@ -150,7 +150,11 @@ var testQueries = [
 	'repos created before June 20 2000 and after this year',
 	'people I and Danny follows', // intentionally incorrect
 	'people people Danny follow and Danny follows', // intentionally incorrect
-	'likers of my repos I contributed to that I like and my repos I contributed to'
+	'likers of my repos I contributed to that I like and my repos I contributed to',
+	'my followers\' repos',
+	'my {left-stop-words} followers\' repos',
+	'my {left-stop-words} followers\' {left-stop-words} repos',
+	'Danny\'s followers\' followers',
 	'repos of Danny\'s',
 	'Danny\'s followers',
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
