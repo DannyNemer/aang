@@ -14,10 +14,10 @@ possDeterminerSg.addRule({ RHS: [ user.apostropheS ] })
 
 
 exports.determinerPl = new g.Symbol(possStr, 'determiner', 'pl')
-// my followers' repos; my {left-stop-words} followers' repos
+// my followers' repos; my female followers' repos
 exports.oneSgPossUserLhs = new g.Symbol('1', 'sg', 'poss', 'user', 'lhs')
-exports.oneSgPossUserLhs.addRule({ RHS: [ oneSg.poss, user.lhs ], semantic: oneSg.semantic })
-// {user:'s} followers' repos; {user:'s} {left-stop-words} followers' repos
+exports.oneSgPossUserLhs.addRule({ RHS: [ oneSg.possSpecial, user.lhs ] })
+// {user:'s} followers' repos; {user:'s} female followers' repos
 exports.userApostropheSUserLhs = new g.Symbol('user:\'s', 'user', 'lhs')
 exports.userApostropheSUserLhs.addRule({ RHS: [ user.apostropheS, user.lhs ] })
 
@@ -25,15 +25,15 @@ exports.userApostropheSUserLhs.addRule({ RHS: [ user.apostropheS, user.lhs ] })
 exports.determiner = new g.Symbol(possStr, 'determiner')
 // my/{user:'s} (repositories)
 exports.determiner.addRule({ RHS: [ possDeterminerSg ] })
-// my followers' repos; // {user:'s} followers' repos
-exports.determiner.addRule({ RHS: [ exports.determinerPl ] })
+// my followers' repos; {user:'s} followers' repos
+exports.determiner.addRule({ RHS: [ exports.determinerPl ], semantic: conjunctions.intersectSemantic })
 
 
 exports.determinerOmissible = new g.Symbol(possStr, 'determiner', 'omissible')
 // my (followers)
 exports.determinerOmissible.addRule({ RHS: [ oneSg.possOmissible ], semantic: oneSg.semantic })
-// my followers' repos; // {user:'s} followers' repos
-exports.determinerOmissible.addRule({ RHS: [ exports.determinerPl ] })
+// my followers' repos; {user:'s} followers' repos
+exports.determinerOmissible.addRule({ RHS: [ exports.determinerPl ], semantic: conjunctions.intersectSemantic })
 // {user:'s} (followers)
 exports.determinerOmissible.addRule({ RHS: [ possDeterminerSg ] })
 

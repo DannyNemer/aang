@@ -152,6 +152,7 @@ function semanticArraysMatch(a, b) {
 // not slicing RHS here because did before
 // the LHS should always be empty, and last one - because of sorting we know it is not arguemnt
 exports.insertSemantic = function (LHS, RHS) {
+exports.insertSemantic = function (LHS, RHS, onlyInsertFirstRHSSemantic) {
 	var lhsSemantic = LHS[0].semantic
 	var RHSLen = RHS.length
 
@@ -165,7 +166,9 @@ exports.insertSemantic = function (LHS, RHS) {
 		// Prevent multiple instances of this function within a RHS
 		// Only insert the first of the RHS, then merge with the remaining RHS
 		// - Ex: my {language} repos -> [ repos-created(me), repos-language({language}) ]
-		if (lhsSemantic.preventDups) {
+		// A rule with followers() -> [1-sg-poss], [user-lhs] should only insert the semantic from [1-sg-poss]
+		// to the LHS semantic, followers(), which is to concatenate with any semantics from [user-lhs]
+		if (lhsSemantic.preventDups || onlyInsertFirstRHSSemantic) {
 			var firstSemantic = [ {
 				semantic: lhsSemantic,
 				children: [ RHS[0] ]

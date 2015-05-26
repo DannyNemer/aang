@@ -159,6 +159,13 @@ var testQueries = [
 	'Danny\'s followers',
 	'people who are male',
 	'female people',
+	'female people who are male',
+	'male people who are not male',
+	'my male followers',
+	'Danny\'s male followers',
+	'my followers\' female followers',
+	'my female followers\' female followers',
+	'my female followers\' female followers who are not male',
 	'REPOS i LiKe'
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
 	// 'my followers who created pull requests of mine my followers who created repositories followers of mine mentioned in issues of my followers who I follow like that are repos created by me I contributed to am mentioned in that I am mentioned in'

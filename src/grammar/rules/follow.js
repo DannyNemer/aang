@@ -45,7 +45,7 @@ userFollowersHead.addRule({ RHS: [ user.companyOpt, followersTermSpecial ] })
 // my followers
 var userFollowersPossessible = new g.Symbol(user.nameSg, 'followers', 'possessible')
 userFollowersPossessible.addRule({ RHS: [ user.lhs, userFollowersHead ], transpositionCost: 1 })
-user.noRelativePossessive.addRule({ RHS: [ poss.determinerOmissible, userFollowersPossessible ], semantic: followersSemantic })
+user.noRelativePossessive.addRule({ RHS: [ poss.determinerOmissible, userFollowersPossessible ], semantic: followersSemantic, onlyInsertFirstRHSSemantic: true })
 
 // followers of mine
 user.head.addRule({ RHS: [ userFollowersHead, poss.ofPossUsersPlus ], semantic: followersSemantic })
@@ -64,7 +64,7 @@ var followersApostropheTerm = new g.Symbol('followers\'', 'term')
 followersApostropheTerm.addWord({
 	accepted: [ 'followers\'', 'subscribers\'' ]
 })
-// my followers' repos; my {left-stop-words} followers' repos
-poss.determinerPl.addRule({ RHS: [ poss.oneSgPossUserLhs, followersApostropheTerm ], semantic: followersSemantic })
-// {user:'s} followers' repos; {user:'s} {left-stop-words} followers' repos
-poss.determinerPl.addRule({ RHS: [ poss.userApostropheSUserLhs, followersApostropheTerm ], semantic: followersSemantic })
+// my followers' repos; my female followers' repos
+poss.determinerPl.addRule({ RHS: [ poss.oneSgPossUserLhs, followersApostropheTerm ], semantic: followersSemantic, onlyInsertFirstRHSSemantic: true })
+// {user:'s} followers' repos; {user:'s} female followers' repos
+poss.determinerPl.addRule({ RHS: [ poss.userApostropheSUserLhs, followersApostropheTerm ], semantic: followersSemantic, onlyInsertFirstRHSSemantic: true })

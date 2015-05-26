@@ -124,6 +124,10 @@ function createRuleProps(origRule) {
 		ruleProps.transposition = true
 	}
 
+	if (origRule.onlyInsertFirstRHSSemantic) {
+		ruleProps.onlyInsertFirstRHSSemantic = true
+	}
+
 	return ruleProps
 }
 
