@@ -72,7 +72,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	}
 
 	var newRule = {
-		RHS: [ opts.RHS ],
+		RHS: [ opts.RHS.toLowerCase() ],
 		terminal: true,
 		// String for terminal symbols, or Object of inflected forms for conjugation
 		text: opts.text || opts.textForms,

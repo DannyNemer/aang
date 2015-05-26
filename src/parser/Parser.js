@@ -20,7 +20,7 @@ Parser.prototype.entityLookup = function (wordTab, j, newSemanticArgs, text) {
 
 		for (var e = entities.length; e-- > 0;) {
 			var entity = entities[e]
-			if (entity.name === text) {
+			if (entity.name.toLowerCase() === text) {
 				var wordSym = this.stateTable.symbolTab[categoryName]
 				// create node with terminal symbol
 				var wordNode = this.addSub(wordSym)
@@ -41,7 +41,7 @@ Parser.prototype.entityLookup = function (wordTab, j, newSemanticArgs, text) {
 						ruleProps: {
 							cost: ruleProps.cost,
 							semantic: ruleProps.semantic ? semantic.insertSemantic(ruleProps.semantic, semanticArg) : semanticArg,
-							text: text
+							text: entity.name
 						}
 					}
 
@@ -61,7 +61,7 @@ Parser.prototype.entityLookup = function (wordTab, j, newSemanticArgs, text) {
 
 // Look up terminal symbol matches in input
 Parser.prototype.matchTerminalRules = function (query) {
-	var tokens = query.split(' ')
+	var tokens = query.toLowerCase().split(' ')
 	this.tokensLen = tokens.length
 	var wordTab = []
 
