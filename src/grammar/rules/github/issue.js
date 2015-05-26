@@ -90,13 +90,17 @@ user.inner.addRule({ RHS: [ assignedTo, issue.catPlPlus ], semantic: usersAssign
 
 
 // OPEN/CLOSED:
-var issuesStateSemantic = g.newSemantic({ name: issue.namePl + '-state', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
-// open issues
-var openStateSemanticArg = g.newSemantic({ name: 'open', isArg: true, cost: 0.5 })
-issue.adjective.addRule({ terminal: true, RHS: 'open', text: 'open', semantic: g.insertSemantic(issuesStateSemantic, openStateSemanticArg) })
-// closed issues
-var closedStateSemanticArg = g.newSemantic({ name: 'closed', isArg: true, cost: 0.5 })
-issue.adjective.addRule({ terminal: true, RHS: 'closed', text: 'closed', semantic: g.insertSemantic(issuesStateSemantic, closedStateSemanticArg) })
+var issuesStateSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+// open issues; issues that are open
+issue.adjective.addRule({
+	terminal: true, RHS: 'open', text: 'open',
+	semantic: g.insertSemantic(issuesStateSemantic, g.newSemantic({ name: 'open', isArg: true, cost: 0.5 }))
+})
+// closed issues; issues that are closed
+issue.adjective.addRule({
+	terminal: true, RHS: 'closed', text: 'closed',
+	semantic: g.insertSemantic(issuesStateSemantic, g.newSemantic({ name: 'closed', isArg: true, cost: 0.5 }))
+})
 
 
 // WITH N COMMENTS:

@@ -150,8 +150,8 @@ function semanticArraysMatch(a, b) {
 
 // LHS and RHS both always defined
 // not slicing RHS here because did before
-// the LHS should always be empty, and last one - because of sorting we know it is not arguemnt
-exports.insertSemantic = function (LHS, RHS) {
+// the LHS should always be empty
+// We are assuming the LHS is always one function, not more than 1 where we intended to insert in the innermost
 exports.insertSemantic = function (LHS, RHS, onlyInsertFirstRHSSemantic) {
 	var lhsSemantic = LHS[0].semantic
 	var RHSLen = RHS.length

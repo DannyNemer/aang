@@ -131,7 +131,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 
 	if (opts.transpositionCost !== undefined) {
 		if (opts.RHS.length !== 2) {
-			ruleErr('Nonterminal rules with transposition-costs must have 2 RHS symbols', this.name, opts.RHS)
+			ruleErr('Nonterminal rules with transposition costs must have 2 RHS symbols', this.name, opts.RHS)
 		}
 
 		newRule.transpositionCost = opts.transpositionCost

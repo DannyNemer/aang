@@ -14,7 +14,7 @@ function Parser(stateTable) {
 
 // Check if nGram is an entity
 // This simple entity resolution implementation will be replaced by language models for each category
-Parser.prototype.entityLookup = function (wordTab, j, newSemanticArgs, text) {
+Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, text) {
 	for (var categoryName in entityCategories) {
 		var entities = entityCategories[categoryName]
 
@@ -49,7 +49,7 @@ Parser.prototype.entityLookup = function (wordTab, j, newSemanticArgs, text) {
 					wordNodes.push(this.addSub(rule.RHS[0], sub)) // FIX: rename prop - rule.RHS[0] is LHS for terms
 				}
 
-				var words = wordTab[j] || (wordTab[j] = [])
+				var words = wordTab[endPos] || (wordTab[endPos] = [])
 				words.push({
 					start: this.position,
 					nodes: wordNodes
@@ -75,11 +75,11 @@ Parser.prototype.matchTerminalRules = function (query) {
 
 		if (isNaN(nGram)) {
 			// Check every possible n-gram for multi-word terminal symbols
-			var j = this.position
+			var endPos = this.position
 			while (true) {
-				this.entityLookup(wordTab, j, newSemanticArgs, nGram)
+				this.entityLookup(wordTab, endPos, newSemanticArgs, nGram)
 
-				// this.nodeTab = this.nodeTabs[j] // should I be doing this?
+				// this.nodeTab = this.nodeTabs[endPos] // should I be doing this?
 				var wordSym = this.stateTable.symbolTab[nGram]
 				if (wordSym) {
 					// create node with terminal symbol
@@ -100,16 +100,17 @@ Parser.prototype.matchTerminalRules = function (query) {
 						wordNodes.push(this.addSub(rule.RHS[0], sub)) // FIX: rename prop - rule.RHS[0] is LHS for terms
 					}
 
-					var words = wordTab[j] || (wordTab[j] = [])
+					// Save word to index of last token
+					var words = wordTab[endPos] || (wordTab[endPos] = [])
 					words.push({
 						start: this.position,
 						nodes: wordNodes
 					})
 				}
 
-				if (++j === this.tokensLen) break
+				if (++endPos === this.tokensLen) break
 
-				nGram += ' ' + tokens[j]
+				nGram += ' ' + tokens[endPos]
 			}
 		}
 

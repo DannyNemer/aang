@@ -151,6 +151,7 @@ var testQueries = [
 	'people I and Danny follows', // intentionally incorrect
 	'people people Danny follow and Danny follows', // intentionally incorrect
 	'likers of my repos I contributed to that I like and my repos I contributed to',
+	'my GitHub repos liked by my github followers',
 	'my followers\' repos',
 	'my {left-stop-words} followers\' repos',
 	'my {left-stop-words} followers\' {left-stop-words} repos',

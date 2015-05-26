@@ -9,7 +9,7 @@ var entityCategoryOptsSchema = {
 	entities: { type: Array, arrayType: String }
 }
 
-// Create a new entities category containing the passed entities
+// Create a new entity category containing the passed entities
 exports.newEntityCategory = function (opts) {
 	if (util.illFormedOpts(entityCategoryOptsSchema, opts)) {
 		throw 'ill-formed entity category'

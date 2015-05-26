@@ -15,7 +15,7 @@ usersTerm.addWord({
 	accepted: [ 'people', 'users' ]
 })
 
-// |Github users (I follow)
+// |GitHub users (I follow)
 user.company = new g.Symbol('company')
 user.companyOpt = user.company.createNonterminalOpt()
 user.head.addRule({ RHS: [ user.companyOpt, usersTerm ] })

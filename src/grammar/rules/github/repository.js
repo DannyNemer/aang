@@ -17,7 +17,7 @@ repositoriesTerm.addWord({
 	accepted: [ repository.namePl, 'repos' ]
 })
 
-// |Github repos (I starred)
+// |GitHub repos (I starred)
 repository.headMayPoss.addRule({ RHS: [ github.termOpt, repositoriesTerm ] })
 
 

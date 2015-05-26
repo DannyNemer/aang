@@ -41,7 +41,7 @@ function findTermRuleInsertions(grammar, insertions) {
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost + rule.insertionCost,
 						insertedSyms: [ { symbol: termSym } ],
-						text: [ rule.text || termSym ],
+						text: [ rule.text ],
 						semantic: rule.semantic
 					})
 				}
@@ -60,7 +60,6 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 		Object.keys(grammar).forEach(function (nontermSym) {
 			grammar[nontermSym].forEach(function (rule) {
 				if (rule.RHS.length === 2 && /\+/.test(nontermSym)) return // TEMP
-				// if (rule.RHS.indexOf(nontermSym) !== -1) return
 				if (rule.transpositionCost !== undefined) return
 
 				if (!rule.terminal && RHSCanBeInserted(insertions, rule.RHS)) {
@@ -114,7 +113,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 							newSemantic = semantic.insertSemantic(rule.semantic, insertion.semantic)
 						} else if (rule.semantic) {
 							newSemantic = rule.semantic
-							// Only needed if allowing intersertions thorugh <empty> in transpositions
+							// Only needed if allowing insertions through <empty> in transpositions
 							// A function without an arugment - currently can only be intersect()
 							// e.g., "issues opened by people"
 							if (newSemantic[0].children) return

@@ -44,10 +44,11 @@ exports.search = function (startNode, K, buildDebugTrees) {
 			for (var n = item.nextNodes.length; n-- > 0;) {
 				node = item.nextNodes[n]
 
-				// 'node' is a node
+				// Stop when 'node' is a node
 				if (node.sym) break
 
 				// we are copying item.ruleProps every time, should only be once
+				// Conjugate all nominative cases of text until find a node
 				item.text = item.text.concat(conjugateTextArray(item, node))
 			}
 
@@ -75,10 +76,10 @@ exports.search = function (startNode, K, buildDebugTrees) {
 			var sub = subs[s]
 			var ruleProps = sub.ruleProps
 
-			// Array of multiple insertions
+			// Array of multiple insertions - first can be a 1-1 with an empty
 			if (ruleProps.constructor === Array) {
-				for (var p = 0, rulePropsLen = ruleProps.length; p < rulePropsLen; ++p) {
-					var newItem = createItem(sub, item, ruleProps[p], buildDebugTrees)
+				for (var r = 0, rulePropsLen = ruleProps.length; r < rulePropsLen; ++r) {
+					var newItem = createItem(sub, item, ruleProps[r], buildDebugTrees)
 					if (newItem === -1) continue // semantically illegal parse -> throw out
 					heap.push(newItem)
 				}
@@ -260,12 +261,11 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 // Determine if newly parsed tree has a unique semantic and unique display text
 // Return true if tree is unique
 function treeIsUnique(trees, item) {
-	item.semantic = item.prevSemantics[0]
 	if (item.prevSemantics.length > 1) throw 'prevSemantics remain'
 
 	// Check for duplicate semantics by comparing semantic string representation
 	// Return false if new semantic is identical to previously constructed (and cheaper) tree
-	var semanticStr = semantic.semanticToString(item.semantic)
+	var semanticStr = semantic.semanticToString(item.prevSemantics[0])
 	for (var t = trees.length; t-- > 0;) {
 		var tree = trees[t]
 		if (tree.semanticStr === semanticStr) return false
@@ -301,7 +301,7 @@ function conjugateTextArray(item, textArray) {
 
 	for (var t = 0, textArrayLen = textArray.length; t < textArrayLen; ++t) {
 		var text = textArray[t]
-		if (text instanceof Object) {
+		if (text.constructor === Object) {
 			if (!arraysCopied) {
 				textArray = textArray.slice()
 				item.ruleProps = item.ruleProps.slice()
@@ -337,7 +337,7 @@ function conjugateText(rulePropsArray, text) {
 
 		var gramCase = ruleProps.gramCase
 		if (gramCase && text[gramCase]) {
-			// rule with gramCase either has personNumber for nominative (so will be needed again), or doesn't have personNUmer (For obj) and can be deleted
+			// rule with gramCase either has personNumber for nominative (so will be needed again), or doesn't have personNumer (For obj) and can be deleted
 			if (!personNumber) rulePropsArray.splice(r, 1)
 
 			return text[gramCase]
@@ -415,7 +415,7 @@ function cloneTree(node, lastNodes) {
 exports.print = function (trees, printCost, printTrees) {
 	trees.forEach(function (tree) {
 		// Print display text (and cost)
-		if (tree.cost !== tree.costSoFar) util.printErr('costs incorrect')
+		if (tree.cost !== tree.costSoFar) util.printErr('Costs incorrect')
 		console.log(tree.text, printCost ? tree.cost : '')
 		// Print semantic
 		console.log(' ', tree.semanticStr)
