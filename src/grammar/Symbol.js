@@ -7,7 +7,7 @@ exports.grammar = {}
 // A mapping of symbol names to creation lines; used for error reporting
 exports.creationLines = {}
 
-exports.Symbol = Symbol
+exports.constructor = Symbol
 
 exports.newSymbol = function () {
 	var symbolNew = Object.create(Symbol.prototype)

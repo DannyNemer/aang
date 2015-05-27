@@ -1,7 +1,7 @@
 // Functions to automate adding many common sets of rules to grammar
 
 var g = require('./grammar')
-var Symbol = g.Symbol
+var Symbol = require('./Symbol.js').constructor
 var util = require('../util')
 
 
