@@ -24,15 +24,6 @@ exports.determiner.addRule({ RHS: [ exports.determinerSg ] })
 exports.determiner.addRule({ RHS: [ exports.determinerPl ], semantic: conjunctions.intersectSemantic })
 
 
-exports.determinerOmissible = new g.Symbol(possStr, 'determiner', 'omissible')
-// my (followers)
-exports.determinerOmissible.addRule({ RHS: [ oneSg.possOmissible ], semantic: oneSg.semantic })
-// my followers' repos; {user:'s} followers' repos
-exports.determinerOmissible.addRule({ RHS: [ exports.determinerPl ], semantic: conjunctions.intersectSemantic })
-// {user:'s} (followers)
-exports.determinerOmissible.addRule({ RHS: [ exports.determinerSg ] })
-
-
 // Seperate [poss-user] from [poss-users] if want rules (functions) limited to single people
 // Primarily exists, instead of just using [obj-users] to limit functions and "mine"
 var possUser = new g.Symbol(possStr, 'user')
