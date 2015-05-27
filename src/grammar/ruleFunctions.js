@@ -250,7 +250,7 @@ Symbol.prototype.addWord = function (opts) {
 
 	// Opt-words cannot have insertion costs
 	if (opts.optional && opts.insertionCost !== undefined) {
-		util.printErrWithLine('Optional words cannot have insertion costs:', opts.name)
+		util.printErrWithLine('Optional words cannot have insertion costs', opts.name)
 		throw 'ill-formed opt-word'
 	}
 
@@ -299,7 +299,7 @@ Symbol.prototype.addInt = function (opts) {
 
 	// If defined, maximum value must be greater than minimum value
 	if (opts.min >= opts.max) {
-		util.printErrWithLine('<int> max value must be greater than min value:', 'min: ' + opts.min + ', max: ' + opts.max)
+		util.printErrWithLine('<int> max value must be greater than min value', 'min: ' + opts.min + ', max: ' + opts.max)
 		throw 'ill-formed <int> symbol'
 	}
 

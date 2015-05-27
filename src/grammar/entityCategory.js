@@ -18,7 +18,7 @@ exports.newEntityCategory = function (opts) {
 	var categoryName = '{' + opts.name + '}'
 
 	if (exports.entityCategories.hasOwnProperty(categoryName)) {
-		util.printErrWithLine('Duplicate entity category:', categoryName)
+		util.printErrWithLine('Duplicate entity category', categoryName)
 		throw 'duplicate entity category'
 	}
 

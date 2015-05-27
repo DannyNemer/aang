@@ -33,7 +33,7 @@ exports.illFormedOpts = function (schema, opts) {
 
 		// Unrecognized property
 		if (!schema.hasOwnProperty(prop)) {
-			return exports.printErrWithLine('Unrecognized property:', prop)
+			return exports.printErrWithLine('Unrecognized property', prop)
 		}
 
 		var optsVal = opts[prop]
@@ -42,27 +42,27 @@ exports.illFormedOpts = function (schema, opts) {
 
 		// Accidentally passed an undefined object; ex: undefined, [], [ 1, undefined ]
 		if (optsVal === undefined || (Array.isArray(optsVal) && (optsVal.length === 0 || optsVal.indexOf(undefined) !== -1))) {
-			return exports.printErrWithLine('undefined ' + prop + ':', optsVal)
+			return exports.printErrWithLine('undefined ' + prop, optsVal)
 		}
 
 		// Schema contains an Array of pre-defined accepted values
 		if (Array.isArray(schemaPropType)) {
 			// Unrecognized value for parameter with pre-defined values
 			if (schemaPropType.indexOf(optsVal) === -1) {
-				exports.printErr('Unrecognized value for ' + prop + ':', optsVal)
-				console.log('     Accepted values for ' + prop, ':', schemaPropType)
+				exports.printErr('Unrecognized value for ' + prop, optsVal)
+				console.log('     Accepted values for ' + prop + ':', schemaPropType)
 				console.log(exports.getLine())
 				return true
 			}
 		} else {
 			// Passed value of incorrect type; ex: LHS: String, RHS: Array
 			if (optsVal.constructor !== schemaPropType) {
-				return exports.printErrWithLine('\'' + prop + '\' not of type ' + schemaPropType.name + ':', optsVal)
+				return exports.printErrWithLine('\'' + prop + '\' not of type ' + schemaPropType.name, optsVal)
 			}
 
 			// Passed Array contains elements not of arrayType (if arrayType is defined)
 			if (Array.isArray(optsVal) && schemaVal.arrayType && !optsVal.every(function (el) { return el.constructor === schemaVal.arrayType })) {
-				return exports.printErrWithLine('\'' + prop + '\' not an Array of type ' + schemaVal.arrayType.name + ':', optsVal)
+				return exports.printErrWithLine('\'' + prop + '\' not an Array of type ' + schemaVal.arrayType.name, optsVal)
 			}
 		}
 	}
@@ -162,9 +162,13 @@ exports.printCount = function (key) {
 	}
 }
 
-// Print like console.log(), but color first arugment red and prepend 'Err:'
+// Print like console.log(), but color first arugment red, prepend 'Err:', and append ':'
 exports.printErr = function () {
-	arguments[0] = colors.red('Err: ' + arguments[0])
+	var firstArg = 'Err: ' + arguments[0]
+	if (arguments[1] !== undefined && firstArg[firstArg.length - 1] !== ':') {
+		firstArg += ':'
+	}
+	arguments[0] = colors.red(firstArg)
 	console.log.apply(null, arguments)
 }
 

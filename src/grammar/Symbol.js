@@ -17,7 +17,7 @@ function Symbol() {
 	var symNameChunks = Array.prototype.slice.call(arguments)
 
 	if (symNameChunks.indexOf(undefined) !== -1) {
-		util.printErrWithLine('undefined String in Symbol name:', symNameChunks)
+		util.printErrWithLine('undefined String in Symbol name', symNameChunks)
 		throw 'ill-formed Symbol'
 	}
 
@@ -25,7 +25,7 @@ function Symbol() {
 	this.name = '[' + symNameChunks.join('-') + ']'
 
 	if (grammar.hasOwnProperty(this.name)) {
-		util.printErrWithLine('Duplicate Symbol:', this.name)
+		util.printErrWithLine('Duplicate Symbol', this.name)
 		throw 'duplicate Symbol'
 	}
 
