@@ -25,8 +25,10 @@ issue.headMayPoss.addRule({ RHS: [ github.termOpt, issuesTerm ] })
 var issuesOpenedSemantic = g.newSemantic({ name: issue.namePl + '-opened', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
 var issuesOpenersSemantic = g.newSemantic({ name: issue.nameSg + '-openers', cost: 0.5, minParams: 1, maxParams: 1 })
 
-// my issues
-issue.noRelativePossessive.addRule({ RHS: [ poss.determiner, issue.possessible ], semantic: issuesOpenedSemantic })
+// my issues; my closed issues
+var issuePossDeterminer = new g.Symbol(issue.nameSg, 'poss', 'determiner')
+issuePossDeterminer.addRule({ RHS: [ poss.determiner ], semantic: issuesOpenedSemantic })
+issue.noRelativePossessive.addRule({ RHS: [ issuePossDeterminer, issue.possessible ] })
 // issues of mine
 issue.head.addRule({ RHS: [ issue.headMayPoss, poss.ofPossUsers ], semantic: issuesOpenedSemantic })
 

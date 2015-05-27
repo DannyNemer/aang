@@ -42,10 +42,12 @@ followersTermSpecial.addWord({
 var userFollowersHead = new g.Symbol(user.nameSg, 'followers', 'head')
 userFollowersHead.addRule({ RHS: [ user.companyOpt, followersTermSpecial ] })
 
-// my followers
+// my followers; my followers' followers
+var followersPossDeterminerOmissible = new g.Symbol('followers', 'poss', 'determiner', 'omissible')
+followersPossDeterminerOmissible.addRule({ RHS: [ poss.determinerOmissible ], semantic: followersSemantic })
 var userFollowersPossessible = new g.Symbol(user.nameSg, 'followers', 'possessible')
 userFollowersPossessible.addRule({ RHS: [ user.lhs, userFollowersHead ], transpositionCost: 1 })
-user.noRelativePossessive.addRule({ RHS: [ poss.determinerOmissible, userFollowersPossessible ], semantic: followersSemantic, onlyInsertFirstRHSSemantic: true })
+user.noRelativePossessive.addRule({ RHS: [ followersPossDeterminerOmissible, userFollowersPossessible ] })
 
 // followers of mine
 user.head.addRule({ RHS: [ userFollowersHead, poss.ofPossUsersPlus ], semantic: followersSemantic })
@@ -60,11 +62,16 @@ followersTerm.addWord({
 user.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(user, followersTerm) ] })
 
 
+
+
 var followersApostropheTerm = new g.Symbol('followers\'', 'term')
 followersApostropheTerm.addWord({
 	accepted: [ 'followers\'', 'subscribers\'' ]
 })
-// my followers' repos; my female followers' repos
-poss.determinerPl.addRule({ RHS: [ poss.oneSgPossUserLhs, followersApostropheTerm ], semantic: followersSemantic, onlyInsertFirstRHSSemantic: true })
-// {user:'s} followers' repos; {user:'s} female followers' repos
-poss.determinerPl.addRule({ RHS: [ poss.userApostropheSUserLhs, followersApostropheTerm ], semantic: followersSemantic, onlyInsertFirstRHSSemantic: true })
+
+// my/{user:'s} followers' repos; my/{user:'s} female followers' repos
+var followersPossDeterminerSg = new g.Symbol('followers', 'poss', 'determiner', 'sg')
+followersPossDeterminerSg.addRule({ RHS: [ poss.determinerSg ], semantic: followersSemantic })
+var userLhsFollowers = new g.Symbol(user.nameSg, 'lhs', 'followers\'')
+userLhsFollowers.addRule({ RHS: [ user.lhs, followersApostropheTerm ] })
+poss.determinerPl.addRule({ RHS: [ followersPossDeterminerSg, userLhsFollowers ] })

@@ -20,12 +20,14 @@ repositoriesTerm.addWord({
 // |GitHub repos (I starred)
 repository.headMayPoss.addRule({ RHS: [ github.termOpt, repositoriesTerm ] })
 
-
+// preventDups because repos only have one author, so an intersection of repos from different authors is empty
 var repositoriesCreatedSemantic = g.newSemantic({ name: repository.namePl + '-created', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
 var repositoryCreatorsSemantic = g.newSemantic({ name: repository.nameSg + '-creators', cost: 0.5, minParams: 1, maxParams: 1 })
 
-// my repos
-repository.noRelativePossessive.addRule({ RHS: [ poss.determiner, repository.possessible ], semantic: repositoriesCreatedSemantic })
+// my repos; my {language} repos
+var repositoryPossDeterminer = new g.Symbol(repository.nameSg, 'poss', 'determiner')
+repositoryPossDeterminer.addRule({ RHS: [ poss.determiner ], semantic: repositoriesCreatedSemantic })
+repository.noRelativePossessive.addRule({ RHS: [ repositoryPossDeterminer, repository.possessible ] })
 // repos of mine
 repository.head.addRule({ RHS: [ repository.headMayPoss, poss.ofPossUsers ], semantic: repositoriesCreatedSemantic })
 

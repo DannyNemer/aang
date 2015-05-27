@@ -21,7 +21,9 @@ var pullRequestsCreatedSemantic = g.newSemantic({ name: pullRequest.namePl + '-c
 var pullRequestCreatorsSemantic = g.newSemantic({ name: pullRequest.nameSg + '-creators', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my pull requests
-pullRequest.noRelativePossessive.addRule({ RHS: [ poss.determiner, pullRequest.possessible ], semantic: pullRequestsCreatedSemantic })
+var pullRequestPossDeterminer = new g.Symbol(pullRequest.nameSg, 'poss', 'determiner')
+pullRequestPossDeterminer.addRule({ RHS: [ poss.determiner ], semantic: pullRequestsCreatedSemantic })
+pullRequest.noRelativePossessive.addRule({ RHS: [ pullRequestPossDeterminer, pullRequest.possessible ] })
 // pull requests of mine
 pullRequest.head.addRule({ RHS: [ pullRequest.headMayPoss, poss.ofPossUsers ], semantic: pullRequestsCreatedSemantic })
 

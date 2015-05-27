@@ -6,25 +6,20 @@ var conjunctions = require('./conjunctions')
 
 var possStr = 'poss'
 
-var possDeterminerSg = new g.Symbol(possStr, 'determiner', 'sg')
+exports.determinerSg = new g.Symbol(possStr, 'determiner', 'sg')
 // my (repositories)
-possDeterminerSg.addRule({ RHS: [ oneSg.poss ], semantic: oneSg.semantic })
+exports.determinerSg.addRule({ RHS: [ oneSg.poss ], semantic: oneSg.semantic })
 // {user:'s} (repositories)
-possDeterminerSg.addRule({ RHS: [ user.apostropheS ] })
+exports.determinerSg.addRule({ RHS: [ user.apostropheS ] })
 
 
+// my/{user:'s} followers' repos; my/{user:'s} female followers' repos
 exports.determinerPl = new g.Symbol(possStr, 'determiner', 'pl')
-// my followers' repos; my female followers' repos
-exports.oneSgPossUserLhs = new g.Symbol('1', 'sg', 'poss', 'user', 'lhs')
-exports.oneSgPossUserLhs.addRule({ RHS: [ oneSg.possSpecial, user.lhs ] })
-// {user:'s} followers' repos; {user:'s} female followers' repos
-exports.userApostropheSUserLhs = new g.Symbol('user:\'s', 'user', 'lhs')
-exports.userApostropheSUserLhs.addRule({ RHS: [ user.apostropheS, user.lhs ] })
 
 
 exports.determiner = new g.Symbol(possStr, 'determiner')
 // my/{user:'s} (repositories)
-exports.determiner.addRule({ RHS: [ possDeterminerSg ] })
+exports.determiner.addRule({ RHS: [ exports.determinerSg ] })
 // my followers' repos; {user:'s} followers' repos
 exports.determiner.addRule({ RHS: [ exports.determinerPl ], semantic: conjunctions.intersectSemantic })
 
@@ -35,7 +30,7 @@ exports.determinerOmissible.addRule({ RHS: [ oneSg.possOmissible ], semantic: on
 // my followers' repos; {user:'s} followers' repos
 exports.determinerOmissible.addRule({ RHS: [ exports.determinerPl ], semantic: conjunctions.intersectSemantic })
 // {user:'s} (followers)
-exports.determinerOmissible.addRule({ RHS: [ possDeterminerSg ] })
+exports.determinerOmissible.addRule({ RHS: [ exports.determinerSg ] })
 
 
 // Seperate [poss-user] from [poss-users] if want rules (functions) limited to single people
