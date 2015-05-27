@@ -64,14 +64,17 @@ user.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(user, 
 
 
 
-var followersApostropheTerm = new g.Symbol('followers\'', 'term')
-followersApostropheTerm.addWord({
+var followersPossessiveTerm = new g.Symbol('followers', 'possessive', 'term')
+followersPossessiveTerm.addWord({
 	accepted: [ 'followers\'', 'subscribers\'' ]
 })
 
+var userFollowersPossessiveHead = new g.Symbol(user.nameSg, 'followers', 'possessive', 'head')
+userFollowersPossessiveHead.addRule({ RHS: [ user.companyOpt, followersPossessiveTerm ] })
+
 // my/{user:'s} followers' repos; my/{user:'s} female followers' repos
-var followersPossDeterminerSg = new g.Symbol('followers', 'poss', 'determiner', 'sg')
+var followersPossDeterminerSg = new g.Symbol('followers', 'possessive', 'poss', 'determiner', 'sg')
 followersPossDeterminerSg.addRule({ RHS: [ poss.determinerSg ], semantic: followersSemantic })
-var userLhsFollowers = new g.Symbol(user.nameSg, 'lhs', 'followers\'')
-userLhsFollowers.addRule({ RHS: [ user.lhs, followersApostropheTerm ] })
+var userLhsFollowers = new g.Symbol(user.nameSg, 'lhs', 'followers', 'possessive')
+userLhsFollowers.addRule({ RHS: [ user.lhs, userFollowersPossessiveHead ] })
 poss.determinerPl.addRule({ RHS: [ followersPossDeterminerSg, userLhsFollowers ] })
