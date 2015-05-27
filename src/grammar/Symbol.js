@@ -44,7 +44,8 @@ Symbol.prototype.addRule = function (opts) {
 	}
 
 	if (this.ruleExists(newRule)) {
-		ruleErr('Duplicate rule', this.name, newRule.RHS)
+		util.printErrWithLine('Duplicate rule', this.name, '->', newRule.RHS)
+		throw 'duplicate rule'
 	}
 
 	this.rules.push(newRule)
@@ -104,10 +105,6 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 		throw 'ill-formed nonterminal rule'
 	}
 
-	if (opts.RHS.length > 2) {
-		ruleErr('Nonterminal rules can only have 1 or 2 RHS symbols', this.name, opts.RHS)
-	}
-
 	var newRule = {
 		RHS: opts.RHS.map(function (RHSSymbol) { return RHSSymbol.name }),
 		gramCase: opts.gramCase,
@@ -115,9 +112,15 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 		personNumber: opts.personNumber
 	}
 
+	if (opts.RHS.length > 2) {
+		util.printErrWithLine('Nonterminal rules can only have 1 or 2 RHS symbols', this.name, '->', newRule.RHS)
+		throw 'ill-formed nonterminal rule'
+	}
+
 	if (opts.transpositionCost !== undefined) {
 		if (opts.RHS.length !== 2) {
-			ruleErr('Nonterminal rules with transposition costs must have 2 RHS symbols', this.name, opts.RHS)
+			util.printErrWithLine('Nonterminal rules with transposition costs must have 2 RHS symbols', this.name, '->', newRule.RHS)
+			throw 'ill-formed nonterminal rule'
 		}
 
 		newRule.transpositionCost = opts.transpositionCost
@@ -142,19 +145,4 @@ Symbol.prototype.calcCost = function (costPenalty) {
 
 	// Cost of rules for each sym are incremented by 1e-7
 	return this.rules.length * 1e-7 + costPenalty
-}
-
-// Print error when new rule is ill-formed
-function ruleErr(errMessage, name, RHS) {
-	if (Array.isArray(RHS)) {
-		RHS = RHS.map(function (sym) {
-			return sym instanceof Symbol ? sym.name : sym
-		})
-	}
-
-	console.log(util.getLine())
-	console.log('Err:', errMessage + ':')
-	console.log('\t' + name, '->', RHS)
-
-	throw 'ill-formed rule'
 }
