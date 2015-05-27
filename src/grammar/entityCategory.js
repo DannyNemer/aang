@@ -1,6 +1,9 @@
 var util = require('../util')
 
-exports.entityCategories = {}
+exports.entities = {}
+// A list of all entity categories only to prevent duplicate category names
+var entityCategories = []
+// An incrementer for entity ids
 var entityCount = 0
 
 // Schema for an entity category
@@ -17,18 +20,36 @@ exports.newEntityCategory = function (opts) {
 
 	var categoryName = '{' + opts.name + '}'
 
-	if (exports.entityCategories.hasOwnProperty(categoryName)) {
+	if (entityCategories.hasOwnProperty(categoryName)) {
 		util.printErrWithLine('Duplicate entity category', categoryName)
 		throw 'duplicate entity category'
 	}
 
-	exports.entityCategories[categoryName] = opts.entities.map(function (entity) {
-		return {
-			name: entity,
+	var newEntities = opts.entities
+	newEntitiesLen = newEntities.length
+	newEntities.forEach(function (entity, i) {
+		var entityKey = entity.toLowerCase()
+
+		// Check for duplicate entities within this category
+		for (var j = i + 1; j < newEntitiesLen; ++j) {
+			var otherEntity = newEntities[j]
+			if (entityKey === otherEntity) {
+				util.printErrWithLine('Duplicate entity', categoryName, '->', i + ': ' + entity + ',', j + ': ' + otherEntity)
+				throw 'duplicate entity'
+			}
+		}
+
+		var entityInstances = (exports.entities[entityKey] || (exports.entities[entityKey] = []))
+		entityInstances.push({
+			// Unmodified display text
+			// Add text to each instance of the entity in a difference category in case capitalization differs
+			text: entity,
+			category: categoryName,
 			// Save id as String for semantic arguments ordering
 			id: String(entityCount++)
-		}
+		})
 	})
 
+	// To be used as a terminal symbol
 	return categoryName
 }

@@ -2,7 +2,7 @@ module.exports = Parser
 var util = require('../util')
 var intSymbol = require('../grammar/grammar').intSymbol
 
-var entityCategories = require('../entities.json')
+var entities = require('../entities.json')
 var semantic = require('../grammar/semantic')
 
 function Parser(stateTable) {
@@ -15,46 +15,43 @@ function Parser(stateTable) {
 // Check if nGram is an entity
 // This simple entity resolution implementation will be replaced by language models for each category
 Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, text) {
-	for (var categoryName in entityCategories) {
-		var entities = entityCategories[categoryName]
+	var entityInstances = entities[text]
+	if (entityInstances) {
+		for (var e = entityInstances.length; e-- > 0;) {
+			var entity = entityInstances[e]
+			var wordSym = this.stateTable.symbolTab[entity.category]
+			// create node with terminal symbol
+			var wordNode = this.addSub(wordSym)
 
-		for (var e = entities.length; e-- > 0;) {
-			var entity = entities[e]
-			if (entity.name.toLowerCase() === text) {
-				var wordSym = this.stateTable.symbolTab[categoryName]
-				// create node with terminal symbol
-				var wordNode = this.addSub(wordSym)
+			var entityId = entity.id
+			var semanticArg = newSemanticArgs[entityId] || (newSemanticArgs[entityId] = [ { semantic: { name: entityId } } ])
 
-				var entityId = entity.id
-				var semanticArg = newSemanticArgs[entityId] || (newSemanticArgs[entityId] = [ { semantic: { name: entityId } } ])
+			// Loop through all term rules that produce term sym
+			var wordNodes = []
+			var wordSize = wordSym.size
+			for (var rules = wordSym.rules, r = rules.length; r-- > 0;) {
+				var rule = rules[r]
+				var ruleProps = rule.ruleProps
 
-				// Loop through all term rules that produce term sym
-				var wordNodes = []
-				var wordSize = wordSym.size
-				for (var rules = wordSym.rules, r = rules.length; r-- > 0;) {
-					var rule = rules[r]
-					var ruleProps = rule.ruleProps
-
-					var sub = {
-						size: wordSize, // size of literal
-						node: wordNode,
-						ruleProps: {
-							cost: ruleProps.cost,
-							semantic: ruleProps.semantic ? semantic.insertSemantic(ruleProps.semantic, semanticArg) : semanticArg,
-							text: entity.name
-						}
+				var sub = {
+					size: wordSize, // size of literal
+					node: wordNode,
+					ruleProps: {
+						cost: ruleProps.cost,
+						semantic: ruleProps.semantic ? semantic.insertSemantic(ruleProps.semantic, semanticArg) : semanticArg,
+						text: entity.text
 					}
-
-					// create node with LHS of terminal rule
-					wordNodes.push(this.addSub(rule.RHS[0], sub)) // FIX: rename prop - rule.RHS[0] is LHS for terms
 				}
 
-				var words = wordTab[endPos] || (wordTab[endPos] = [])
-				words.push({
-					start: this.position,
-					nodes: wordNodes
-				})
+				// create node with LHS of terminal rule
+				wordNodes.push(this.addSub(rule.RHS[0], sub)) // FIX: rename prop - rule.RHS[0] is LHS for terms
 			}
+
+			var words = wordTab[endPos] || (wordTab[endPos] = [])
+			words.push({
+				start: this.position,
+				nodes: wordNodes
+			})
 		}
 	}
 }
