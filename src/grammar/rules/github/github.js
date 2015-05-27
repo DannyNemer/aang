@@ -24,10 +24,6 @@ exports.created.addWord({
 	accepted: [ 'created' ]
 })
 
-// (repos/pull-requests I) created
-exports.preVerbStopWordsCreated = new g.Symbol('pre', 'verb', 'stop', 'words', 'created')
-exports.preVerbStopWordsCreated.addRule({ RHS: [ stopWords.preVerb, exports.created ] })
-
 // (repos/pull-requests I) have created
 // (people who) have created ([repos]/[pull-requests])
 exports.haveCreated = new g.Symbol('have', 'created')

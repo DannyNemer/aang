@@ -30,6 +30,26 @@ exports.newEntityCategory = entityCategory.newEntityCategory
 // Derive rules from insertion and transposition costs, and empty-strings
 exports.createEditRules = require('./createEditRules').bind(null, grammar)
 
+// Check for nonterminal symbols and entity categories that are not used in any productions
+exports.checkForUnusedSymbols = function () {
+	Object.keys(grammar).concat(entityCategory.entityCategories).forEach(function (symbol) {
+		if (symbol === exports.startSymbol.name) return
+
+		for (var otherSymbol in grammar) {
+			if (otherSymbol !== symbol) {
+				var rules = grammar[otherSymbol]
+				for (var r = rules.length; r-- > 0;) {
+					var rule = rules[r]
+					if (rule.RHS.indexOf(symbol) !== -1) return
+				}
+			}
+		}
+
+		util.printErr('Unused symbol', symbol)
+		throw 'unused symbol'
+	})
+}
+
 // Sort nonterminal symbols alphabetically
 exports.sortGrammar = function () {
 	Object.keys(grammar).sort().forEach(function (symbol) {

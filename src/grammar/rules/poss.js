@@ -55,8 +55,3 @@ exports.ofPossUsersPlus.addRule({ RHS: [ preps.possessor, possUsersPlus ] })
 // For categories that a semantic function for possession that limits to one argument; ex: repositories-created()
 exports.ofPossUsers = new g.Symbol('of', possStr, 'users')
 exports.ofPossUsers.addRule({ RHS: [ preps.possessorSpecial, possUsers ] })
-
-// (repos of) mine - NOTE: not currently used
-// - No insertion for 'of'
-exports.ofPossUsersPlusSpecial = new g.Symbol('of', possStr, 'users+', 'special')
-exports.ofPossUsersPlusSpecial.addRule({ RHS: [ preps.possessorSpecial, possUsersPlus ] })

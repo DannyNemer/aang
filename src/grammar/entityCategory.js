@@ -1,9 +1,9 @@
 var util = require('../util')
 
 exports.entities = {}
-// A list of all entity categories only to prevent duplicate category names
-var entityCategories = []
-// An incrementer for entity ids
+// List of all categories to check for duplicates and that all categories are used in grammar
+exports.entityCategories = []
+// Counter for entity ids
 var entityCount = 0
 
 // Schema for an entity category
@@ -20,10 +20,11 @@ exports.newEntityCategory = function (opts) {
 
 	var categoryName = '{' + opts.name + '}'
 
-	if (entityCategories.hasOwnProperty(categoryName)) {
+	if (exports.entityCategories.indexOf(categoryName) !== -1) {
 		util.printErrWithLine('Duplicate entity category', categoryName)
 		throw 'duplicate entity category'
 	}
+	exports.entityCategories.push(categoryName)
 
 	var newEntities = opts.entities
 	newEntitiesLen = newEntities.length
