@@ -92,8 +92,6 @@ Symbol.prototype.newTerminalRule = function (opts) {
 var nontermRuleOptsSchema = {
 	RHS: { type: Array, arrayType: Symbol },
 	semantic: { type: Array, optional: true },
-	// The semantic in this rule will take the first of any RHS semantics as an argument, and will concatenate with any remaining RHS semantics
-	onlyInsertFirstRHSSemantic: { type: Boolean, optional: true },
 	transpositionCost: { type: Number, optional: true },
 	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
 	verbForm: { type: [ 'past' ], optional: true },
@@ -115,18 +113,6 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 		gramCase: opts.gramCase,
 		verbForm: opts.verbForm,
 		personNumber: opts.personNumber
-	}
-
-	if (opts.onlyInsertFirstRHSSemantic) {
-		if (!opts.semantic) {
-			ruleErr('Nonterminal rules defined as \'onlyInsertFirstRHSSemantic\' must contain a semantic', this.name, opts.RHS)
-		}
-
-		if (opts.RHS.length !== 2) {
-			ruleErr('Nonterminal rules defined as \'onlyInsertFirstRHSSemantic\' must have 2 RHS symbols', this.name, opts.RHS)
-		}
-
-		newRule.onlyInsertFirstRHSSemantic = true
 	}
 
 	if (opts.transpositionCost !== undefined) {

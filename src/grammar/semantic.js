@@ -152,38 +152,25 @@ function semanticArraysMatch(a, b) {
 // not slicing RHS here because did before
 // the LHS should always be empty
 // We are assuming the LHS is always one function, not more than 1 where we intended to insert in the innermost
-exports.insertSemantic = function (LHS, RHS, onlyInsertFirstRHSSemantic) {
+exports.insertSemantic = function (LHS, RHS) {
 	var lhsSemantic = LHS[0].semantic
-	var RHSLen = RHS.length
+	var rhsLen = RHS.length
 
 	// If intersect with one semantic arg
-	if (RHSLen === 1 && lhsSemantic.name === 'intersect') return RHS
+	if (rhsLen === 1 && lhsSemantic.name === 'intersect') return RHS
 
-	if (RHSLen < lhsSemantic.minParams) {
-		// throw 'semantic problem: RHS.length < minParams'
+	if (rhsLen < lhsSemantic.minParams) {
+		throw 'insertSemantic: RHS.length < minParams'
 		return -1
-	} else if (RHSLen > lhsSemantic.maxParams) {
-		// Prevent multiple instances of this function within a RHS
-		// Only insert the first of the RHS, then merge with the remaining RHS
-		// - Ex: my {language} repos -> [ repos-created(me), repos-language({language}) ]
-		// A rule with followers() -> [1-sg-poss], [user-lhs] should only insert the semantic from [1-sg-poss]
-		// to the LHS semantic, followers(), which is to concatenate with any semantics from [user-lhs]
-		if (lhsSemantic.preventDups || onlyInsertFirstRHSSemantic) {
-			var firstSemantic = [ {
-				semantic: lhsSemantic,
-				children: [ RHS[0] ]
-			} ]
-
-			return firstSemantic.concat(RHS.slice(1))
-		}
-
-		if (lhsSemantic.maxParams > 1) throw 'semantic problem'
+	} else if (rhsLen > lhsSemantic.maxParams) {
+		if (lhsSemantic.maxParams > 1) throw 'insertSemantic: rhsLen > LHS.maxParams && LHS.maxParams > 1'
+		if (lhsSemantic.preventDups) throw 'insertSemantic: rhsLen > LHS.maxParams && LHS.preventDups'
 
 		// Copy LHS semantic for each RHS
 		// repos liked by me and my followers -> copy "repos-liked()" for each child
 		var newLHS = []
 
-		for (var s = 0; s < RHSLen; ++s) {
+		for (var s = 0; s < rhsLen; ++s) {
 			newLHS[s] = {
 				semantic: lhsSemantic,
 				children: [ RHS[s] ]

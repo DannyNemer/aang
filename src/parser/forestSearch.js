@@ -123,7 +123,6 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 		if (newSemantic) {
 			newItem.prevSemantics = item.prevSemantics.concat({
 				semantic: newSemantic,
-				onlyInsertFirstRHSSemantic: ruleProps.onlyInsertFirstRHSSemantic,
 				nextNodesLen: item.nextNodesLen
 			})
 
@@ -176,14 +175,12 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				} else {
 					newItem.prevSemantics = item.prevSemantics.concat({
 						semantic: newSemantic,
-						onlyInsertFirstRHSSemantic: ruleProps.onlyInsertFirstRHSSemantic,
 						nextNodesLen: item.nextNodesLen
 					})
 				}
 			} else {
 				newItem.prevSemantics = item.prevSemantics
 			}
-
 
 			newItem.node = sub.node
 
@@ -215,7 +212,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				// LHS after parsing the right-most branch that follows the semantic (completed the reduction)
 				else if (item.nextNodesLen <= prevSemantic.nextNodesLen) {
 					if (newSemantic) {
-						newSemantic = semantic.insertSemantic(prevSemantic.semantic, newSemantic, prevSemantic.onlyInsertFirstRHSSemantic)
+						newSemantic = semantic.insertSemantic(prevSemantic.semantic, newSemantic)
 					} else {
 						newSemantic = prevSemantic.semantic
 						// A function without an argument - currently can only be intersect()
