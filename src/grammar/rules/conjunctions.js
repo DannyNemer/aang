@@ -6,14 +6,14 @@ exports.intersectSemantic = g.newSemantic({ name: 'intersect', cost: 0, minParam
 exports.unionSemantic = g.newSemantic({ name: 'union', cost: 0.5, minParams: 1, maxParams: 100 })
 
 // conjunction
-exports.and = g.newSymbol('and')
+exports.and = new g.Symbol('and')
 exports.and.addWord({
 	insertionCost: 2,
 	accepted: [ 'and' ]
 })
 
 // disjunction
-exports.union = g.newSymbol('union')
+exports.union = new g.Symbol('union')
 exports.union.addWord({
 	accepted: [ 'or' ]
 })
@@ -25,11 +25,11 @@ exports.addForSymbol = function (symbol, glossProperty) {
 	var symbolNamePlus = symbol.name.slice(1, -1) + '+'
 
 	// (people who follow) [obj-users]
-	var symbolPlus = g.newSymbol(symbolNamePlus)
+	var symbolPlus = new g.Symbol(symbolNamePlus)
 	symbolPlus.addRule({ RHS: [ symbol ] })
 
 	// (people who follow) [obj-users] and [obj-users+]
-	var andSymbolPlus = g.newSymbol('and', symbolNamePlus)
+	var andSymbolPlus = new g.Symbol('and', symbolNamePlus)
 	andSymbolPlus.addRule({ RHS: [ exports.and, symbolPlus ] })
 	var andRule = { RHS: [ symbol, andSymbolPlus ] }
 	for (var gloss in glossProperty) {
@@ -38,7 +38,7 @@ exports.addForSymbol = function (symbol, glossProperty) {
 	symbolPlus.addRule(andRule)
 
 	// (people who follow) [obj-users] or [obj-users+]
-	var orSymbolPlus = g.newSymbol('or', symbolNamePlus)
+	var orSymbolPlus = new g.Symbol('or', symbolNamePlus)
 	orSymbolPlus.addRule({ RHS: [ exports.union, symbolPlus ] })
 	var orRule = { RHS: [ symbol, orSymbolPlus ], semantic: exports.unionSemantic }
 	for (var gloss in glossProperty) {

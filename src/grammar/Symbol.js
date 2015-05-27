@@ -1,19 +1,9 @@
 var util = require('../util')
+var g = require('./grammar')
 var semantic = require('./semantic')
 
 
-// A mapping of symbols to productions
-exports.grammar = {}
-// A mapping of symbol names to creation lines; used for error reporting
-exports.creationLines = {}
-
-exports.constructor = Symbol
-
-exports.newSymbol = function () {
-	var symbolNew = Object.create(Symbol.prototype)
-  Symbol.apply(symbolNew, arguments)
-	return symbolNew
-}
+module.exports = Symbol
 
 // Constructor for nonterminal symbols
 // Concatenates arguments after 0th index as Symbol's name
@@ -28,15 +18,15 @@ function Symbol() {
 	// Symbol names will be removed from production to conserve memory
 	this.name = '[' + symNameChunks.join('-') + ']'
 
-	if (exports.grammar.hasOwnProperty(this.name)) {
+	if (g.grammar.hasOwnProperty(this.name)) {
 		util.printErrWithLine('Duplicate Symbol', this.name)
 		throw 'duplicate Symbol'
 	}
 
-	this.rules = exports.grammar[this.name] = []
+	this.rules = g.grammar[this.name] = []
 
 	// Save calling line for error reporting
-	exports.creationLines[this.name] = util.getLine()
+	g.creationLines[this.name] = util.getLine()
 }
 
 // Add a new rule to the grammar

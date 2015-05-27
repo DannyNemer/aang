@@ -1,7 +1,7 @@
 // Functions to automate adding many common sets of rules to grammar
 
 var g = require('./grammar')
-var Symbol = require('./Symbol.js').constructor
+var Symbol = require('./Symbol')
 var util = require('../util')
 
 
@@ -320,7 +320,7 @@ Symbol.prototype.addInt = function (opts) {
 // Returns a new Symbol
 Symbol.prototype.createNonterminalOpt = function () {
 	// Append 'opt' to original symbol name
-	var symbolOpt = g.newSymbol(this.name.slice(1, -1), 'opt')
+	var symbolOpt = new g.Symbol(this.name.slice(1, -1), 'opt')
 
 	symbolOpt.addRule({ RHS: [ this ] })
 	// <empty> always last for optional nonterminal symbols

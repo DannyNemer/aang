@@ -1,10 +1,13 @@
 var util = require('../util')
 
-var symbol = require('./Symbol')
-exports.newSymbol = symbol.newSymbol
-var grammar = symbol.grammar
+// A mapping of symbols to productions
+exports.grammar = {}
+// A mapping of symbol names to creation lines; used for error reporting
+exports.creationLines = {}
 
-exports.startSymbol = exports.newSymbol('start')
+exports.Symbol = require('./Symbol')
+
+exports.startSymbol = new exports.Symbol('start')
 
 // Empty-string
 // Rules with <empty> optionalize their LHS symbols and subsequent unary reductions
@@ -29,21 +32,16 @@ var entityCategory = require('./entityCategory')
 exports.newEntityCategory = entityCategory.newEntityCategory
 
 // Derive rules from insertion and transposition costs, and empty-strings
-exports.createEditRules = require('./createEditRules').bind(null, grammar)
+exports.createEditRules = require('./createEditRules').bind(null, exports.grammar)
 
 // Check for nonterminal symbols and entity categories that are not used in any productions
 exports.checkForUnusedSymbols = function () {
-	var symbolLines = symbol.creationLines
-	for (var entityCategoryName in entityCategory.entityCategoryLines) {
-		symbolLines[entityCategoryName] = entityCategory.entityCategoryLines[entityCategoryName]
-	}
-
-	Object.keys(symbolLines).forEach(function (symbol) {
+	Object.keys(exports.creationLines).forEach(function (symbol) {
 		if (symbol === exports.startSymbol.name) return
 
-		for (var otherSymbol in grammar) {
+		for (var otherSymbol in exports.grammar) {
 			if (otherSymbol !== symbol) {
-				var rules = grammar[otherSymbol]
+				var rules = exports.grammar[otherSymbol]
 				for (var r = rules.length; r-- > 0;) {
 					var rule = rules[r]
 					if (rule.RHS.indexOf(symbol) !== -1) return
@@ -52,17 +50,17 @@ exports.checkForUnusedSymbols = function () {
 		}
 
 		util.printErr('Unused symbol', symbol)
-		console.log(symbolLines[symbol])
+		console.log(exports.creationLines[symbol])
 		throw 'unused symbol'
 	})
 }
 
 // Sort nonterminal symbols alphabetically
 exports.sortGrammar = function () {
-	Object.keys(grammar).sort().forEach(function (symbol) {
-		var rules = grammar[symbol]
-		delete grammar[symbol]
-		grammar[symbol] = rules
+	Object.keys(exports.grammar).sort().forEach(function (symbol) {
+		var rules = exports.grammar[symbol]
+		delete exports.grammar[symbol]
+		exports.grammar[symbol] = rules
 	})
 }
 
@@ -72,7 +70,7 @@ exports.printRuleCount = function (outputPath) {
 	var fs = require('fs')
 	var oldGrammarPath = outputPath + 'grammar.json'
 
-	var newRuleCount = exports.ruleCount(grammar)
+	var newRuleCount = exports.ruleCount(exports.grammar)
 
 	if (fs.existsSync(oldGrammarPath)) {
 		var oldRuleCount = exports.ruleCount(require(fs.realpathSync(oldGrammarPath)))
@@ -94,7 +92,7 @@ exports.ruleCount = function (grammar) {
 
 // Write grammar and semantics to files
 exports.writeGrammarToFile = function (outputPath) {
-	util.writeJSONFile(outputPath + 'grammar.json', grammar)
+	util.writeJSONFile(outputPath + 'grammar.json', exports.grammar)
 	util.writeJSONFile(outputPath + 'semantics.json', semantic.semantics)
 	util.writeJSONFile(outputPath + 'entities.json', entityCategory.entities)
 }

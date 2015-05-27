@@ -22,26 +22,26 @@ module.exports = function Category(opts) {
 	this.nameSg = opts.sg
 	this.namePl = opts.pl
 
-	this.lhs = g.newSymbol(this.nameSg, 'lhs') // (NOTE: orig manually makes rules that would be from <empty>)
+	this.lhs = new g.Symbol(this.nameSg, 'lhs') // (NOTE: orig manually makes rules that would be from <empty>)
 	this.lhs.addRule({ terminal: true, RHS: g.emptySymbol })
 	// open/closed (issues)
-	this.adjective = g.newSymbol(this.nameSg, 'adjective')
+	this.adjective = new g.Symbol(this.nameSg, 'adjective')
 	this.lhs.addRule({ RHS: [ this.adjective ] })
 	// If multiple adjectives, or to combine with noun-modifer: recent profil photos
 	// But will create ambiguity with stop-words
 	// this.lhs.addRule({ RHS: [ this.adjective, this.lhs ] })
 	// {language} (repos)
-	this.preModifier = g.newSymbol(this.nameSg, 'pre', 'modifier')
+	this.preModifier = new g.Symbol(this.nameSg, 'pre', 'modifier')
 	this.lhs.addRule({ RHS: [ this.preModifier ] })
 	// <stop> (issues); <stop> [issue-adjective] (issues)
 	this.lhs.addRule({ RHS: [ stopWords.left, this.lhs ], transpositionCost: 0 })
 
 
 	// repos of [users]; followers
-	this.head = g.newSymbol(this.nameSg, 'head')
+	this.head = new g.Symbol(this.nameSg, 'head')
 
 	if (!opts.isPerson) {
-		this.headMayPoss = g.newSymbol(this.nameSg, 'head', 'may', 'poss')
+		this.headMayPoss = new g.Symbol(this.nameSg, 'head', 'may', 'poss')
 
 		// [head] -> [head-may-poss] is likely used for reducing frequency of "my" insertions
 		// my/[user's] -> [head-may-poss] is seperate and will not create duplicates
@@ -51,50 +51,50 @@ module.exports = function Category(opts) {
 		// |Github repos (I starred)
 		this.head.addRule({ RHS: [ this.headMayPoss ] })
 
-		this.possessible = g.newSymbol(this.nameSg, 'possessible')
+		this.possessible = new g.Symbol(this.nameSg, 'possessible')
 		// (my) repos
 		this.possessible.addRule({ RHS: [ this.lhs, this.headMayPoss ], transpositionCost: 1 })
 	}
 
-	var lhsHead = g.newSymbol(this.nameSg, 'lhs', this.nameSg, 'head')
+	var lhsHead = new g.Symbol(this.nameSg, 'lhs', this.nameSg, 'head')
 	// people (I follow); people (followed by me)
 	lhsHead.addRule({ RHS: [ this.lhs, this.head ], transpositionCost: 1 })
 
 	// (people) followed by me
-	this.passive = g.newSymbol(this.nameSg, 'passive')
+	this.passive = new g.Symbol(this.nameSg, 'passive')
 	// (repos) liked by me and/or created by {user}
 	var passivePlus = conjunctions.addForSymbol(this.passive)
 
 
-	var reducedNoTense = g.newSymbol(this.nameSg, 'reduced', 'no', 'tense')
+	var reducedNoTense = new g.Symbol(this.nameSg, 'reduced', 'no', 'tense')
 	// (people) mentioned in [pull-requests+]; (people who are) mentioned in [pull-requests+]
-	this.inner = g.newSymbol(this.nameSg, 'inner')
+	this.inner = new g.Symbol(this.nameSg, 'inner')
 	reducedNoTense.addRule({ RHS: [ this.inner ] })
 	// (issues) with <int> comments assigned to me
 	reducedNoTense.addRule({ RHS: [ this.inner, reducedNoTense ], transpositionCost: 0.1 })
 	// (people) followed by me; (people who are) followed by me
 	reducedNoTense.addRule({ RHS: [ passivePlus ] })
 
-	var reduced = g.newSymbol(this.nameSg, 'reduced')
+	var reduced = new g.Symbol(this.nameSg, 'reduced')
 	// (people) followed by me
 	reduced.addRule({ RHS: [ reducedNoTense ] })
 
 
 	// (people who) follow me
-	this.subjFilter = g.newSymbol(this.nameSg, 'subj', 'filter')
+	this.subjFilter = new g.Symbol(this.nameSg, 'subj', 'filter')
 
 	// (people) I follow
-	this.objFilter = g.newSymbol(this.nameSg, 'obj', 'filter')
+	this.objFilter = new g.Symbol(this.nameSg, 'obj', 'filter')
 	// (people) I follow and/or {user} follows
 	var objFilterPlus = conjunctions.addForSymbol(this.objFilter)
 
 
-	var rhsExt = g.newSymbol(this.nameSg, 'rhs', 'ext')
+	var rhsExt = new g.Symbol(this.nameSg, 'rhs', 'ext')
 	// (people) I follow
 	rhsExt.addRule({ RHS: [ objFilterPlus ] })
 
 
-	var rhs = g.newSymbol(this.nameSg, 'rhs')
+	var rhs = new g.Symbol(this.nameSg, 'rhs')
 	rhs.addRule({ terminal: true, RHS: g.emptySymbol })
 	// (people) followed by me
 	rhs.addRule({ RHS: [ reduced ] })
@@ -106,21 +106,21 @@ module.exports = function Category(opts) {
 	rhs.addRule({ RHS: [ rhs, stopWords.sentenceAdverbial ], transpositionCost: 0 })
 
 
-	var noRelativeBase = g.newSymbol(this.nameSg, 'no', 'relative', 'base')
+	var noRelativeBase = new g.Symbol(this.nameSg, 'no', 'relative', 'base')
 	// people I follow; people followed by me
 	noRelativeBase.addRule({ RHS: [ lhsHead, rhs ], transpositionCost: 1 })
 
-	var noRelative = g.newSymbol(this.nameSg, 'no', 'relative')
+	var noRelative = new g.Symbol(this.nameSg, 'no', 'relative')
 	// people followed by me; people I follow
 	noRelative.addRule({ RHS: [ noRelativeBase ] })
 	// my followers; (people who follow) my followers
-	this.noRelativePossessive = g.newSymbol(this.nameSg, 'no', 'relative', 'possessive')
+	this.noRelativePossessive = new g.Symbol(this.nameSg, 'no', 'relative', 'possessive')
 	noRelative.addRule({ RHS: [ this.noRelativePossessive, rhs ], transpositionCost: 1 })
 	// people <stop> I follow
 	noRelative.addRule({ RHS: [ stopWords.left, noRelative ] })
 
 
-	var filter = g.newSymbol(this.nameSg, 'filter')
+	var filter = new g.Symbol(this.nameSg, 'filter')
 	// (people who) follow me
 	filter.addRule({ RHS: [ this.subjFilter ] })
 	// (people who) I follow
@@ -150,7 +150,7 @@ module.exports = function Category(opts) {
 	// (people who) have not been followed by me
 	filter.addRule({ RHS: [ auxVerbs.haveNegationBePast, reduced ], semantic: auxVerbs.notSemantic })
 	// (repos that) are 22 KB
-	this.postModifer = g.newSymbol(this.nameSg, 'post', 'modifier')
+	this.postModifer = new g.Symbol(this.nameSg, 'post', 'modifier')
 	filter.addRule({ RHS: [ auxVerbs.beNon1SgSentenceAdverbial, this.postModifer ] })
 	// (repos that) are not 22 KB
 	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, this.postModifer ], semantic: auxVerbs.notSemantic })
@@ -159,19 +159,19 @@ module.exports = function Category(opts) {
 	// (people) who follow me and/or I follow
 	var filterPlus = conjunctions.addForSymbol(filter)
 
-	var relPronounFilterPlus = g.newSymbol(opts.isPerson ? 'who' : 'that', this.nameSg, 'filter+')
+	var relPronounFilterPlus = new g.Symbol(opts.isPerson ? 'who' : 'that', this.nameSg, 'filter+')
 	relPronounFilterPlus.addRule({ RHS: [ opts.isPerson ? relPronouns.who : relPronouns.that, filterPlus ] })
 	// (people) who follow me and who I follow
-	var andRelPronounFilterPlus = g.newSymbol('and', opts.isPerson ? 'who' : 'that', this.nameSg, 'filter+')
+	var andRelPronounFilterPlus = new g.Symbol('and', opts.isPerson ? 'who' : 'that', this.nameSg, 'filter+')
 	andRelPronounFilterPlus.addRule({ RHS: [ conjunctions.and, relPronounFilterPlus ] })
 	filterPlus.addRule({ RHS: [ filter, andRelPronounFilterPlus ] })
 	// (people) who follow me or who I follow
-	var orRelPronounFilterPlus = g.newSymbol('or', opts.isPerson ? 'who' : 'that', this.nameSg, 'filter+')
+	var orRelPronounFilterPlus = new g.Symbol('or', opts.isPerson ? 'who' : 'that', this.nameSg, 'filter+')
 	orRelPronounFilterPlus.addRule({ RHS: [ conjunctions.union, relPronounFilterPlus ] })
 	filterPlus.addRule({ RHS: [ filter, orRelPronounFilterPlus ], semantic: conjunctions.unionSemantic })
 
 
-	var relativeclause = g.newSymbol(this.nameSg, 'relativeclause')
+	var relativeclause = new g.Symbol(this.nameSg, 'relativeclause')
 	if (opts.isPerson) {
 		// (people) who are followed by me
 		relativeclause.addRule({ RHS: [ relPronouns.who, filterPlus ] })
@@ -181,18 +181,18 @@ module.exports = function Category(opts) {
 	}
 
 
-	this.plural = g.newSymbol(this.nameSg, 'plural')
+	this.plural = new g.Symbol(this.nameSg, 'plural')
 	// people followed by me
 	this.plural.addRule({ RHS: [ noRelative ], semantic: conjunctions.intersectSemantic })
 	// people who are followed by me
 	this.plural.addRule({ RHS: [ noRelative, relativeclause ], semantic: conjunctions.intersectSemantic })
 
-	this.catPl = g.newSymbol(this.namePl)
+	this.catPl = new g.Symbol(this.namePl)
 	// (people who created) repos ...
 	this.catPl.addRule({ RHS: [ this.plural ] })
 
 	if (opts.entities) {
-		this.catSg = g.newSymbol(this.nameSg)
+		this.catSg = new g.Symbol(this.nameSg)
 		// (people) {user} (follows); (people who follow) {user}
 		var entity = g.newEntityCategory({ name: this.nameSg, entities: opts.entities })
 		this.catSg.addRule({ terminal: true, RHS: entity })

@@ -7,7 +7,7 @@ var user = require('../user')
 
 var pullRequest = new Category({ sg: 'pull-request', pl: 'pull-requests' })
 
-var pullRequestsTerm = g.newSymbol(pullRequest.namePl, 'term')
+var pullRequestsTerm = new g.Symbol(pullRequest.namePl, 'term')
 pullRequestsTerm.addWord({
 	insertionCost: 3.5,
 	accepted: [ 'pull requests' ]
@@ -21,7 +21,7 @@ var pullRequestsCreatedSemantic = g.newSemantic({ name: pullRequest.namePl + '-c
 var pullRequestCreatorsSemantic = g.newSemantic({ name: pullRequest.nameSg + '-creators', cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my pull requests
-var pullRequestPossDeterminer = g.newSymbol(pullRequest.nameSg, 'poss', 'determiner')
+var pullRequestPossDeterminer = new g.Symbol(pullRequest.nameSg, 'poss', 'determiner')
 pullRequestPossDeterminer.addRule({ RHS: [ poss.determiner ], semantic: pullRequestsCreatedSemantic })
 pullRequest.noRelativePossessive.addRule({ RHS: [ pullRequestPossDeterminer, pullRequest.possessible ] })
 // pull requests of mine
