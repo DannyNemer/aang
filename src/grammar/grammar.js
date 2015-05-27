@@ -1,10 +1,11 @@
 var util = require('../util')
 
-var grammar = {}
-exports.symbolLines = {}
-exports.Symbol = require('./Symbol')(grammar, exports.symbolLines)
+var symbol = require('./Symbol')
+exports.newSymbol = symbol.newSymbol
+exports.Symbol = symbol.Symbol
+var grammar = symbol.grammar
 
-exports.startSymbol = new exports.Symbol('start')
+exports.startSymbol = exports.newSymbol('start')
 
 // Empty-string
 // Rules with <empty> optionalize their LHS symbols and subsequent unary reductions
@@ -33,7 +34,12 @@ exports.createEditRules = require('./createEditRules').bind(null, grammar)
 
 // Check for nonterminal symbols and entity categories that are not used in any productions
 exports.checkForUnusedSymbols = function () {
-	Object.keys(exports.symbolLines).forEach(function (symbol) {
+	var symbolLines = symbol.creationLines
+	for (var entityCategoryName in entityCategory.entityCategoryLines) {
+		symbolLines[entityCategoryName] = entityCategory.entityCategoryLines[entityCategoryName]
+	}
+
+	Object.keys(symbolLines).forEach(function (symbol) {
 		if (symbol === exports.startSymbol.name) return
 
 		for (var otherSymbol in grammar) {
@@ -47,7 +53,7 @@ exports.checkForUnusedSymbols = function () {
 		}
 
 		util.printErr('Unused symbol', symbol)
-		console.log(exports.symbolLines[symbol])
+		console.log(symbolLines[symbol])
 		throw 'unused symbol'
 	})
 }
