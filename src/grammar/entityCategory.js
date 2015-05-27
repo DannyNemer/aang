@@ -1,8 +1,7 @@
 var util = require('../util')
+var g = require('./grammar')
 
 exports.entities = {}
-// List of all categories to check for duplicates and that all categories are used in grammar
-exports.entityCategories = []
 // Counter for entity ids
 var entityCount = 0
 
@@ -20,11 +19,13 @@ exports.newEntityCategory = function (opts) {
 
 	var categoryName = '{' + opts.name + '}'
 
-	if (exports.entityCategories.indexOf(categoryName) !== -1) {
+	if (g.symbolLines.hasOwnProperty(categoryName)) {
 		util.printErrWithLine('Duplicate entity category', categoryName)
 		throw 'duplicate entity category'
 	}
-	exports.entityCategories.push(categoryName)
+
+	// Save calling line for error reporting
+	g.symbolLines[categoryName] = util.getLine()
 
 	var newEntities = opts.entities
 	newEntitiesLen = newEntities.length

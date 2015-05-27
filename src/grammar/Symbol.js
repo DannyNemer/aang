@@ -4,9 +4,12 @@ var util = require('../util')
 var semantic = require('./semantic')
 
 var grammar
+// A mapping of all symbols to the lines where created; used for error reporting
+var symbolLines = {}
 
-module.exports = function (externalGrammar) {
+module.exports = function (externalGrammar, extSymbolLines) {
 	grammar = externalGrammar
+	symbolLines = extSymbolLines
 
 	return Symbol
 }
@@ -30,6 +33,9 @@ function Symbol() {
 	}
 
 	this.rules = grammar[this.name] = []
+
+	// Save calling line for error reporting
+	symbolLines[this.name] = util.getLine()
 }
 
 // Add a new rule to the grammar

@@ -1,7 +1,8 @@
 var util = require('../util')
 
 var grammar = {}
-exports.Symbol = require('./Symbol')(grammar)
+exports.symbolLines = {}
+exports.Symbol = require('./Symbol')(grammar, exports.symbolLines)
 
 exports.startSymbol = new exports.Symbol('start')
 
@@ -32,7 +33,7 @@ exports.createEditRules = require('./createEditRules').bind(null, grammar)
 
 // Check for nonterminal symbols and entity categories that are not used in any productions
 exports.checkForUnusedSymbols = function () {
-	Object.keys(grammar).concat(entityCategory.entityCategories).forEach(function (symbol) {
+	Object.keys(exports.symbolLines).forEach(function (symbol) {
 		if (symbol === exports.startSymbol.name) return
 
 		for (var otherSymbol in grammar) {
@@ -46,6 +47,7 @@ exports.checkForUnusedSymbols = function () {
 		}
 
 		util.printErr('Unused symbol', symbol)
+		console.log(exports.symbolLines[symbol])
 		throw 'unused symbol'
 	})
 }
