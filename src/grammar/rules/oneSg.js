@@ -8,7 +8,7 @@ exports.plain.addPronoun({
 	insertionCost: 0.5,
 	nom: 'I',
 	obj: 'me',
-	substitutions: [ 'myself' ]
+	substitutions: [ 'myself', 'you|he|she|him|her|they|them|it' ]
 })
 
 // my (repositories)

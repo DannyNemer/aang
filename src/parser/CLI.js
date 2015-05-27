@@ -125,8 +125,6 @@ var testQueries = [
 	'followers of my followers who are followers of mine my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed to follow',
 	'repos contributed to by me',
 	'repos to by me', // intentionally wrong
-	// 'repos danny by me', // intentionally wrong - requires implementation of deletions
-	// 'repos danny by me danny', // intentionally wrong - requires implementation of deletions
 	'repos liked contributed to by me', // intentionally wrong
 	'repos by me', // should insert 'liked'
 	'issues opened by me assigned to me', // transposition
@@ -167,7 +165,12 @@ var testQueries = [
 	'my followers\' female followers',
 	'my female followers\' female followers',
 	'my female followers\' female followers who are not male',
-	'REPOS i LiKe'
+	'REPOS i LiKe',
+	'repos that are not created today liked by me',
+	'people who are not my followers',
+	'repos not created today not liked by me', // should produce results
+	// 'repos danny by me', // intentionally wrong - requires implementation of deletions
+	// 'repos danny by me danny', // intentionally wrong - requires implementation of deletions
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
 	// 'my followers who created pull requests of mine my followers who created repositories followers of mine mentioned in issues of my followers who I follow like that are repos created by me I contributed to am mentioned in that I am mentioned in'
 	// illegal, but takes a long time for search to fail (produce no results):

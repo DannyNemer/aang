@@ -10,7 +10,7 @@ exports.determinerSg = new g.Symbol(possStr, 'determiner', 'sg')
 // my (repositories)
 exports.determinerSg.addRule({ RHS: [ oneSg.poss ], semantic: oneSg.semantic })
 // {user:'s} (repositories)
-exports.determinerSg.addRule({ RHS: [ user.apostropheS ] })
+exports.determinerSg.addRule({ RHS: [ user.possessive ] })
 
 
 // my/{user:'s} followers' repos; my/{user:'s} female followers' repos
@@ -28,7 +28,7 @@ exports.determiner.addRule({ RHS: [ exports.determinerPl ], semantic: conjunctio
 // Primarily exists, instead of just using [obj-users] to limit functions and "mine"
 var possUser = new g.Symbol(possStr, 'user')
 // (followers of) {user:'s}
-possUser.addRule({ RHS: [ user.apostropheS ] })
+possUser.addRule({ RHS: [ user.possessive ] })
 // (followers of) {user}
 possUser.addRule({ RHS: [ user.catSg ] })
 // (followers of) mine

@@ -55,6 +55,7 @@ exports.haveSentenceAdverbialBePast.addRule({ RHS: [ haveSentenceAdverbial, expo
 
 // NEGATION:
 exports.notSemantic = g.newSemantic({ name: 'not', cost: 0.5, minParams: 1, maxParams: 1 })
+
 var negation = new g.Symbol('negation')
 negation.addWord({
 	accepted: [ 'not' ],
