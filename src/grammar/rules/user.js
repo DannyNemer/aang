@@ -74,13 +74,24 @@ user.possessive.addRule({
 
 // GENDER:
 var usersGenderSemantic = g.newSemantic({ name: g.hyphenate(user.namePl, 'gender'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+var usersGenderFemaleSemantic = g.insertSemantic(usersGenderSemantic, g.newSemantic({ name: 'female', isArg: true, cost: 0 }))
+var usersGenderMaleSemantic = g.insertSemantic(usersGenderSemantic, g.newSemantic({ name: 'male', isArg: true, cost: 0 }))
+
 // female (followers of mine); (people who are) female
-user.adjective.addRule({
-	terminal: true, RHS: 'female', text: 'female',
-	semantic: g.insertSemantic(usersGenderSemantic, g.newSemantic({ name: 'female', isArg: true, cost: 0.5 }))
-})
+user.adjective.addRule({ terminal: true, RHS: 'female', text: 'female', semantic: usersGenderFemaleSemantic })
 // male (followers of mine); (people who are) male
-user.adjective.addRule({
-	terminal: true, RHS: 'male', text: 'male',
-	semantic: g.insertSemantic(usersGenderSemantic, g.newSemantic({ name: 'male', isArg: true, cost: 0.5 }))
+user.adjective.addRule({ terminal: true, RHS: 'male', text: 'male', semantic: usersGenderMaleSemantic })
+
+var womenTerm = new g.Symbol('women', 'term')
+womenTerm.addWord({
+	accepted: [ 'women', 'females' ]
 })
+// women (who follow me); (people who are) women; women
+user.head.addRule({ RHS: [ womenTerm ], semantic: usersGenderFemaleSemantic })
+
+var menTerm = new g.Symbol('men', 'term')
+menTerm.addWord({
+	accepted: [ 'men', 'males' ]
+})
+// men (who follow me); (people who are) men; men
+user.head.addRule({ RHS: [ menTerm ], semantic: usersGenderMaleSemantic })

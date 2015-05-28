@@ -169,6 +169,12 @@ var testQueries = [
 	'repos that are not created today liked by me',
 	'people who are not my followers',
 	'repos not created today not liked by me', // should produce results
+	'repos created today created yesterday', // intentionally incorrect
+	'women',
+	'men I follow',
+	'people who are males',
+	'male women',
+	'female people who are women',
 	// 'repos danny by me', // intentionally wrong - requires implementation of deletions
 	// 'repos danny by me danny', // intentionally wrong - requires implementation of deletions
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
