@@ -55,7 +55,7 @@ exports.preVerbStopWordsBeGeneralMentionedIn = new g.Symbol('pre', 'verb', 'stop
 exports.preVerbStopWordsBeGeneralMentionedIn.addRule({ RHS: [ stopWords.preVerb, beGeneralMentionedIn ] })
 
 
-var usersMentionedSemantic = g.newSemantic({ name: user.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })
+var usersMentionedSemantic = g.newSemantic({ name: g.hyphenate(user.namePl, 'mentioned'), cost: 0.5, minParams: 1, maxParams: 1 })
 // (people mentioned) in [issues]/[pull-request]
 exports.mentioners = new g.Symbol('mentioners')
 // (people mentioned) in [issues]/[pull-request] and/or [issues]/[pull-request]

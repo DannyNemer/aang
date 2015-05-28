@@ -36,7 +36,7 @@ yearPhrase.addRule({
 // (repos created) last year
 yearPhrase.addRule({
   RHS: [ lastDate, yearTerm ],
-  semantic: g.newSemantic({ name: g.hyphenate('last', 'last'), cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ name: g.hyphenate('last', 'year'), cost: 0.5, isArg: true })
 })
 datePhrase.addRule({ RHS: [ yearPhrase ] })
 

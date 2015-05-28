@@ -7,7 +7,7 @@ var count = require('./count')
 
 
 var followersSemantic = g.newSemantic({ name: 'followers', cost: 0.5, minParams: 1, maxParams: 1 })
-var usersFollowedSemantic = g.newSemantic({ name: user.namePl + '-followed', cost: 0.5, minParams: 1, maxParams: 1 })
+var usersFollowedSemantic = g.newSemantic({ name: g.hyphenate(user.namePl, 'followed'), cost: 0.5, minParams: 1, maxParams: 1 })
 
 var follow = new g.Symbol('follow')
 follow.addVerb({
@@ -60,8 +60,6 @@ followersTerm.addWord({
 })
 // users with <int> followers
 user.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(user, followersTerm) ] })
-
-
 
 
 var followersPossessiveTerm = new g.Symbol('followers', 'possessive', 'term')

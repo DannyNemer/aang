@@ -21,8 +21,8 @@ repositoriesTerm.addWord({
 repository.headMayPoss.addRule({ RHS: [ github.termOpt, repositoriesTerm ] })
 
 // preventDups because repos only have one author, so an intersection of repos from different authors is empty
-var repositoriesCreatedSemantic = g.newSemantic({ name: repository.namePl + '-created', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
-var repositoryCreatorsSemantic = g.newSemantic({ name: repository.nameSg + '-creators', cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoriesCreatedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'created'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+var repositoryCreatorsSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'creators'), cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my repos; my {language} repos
 var repositoryPossDeterminer = new g.Symbol(repository.nameSg, 'poss', 'determiner')
@@ -48,8 +48,8 @@ user.head.addRule({ RHS: [ github.creatorsOf, repository.catPl ], semantic: repo
 
 
 // LIKE:
-var repositoriesLikedSemantic = g.newSemantic({ name: repository.namePl + '-liked', cost: 0.5, minParams: 1, maxParams: 1 })
-var repositoryLikersSemantic = g.newSemantic({ name: repository.nameSg + '-likers', cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoriesLikedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'liked'), cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoryLikersSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'likers'), cost: 0.5, minParams: 1, maxParams: 1 })
 
 var like = new g.Symbol('like')
 like.addVerb({
@@ -89,8 +89,8 @@ contributedTo.addWord({
 	accepted: [ 'contributed to' ]
 })
 
-var repositoriesContributedSemantic = g.newSemantic({ name: repository.namePl + '-contributed', cost: 0.5, minParams: 1, maxParams: 1 })
-var repositoryContributorsSemantic = g.newSemantic({ name: repository.nameSg + '-contributors', cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoriesContributedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'contributed'), cost: 0.5, minParams: 1, maxParams: 1 })
+var repositoryContributorsSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'contributors'), cost: 0.5, minParams: 1, maxParams: 1 })
 
 // (repos) contributed to by me
 repository.passive.addRule({ RHS: [ contributedTo, user.byObjUsersPlus ], semantic: repositoriesContributedSemantic })
@@ -125,13 +125,14 @@ var language = new g.Symbol('language')
 language.addRule({
 	terminal: true,
 	RHS: languageEntity,
-	semantic: g.newSemantic({ name: repository.namePl + '-language', cost: 0.5, minParams: 1, maxParams: 1 })
+	semantic: g.newSemantic({ name: g.hyphenate(repository.namePl, 'language'), cost: 0.5, minParams: 1, maxParams: 1 })
 })
 // (my) {language} (repos); (repos that are) {language} (repos)
 repository.preModifier.addRule({ RHS: [ language ] })
 
 var writtenIn = new g.Symbol('written', 'in')
 writtenIn.addWord({
+	insertionCost: 3,
 	accepted: [ 'written in' ],
 	// substitutions: [ 'in' ]
 })

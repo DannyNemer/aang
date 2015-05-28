@@ -17,8 +17,8 @@ pullRequestsTerm.addWord({
 pullRequest.headMayPoss.addRule({ RHS: [ github.termOpt, pullRequestsTerm ] })
 
 
-var pullRequestsCreatedSemantic = g.newSemantic({ name: pullRequest.namePl + '-created', cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
-var pullRequestCreatorsSemantic = g.newSemantic({ name: pullRequest.nameSg + '-creators', cost: 0.5, minParams: 1, maxParams: 1 })
+var pullRequestsCreatedSemantic = g.newSemantic({ name: g.hyphenate(pullRequest.namePl, 'created'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+var pullRequestCreatorsSemantic = g.newSemantic({ name: g.hyphenate(pullRequest.nameSg, 'creators'), cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my pull requests
 var pullRequestPossDeterminer = new g.Symbol(pullRequest.nameSg, 'poss', 'determiner')
@@ -44,7 +44,7 @@ user.head.addRule({ RHS: [ github.creatorsOf, pullRequest.catPl ], semantic: pul
 
 
 // MENTION:
-var pullRequestsMentionedSemantic = g.newSemantic({ name: pullRequest.namePl + '-mentioned', cost: 0.5, minParams: 1, maxParams: 1 })
+var pullRequestsMentionedSemantic = g.newSemantic({ name: g.hyphenate(pullRequest.namePl, 'mentioned'), cost: 0.5, minParams: 1, maxParams: 1 })
 // (pull requests that) mention me
 pullRequest.subjFilter.addRule({ RHS: [ github.mention, user.objUsersPlus ], semantic: pullRequestsMentionedSemantic })
 // (pull requests) I-am/{user}-is/[users]-are mentioned in
