@@ -195,8 +195,13 @@ var printForestGraph = false
 var printTrees = false
 var printCost = false
 var parserPath = parserNewPath
+var history = []
 
 function runCommand(query) {
+	if (history[history.length - 1] !== query) {
+		history.push(query)
+	}
+
 	var args = query.split(' ')
 	if (args[0] === '-k') {
 		if (!isNaN(args[1])) K = Number(args[1])
@@ -232,6 +237,11 @@ function runCommand(query) {
 	} else if (query === '-ts') {
 		console.log('test queries:')
 		console.log(testQueries.join('\n'))
+	} else if (query === '-hs') {
+		var historyLen = history.length - 1
+		for (var i = 0; i < historyLen; ++i) {
+			console.log((historyLen > 10 && i < 10 ? ' ' : '') + i + '  ' + history[i])
+		}
 	} else if (query === '-t') {
 		printTime = !printTime
 		console.log('print time:', printTime)
@@ -267,6 +277,7 @@ function runCommand(query) {
 		console.log('-d  delete module cache')
 		console.log('-st print state table')
 		console.log('-ts print test queries')
+		console.log('-hs print history')
 		console.log('-t  print time:', printTime)
 		console.log('-q  print query:', printQuery)
 		console.log('-o  print output:', printOutput)
