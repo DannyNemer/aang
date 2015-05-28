@@ -124,6 +124,10 @@ function createRuleProps(origRule) {
 		ruleProps.transposition = true
 	}
 
+	if (origRule.semanticIsRHS) {
+		ruleProps.semanticIsRHS = true
+	}
+
 	return ruleProps
 }
 

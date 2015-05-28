@@ -82,6 +82,15 @@ Symbol.prototype.newTerminalRule = function (opts) {
 		newRule.insertionCost = opts.insertionCost
 	}
 
+	// If semantic, must be complete and consitute a RHS
+	// Exceptions: terminal symbol is an entity category or <int>
+	if (opts.semantic && !semantic.semanticIsRHS(opts.semantic) && !g.creationLines.hasOwnProperty(newRule.RHS[0]) && newRule.RHS[0] !== g.intSymbol) {
+		util.printErr('Terminal rules can only hold complete (RHS) semantics', this.name, '->', newRule.RHS)
+		util.log(opts.semantic)
+		console.log(util.getLine())
+		throw 'ill-formed nonterminal rule'
+	}
+
 	return newRule
 }
 
@@ -107,6 +116,12 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 		gramCase: opts.gramCase,
 		verbForm: opts.verbForm,
 		personNumber: opts.personNumber
+	}
+
+	if (opts.semantic) {
+		// True if semantic is complete and constitutes a RHS
+		// Otherwise semantic is to accept other semantics as arguments
+		newRule.semanticIsRHS = semantic.semanticIsRHS(opts.semantic)
 	}
 
 	if (opts.RHS.length > 2) {

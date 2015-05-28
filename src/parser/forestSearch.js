@@ -170,6 +170,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			if (newSemantic) {
 				// A RHS semantic not at the base of the branch because of forestReduction
 				if (ruleProps.semanticIsRHS) {
+					// Last in prevSemantics is always LHS (so far we have seen)
 					newItem.prevSemantics = item.prevSemantics.slice()
 					newItem.prevSemantics.push(newSemantic) // cannot concat because semantic is array
 				} else {
@@ -216,7 +217,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 					} else {
 						newSemantic = prevSemantic.semantic
 						// A function without an argument - currently can only be intersect()
-						// This will need to be extended if we incorporate functions that don't require args
+						// This will need to be modified if we incorporate functions that don't require args
 						if (newSemantic[0].children) return -1
 					}
 				}
