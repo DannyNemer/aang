@@ -408,7 +408,7 @@ function printNode(node) {
 	}
 }
 
-Parser.prototype.printForest = function () {
+Parser.prototype.printForest = function (startNode) {
 	console.log("\nParse Forest:")
 
 	if (startNode) {
