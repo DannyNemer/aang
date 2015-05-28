@@ -24,13 +24,10 @@ module.exports = function Category(opts) {
 
 	this.lhs = new g.Symbol(this.nameSg, 'lhs') // (NOTE: orig manually makes rules that would be from <empty>)
 	this.lhs.addRule({ terminal: true, RHS: g.emptySymbol })
-	// open/closed (issues)
+	// (my) public/private (repos); (my) public/private ({language} repos)
 	this.adjective = new g.Symbol(this.nameSg, 'adjective')
-	this.lhs.addRule({ RHS: [ this.adjective ] })
-	// If multiple adjectives, or to combine with noun-modifer: recent profil photos
-	// But will create ambiguity with stop-words
-	// this.lhs.addRule({ RHS: [ this.adjective, this.lhs ] })
-	// {language} (repos)
+	this.lhs.addRule({ RHS: [ this.adjective, this.lhs ] })
+	// {language} (repos); (repos that are) {language} (repos)
 	this.preModifier = new g.Symbol(this.nameSg, 'pre', 'modifier')
 	this.lhs.addRule({ RHS: [ this.preModifier ] })
 	// <stop> (issues); <stop> [issue-adjective] (issues)

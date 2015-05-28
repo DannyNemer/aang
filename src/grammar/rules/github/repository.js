@@ -181,3 +181,17 @@ var pushed = new g.Symbol('pushed')
 pushed.addWord({ accepted: [ 'pushed' ] })
 var repositoriesPushedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'pushed'), cost: 0.5, minParams: 1, maxParams: 2 })
 repository.inner.addRule({ RHS: [ pushed, date.general ], semantic: repositoriesPushedSemantic })
+
+
+// PUBLIC/PRIVATE
+var repositoriesVisibilitySemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'visibility'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+// (my) public (repos); (my repos that are) public
+repository.adjective.addRule({
+	terminal: true, RHS: 'public', text: 'public',
+	semantic: g.insertSemantic(repositoriesVisibilitySemantic, g.newSemantic({ name: 'public', isArg: true, cost: 0 }))
+})
+// (my) private (repos); (my repos that are) private
+repository.adjective.addRule({
+	terminal: true, RHS: 'private', text: 'private',
+	semantic: g.insertSemantic(repositoriesVisibilitySemantic, g.newSemantic({ name: 'private', isArg: true, cost: 0 }))
+})

@@ -175,6 +175,11 @@ var testQueries = [
 	'people who are males',
 	'male women',
 	'female people who are women',
+	'my public repos',
+	'my private Java repos',
+	'repos that are public and java',
+	'repos that are created by me and are not created by me',
+	'repos that are not created by me and are created by me',
 	// 'repos danny by me', // intentionally wrong - requires implementation of deletions
 	// 'repos danny by me danny', // intentionally wrong - requires implementation of deletions
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
