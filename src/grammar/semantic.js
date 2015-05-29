@@ -96,18 +96,31 @@ exports.costOfSemantic = function (semanticArray) {
 exports.mergeRHS = function (A, B) {
 	// Check for duplicates
 	for (var i = A.length; i-- > 0;) {
-		var semanticA = A[i]
-		var semanticAPreventsDups = semanticA.semantic.preventDups
+		var semanticNodeA = A[i]
+		var semanticA = semanticNodeA.semantic
+		var semanticAPreventsDups = semanticA.preventDups
+		var semanticAIsNegation = semanticA.name === 'not'
 
 		for (var j = B.length; j-- > 0;) {
-			var semanticB = B[j]
+			var semanticNodeB = B[j]
+			var semanticB = semanticNodeB.semantic
 
 			// Prevent multiple instances of this function within a function's args (e.g., repos-by())
-			if (semanticAPreventsDups && semanticA.semantic === semanticB.semantic) {
+			if (semanticAPreventsDups && semanticA === semanticB) {
 				return -1
 			}
 
-			if (semanticsMatch(semanticA, semanticB)) {
+			// Prevent contradiction with not() function
+			if (semanticAIsNegation && semanticsMatch(semanticNodeA.children[0], semanticNodeB)) {
+				return -1
+			}
+
+			// Prevent contradiction with not() function
+			if (semanticB.name === 'not' && semanticsMatch(semanticNodeA, semanticNodeB.children[0])) {
+				return -1
+			}
+
+			if (semanticsMatch(semanticNodeA, semanticNodeB)) {
 				return -1
 			}
 		}
