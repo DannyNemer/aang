@@ -51,10 +51,11 @@ function findTermRuleInsertions(grammar, insertions) {
 
 // Find sequences of syms that produce inserted terminal symbols or empty-strings
 function findNontermRulesProducingInsertions(grammar, insertions) {
+	var curInsertionsSerial = JSON.stringify(insertions)
 	var prevInsertionsSerial
 
 	do { // Loop until no longer finding new productions
-		prevInsertionsSerial = JSON.stringify(insertions)
+		prevInsertionsSerial = curInsertionsSerial
 
 		Object.keys(grammar).forEach(function (nontermSym) {
 			grammar[nontermSym].forEach(function (rule) {
@@ -79,18 +80,13 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 
 						AInsertions.forEach(function (A) {
 							BInsertions.forEach(function (B) {
-								var newSemantic
-								if (A.semantic && B.semantic) {
-									// To reduce possible insertions, prevent semantic functions with > 1 arguments
-									return
-								} else {
-									newSemantic = A.semantic || B.semantic
-								}
+								// To reduce possible insertions, prevent semantic functions with > 1 arguments
+								if (A.semantic && B.semantic) return
 
 								mergedInsertions.push({
 									cost: A.cost + B.cost,
 									text: A.text.concat(B.text),
-									semantic: newSemantic,
+									semantic: A.semantic || B.semantic,
 									// Person-number only needed for 1st for 2 RHS syms: nominative case (verb precedes subject)
 									// Only used for conjugation of current rule
 									personNumber: A.personNumber,
@@ -104,9 +100,6 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 					}).forEach(function (insertion) {
 						// Add each insertion the can be produced from the RHS
 
-						// TEMP
-						// FIX: not checking for an insertect (or any open ended) on right
-						// no problems currently, but need checks
 						var newSemantic
 						if (rule.semantic && insertion.semantic) {
 							newSemantic = semantic.insertSemantic(rule.semantic, insertion.semantic)
@@ -115,7 +108,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 							// Only needed if allowing insertions through <empty> in transpositions
 							// A function without an arugment - currently can only be intersect()
 							// e.g., "issues opened by people"
-							if (newSemantic[0].children) return
+							if (!rule.semanticIsRHS) return
 						} else {
 							newSemantic = insertion.semantic
 						}
@@ -136,7 +129,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 				}
 			})
 		})
-	} while (JSON.stringify(insertions) !== prevInsertionsSerial)
+	} while (prevInsertionsSerial !== (curInsertionsSerial = JSON.stringify(insertions)))
 }
 
 // Every sym in production is a terminal symbol with an insertion cost, an empty-string, or a nonterminal symbol that produces a sequence of the these
@@ -203,14 +196,29 @@ function createRulesFromInsertions(grammar, insertions) {
 							var newRule = {
 								RHS: [ otherSym ],
 								cost: rule.cost + insertion.cost,
-								semantic: rule.semantic,
 								insertedSyms: [ { symbol: sym, children: insertion.insertedSyms } ],
+							}
+
+							if (insertion.semantic) {
+								if (rule.semanticIsRHS) {
+									newRule.semanticIsRHS = true
+									newRule.semantic = semantic.mergeRHS(rule.semantic, insertion.semantic)
+									if (newRule.semantic === -1) return
+								} else if (rule.semantic) {
+									newRule.semantic = rule.semantic
+									newRule.insertedSemantic = insertion.semantic
+								} else {
+									newRule.semanticIsRHS = true
+									newRule.semantic = insertion.semantic
+								}
+							} else {
+								newRule.semanticIsRHS = rule.semanticIsRHS
+								newRule.semantic = rule.semantic
 							}
 
 							// Empty-strings don't produce text or semantics (for now)
 							if (insertion.text && insertion.text[0]) {
 								newRule.insertionIdx = symIdx
-								newRule.insertedSemantic = insertion.semantic
 								newRule.text = conjugateText(rule, insertion)
 								// If insertion.personNumber or rule.personNumber exists, conjugation will occur on this rule
 								// - Could conjugate now, but keep to check input (if multiple forms of inflection accepted)
@@ -232,7 +240,6 @@ function createRulesFromInsertions(grammar, insertions) {
 									newRule.verbForm = rule.verbForm
 								}
 							} else {
-								newRule.insertedSemantic = insertion.semantic
 								newRule.personNumber = rule.personNumber
 							}
 
@@ -372,15 +379,13 @@ function ruleExists(rules, newRule, LHS) {
 			}
 
 			// New rule and previously created rule have identical RHS and semantics
-			if (existingRule.insertedSemantic && existingRule.semantic === newRule.semantic) {
-				if (JSON.stringify(existingRule.insertedSemantic) === JSON.stringify(newRule.insertedSemantic)) {
-					if (existingRule.cost < newRule.cost) {
-						return true
-					} else {
-						// New rule is cheaper -> remove existing rule
-						rules.splice(r, 1)
-						return false
-					}
+			if (semantic.semanticArraysMatch(existingRule.semantic, newRule.semantic) && semantic.semanticArraysMatch(existingRule.insertedSemantic, newRule.insertedSemantic)) {
+				if (existingRule.cost < newRule.cost) {
+					return true
+				} else {
+					// New rule is cheaper -> remove existing rule
+					rules.splice(r, 1)
+					return false
 				}
 			}
 		}

@@ -138,13 +138,13 @@ function semanticsMatch(a, b) {
 	if (a.semantic !== b.semantic) return false
 
 	if (a.children && b.children) {
-		return semanticArraysMatch(a.children, b.children)
+		return exports.semanticArraysMatch(a.children, b.children)
 	}
 
 	return true // args with same name
 }
 
-function semanticArraysMatch(a, b) {
+exports.semanticArraysMatch = function (a, b) {
 	// Same entity arrays
 	if (a === b) return true
 

@@ -120,7 +120,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 	// Insertion
 	if (ruleProps.insertionIdx !== undefined) {
-		if (newSemantic) {
+		if (ruleProps.insertedSemantic) {
 			newItem.prevSemantics = item.prevSemantics.concat({
 				semantic: newSemantic,
 				nextNodesLen: item.nextNodesLen
@@ -129,17 +129,24 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			if (ruleProps.insertedSemantic) {
 				newItem.prevSemantics.push(ruleProps.insertedSemantic)
 			}
-		} else if (ruleProps.insertedSemantic) {
-			var prevSemantic = item.prevSemantics[item.prevSemantics.length - 1]
+		} else if (newSemantic) {
+			if (ruleProps.semanticIsRHS) {
+				var prevSemantic = item.prevSemantics[item.prevSemantics.length - 1]
 
-			if (prevSemantic.constructor === Object) { // LHS
-				newItem.prevSemantics = item.prevSemantics.slice()
-				newItem.prevSemantics.push(ruleProps.insertedSemantic) // cannot concat because semantic is array
+				if (prevSemantic.constructor === Object) { // LHS
+					newItem.prevSemantics = item.prevSemantics.slice()
+					newItem.prevSemantics.push(newSemantic) // cannot concat because semantic is array
+				} else {
+					newSemantic = semantic.mergeRHS(prevSemantic, newSemantic)
+					if (newSemantic === -1) return -1
+					newItem.prevSemantics = item.prevSemantics.slice(0, -1)
+					newItem.prevSemantics.push(newSemantic)
+				}
 			} else {
-				newSemantic = semantic.mergeRHS(prevSemantic, ruleProps.insertedSemantic)
-				if (newSemantic === -1) return -1
-				newItem.prevSemantics = item.prevSemantics.slice(0, -1)
-				newItem.prevSemantics.push(newSemantic)
+				newItem.prevSemantics = item.prevSemantics.concat({
+					semantic: newSemantic,
+					nextNodesLen: item.nextNodesLen
+				})
 			}
 		} else {
 			newItem.prevSemantics = item.prevSemantics
@@ -212,14 +219,11 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 				// LHS after parsing the right-most branch that follows the semantic (completed the reduction)
 				else if (item.nextNodesLen <= prevSemantic.nextNodesLen) {
-					if (newSemantic) {
-						newSemantic = semantic.insertSemantic(prevSemantic.semantic, newSemantic)
-					} else {
-						newSemantic = prevSemantic.semantic
-						// A function without an argument - currently can only be intersect()
-						// This will need to be modified if we incorporate functions that don't require args
-						if (newSemantic[0].children) return -1
-					}
+					// A function without an argument - currently can only be intersect()
+					// This will need to be modified if we incorporate functions that don't require args
+					if (!newSemantic) return -1
+
+					newSemantic = semantic.insertSemantic(prevSemantic.semantic, newSemantic)
 				}
 
 				// On left side of a reduction and cannot continue merging with LHS w/o completing its RHS (children)
@@ -240,11 +244,6 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			if (text.constructor === Object) {
 				newItem.ruleProps = newItem.ruleProps.slice()
 				text = conjugateText(newItem.ruleProps, text)
-			}
-
-			// Originally insertion text move in forest reduction
-			else if (text.constructor === Array && newItem.ruleProps.length) {
-				text = conjugateTextArray(newItem, text)
 			}
 
 			newItem.text = item.text.concat(text)
