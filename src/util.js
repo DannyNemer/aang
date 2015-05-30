@@ -136,9 +136,14 @@ exports.log = function () {
 	console.log() // Print trailing blank line
 }
 
-// Print 'msg' when called, and line of where called, to mark reaching its section
-exports.mark = function (msg) {
+// Print calling line and optional 'msg' to mark reaching its section
+exports.assert = function (msg) {
 	console.log(colors.red((msg || 'Reached') + ':'), exports.getLine(true))
+}
+
+// If value is truthy, call assert()
+exports.assertTrue = function (value, msg) {
+	if (value) exports.assert(msg)
 }
 
 // Count number of instances a section of code is reached, identified by 'key'
