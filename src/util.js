@@ -216,7 +216,7 @@ exports.writeJSONFile = function (path, obj) {
 // Remove parentheses from error stack for iTerm open-file shortcut
 exports.tryCatchWrapper = function (callback) {
 	try {
-		callback()
+		return callback()
 	} catch (e) {
 		console.log()
 

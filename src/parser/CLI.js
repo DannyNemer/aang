@@ -30,7 +30,7 @@ rl.on('line', function (line) {
 
 
 function parse(query, K) {
-	util.tryCatchWrapper(function () {
+	return util.tryCatchWrapper(function () {
 		if (printQuery) console.log('\nquery:', query)
 		var parser = new (require(parserPath))(stateTable)
 
@@ -47,6 +47,7 @@ function parse(query, K) {
 			if (printTime) console.timeEnd('parse')
 			if (printForestGraph) parser.printNodeGraph(startNode)
 			if (printOutput) forestSearch.print(trees, printCost, printTrees)
+			return trees
 		} else {
 			console.log('Failed to reach start node')
 		}
