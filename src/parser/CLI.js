@@ -181,6 +181,9 @@ var testQueries = [
 	'repos that are public and java',
 	'repos that are created by me and are not created by me',
 	'repos that are not created by me and are created by me',
+	'people people I follow who Danny follow and follow Danny follow',
+	'repos people I follow created that Danny like',
+	'issues assigned to me Danny opened and Aang are mentioned in',
 	// 'repos danny by me', // intentionally wrong - requires implementation of deletions
 	// 'repos danny by me danny', // intentionally wrong - requires implementation of deletions
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
@@ -189,6 +192,21 @@ var testQueries = [
 	// 'my repositories people who created my repos created'
 	// 'people who like my repos liked by people who follow me that people I follow created'
 	// 'my repos me people who follow my followers have been and', - BROKEN
+]
+
+// The first result for these queries must match the input exactly
+var conjugationTestQueries = [
+	'people I follow',
+	'people Danny follows',
+	'people I and Danny follow',
+	'people Danny and I follow',
+	'people people Danny follows follow',
+	'people people Danny follows and Danny follow',
+	'repos I have liked',
+	'repos Danny has liked',
+	'issues assigned to me Danny opened and Aang is mentioned in',
+	'repos people I follow created that Danny likes',
+	'people people I follow who Danny follows and follow Danny follow'
 ]
 
 var K = 7
@@ -219,13 +237,29 @@ function runCommand(query) {
 		if (printOutput) printQuery = true
 		else console.time('test')
 
-		testQueries.forEach(function (testQuery) {
-			parse(testQuery, 50)
+		testQueries.forEach(function (query) {
+			parse(query, 50)
 		})
 
 		if (printOutput) printQuery = false
 		else console.timeEnd('test')
 
+		printTrees = prevSettingPrintTrees
+	} else if (query === '-r2') {
+		var prevSettingPrintTrees = printTrees
+		printTrees = false
+		var prevSettingPrintOutput = printOutput
+		printOutput = false
+
+		conjugationTestQueries.forEach(function (query) {
+			var trees = parse(query, 1)
+			if (!trees || trees[0].text !== query) {
+				util.printErr('Expected', query)
+				console.log('       Actual:', trees[0].text)
+			}
+		})
+
+		printOutput = prevSettingPrintOutput
 		printTrees = prevSettingPrintTrees
 	} else if (query === '-rb') {
 		console.log('Rebuild grammar and state table:')
@@ -279,6 +313,7 @@ function runCommand(query) {
 		console.log('Commands:')
 		console.log('-k  K:', K)
 		console.log('-r  run test queries')
+		console.log('-r2 run conjugation tests')
 		console.log('-rb rebuild grammar and state table')
 		console.log('-d  delete module cache')
 		console.log('-st print state table')
