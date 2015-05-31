@@ -48,6 +48,24 @@ var pullRequestsMentionedSemantic = g.newSemantic({ name: g.hyphenate(pullReques
 // (pull requests that) mention me
 pullRequest.subjFilter.addRule({ RHS: [ github.mention, user.objUsersPlus ], semantic: pullRequestsMentionedSemantic })
 // (pull requests) I-am/{user}-is/[users]-are mentioned in
-pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPlus, github.preVerbStopWordsBeGeneralMentionedIn ], semantic: pullRequestsMentionedSemantic })
-// (people mentioned in) [pull-requests]
+pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralMentionedIn ], semantic: pullRequestsMentionedSemantic })
+// (people mentioned in) [issues]/[pull-requests] (and/or) [issues]/[pull-requests]
 github.mentioners.addRule({ RHS: [ pullRequest.catPl ] })
+
+
+// ASSIGNED-TO:
+var pullRequestsAssignedSemantic = g.newSemantic({ name: g.hyphenate(pullRequest.namePl, 'assigned'), cost: 0.5, minParams: 1, maxParams: 1 })
+// (issues) assigned to me
+pullRequest.inner.addRule({ RHS: [ github.assignedTo, user.objUsersPlus ], semantic: pullRequestsAssignedSemantic })
+// (issues) I-am/{user}-is/[users]-are assigned to
+pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralAssignedTo ], semantic: pullRequestsAssignedSemantic })
+// (people assigned to) [issues]/[pull-requests] (and/or) [issues]/[pull-requests]
+github.assigners.addRule({ RHS: [ pullRequest.catPl ] })
+
+
+// OPEN/CLOSED:
+// open/closed (pull requests); (pull requests that are) open/closed
+pullRequest.adjective.addRule({
+	RHS: [ github.state ],
+	semantic: g.newSemantic({ name: g.hyphenate(pullRequest.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+})

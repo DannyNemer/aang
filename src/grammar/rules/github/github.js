@@ -36,6 +36,7 @@ exports.creatorsOf.addWord({
 })
 
 
+// MENTION:
 // (pull-requests/issues that) mention ([obj-users+])
 exports.mention = new g.Symbol('mention')
 exports.mention.addWord({
@@ -49,19 +50,53 @@ mentionedIn.addWord({
 })
 
 // (pull-requests/issues) I-am/{user}-is/[users]-are mentioned in
-var beGeneralMentionedIn = new g.Symbol('be', 'general', 'mentioned', 'in')
-beGeneralMentionedIn.addRule({ RHS: [ auxVerbs.beGeneral, mentionedIn ] })
-exports.preVerbStopWordsBeGeneralMentionedIn = new g.Symbol('pre', 'verb', 'stop', 'words', 'be', 'general', 'mentioned', 'in')
-exports.preVerbStopWordsBeGeneralMentionedIn.addRule({ RHS: [ stopWords.preVerb, beGeneralMentionedIn ] })
+exports.beGeneralMentionedIn = new g.Symbol('be', 'general', 'mentioned', 'in')
+exports.beGeneralMentionedIn.addRule({ RHS: [ auxVerbs.beGeneral, mentionedIn ] })
 
-
-var usersMentionedSemantic = g.newSemantic({ name: g.hyphenate(user.namePl, 'mentioned'), cost: 0.5, minParams: 1, maxParams: 1 })
-// (people mentioned) in [issues]/[pull-request]
+// (people mentioned in) [issues]/[pull-requests]
 exports.mentioners = new g.Symbol('mentioners')
-// (people mentioned) in [issues]/[pull-request] and/or [issues]/[pull-request]
+// (people mentioned in) [issues]/[pull-requests] and/or [issues]/[pull-requests]
 var mentionersPlus = conjunctions.addForSymbol(exports.mentioners)
 // (people) mentioned in [mentioners+]; (people who are) mentioned in [mentioners+]
-user.inner.addRule({ RHS: [ mentionedIn, mentionersPlus ], semantic: usersMentionedSemantic })
+user.inner.addRule({
+	RHS: [ mentionedIn, mentionersPlus ],
+	semantic: g.newSemantic({ name: g.hyphenate(user.namePl, 'mentioned'), cost: 0.5, minParams: 1, maxParams: 1 })
+})
+
+
+// ASSIGNED-TO:
+exports.assignedTo = new g.Symbol('assigned', 'to')
+exports.assignedTo.addWord({
+  insertionCost: 2,
+  accepted: [ 'assigned to' ]
+})
+
+// (issues/pull-requests) I-am/{user}-is/[users]-are assigned to
+exports.beGeneralAssignedTo = new g.Symbol('be', 'general', 'assigned', 'to')
+exports.beGeneralAssignedTo.addRule({ RHS: [ auxVerbs.beGeneral, exports.assignedTo ] })
+
+// (people assigned to) [issues]/[pull-requests]
+exports.assigners = new g.Symbol('assigners')
+// (people assigned to) [issues]/[pull-requests] and/or [issues]/[pull-requests]
+var assignersPlus = conjunctions.addForSymbol(exports.assigners)
+// (people) assigned to [assigners+]; (people who are) mentioned in [assigners+]
+user.inner.addRule({
+	RHS: [ exports.assignedTo, assignersPlus ],
+	semantic: g.newSemantic({ name: g.hyphenate(user.namePl, 'assigned'), cost: 0.5, minParams: 1, maxParams: 1 })
+})
+
+
+// OPEN/CLOSED
+// open/closed (issues/pull-requests); (issues/pull-requests that are) open/closed
+exports.state = new g.Symbol('state')
+exports.state.addRule({
+	terminal: true, RHS: 'open', text: 'open',
+	semantic: g.newSemantic({ name: 'open', isArg: true, cost: 0 })
+})
+exports.state.addRule({
+	terminal: true, RHS: 'closed', text: 'closed',
+	semantic: g.newSemantic({ name: 'closed', isArg: true, cost: 0 })
+})
 
 
 // Load GitHub-specific rules:

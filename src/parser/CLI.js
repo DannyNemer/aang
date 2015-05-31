@@ -83,6 +83,7 @@ var testQueries = [
 	'issues assigned to me I opened and am mentioned in',
 	'people who are assigned to my issues and follow people who contributed to repos I created and are mentioned in pull requests of mine',
 	'people who are mentioned in my issues and pull requests',
+	'people who are assigned to my issues and my pull requests',
 	'people mentioned in my issues and my pull requests',
 	'my {left-stop-words} repos',
 	'my {left-stop-words} JavaScript repos',

@@ -66,42 +66,26 @@ var issuesRequestsMentionedSemantic = g.newSemantic({ name: g.hyphenate(issue.na
 // (issues that) mention me
 issue.subjFilter.addRule({ RHS: [ github.mention, user.objUsersPlus ], semantic: issuesRequestsMentionedSemantic })
 // (issues) I-am/{user}-is/[users]-are mentioned in
-issue.objFilter.addRule({ RHS: [ user.nomUsersPlus, github.preVerbStopWordsBeGeneralMentionedIn ], semantic: issuesRequestsMentionedSemantic })
-// (people mentioned in) [issues]
+issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralMentionedIn ], semantic: issuesRequestsMentionedSemantic })
+// (people mentioned in) [issues]/[pull-requests] (and/or) [issues]/[pull-requests]
 github.mentioners.addRule({ RHS: [ issue.catPl ] })
 
 
 // ASSIGNED-TO:
-var assignedTo = new g.Symbol('assigned', 'to')
-assignedTo.addWord({
-  insertionCost: 2,
-  accepted: [ 'assigned to' ]
-})
-
 var issuesAssignedSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'assigned'), cost: 0.5, minParams: 1, maxParams: 1 })
-var usersAssignedSemantic = g.newSemantic({ name: g.hyphenate(user.namePl, 'assigned'), cost: 0.5, minParams: 1, maxParams: 1 })
-
-// (issues) I-am/{user}-is/[users]-are assigned to
-var beGeneralAssignedTo = new g.Symbol('be', 'general', 'assigned', 'to')
-beGeneralAssignedTo.addRule({ RHS: [ auxVerbs.beGeneral, assignedTo ] })
-issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, beGeneralAssignedTo ], semantic: issuesAssignedSemantic })
 // (issues) assigned to me
-issue.inner.addRule({ RHS: [ assignedTo, user.objUsersPlus ], semantic: issuesAssignedSemantic })
-// (people) assigned to [issues+]; (people who are) mentioned in [issues+]
-user.inner.addRule({ RHS: [ assignedTo, issue.catPlPlus ], semantic: usersAssignedSemantic })
+issue.inner.addRule({ RHS: [ github.assignedTo, user.objUsersPlus ], semantic: issuesAssignedSemantic })
+// (issues) I-am/{user}-is/[users]-are assigned to
+issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralAssignedTo ], semantic: issuesAssignedSemantic })
+// (people assigned to) [issues]/[pull-requests] (and/or) [issues]/[pull-requests]
+github.assigners.addRule({ RHS: [ issue.catPl ] })
 
 
 // OPEN/CLOSED:
-var issuesStateSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
-// open (issues); (issues that are) open
+// open/closed (issues); (issues that are) open/closed
 issue.adjective.addRule({
-	terminal: true, RHS: 'open', text: 'open',
-	semantic: g.insertSemantic(issuesStateSemantic, g.newSemantic({ name: 'open', isArg: true, cost: 0 }))
-})
-// closed (issues); (issues that are) closed
-issue.adjective.addRule({
-	terminal: true, RHS: 'closed', text: 'closed',
-	semantic: g.insertSemantic(issuesStateSemantic, g.newSemantic({ name: 'closed', isArg: true, cost: 0 }))
+	RHS: [ github.state ],
+	semantic: g.newSemantic({ name: g.hyphenate(issue.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
 })
 
 
