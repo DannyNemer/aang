@@ -5,7 +5,7 @@ var reduceForest = require('./reduceForest')
 
 
 // Use A* path search to find trees in parse forest returned by parser, beginning at start node
-exports.search = function (startNode, K, buildDebugTrees) {
+exports.search = function (startNode, K, buildDebugTrees, printStats) {
 	reduceForest(startNode) // currently slows because of work to condense
 
 	var heap = new BinaryHeap // Min-heap of all partially constructed trees
@@ -93,9 +93,11 @@ exports.search = function (startNode, K, buildDebugTrees) {
 		}
 	}
 
-	console.log('heap size:', heap.content.length)
-	console.log('push:', heap.pushCount)
-	console.log('pop:', heap.popCount)
+	if (printStats) {
+		console.log('heap size:', heap.content.length)
+		console.log('push:', heap.pushCount)
+		console.log('pop:', heap.popCount)
+	}
 
 	return trees
 }

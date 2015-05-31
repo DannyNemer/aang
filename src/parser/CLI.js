@@ -43,7 +43,7 @@ function parse(query, K) {
 
 		if (startNode) {
 			var forestSearch = require(forestSearchPath)
-			var trees = forestSearch.search(startNode, K, printTrees)
+			var trees = forestSearch.search(startNode, K, printTrees, printOutput)
 			if (printTime) console.timeEnd('parse')
 			if (printForestGraph) parser.printNodeGraph(startNode)
 			if (printOutput) forestSearch.print(trees, printCost, printTrees)
