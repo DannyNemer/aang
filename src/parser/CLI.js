@@ -185,6 +185,9 @@ var testQueries = [
 	'people people I follow who Danny follow and follow Danny follow',
 	'repos people I follow created that Danny like',
 	'issues assigned to me Danny opened and Aang are mentioned in',
+	'people {user} follows', // intentionally wrong
+	'people I and {user} follow', // intentionally wrong
+	'issues with <int> comments', // intentionally wrong
 	// 'repos danny by me', // intentionally wrong - requires implementation of deletions
 	// 'repos danny by me danny', // intentionally wrong - requires implementation of deletions
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees

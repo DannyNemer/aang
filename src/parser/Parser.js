@@ -78,7 +78,8 @@ Parser.prototype.matchTerminalRules = function (query) {
 
 				// this.nodeTab = this.nodeTabs[endPos] // should I be doing this?
 				var wordSym = this.stateTable.symbolTab[nGram]
-				if (wordSym) {
+				// Prevent terminal symbol match with placeholder symbols: <int>, entities category names (e.g., {user})
+				if (wordSym && !wordSym.isPlaceholder) {
 					// create node with terminal symbol
 					var wordNode = this.addSub(wordSym)
 

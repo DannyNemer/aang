@@ -82,13 +82,24 @@ Symbol.prototype.newTerminalRule = function (opts) {
 		newRule.insertionCost = opts.insertionCost
 	}
 
+	// If RHS is <int> or an entity category, prevent those terminal symbols from being accepted as input
+	if (opts.RHS === g.intSymbol || g.creationLines.hasOwnProperty(opts.RHS)) {
+		newRule.RHSIsPlaceholder = true
+	}
+
 	// If semantic, must be complete and consitute a RHS
 	// Exceptions: terminal symbol is an entity category or <int>
-	if (opts.semantic && !semantic.semanticIsRHS(opts.semantic) && !g.creationLines.hasOwnProperty(newRule.RHS[0]) && newRule.RHS[0] !== g.intSymbol) {
+	else if (opts.semantic && !semantic.semanticIsRHS(opts.semantic)) {
 		util.printErr('Terminal rules can only hold complete (RHS) semantics', this.name, '->', newRule.RHS)
 		util.log(opts.semantic)
 		console.log(util.getLine())
-		throw 'ill-formed nonterminal rule'
+		throw 'ill-formed terminal rule'
+	}
+
+	// intMin and intMax can only be used with <int>
+	if (opts.RHS !== g.intSymbol && (opts.intMin !== undefined || opts.intMax !== undefined)) {
+		util.printErrWithLine('\'intMin\' and \'intMax\' can only be used with ' + g.intSymbol, this.name, '->', newRule.RHS)
+		throw 'ill-formed terminal rule'
 	}
 
 	return newRule
