@@ -3,6 +3,8 @@ var Category = require('../Category')
 var github = require('./github')
 var poss = require('../poss')
 var user = require('../user')
+var preps = require('../prepositions')
+var count = require('../count')
 
 
 var pullRequest = new Category({ sg: 'pull-request', pl: 'pull-requests' })
@@ -69,3 +71,8 @@ pullRequest.adjective.addRule({
 	RHS: [ github.state ],
 	semantic: g.newSemantic({ name: g.hyphenate(pullRequest.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
 })
+
+
+// WITH N COMMENTS:
+// (pull-requests) with <int> comment
+pullRequest.inner.addRule({ RHS: [ preps.possessed, github.commentCount ], semantic: pullRequest.semantic })

@@ -149,7 +149,7 @@ stars.addWord({
 })
 
 // (repos) with <int> stars
-repository.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(repository, stars) ] })
+repository.inner.addRule({ RHS: [ preps.possessed, count.createForItems(stars) ], semantic: repository.semantic })
 
 // WITH N FORKS:
 var forks = new g.Symbol('forks')
@@ -159,7 +159,7 @@ forks.addWord({
 })
 
 // (repos) with <int> forks
-repository.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(repository, forks) ] })
+repository.inner.addRule({ RHS: [ preps.possessed, count.createForItems(forks) ], semantic: repository.semantic })
 
 var size = new g.Symbol('size')
 size.addWord({
@@ -167,14 +167,12 @@ size.addWord({
 	accepted: [ 'KB' ]
 })
 // (repos that are) <int> KB
-repository.postModifer.addRule({ RHS: [ count.createForCategoryItems(repository, size) ] })
+repository.postModifer.addRule({ RHS: [ count.createForItems(size) ], semantic: repository.semantic })
 
 
 // DATE:
-// Unsure about maxParams, and questioning when to duplicate at all, but will become clearer once making backend
 // (repos) created in [year]
-var catPlSemantic = g.newSemantic({ name: repository.namePl, cost: 0.5, minParams: 1, maxParams: 2 })
-repository.inner.addRule({ RHS: [ github.created, date.general ], semantic: catPlSemantic })
+repository.inner.addRule({ RHS: [ github.created, date.general ], semantic: repository.semantic })
 
 // (repos) pushed in [year]
 var pushed = new g.Symbol('pushed')

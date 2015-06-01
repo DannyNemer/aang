@@ -206,5 +206,8 @@ module.exports = function Category(opts) {
 		this.catPlPlus = conjunctions.addForSymbol(this.catPl)
 	}
 
+	// repositories(date-before(), date-after()); users(followers-count())
+	this.semantic = g.newSemantic({ name: this.namePl, cost: 0.5, minParams: 1, maxParams: 2 })
+
 	g.startSymbol.addRule({ RHS: [ this.catPl ] })
 }

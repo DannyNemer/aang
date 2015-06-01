@@ -59,7 +59,7 @@ followersTerm.addWord({
 	accepted: [ 'followers', 'subscribers' ]
 })
 // users with <int> followers
-user.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(user, followersTerm) ] })
+user.inner.addRule({ RHS: [ preps.possessed, count.createForItems(followersTerm) ], semantic: user.semantic })
 
 
 var followersPossessiveTerm = new g.Symbol('followers', 'possessive', 'term')

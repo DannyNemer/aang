@@ -15,25 +15,25 @@ var andPrepUnder = new g.Symbol('and', 'prep', 'under')
 andPrepUnder.addRule({ RHS: [ conjunctions.and, preps.under ] })
 
 
-exports.createForCategoryItems = function (category, itemsSymbol) {
+exports.createForItems = function (itemsSymbol) {
 	var itemsName = itemsSymbol.name.slice(1, -1)
 
-	var catPlItemsSemantic = g.newSemantic({
-		name: g.hyphenate(category.namePl, itemsName),
+	var itemsCountSemantic = g.newSemantic({
+		name: g.hyphenate(itemsName, 'count'),
 		cost: 0.5,
 		minParams: 1,
 		maxParams: 2
 	})
 
-	var catPlItemsOverSemantic = g.newSemantic({
-		name: g.hyphenate(category.namePl, itemsName, 'over'),
+	var itemsCountOverSemantic = g.newSemantic({
+		name: g.hyphenate(itemsName, 'count', 'over'),
 		cost: 0.5,
 		minParams: 1,
 		maxParams: 1
 	})
 
-	var catPlItemsUnderSemantic = g.newSemantic({
-		name: g.hyphenate(category.namePl, itemsName, 'under'),
+	var itemsCountUnderSemantic = g.newSemantic({
+		name: g.hyphenate(itemsName, 'count', 'under'),
 		cost: 0.5,
 		minParams: 1,
 		maxParams: 1
@@ -51,47 +51,47 @@ exports.createForCategoryItems = function (category, itemsSymbol) {
 
 
 	// (issues with) <int> comments
-	// issues-comments(n2)
-	itemsCount.addRule({ RHS: [ numberItems ], semantic: catPlItemsSemantic })
+	// comments-count(n2)
+	itemsCount.addRule({ RHS: [ numberItems ], semantic: itemsCountSemantic })
 
 	// (issues with) under <int> comments
-	// issues-comments-under(n)
-	itemsCount.addRule({ RHS: [ preps.under, numberItems ], semantic: catPlItemsUnderSemantic })
+	// comments-count-under(n)
+	itemsCount.addRule({ RHS: [ preps.under, numberItems ], semantic: itemsCountUnderSemantic })
 
 	// (issues with) over <int> comments
-	// issues-comments-over(n)
-	itemsCount.addRule({ RHS: [ preps.over, numberItems ], semantic: catPlItemsOverSemantic })
+	// comments-count-over(n)
+	itemsCount.addRule({ RHS: [ preps.over, numberItems ], semantic: itemsCountOverSemantic })
 
 	// (issues with) under <int> comments and over <int> comments
-	// issues-comments-over(n1), issues-comments-under(n2) - exclusive
+	// comments-count-over(n1), comments-count-under(n2) - exclusive
 	// Each semantic must be on a seperate branch
 	var prepUnderNumberItemsOpt = new g.Symbol('prep', 'under', 'number', itemsName, 'opt')
-	prepUnderNumberItemsOpt.addRule({ RHS: [ preps.under, numberItemsOpt ], semantic: catPlItemsUnderSemantic })
+	prepUnderNumberItemsOpt.addRule({ RHS: [ preps.under, numberItemsOpt ], semantic: itemsCountUnderSemantic })
 	var andPrepOverNumberItems = new g.Symbol('and', 'prep', 'over', 'number', itemsName)
-	andPrepOverNumberItems.addRule({ RHS: [ andPrepOver, numberItems ], semantic: catPlItemsOverSemantic })
+	andPrepOverNumberItems.addRule({ RHS: [ andPrepOver, numberItems ], semantic: itemsCountOverSemantic })
 	itemsCount.addRule({ RHS: [ prepUnderNumberItemsOpt, andPrepOverNumberItems ] })
 
 	// (issues with) over <int> comments and under <int> comments
-	// issues-comments-over(n1), issues-comments-under(n2) - exclusive
+	// comments-count-over(n1), comments-count-under(n2) - exclusive
 	var prepOverNumberItemsOpt = new g.Symbol('prep', 'over', 'number', itemsName, 'opt')
-	prepOverNumberItemsOpt.addRule({ RHS: [ preps.over, numberItemsOpt ], semantic: catPlItemsOverSemantic })
+	prepOverNumberItemsOpt.addRule({ RHS: [ preps.over, numberItemsOpt ], semantic: itemsCountOverSemantic })
 	var andPrepUnderNumberItems = new g.Symbol('and', 'prep', 'under', 'number', itemsName)
-	andPrepUnderNumberItems.addRule({ RHS: [ andPrepUnder, numberItems ], semantic: catPlItemsUnderSemantic })
+	andPrepUnderNumberItems.addRule({ RHS: [ andPrepUnder, numberItems ], semantic: itemsCountUnderSemantic })
 	itemsCount.addRule({ RHS: [ prepOverNumberItemsOpt, andPrepUnderNumberItems ] })
 
 	// (issues with) <int> comments to <int> comments
-	// issues-comments(n1, n2) - inclusive
+	// comments-count(n1, n2) - inclusive
 	var numberItemsOptPrepEnd = new g.Symbol('number', itemsName, 'opt', 'prep', 'end')
 	numberItemsOptPrepEnd.addRule({ RHS: [ numberItemsOpt, preps.end ] })
-	itemsCount.addRule({ RHS: [ numberItemsOptPrepEnd, numberItems ], semantic: catPlItemsSemantic })
+	itemsCount.addRule({ RHS: [ numberItemsOptPrepEnd, numberItems ], semantic: itemsCountSemantic })
 
 	// (issues with) between <int> comments and <int> comments
-	// issues-comments(n1, n2) - inclusive
+	// comments-count(n1, n2) - inclusive
 	var prepBetweenNumberItemsOpt = new g.Symbol('prep', 'between', 'number', itemsName, 'opt')
 	prepBetweenNumberItemsOpt.addRule({ RHS: [ preps.between, numberItemsOpt ] })
 	var andNumberItems = new g.Symbol('and', 'number', itemsName)
 	andNumberItems.addRule({ RHS: [ conjunctions.and, numberItems ] })
-	itemsCount.addRule({ RHS: [ prepBetweenNumberItemsOpt, andNumberItems ], semantic: catPlItemsSemantic })
+	itemsCount.addRule({ RHS: [ prepBetweenNumberItemsOpt, andNumberItems ], semantic: itemsCountSemantic })
 
 	return itemsCount
 }

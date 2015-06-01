@@ -90,14 +90,8 @@ issue.adjective.addRule({
 
 
 // WITH N COMMENTS:
-var comments = new g.Symbol('comments')
-comments.addWord({
-  insertionCost: 3,
-  accepted: [ 'comments' ]
-})
-
 // (issues) with <int> comment
-issue.inner.addRule({ RHS: [ preps.possessed, count.createForCategoryItems(issue, comments) ] })
+issue.inner.addRule({ RHS: [ preps.possessed, github.commentCount ], semantic: issue.semantic })
 
 
 // DATE:
@@ -107,9 +101,5 @@ updated.addWord({
 	accepted: [ 'updated' ]
 })
 
-// Are we correct to use that semantic? because there is a date semantic which has a cost and the updated semantic only for the date
 // (issues) updated in [year]
-issue.inner.addRule({
-	RHS: [ updated, date.general ],
-	semantic: g.newSemantic({ name: g.hyphenate(issue.namePl, 'updated'), cost: 0.5, minParams: 1, maxParams: 2 })
-})
+issue.inner.addRule({ RHS: [ updated, date.general ], semantic: issue.semantic })

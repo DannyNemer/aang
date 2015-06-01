@@ -3,7 +3,8 @@ var user = require('../user')
 var auxVerbs = require('../auxVerbs')
 var stopWords = require('../stopWords')
 var user = require('../user')
-var conjunctions = require('../conjunctions.js')
+var conjunctions = require('../conjunctions')
+var count = require('../count')
 
 
 var github = new g.Symbol('github')
@@ -97,6 +98,16 @@ exports.state.addRule({
 	terminal: true, RHS: 'closed', text: 'closed',
 	semantic: g.newSemantic({ name: 'closed', isArg: true, cost: 0 })
 })
+
+
+// WITH N COMMENTS:
+var comments = new g.Symbol('comments')
+comments.addWord({
+  insertionCost: 3,
+  accepted: [ 'comments' ]
+})
+// (issues/pull-requests) with <int> comment
+exports.commentCount = count.createForItems(comments)
 
 
 // Load GitHub-specific rules:
