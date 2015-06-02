@@ -7,6 +7,7 @@ require('./rules/github/github')
 var outputPath = __dirname + '/../'
 
 g.checkForUnusedSymbols()
+g.checkForUnusedSemantics()
 g.createEditRules()
 g.sortGrammar()
 g.printRuleCount(outputPath)

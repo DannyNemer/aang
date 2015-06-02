@@ -1,6 +1,8 @@
 var util = require('../util')
 
 exports.semantics = {}
+// A mapping of semantic names to creation lines; used for error reporting
+exports.creationLines = {}
 
 exports.newSemantic = function (opts) {
 	if (exports.semantics.hasOwnProperty(opts.name)) {
@@ -54,6 +56,9 @@ function newSemanticFunc(opts) {
 		preventDups: opts.preventDups
 	}
 
+	// Save calling line for error reporting
+	exports.creationLines[opts.name] = util.getLine()
+
 	return [ {
 		semantic: semantic,
 		children: []
@@ -79,6 +84,9 @@ function newSemanticArg(opts) {
 		cost: opts.cost,
 		isArg: true
 	}
+
+	// Save calling line for error reporting
+	exports.creationLines[opts.name] = util.getLine()
 
 	return [ {
 		semantic: semantic

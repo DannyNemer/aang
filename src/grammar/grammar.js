@@ -34,7 +34,7 @@ exports.newEntityCategory = entityCategory.newEntityCategory
 // Derive rules from insertion and transposition costs, and empty-strings
 exports.createEditRules = require('./createEditRules')
 
-// Check for nonterminal symbols and entity categories that are not used in any productions
+// Check for nonterminal symbols and entity categories that are not used in any production
 exports.checkForUnusedSymbols = function () {
 	Object.keys(exports.creationLines).forEach(function (symbol) {
 		if (symbol === exports.startSymbol.name) return
@@ -52,6 +52,35 @@ exports.checkForUnusedSymbols = function () {
 		util.printErr('Unused symbol', symbol)
 		console.log(exports.creationLines[symbol])
 		throw 'unused symbol'
+	})
+}
+
+// Check for semantic functions and arguments that are not used in any production
+exports.checkForUnusedSemantics = function () {
+	Object.keys(semantic.semantics).forEach(function (semanticName) {
+		var thisSemantic = semantic.semantics[semanticName]
+
+		for (var sym in exports.grammar) {
+			var rules = exports.grammar[sym]
+			for (var r = rules.length; r-- > 0;) {
+				var rule = rules[r]
+				if (rule.semantic) {
+					// Initialize stack with rule.semantic, an array (possible of multiple semantic nodes)
+					var semanticStack = rule.semantic.slice()
+					while (semanticStack.length) {
+						var semanticNode = semanticStack.pop()
+						if (semanticNode.semantic === thisSemantic) return
+						if (semanticNode.children) {
+							Array.prototype.push.apply(semanticStack, semanticNode.children)
+						}
+					}
+				}
+			}
+		}
+
+		util.printErr('Unused semantic', semanticName)
+		console.log(semantic.creationLines[semanticName])
+		throw 'unused semantic'
 	})
 }
 
