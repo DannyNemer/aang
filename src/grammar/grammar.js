@@ -32,7 +32,7 @@ var entityCategory = require('./entityCategory')
 exports.newEntityCategory = entityCategory.newEntityCategory
 
 // Derive rules from insertion and transposition costs, and empty-strings
-exports.createEditRules = require('./createEditRules').bind(null, exports.grammar)
+exports.createEditRules = require('./createEditRules')
 
 // Check for nonterminal symbols and entity categories that are not used in any productions
 exports.checkForUnusedSymbols = function () {
