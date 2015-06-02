@@ -7,6 +7,7 @@
 var util = require('../util')
 var g = require('./grammar')
 var semantic = require('./semantic')
+var ruleMissingNeededRHSSemantic = require('./ruleMissingNeededRHSSemantic')
 
 
 module.exports = function (grammar) {
@@ -15,13 +16,18 @@ module.exports = function (grammar) {
 
 	findTermRuleInsertions(grammar, insertions)
 
+	// Called after rules with '<empty>' have been removed in findTermRuleInsertions()
+	// Called before calling ruleMissingNeededRHSSemantic()
+	removeNullNonterminalSymbols(grammar)
+
+	// Check non-edit rules for semantic errors: fail to produce a needed RHS semantic
+	checkForSemanticErrors(grammar)
+
 	findNontermRulesProducingInsertions(grammar, insertions)
 
 	createRulesFromInsertions(grammar, insertions)
 
 	createRulesFromTranspositions(grammar)
-
-	removeNullNonterminalSymbols(grammar)
 }
 
 // Find all terminal rules with insertion costs or blanks
@@ -142,9 +148,9 @@ function RHSCanBeInserted(insertions, RHS) {
 // Add new insertion if does not already exist
 // Return true if new insertion is added
 function addInsertion(insertions, nontermSym, newInsertion) {
-	var symInsertions = insertions[nontermSym] || (insertions[nontermSym] = [])
+	// if (newInsertion.cost > 5) return false
 
-	if (newInsertion.cost > 5) return false
+	var symInsertions = insertions[nontermSym] || (insertions[nontermSym] = [])
 
 	if (!insertionExists(symInsertions, newInsertion)) {
 		symInsertions.push(newInsertion)
@@ -178,12 +184,12 @@ function insertionExists(symInsertions, newInsertion) {
 
 // Add new rules from inserted terminal symbol productions and empty-string productions to grammar
 function createRulesFromInsertions(grammar, insertions) {
-	Object.keys(grammar).forEach(function (nontermSym) {
+	Object.keys(grammar).forEach(function (lhsSym) {
 		// true for all except: [nom-users-or-author-pages+] [obj-users-penalize-1+] [user-filter+]
-		if (/\+/.test(nontermSym)) return
-		// if (/lhs]/.test(nontermSym)) return
+		if (/\+/.test(lhsSym)) return
+		// if (/lhs]/.test(lhsSym)) return
 
-		grammar[nontermSym].forEach(function (rule, ruleIdx, symRules) {
+		grammar[lhsSym].forEach(function (rule, ruleIdx, symRules) {
 			var RHS = rule.RHS
 			if (RHS.length > 1) {
 				RHS.forEach(function (sym, symIdx) {
@@ -191,7 +197,7 @@ function createRulesFromInsertions(grammar, insertions) {
 
 					// if (/\+/.test(nontermSym) && /\+/.test(sym)) return
 
-					if (insertions.hasOwnProperty(sym) && otherSym !== nontermSym) {
+					if (insertions.hasOwnProperty(sym) && otherSym !== lhsSym) {
 						insertions[sym].forEach(function (insertion) {
 							var newRule = {
 								RHS: [ otherSym ],
@@ -216,8 +222,16 @@ function createRulesFromInsertions(grammar, insertions) {
 								newRule.semantic = rule.semantic
 							}
 
+							// Discard rule if lacks and cannot produce a RHS semantic needed by this rule or an ancestor
+							var parsingStack
+							if (parsingStack = ruleMissingNeededRHSSemantic(grammar, newRule, lhsSym)) {
+								// util.printErr('Rule will not produce needed RHS semantic')
+								// util.log(parsingStack)
+								return
+							}
+
 							// Empty-strings don't produce text or semantics (for now)
-							if (insertion.text && insertion.text[0]) {
+							if (insertion.text[0]) {
 								newRule.insertionIdx = symIdx
 								newRule.text = conjugateText(rule, insertion)
 								// If insertion.personNumber or rule.personNumber exists, conjugation will occur on this rule
@@ -396,6 +410,7 @@ function ruleExists(rules, newRule, LHS) {
 
 
 // Recursively remove nonterminal symbols with no productions, rules whose RHS contain those symbols or the <empty> symbol, and any production-less symbols that result
+// Called after rules with '<empty>' have been removed
 function removeNullNonterminalSymbols(grammar) {
 	var curRuleCount = g.ruleCount(grammar)
 	var prevRuleCount
@@ -432,4 +447,23 @@ function removeNullNonterminalSymbols(grammar) {
 			}
 		}
 	} while (prevRuleCount !== (curRuleCount = g.ruleCount(grammar)))
+}
+
+
+// Throw an error if a default (non-edit) rule lacks and cannot produce a needed RHS semantic
+function checkForSemanticErrors(grammar) {
+	for (var nontermSym in grammar) {
+		var rules = grammar[nontermSym]
+		for (var r = 0; r < rules.length; ++r) {
+			var rule = rules[r]
+			if (rule.insertionIdx === undefined) {
+				var parsingStack
+				if (parsingStack = ruleMissingNeededRHSSemantic(grammar, rule, nontermSym)) {
+					util.printErr('Rule will not produce needed RHS semantic')
+					util.log(parsingStack)
+					throw 'semantic error'
+				}
+			}
+		}
+	}
 }
