@@ -3,6 +3,8 @@ var g = require('./grammar')
 
 
 exports.entities = {}
+// A mapping of entity category names to creation lines; used for error reporting
+exports.creationLines = {}
 // Counter for entity ids
 var entityCount = 0
 
@@ -20,13 +22,13 @@ exports.newEntityCategory = function (opts) {
 
 	var categoryName = '{' + opts.name + '}'
 
-	if (g.creationLines.hasOwnProperty(categoryName)) {
+	if (exports.creationLines.hasOwnProperty(categoryName)) {
 		util.printErrWithLine('Duplicate entity category', categoryName)
 		throw 'duplicate entity category'
 	}
 
 	// Save calling line for error reporting
-	g.creationLines[categoryName] = util.getLine()
+	exports.creationLines[categoryName] = util.getLine()
 
 	var newEntities = opts.entities
 	newEntitiesLen = newEntities.length

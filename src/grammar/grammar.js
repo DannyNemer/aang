@@ -36,6 +36,11 @@ exports.createEditRules = require('./createEditRules')
 
 // Check for nonterminal symbols and entity categories that are not used in any production
 exports.checkForUnusedSymbols = function () {
+	// Merge entityCategory creation lines with nonterminal symbols for error checking
+	for (var entityCategoryName in entityCategory.creationLines) {
+		exports.creationLines[entityCategoryName] = entityCategory.creationLines[entityCategoryName]
+	}
+
 	Object.keys(exports.creationLines).forEach(function (symbol) {
 		if (symbol === exports.startSymbol.name) return
 
