@@ -194,10 +194,8 @@ module.exports = function Category(opts) {
 		var entity = g.newEntityCategory({ name: this.nameSg, entities: opts.entities })
 		this.catSg.addRule({ terminal: true, RHS: entity })
 
-		if (!opts.isPerson) { // user does not use because obj/nom-users -> [user]
-			// (people who like) {repo}
-			this.catPl.addRule({ RHS: [ this.catSg ] })
-		}
+		// (people who like) {repo}; {user}
+		this.catPl.addRule({ RHS: [ this.catSg ] })
 	}
 
 	// user does not use because obj/nom-users
