@@ -6,7 +6,7 @@
 
 var util = require('../util')
 var g = require('./grammar')
-var grammar = require('./Symbol').grammar
+var grammar = require('./symbol').grammar
 var semantic = require('./semantic')
 var ruleMissingNeededRHSSemantic = require('./ruleMissingNeededRHSSemantic')
 
