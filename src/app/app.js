@@ -71,29 +71,33 @@ var forestSearch = require('../parser/forestSearch.js')
 var K = 7
 
 function buildStateTable() {
-	var grammarPath = '../grammar.json'
-	var semanticsPath = '../semantics.json'
-	var grammar = require(grammarPath)
-	var semantics = require(semanticsPath)
+	var inputFile = require('../aang.json')
+	var grammar = inputFile.grammar
+	var semantics = inputFile.semantics
+	var semanticArgNodes = {}
 
 	Object.keys(grammar).forEach(function (sym) {
 		grammar[sym].forEach(function (rule) {
-			if (rule.semantic) mapSemantic(semantics, rule.semantic)
-			if (rule.insertedSemantic) mapSemantic(semantics, rule.insertedSemantic)
+			if (rule.semantic) mapSemantic(rule.semantic)
+			if (rule.insertedSemantic) mapSemantic(rule.insertedSemantic)
 		})
 	})
 
+	function mapSemantic(semanticArray) {
+		semanticArray.forEach(function (semanticNode, i) {
+			if (semanticNode.children) {
+				semanticNode.semantic = semantics[semanticNode.semantic.name]
+				mapSemantic(semanticNode.children)
+			} else {
+				// Share nodes for semantic arguments (no 'children' property to differentiate)
+				var name = semanticNode.semantic.name
+				semanticArray[i] = semanticArgNodes[name] || (semanticArgNodes[name] = { semantic: semantics[name] })
+			}
+		})
+	}
+
 	// Build state table
 	var stateTable = new (require('../parser/StateTable.js'))(grammar, '[start]')
-	// Remove grammar and semantics from cache
-	util.deleteCache(grammarPath, semanticsPath)
 
 	return stateTable
-}
-
-function mapSemantic(semantics, semanticArray) {
-	semanticArray.forEach(function (semanticNode) {
-		semanticNode.semantic = semantics[semanticNode.semantic.name]
-		if (semanticNode.children) mapSemantic(semantics, semanticNode.children)
-	})
 }

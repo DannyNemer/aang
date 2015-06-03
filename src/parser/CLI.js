@@ -1,8 +1,5 @@
 var util = require('../util.js')
 
-var grammarPath = '../grammar.json'
-var semanticsPath = '../semantics.json'
-var entitiesPath = '../entities.json'
 var parserNewPath = './Parser.js'
 var parserOldPath = './util/ParserBestFirst.js'
 var forestSearchPath = './forestSearch.js'
@@ -341,8 +338,13 @@ function runCommand(query) {
 
 
 function buildStateTable() {
-	var grammar = require(grammarPath)
-	var semantics = require(semanticsPath)
+	var inputFilePath = '../aang.json'
+	// If loaded, remove from cache to force reload of file after removing grammar and semantics below
+	util.deleteCache(inputFilePath)
+	var inputFile = require(inputFilePath)
+
+	var grammar = inputFile.grammar
+	var semantics = inputFile.semantics
 	var semanticArgNodes = {}
 
 	Object.keys(grammar).forEach(function (sym) {
@@ -368,7 +370,8 @@ function buildStateTable() {
 	// Build state table
 	var stateTable = new (require(stateTablePath))(grammar, '[start]')
 	// Remove grammar and semantics from cache
-	util.deleteCache(grammarPath, semanticsPath, entitiesPath)
+	delete inputFile.grammar
+	delete inputFile.semantics
 
 	return stateTable
 }

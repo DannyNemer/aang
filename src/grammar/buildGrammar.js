@@ -4,14 +4,14 @@ require('./rules/user')
 require('./rules/follow')
 require('./rules/github/github')
 
-var outputPath = __dirname + '/../'
+var outputFilePath = __dirname + '/../aang.json'
 
 g.checkForUnusedSymbols()
 g.checkForUnusedSemantics()
 g.createEditRules()
 g.sortGrammar()
-g.printRuleCount(outputPath)
-g.writeGrammarToFile(outputPath)
+g.printRuleCount(outputFilePath)
+g.writeGrammarToFile(outputFilePath)
 
 
 /*

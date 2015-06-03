@@ -1,9 +1,9 @@
 module.exports = Parser
 var util = require('../util')
 var intSymbol = require('../grammar/grammar').intSymbol
-
-var entities = require('../entities.json')
+var entities = require('../aang.json').entities
 var semantic = require('../grammar/semantic')
+
 
 function Parser(stateTable) {
 	this.stateTable = stateTable
