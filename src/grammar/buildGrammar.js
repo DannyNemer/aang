@@ -7,6 +7,7 @@ require('./rules/github/github')
 var outputFilePath = __dirname + '/../aang.json'
 
 g.checkForUnusedSymbols()
+g.checkForUnusedEntityCategories()
 g.checkForUnusedSemantics()
 g.createEditRules()
 g.sortGrammar()

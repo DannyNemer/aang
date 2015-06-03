@@ -32,13 +32,8 @@ exports.newEntityCategory = entityCategory.newEntityCategory
 // Derive rules from insertion and transposition costs, and empty-strings
 exports.createEditRules = require('./createEditRules')
 
-// Check for nonterminal symbols and entity categories that are not used in any production
+// Check for nonterminal symbols that are not used in any production
 exports.checkForUnusedSymbols = function () {
-	// Merge entityCategory creation lines with nonterminal symbols' for error checking
-	for (var entityCategoryName in entityCategory.creationLines) {
-		symbol.creationLines[entityCategoryName] = entityCategory.creationLines[entityCategoryName]
-	}
-
 	Object.keys(symbol.creationLines).forEach(function (symbolName) {
 		if (symbolName === exports.startSymbol.name) return
 
@@ -55,6 +50,23 @@ exports.checkForUnusedSymbols = function () {
 		util.printErr('Unused symbol', symbolName)
 		console.log(symbol.creationLines[symbolName])
 		throw 'unused symbol'
+	})
+}
+
+// Check for entity categories that are not used in any production
+exports.checkForUnusedEntityCategories = function () {
+	Object.keys(entityCategory.creationLines).forEach(function (categorySymbolName) {
+		for (var otherSymbol in grammar) {
+			var rules = grammar[otherSymbol]
+			for (var r = rules.length; r-- > 0;) {
+				var rule = rules[r]
+				if (rule.RHS.indexOf(categorySymbolName) !== -1) return
+			}
+		}
+
+		util.printErr('Unused entity category', categorySymbolName)
+		console.log(entityCategory.creationLines[categorySymbolName])
+		throw 'unused entity category'
 	})
 }
 
