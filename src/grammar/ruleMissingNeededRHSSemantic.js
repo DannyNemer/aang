@@ -1,5 +1,5 @@
 var util = require('../util')
-var grammar = require('./grammar').grammar
+var grammar = require('./Symbol').grammar
 
 
 // Checks if rule lacks and cannot produce a RHS semantic needed by this rule or an ancestor

@@ -4,7 +4,18 @@ var semantic = require('./semantic')
 var entityCategory = require('./entityCategory')
 
 
-module.exports = Symbol
+// A mapping of symbols to productions
+exports.grammar = {}
+// A mapping of Symbol names to creation lines; used for error reporting
+exports.creationLines = {}
+// Constructor for extending Symbol
+exports.constructor = Symbol
+
+exports.newSymbol = function () {
+	var symbolNew = Object.create(Symbol.prototype)
+  Symbol.apply(symbolNew, arguments)
+	return symbolNew
+}
 
 // Constructor for nonterminal symbols
 // Concatenates arguments after 0th index as Symbol's name
@@ -19,15 +30,15 @@ function Symbol() {
 	// Symbol names will be removed from production to conserve memory
 	this.name = '[' + symNameChunks.join('-') + ']'
 
-	if (g.grammar.hasOwnProperty(this.name)) {
+	if (exports.grammar.hasOwnProperty(this.name)) {
 		util.printErrWithLine('Duplicate Symbol', this.name)
 		throw 'duplicate Symbol'
 	}
 
-	this.rules = g.grammar[this.name] = []
+	this.rules = exports.grammar[this.name] = []
 
 	// Save calling line for error reporting
-	g.creationLines[this.name] = util.getLine()
+	exports.creationLines[this.name] = util.getLine()
 }
 
 // Add a new rule to the grammar

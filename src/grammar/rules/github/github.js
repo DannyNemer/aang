@@ -7,7 +7,7 @@ var conjunctions = require('../conjunctions')
 var count = require('../count')
 
 
-var github = new g.Symbol('github')
+var github = g.newSymbol('github')
 github.addWord({
 	accepted: [ 'GitHub' ]
 })
@@ -19,7 +19,7 @@ exports.termOpt = github.createNonterminalOpt()
 user.company.addRule({ RHS: [ github ] })
 
 
-exports.created = new g.Symbol('created')
+exports.created = g.newSymbol('created')
 exports.created.addWord({
 	insertionCost: 0.5,
 	accepted: [ 'created' ]
@@ -27,11 +27,11 @@ exports.created.addWord({
 
 // (repos/pull-requests I) have created
 // (people who) have created ([repos]/[pull-requests])
-exports.haveCreated = new g.Symbol('have', 'created')
+exports.haveCreated = g.newSymbol('have', 'created')
 exports.haveCreated.addRule({ RHS: [ auxVerbs.have, exports.created ] })
 
 // creators of ([repositories]/[pull-requests])
-exports.creatorsOf = new g.Symbol('creators', 'of')
+exports.creatorsOf = g.newSymbol('creators', 'of')
 exports.creatorsOf.addWord({
 	accepted: [ 'creators of' ]
 })
@@ -39,23 +39,23 @@ exports.creatorsOf.addWord({
 
 // MENTION:
 // (pull-requests/issues that) mention ([obj-users+])
-exports.mention = new g.Symbol('mention')
+exports.mention = g.newSymbol('mention')
 exports.mention.addWord({
 	accepted: [ 'mention' ]
 })
 
-var mentionedIn = new g.Symbol('mentioned', 'in')
+var mentionedIn = g.newSymbol('mentioned', 'in')
 mentionedIn.addWord({
 	insertionCost: 2,
 	accepted: [ 'mentioned in' ]
 })
 
 // (pull-requests/issues) I-am/{user}-is/[users]-are mentioned in
-exports.beGeneralMentionedIn = new g.Symbol('be', 'general', 'mentioned', 'in')
+exports.beGeneralMentionedIn = g.newSymbol('be', 'general', 'mentioned', 'in')
 exports.beGeneralMentionedIn.addRule({ RHS: [ auxVerbs.beGeneral, mentionedIn ] })
 
 // (people mentioned in) [issues]/[pull-requests]
-exports.mentioners = new g.Symbol('mentioners')
+exports.mentioners = g.newSymbol('mentioners')
 // (people mentioned in) [issues]/[pull-requests] and/or [issues]/[pull-requests]
 var mentionersPlus = conjunctions.addForSymbol(exports.mentioners)
 // (people) mentioned in [mentioners+]; (people who are) mentioned in [mentioners+]
@@ -66,18 +66,18 @@ user.inner.addRule({
 
 
 // ASSIGNED-TO:
-exports.assignedTo = new g.Symbol('assigned', 'to')
+exports.assignedTo = g.newSymbol('assigned', 'to')
 exports.assignedTo.addWord({
   insertionCost: 2,
   accepted: [ 'assigned to' ]
 })
 
 // (issues/pull-requests) I-am/{user}-is/[users]-are assigned to
-exports.beGeneralAssignedTo = new g.Symbol('be', 'general', 'assigned', 'to')
+exports.beGeneralAssignedTo = g.newSymbol('be', 'general', 'assigned', 'to')
 exports.beGeneralAssignedTo.addRule({ RHS: [ auxVerbs.beGeneral, exports.assignedTo ] })
 
 // (people assigned to) [issues]/[pull-requests]
-exports.assigners = new g.Symbol('assigners')
+exports.assigners = g.newSymbol('assigners')
 // (people assigned to) [issues]/[pull-requests] and/or [issues]/[pull-requests]
 var assignersPlus = conjunctions.addForSymbol(exports.assigners)
 // (people) assigned to [assigners+]; (people who are) mentioned in [assigners+]
@@ -89,7 +89,7 @@ user.inner.addRule({
 
 // OPEN/CLOSED
 // open/closed (issues/pull-requests); (issues/pull-requests that are) open/closed
-exports.state = new g.Symbol('state')
+exports.state = g.newSymbol('state')
 exports.state.addRule({
 	terminal: true, RHS: 'open', text: 'open',
 	semantic: g.newSemantic({ name: 'open', isArg: true, cost: 0 })
@@ -101,7 +101,7 @@ exports.state.addRule({
 
 
 // WITH N COMMENTS:
-var comments = new g.Symbol('comments')
+var comments = g.newSymbol('comments')
 comments.addWord({
   insertionCost: 3,
   accepted: [ 'comments' ]

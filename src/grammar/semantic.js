@@ -1,5 +1,6 @@
 var util = require('../util')
 
+
 exports.semantics = {}
 // A mapping of semantic names to creation lines; used for error reporting
 exports.creationLines = {}

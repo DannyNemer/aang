@@ -12,7 +12,7 @@ var date = require('../date')
 
 var issue = new Category({ sg: 'issue', pl: 'issues' })
 
-var issuesTerm = new g.Symbol(issue.namePl, 'term')
+var issuesTerm = g.newSymbol(issue.namePl, 'term')
 issuesTerm.addWord({
 	insertionCost: 3.5,
 	accepted: [ issue.namePl ]
@@ -26,7 +26,7 @@ var issuesOpenedSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'open
 var issuesOpenersSemantic = g.newSemantic({ name: g.hyphenate(issue.nameSg, 'openers'), cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my issues; my closed issues
-var issuePossDeterminer = new g.Symbol(issue.nameSg, 'poss', 'determiner')
+var issuePossDeterminer = g.newSymbol(issue.nameSg, 'poss', 'determiner')
 issuePossDeterminer.addRule({ RHS: [ poss.determiner ], semantic: issuesOpenedSemantic })
 issue.noRelativePossessive.addRule({ RHS: [ issuePossDeterminer, issue.possessible ] })
 // issues of mine
@@ -34,7 +34,7 @@ issue.head.addRule({ RHS: [ issue.headMayPoss, poss.ofPossUsers ], semantic: iss
 
 
 // OPENED:
-var opened = new g.Symbol('opened')
+var opened = g.newSymbol('opened')
 opened.addWord({
 	insertionCost: 1,
 	accepted: [ 'opened', 'created' ]
@@ -45,7 +45,7 @@ issue.passive.addRule({ RHS: [ opened, user.byObjUsers ], semantic: issuesOpened
 // (issues) I <stop> opened
 issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, opened ], semantic: issuesOpenedSemantic })
 // (issues) I <stop> have opened
-var haveOpened = new g.Symbol('have', 'opened')
+var haveOpened = g.newSymbol('have', 'opened')
 haveOpened.addRule({ RHS: [ auxVerbs.have, opened ] })
 issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, haveOpened ], semantic: issuesOpenedSemantic })
 // (people who) opened issues ...
@@ -53,7 +53,7 @@ user.subjFilter.addRule({ RHS: [ opened, issue.catPl ], semantic: issuesOpenersS
 // (people who) have opened issues ... - not [issues+] because 'by'
 user.subjFilter.addRule({ RHS: [ haveOpened, issue.catPl ], semantic: issuesOpenersSemantic, personNumber: 'pl' })
 
-var openersOf = new g.Symbol('openers', 'of')
+var openersOf = g.newSymbol('openers', 'of')
 openersOf.addWord({
 	accepted: [ 'openers of', 'creators of' ] // should I use regexp? be seperate syms
 })
@@ -95,7 +95,7 @@ issue.inner.addRule({ RHS: [ preps.possessed, github.commentCount ], semantic: i
 
 
 // DATE:
-var updated = new g.Symbol('updated')
+var updated = g.newSymbol('updated')
 updated.addWord({
 	insertionCost: 3,
 	accepted: [ 'updated' ]
