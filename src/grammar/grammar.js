@@ -2,7 +2,7 @@ var util = require('../util')
 
 
 var symbol = require('./symbol')
-exports.newSymbol = symbol.newSymbol
+exports.newSymbol = symbol.new
 var grammar = symbol.grammar
 
 exports.startSymbol = exports.newSymbol('start')

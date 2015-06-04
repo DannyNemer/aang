@@ -11,7 +11,7 @@ exports.creationLines = {}
 // Constructor for extending Symbol
 exports.constructor = Symbol
 
-exports.newSymbol = function () {
+exports.new = function () {
 	var symbolNew = Object.create(Symbol.prototype)
   Symbol.apply(symbolNew, arguments)
 	return symbolNew
