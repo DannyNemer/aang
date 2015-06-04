@@ -51,7 +51,7 @@ var possUsersPlus = conjunctions.addForSymbol(possUsers)
 exports.ofPossUsersPlus = g.newSymbol('of', possStr, 'users+')
 exports.ofPossUsersPlus.addRule({ RHS: [ preps.possessor, possUsersPlus ] })
 
-// (repos of) mine - must use possessorSpecial, otherwise the insertion is too slow
+// (repos of) mine - must use possessorNoInsertion, otherwise the insertion is too slow
 // For categories that a semantic function for possession that limits to one argument; ex: repositories-created()
 exports.ofPossUsers = g.newSymbol('of', possStr, 'users')
-exports.ofPossUsers.addRule({ RHS: [ preps.possessorSpecial, possUsers ] })
+exports.ofPossUsers.addRule({ RHS: [ preps.possessorNoInsertion, possUsers ] })

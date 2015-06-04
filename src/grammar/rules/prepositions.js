@@ -18,8 +18,8 @@ exports.possessor.addWord({
 
 // (repos) of (mine)
 // Same as [prep-possessor], without insertion cost
-exports.possessorSpecial = g.newSymbol(prepStr, 'possessor', 'special')
-exports.possessorSpecial.addWord({
+exports.possessorNoInsertion = g.newSymbol(prepStr, 'possessor', 'no', 'insertion')
+exports.possessorNoInsertion.addWord({
 	accepted: [ 'of' ]
 })
 

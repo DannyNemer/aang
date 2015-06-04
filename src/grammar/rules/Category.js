@@ -30,7 +30,7 @@ module.exports = function Category(opts) {
 	// {language} (repos); (repos that are) {language} (repos)
 	this.preModifier = g.newSymbol(this.nameSg, 'pre', 'modifier')
 	this.lhs.addRule({ RHS: [ this.preModifier ] })
-	// <stop> (issues); <stop> [issue-adjective] (issues)
+	// <stop> (repos); <stop> {language} (repos)
 	this.lhs.addRule({ RHS: [ stopWords.left, this.lhs ], transpositionCost: 0 })
 
 

@@ -33,14 +33,14 @@ user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: follower
 
 
 // No insertion
-var followersTermSpecial = g.newSymbol('followers', 'term', 'special')
-followersTermSpecial.addWord({
+var followersTermNoInsertion = g.newSymbol('followers', 'term', 'no', 'insertion')
+followersTermNoInsertion.addWord({
 	accepted: [ 'followers', 'subscribers' ]
 })
 
 // (my) followers; followers (of mine)
 var userFollowersHead = g.newSymbol(user.nameSg, 'followers', 'head')
-userFollowersHead.addRule({ RHS: [ user.companyOpt, followersTermSpecial ] })
+userFollowersHead.addRule({ RHS: [ user.companyOpt, followersTermNoInsertion ] })
 
 // my followers; my followers' followers
 var followersPossDeterminer = g.newSymbol('followers', 'poss', 'determiner')
@@ -71,8 +71,8 @@ var userFollowersPossessiveHead = g.newSymbol(user.nameSg, 'followers', 'possess
 userFollowersPossessiveHead.addRule({ RHS: [ user.companyOpt, followersPossessiveTerm ] })
 
 // my/{user:'s} followers' repos; my/{user:'s} female followers' repos
-var followersPossDeterminerSg = g.newSymbol('followers', 'possessive', 'poss', 'determiner', 'sg')
-followersPossDeterminerSg.addRule({ RHS: [ poss.determinerSg ], semantic: followersSemantic })
-var userLhsFollowers = g.newSymbol(user.nameSg, 'lhs', 'followers', 'possessive')
-userLhsFollowers.addRule({ RHS: [ user.lhs, userFollowersPossessiveHead ] })
-poss.determinerPl.addRule({ RHS: [ followersPossDeterminerSg, userLhsFollowers ] })
+var followersPossessiveDeterminerSg = g.newSymbol('followers', 'possessive', 'poss', 'determiner', 'sg')
+followersPossessiveDeterminerSg.addRule({ RHS: [ poss.determinerSg ], semantic: followersSemantic })
+var userLhsFollowersPossessive = g.newSymbol(user.nameSg, 'lhs', 'followers', 'possessive')
+userLhsFollowersPossessive.addRule({ RHS: [ user.lhs, userFollowersPossessiveHead ] })
+poss.determinerPl.addRule({ RHS: [ followersPossessiveDeterminerSg, userLhsFollowersPossessive ] })
