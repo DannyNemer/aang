@@ -58,7 +58,7 @@ Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, text
 
 // Look up terminal symbol matches in input
 Parser.prototype.matchTerminalRules = function (query) {
-	var tokens = query.toLowerCase().split(' ')
+	var tokens = query.toLowerCase().split(/\s+/)
 	this.tokensLen = tokens.length
 	var wordTab = []
 
