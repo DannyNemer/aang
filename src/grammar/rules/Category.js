@@ -29,9 +29,12 @@ module.exports = function Category(opts) {
 	this.lhs.addRule({ RHS: [ this.adjective, this.lhs ] })
 	// {language} (repos); (repos that are) {language} (repos)
 	this.preModifier = g.newSymbol(this.nameSg, 'pre', 'modifier')
-	this.lhs.addRule({ RHS: [ this.preModifier ] })
+	// Ensure [pre-modifier] is rightmost of [this-lhs] because adjective must precede
+	// - Ex: (my public) Java (repos); Not: (my) Java (public repos)
+	this.lhs.addRule({ RHS: [ this.lhs, this.preModifier ], transpositionCost: 0 })
+	// this.lhs.addRule({ RHS: [ this.preModifier, this.lhs ] })
 	// <stop> (repos); <stop> {language} (repos)
-	this.lhs.addRule({ RHS: [ stopWords.left, this.lhs ], transpositionCost: 0 })
+	this.lhs.addRule({ RHS: [ stopWords.left, this.lhs ] })
 
 	// (my) repos; users (I like)
 	this.term = g.newSymbol(this.namePl, 'term')
