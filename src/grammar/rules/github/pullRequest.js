@@ -1,5 +1,5 @@
 var g = require('../../grammar')
-var category = require('../Category')
+var category = require('../category')
 var github = require('./github')
 var poss = require('../poss')
 var user = require('../user')

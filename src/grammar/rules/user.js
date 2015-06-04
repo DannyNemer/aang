@@ -1,5 +1,5 @@
 var g = require('../grammar')
-var category = require('./Category')
+var category = require('./category')
 var oneSg = require('./oneSg')
 var preps = require('./prepositions')
 var conjunctions = require('./conjunctions')
