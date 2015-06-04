@@ -124,7 +124,7 @@ var language = g.newSymbol('language')
 language.addRule({
 	terminal: true,
 	RHS: languageEntity,
-	semantic: g.newSemantic({ name: g.hyphenate(repository.namePl, 'language'), cost: 0.5, minParams: 1, maxParams: 1 })
+	semantic: g.newSemantic({ name: g.hyphenate(repository.namePl, 'language'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
 })
 // (my) {language} (repos); (repos that are) {language} (repos)
 repository.preModifier.addRule({ RHS: [ language ] })
