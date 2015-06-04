@@ -1,5 +1,5 @@
 var g = require('../../grammar')
-var Category = require('../Category')
+var category = require('../Category')
 var github = require('./github')
 var poss = require('../poss')
 var user = require('../user')
@@ -7,7 +7,7 @@ var preps = require('../prepositions')
 var count = require('../count')
 
 
-var pullRequest = new Category({ sg: 'pull-request', pl: 'pull-requests' })
+var pullRequest = category.new({ sg: 'pull-request', pl: 'pull-requests' })
 
 pullRequest.term.addWord({
 	insertionCost: 3.5,

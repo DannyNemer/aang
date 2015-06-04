@@ -1,5 +1,5 @@
 var g = require('../../grammar')
-var Category = require('../Category')
+var category = require('../Category')
 var github = require('./github')
 var poss = require('../poss')
 var user = require('../user')
@@ -10,7 +10,7 @@ var count = require('../count')
 var date = require('../date')
 
 
-var issue = new Category({ sg: 'issue', pl: 'issues' })
+var issue = category.new({ sg: 'issue', pl: 'issues' })
 
 issue.term.addWord({
 	insertionCost: 3.5,

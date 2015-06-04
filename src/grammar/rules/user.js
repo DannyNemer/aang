@@ -1,5 +1,5 @@
 var g = require('../grammar')
-var Category = require('./Category')
+var category = require('./Category')
 var oneSg = require('./oneSg')
 var preps = require('./prepositions')
 var conjunctions = require('./conjunctions')
@@ -7,7 +7,7 @@ var stopWords = require('./stopWords')
 
 
 // Merges this module with 'user' category
-var user = module.exports = new Category({ sg: 'user', pl: 'users', isPerson: true, entities: [ 'Danny', 'Aang' ] })
+var user = module.exports = category.new({ sg: 'user', pl: 'users', isPerson: true, entities: [ 'Danny', 'Aang' ] })
 
 user.term.addWord({
 	insertionCost: 2.5,

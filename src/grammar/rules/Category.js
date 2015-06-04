@@ -5,6 +5,7 @@ var auxVerbs = require('./auxVerbs')
 var stopWords = require('./stopWords')
 var conjunctions = require('./conjunctions')
 
+
 // Schema for a Category
 var categoryOptsSchema = {
 	sg: String,
@@ -13,8 +14,12 @@ var categoryOptsSchema = {
 	entities: { type: Array, arrayType: String, optional: true }
 }
 
-// Create the rules every must category
-module.exports = function Category(opts) {
+exports.new = function (opts) {
+	return new Category(opts)
+}
+
+// Create base rules for a category
+function Category(opts) {
 	if (util.illFormedOpts(categoryOptsSchema, opts)) {
 		throw 'ill-formed Category'
 	}
