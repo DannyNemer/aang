@@ -43,7 +43,10 @@ function parse(query, K) {
 			var trees = forestSearch.search(startNode, K, printTrees, printOutput)
 			if (printTime) console.timeEnd('parse')
 			if (printForestGraph) parser.printNodeGraph(startNode)
-			if (printOutput) forestSearch.print(trees, printCost, printTrees)
+			if (printOutput) {
+				if (trees.length) forestSearch.print(trees, printCost, printTrees)
+				else console.log('Failed to find legal parse trees')
+			}
 			return trees
 		} else {
 			console.log('Failed to reach start node')
