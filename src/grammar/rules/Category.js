@@ -33,8 +33,10 @@ module.exports = function Category(opts) {
 	// <stop> (repos); <stop> {language} (repos)
 	this.lhs.addRule({ RHS: [ stopWords.left, this.lhs ], transpositionCost: 0 })
 
+	// (my) repos; users (I like)
+	this.term = g.newSymbol(this.namePl, 'term')
 
-	// repos of [users]; followers
+	// repos of [users]; followers of [users]
 	this.head = g.newSymbol(this.nameSg, 'head')
 
 	if (!opts.isPerson) {

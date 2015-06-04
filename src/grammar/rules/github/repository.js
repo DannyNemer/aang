@@ -11,14 +11,13 @@ var date = require('../date')
 
 var repository = new Category({ sg: 'repository', pl: 'repositories', entities: [ 'Node', 'D3', 'Linux' ] })
 
-var repositoriesTerm = g.newSymbol(repository.namePl, 'term')
-repositoriesTerm.addWord({
+repository.term.addWord({
 	insertionCost: 3.5,
 	accepted: [ repository.namePl, 'repos' ]
 })
 
 // |GitHub repos (I starred)
-repository.headMayPoss.addRule({ RHS: [ github.termOpt, repositoriesTerm ] })
+repository.headMayPoss.addRule({ RHS: [ github.termOpt, repository.term ] })
 
 // preventDups because repos only have one author, so an intersection of repos from different authors is empty
 var repositoriesCreatedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'created'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })

@@ -9,14 +9,13 @@ var count = require('../count')
 
 var pullRequest = new Category({ sg: 'pull-request', pl: 'pull-requests' })
 
-var pullRequestsTerm = g.newSymbol(pullRequest.namePl, 'term')
-pullRequestsTerm.addWord({
+pullRequest.term.addWord({
 	insertionCost: 3.5,
 	accepted: [ 'pull requests' ]
 })
 
 // |Github pull requests (I created)
-pullRequest.headMayPoss.addRule({ RHS: [ github.termOpt, pullRequestsTerm ] })
+pullRequest.headMayPoss.addRule({ RHS: [ github.termOpt, pullRequest.term ] })
 
 
 var pullRequestsCreatedSemantic = g.newSemantic({ name: g.hyphenate(pullRequest.namePl, 'created'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })

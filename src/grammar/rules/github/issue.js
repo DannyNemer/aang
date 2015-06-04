@@ -12,14 +12,13 @@ var date = require('../date')
 
 var issue = new Category({ sg: 'issue', pl: 'issues' })
 
-var issuesTerm = g.newSymbol(issue.namePl, 'term')
-issuesTerm.addWord({
+issue.term.addWord({
 	insertionCost: 3.5,
 	accepted: [ issue.namePl ]
 })
 
 // |Github issues (I opened)
-issue.headMayPoss.addRule({ RHS: [ github.termOpt, issuesTerm ] })
+issue.headMayPoss.addRule({ RHS: [ github.termOpt, issue.term ] })
 
 
 var issuesOpenedSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'opened'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
