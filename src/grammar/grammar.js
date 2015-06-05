@@ -42,8 +42,7 @@ exports.checkForUnusedSymbols = function () {
 			if (otherSymbol !== symbolName) {
 				var rules = grammar[otherSymbol]
 				for (var r = rules.length; r-- > 0;) {
-					var rule = rules[r]
-					if (rule.RHS.indexOf(symbolName) !== -1) return
+					if (rules[r].RHS.indexOf(symbolName) !== -1) return
 				}
 			}
 		}
@@ -60,8 +59,7 @@ exports.checkForUnusedEntityCategories = function () {
 		for (var otherSymbol in grammar) {
 			var rules = grammar[otherSymbol]
 			for (var r = rules.length; r-- > 0;) {
-				var rule = rules[r]
-				if (rule.RHS.indexOf(categorySymbolName) !== -1) return
+				if (rules[r].RHS.indexOf(categorySymbolName) !== -1) return
 			}
 		}
 

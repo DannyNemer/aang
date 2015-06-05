@@ -288,6 +288,7 @@ Symbol.prototype.addWord = function (opts) {
 // Schema for <int>
 var intOptsSchema = {
 	min: Number,
+	// If max undefined, set to Number.MAX_SAFE_INTEGER
 	max: { type: Number, optional: true }
 }
 
@@ -307,7 +308,7 @@ Symbol.prototype.addInt = function (opts) {
 		terminal: true,
 		RHS: g.intSymbol,
 		intMin: opts.min,
-		// If maximum value unedfined, set to Number.MAX_SAFE_INTEGER
+		// If maximum value undefined, set to Number.MAX_SAFE_INTEGER
 		// - Infinity unrecognized in JSON.stringify() and will accept 'Infinity' in input
 		intMax: opts.max !== undefined ? opts.max : Number.MAX_SAFE_INTEGER
 	})

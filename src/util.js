@@ -62,7 +62,7 @@ exports.illFormedOpts = function (schema, opts) {
 
 			// Passed Array contains elements not of arrayType (if arrayType is defined)
 			if (Array.isArray(optsVal) && schemaVal.arrayType && !optsVal.every(function (el) { return el.constructor === schemaVal.arrayType })) {
-				return exports.printErrWithLine('\'' + prop + '\' not an Array of type ' + schemaVal.arrayType.name, optsVal)
+				return exports.printErrWithLine('\'' + prop + '\' not an array of type ' + schemaVal.arrayType.name, optsVal)
 			}
 		}
 	}
@@ -95,7 +95,7 @@ exports.getLine = function (getCallingLine) {
 	}
 
 	// Could not find line in stack for file from which funciton calling getLine() was called
-	console.log('sought-after line not found in stack trace (trace limited to 10 most recent')
+	console.log('sought-after line not found in stack trace (trace limited to 10 most recent\)')
 }
 
 // Returns true if arrays a and b are of the same length and same shallow-level contents
