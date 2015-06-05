@@ -118,19 +118,10 @@ exports.arraysMatch = function (a, b) {
 	return true
 }
 
-// Print all passed arguments on own line, and pretty-print objects
+// Print arguments on seperate lines, and pretty-print objects
 exports.log = function () {
 	Array.prototype.slice.call(arguments).forEach(function (arg) {
-		// Pretty-print objects
-		if (arg instanceof Object) {
-			arg = JSON.stringify(arg, function (key, val) {
-				// Convert RegExp to strings for JSON.stringify()
-				return val instanceof RegExp ? val.source : val
-			}, 2)
-		}
-
-		// Print other types normally to avoid unnecessary quotations marks from JSON.stringify()
-		console.log(arg)
+		console.dir(arg, { depth: null, colors: true })
 	})
 
 	console.log() // Print trailing blank line
