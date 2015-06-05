@@ -11,8 +11,7 @@ exports.beNon1Sg.addWord({
 
 // (issues that are) <stop> (open/closed)
 // (people who are) <stop> (followed by me)
-exports.beNon1SgSentenceAdverbial = g.newSymbol('be', 'non', '1', 'sg', 'sentence', 'adverbial')
-exports.beNon1SgSentenceAdverbial.addRule({ RHS: [ exports.beNon1Sg, stopWords.sentenceAdverbial ] })
+exports.beNon1SgSentenceAdverbial = g.newBinaryRule({ RHS: [ exports.beNon1Sg, stopWords.sentenceAdverbial ] })
 
 // (people who have) been (followed by me)
 exports.bePast = g.newSymbol('be', 'past')
@@ -43,15 +42,11 @@ exports.have.addVerb({
 })
 
 // (repos I) have <stop> (contributed to)
-exports.havePreVerbStopWords = g.newSymbol('have', 'pre', 'verb', 'stop', 'words')
-exports.havePreVerbStopWords.addRule({ RHS: [ exports.have, stopWords.preVerb ] })
+exports.havePreVerbStopWords = g.newBinaryRule({ RHS: [ exports.have, stopWords.preVerb ] })
 
 // (people who have) <stop> (been folllowed by me); (people who have) <stop> (been following me)
-var haveSentenceAdverbial = g.newSymbol('have', 'sentence', 'adverbial')
-haveSentenceAdverbial.addRule({ RHS: [ exports.have, stopWords.sentenceAdverbial ], personNumber: 'pl' })
-exports.haveSentenceAdverbialBePast = g.newSymbol('have', 'sentence', 'adverbial', 'be', 'past')
-exports.haveSentenceAdverbialBePast.addRule({ RHS: [ haveSentenceAdverbial, exports.bePast ] })
-
+var haveSentenceAdverbial = g.newBinaryRule({ RHS: [ exports.have, stopWords.sentenceAdverbial ], personNumber: 'pl' })
+exports.haveSentenceAdverbialBePast = g.newBinaryRule({ RHS: [ haveSentenceAdverbial, exports.bePast ] })
 
 // NEGATION:
 exports.notSemantic = g.newSemantic({ name: 'not', cost: 0.5, minParams: 1, maxParams: 1 })
@@ -69,17 +64,13 @@ doTerm.addWord({
 	accepted: [ 'do' ],
 	substitutions: [ 'did', 'does' ]
 })
-exports.doNegation = g.newSymbol('do', 'negation')
-exports.doNegation.addRule({ RHS: [ doTerm, negation ] })
+exports.doNegation = g.newBinaryRule({ RHS: [ doTerm, negation ] })
 
 // (people who) are not followers of mine
 // (issues that) are not (open)
 // (people who) are not (follwed by me)
-exports.beNon1SgNegation = g.newSymbol('be', 'non', '1', 'sg', 'negation')
-exports.beNon1SgNegation.addRule({ RHS: [ exports.beNon1Sg, negation ] })
+exports.beNon1SgNegation = g.newBinaryRule({ RHS: [ exports.beNon1Sg, negation ] })
 
 // (people who) have not been (follwed by me)
-var haveNegation = g.newSymbol('have', 'negation')
-haveNegation.addRule({ RHS: [ exports.have, negation ], personNumber: 'pl' })
-exports.haveNegationBePast = g.newSymbol('have', 'negation', 'be', 'past')
-exports.haveNegationBePast.addRule({ RHS: [ haveNegation, exports.bePast ] })
+var haveNegation = g.newBinaryRule({ RHS: [ exports.have, negation ], personNumber: 'pl' })
+exports.haveNegationBePast = g.newBinaryRule({ RHS: [ haveNegation, exports.bePast ] })

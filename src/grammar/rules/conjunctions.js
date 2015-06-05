@@ -29,18 +29,14 @@ exports.addForSymbol = function (symbol, glossProperty) {
 	symbolPlus.addRule({ RHS: [ symbol ] })
 
 	// (people who follow) [obj-users] and [obj-users+]
-	var andSymbolPlus = g.newSymbol('and', symbolNamePlus)
-	andSymbolPlus.addRule({ RHS: [ exports.and, symbolPlus ] })
-	var andRule = { RHS: [ symbol, andSymbolPlus ] }
+	var andRule = { RHS: [ symbol, [ exports.and, symbolPlus ] ] }
 	for (var gloss in glossProperty) {
 		andRule[gloss] = glossProperty[gloss]
 	}
 	symbolPlus.addRule(andRule)
 
 	// (people who follow) [obj-users] or [obj-users+]
-	var orSymbolPlus = g.newSymbol('or', symbolNamePlus)
-	orSymbolPlus.addRule({ RHS: [ exports.union, symbolPlus ] })
-	var orRule = { RHS: [ symbol, orSymbolPlus ], semantic: exports.unionSemantic }
+	var orRule = { RHS: [ symbol, [ exports.union, symbolPlus ] ], semantic: exports.unionSemantic }
 	for (var gloss in glossProperty) {
 		orRule[gloss] = glossProperty[gloss]
 	}

@@ -48,10 +48,8 @@ var possUsersPlus = conjunctions.addForSymbol(possUsers)
 
 
 // (followers of) mine
-exports.ofPossUsersPlus = g.newSymbol('of', possStr, 'users+')
-exports.ofPossUsersPlus.addRule({ RHS: [ preps.possessor, possUsersPlus ] })
+exports.ofPossUsersPlus = g.newBinaryRule({ RHS: [ preps.possessor, possUsersPlus ] })
 
 // (repos of) mine - must use possessorNoInsertion, otherwise the insertion is too slow
 // For categories that a semantic function for possession that limits to one argument; ex: repositories-created()
-exports.ofPossUsers = g.newSymbol('of', possStr, 'users')
-exports.ofPossUsers.addRule({ RHS: [ preps.possessorNoInsertion, possUsers ] })
+exports.ofPossUsers = g.newBinaryRule({ RHS: [ preps.possessorNoInsertion, possUsers ] })

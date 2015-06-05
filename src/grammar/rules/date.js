@@ -167,15 +167,15 @@ dateStrict.addRule({ RHS: [ preps.container, monthYear ] })
 dateStrict.addRule({ RHS: [ preps.surface, monthDayYear ] })
 
 // INTERVAL
-var dateValueOrPhrase = g.newSymbol('date', 'phrase', 'or', 'value')
+var datePhraseOrValue = g.newSymbol('date', 'phrase', 'or', 'value')
 // (repos created before/after) this/last month/year
-dateValueOrPhrase.addRule({ RHS: [ datePhrase ] })
+datePhraseOrValue.addRule({ RHS: [ datePhrase ] })
 // (repos created before/after) [year]
-dateValueOrPhrase.addRule({ RHS: [ year ] })
+datePhraseOrValue.addRule({ RHS: [ year ] })
 // (repos created before/after) [month] [year]
-dateValueOrPhrase.addRule({ RHS: [ monthYear ] })
+datePhraseOrValue.addRule({ RHS: [ monthYear ] })
 // (repos created before/after) [month] [day] [year]
-dateValueOrPhrase.addRule({ RHS: [ monthDayYear ] })
+datePhraseOrValue.addRule({ RHS: [ monthDayYear ] })
 
 
 var dateBeforeSemantic = g.newSemantic({ name: g.hyphenate('date', 'before'), minParams: 1, maxParams: 3, cost: 0.5 })
@@ -189,58 +189,32 @@ dateIntervalStopWord.addStopWord({
   stopWords: [ 'from|in' ]
 })
 
-// (repos created) <from> before this year
-var prepBefore = g.newSymbol('date', 'interval', 'stop', 'word', 'prep', 'before')
-prepBefore.addRule({ RHS: [ dateIntervalStopWord, preps.before ] })
-var andPrepBefore = g.newSymbol('and', 'prep', 'before')
-andPrepBefore.addRule({ RHS: [ conjunctions.and, prepBefore ] })
-
-// (repos created) <from> after this year
-var prepAfter = g.newSymbol('date', 'interval', 'stop', 'word', 'prep', 'after')
-prepAfter.addRule({ RHS: [ dateIntervalStopWord, preps.after ] })
-var andPrepAfter = g.newSymbol('and', 'prep', 'after')
-andPrepAfter.addRule({ RHS: [ conjunctions.and, prepAfter ] })
-
-// (repos created) <from> between last year and this year
-var prepBetween = g.newSymbol('date', 'interval', 'stop', 'word', 'prep', 'between')
-prepBetween.addRule({ RHS: [ dateIntervalStopWord, preps.between ] })
-
+// (repos created) <from> before (this year)
+var prepBefore = g.newBinaryRule({ RHS: [ dateIntervalStopWord, preps.before ] })
+var prepBeforeDatePhraseOrValue = g.newBinaryRule({ RHS: [ prepBefore, datePhraseOrValue ], semantic: dateBeforeSemantic })
+// (repos created) <from> after (this year)
+var prepAfter = g.newBinaryRule({ RHS: [ dateIntervalStopWord, preps.after ] })
+var prepAfterDatePhraseOrValue = g.newBinaryRule({ RHS: [ prepAfter, datePhraseOrValue ], semantic: dateAfterSemantic })
 
 var dateInterval = g.newSymbol('date', 'interval')
-
 // (repos created) before this year, [month] [year]
-dateInterval.addRule({ RHS: [ prepBefore, dateValueOrPhrase ], semantic: dateBeforeSemantic })
-
+dateInterval.addRule({ RHS: [ prepBefore, datePhraseOrValue ], semantic: dateBeforeSemantic })
 // (repos created) after this year, [month] [year]
-dateInterval.addRule({ RHS: [ prepAfter, dateValueOrPhrase ], semantic: dateAfterSemantic })
-
-// (repos created) after [year] and before [year]
-var prepAfterDatePresentOrPhrase = g.newSymbol('prep', 'after', 'date', 'value', 'or', 'phrase')
-prepAfterDatePresentOrPhrase.addRule({ RHS: [ prepAfter, dateValueOrPhrase ], semantic: dateAfterSemantic })
-var andPrepBeforeDatePresentOrPhrase = g.newSymbol('and', 'prep', 'before', 'date', 'value', 'or', 'phrase')
-andPrepBeforeDatePresentOrPhrase.addRule({ RHS: [ andPrepBefore, dateValueOrPhrase ], semantic: dateBeforeSemantic })
-dateInterval.addRule({ RHS: [ prepAfterDatePresentOrPhrase, andPrepBeforeDatePresentOrPhrase ] })
-
-// (repos created) before [year] and after [year]
-var prepBeforeDatePresentOrPhrase = g.newSymbol('prep', 'before', 'date', 'value', 'or', 'phrase')
-prepBeforeDatePresentOrPhrase.addRule({ RHS: [ prepBefore, dateValueOrPhrase ], semantic: dateBeforeSemantic })
-var andPrepAfterDatePresentOrPhrase = g.newSymbol('and', 'prep', 'after', 'date', 'value', 'or', 'phrase')
-andPrepAfterDatePresentOrPhrase.addRule({ RHS: [ andPrepAfter, dateValueOrPhrase ], semantic: dateAfterSemantic })
-dateInterval.addRule({ RHS: [ prepBeforeDatePresentOrPhrase, andPrepAfterDatePresentOrPhrase ] })
-
+dateInterval.addRule({ RHS: [ prepAfter, datePhraseOrValue ], semantic: dateAfterSemantic })
+// (repos created) <from> after [year] and <from> before [year]
+dateInterval.addRule({ RHS: [ prepAfterDatePhraseOrValue, [ conjunctions.and, prepBeforeDatePhraseOrValue ] ] })
+// (repos created) <from> before [year] and <from>  after [year]
+dateInterval.addRule({ RHS: [ prepBeforeDatePhraseOrValue, [ conjunctions.and, prepAfterDatePhraseOrValue ] ] })
 // (repos created) from [year] to [year]
-var prepStartDatePresentOrPhrase = g.newSymbol('prep', 'start', 'date', 'value', 'or', 'phrase')
-prepStartDatePresentOrPhrase.addRule({ RHS: [ preps.start, dateValueOrPhrase ], semantic: dateIntervalStartSemantic })
-var prepEndDatePresentOrPhrase = g.newSymbol('prep', 'end', 'date', 'value', 'or', 'phrase')
-prepEndDatePresentOrPhrase.addRule({ RHS: [ preps.end, dateValueOrPhrase ], semantic: dateIntervalEndSemantic })
-dateInterval.addRule({ RHS: [ prepStartDatePresentOrPhrase, prepEndDatePresentOrPhrase ] })
-
-// (repos created) between [year] and [year]
-var prepBetweenDatePresentOrPhrase = g.newSymbol('prep', 'between', 'date', 'value', 'or', 'phrase')
-prepBetweenDatePresentOrPhrase.addRule({ RHS: [ prepBetween, dateValueOrPhrase ], semantic: dateIntervalStartSemantic })
-var andDatePresentOrPhrase = g.newSymbol('and', 'date', 'value', 'or', 'phrase')
-andDatePresentOrPhrase.addRule({ RHS: [ conjunctions.and, dateValueOrPhrase ], semantic: dateIntervalEndSemantic })
-dateInterval.addRule({ RHS: [ prepBetweenDatePresentOrPhrase, andDatePresentOrPhrase ] })
+dateInterval.addRule({ RHS: [
+	g.newBinaryRule({ RHS: [ preps.start, datePhraseOrValue ], semantic: dateIntervalStartSemantic }),
+	g.newBinaryRule({ RHS: [ preps.end, datePhraseOrValue ], semantic: dateIntervalEndSemantic })
+] })
+// (repos created) <from> between [year] and [year]
+dateInterval.addRule({ RHS: [
+	g.newBinaryRule({ RHS: [ [ dateIntervalStopWord, preps.between ], datePhraseOrValue ], semantic: dateIntervalStartSemantic }),
+	g.newBinaryRule({ RHS: [ conjunctions.and, datePhraseOrValue ], semantic: dateIntervalEndSemantic })
+] })
 
 
 exports.general = g.newSymbol('date', 'general')

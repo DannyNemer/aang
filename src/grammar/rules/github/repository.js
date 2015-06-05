@@ -96,14 +96,11 @@ repository.passive.addRule({ RHS: [ contributedTo, user.byObjUsersPlus ], semant
 // (repos) I <stop> contributed to
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, contributedTo ], semantic: repositoriesContributedSemantic })
 // (repos) I have contributed to
-var havePreVerbStopWordsContributedTo = g.newSymbol('have', 'pre', 'verb', 'stop', 'words', 'contributed', 'to')
-havePreVerbStopWordsContributedTo.addRule({ RHS: [ auxVerbs.havePreVerbStopWords, contributedTo ] })
-repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, havePreVerbStopWordsContributedTo ], semantic: repositoriesContributedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, [ auxVerbs.havePreVerbStopWords, contributedTo ] ], semantic: repositoriesContributedSemantic })
 // (people who) contributed to repos ...
 user.subjFilter.addRule({ RHS: [ contributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 // (people who) have contributed to repos ...
-var haveContributedTo = g.newSymbol('have', 'contributed', 'to')
-haveContributedTo.addRule({ RHS: [ auxVerbs.have, contributedTo ], personNumber: 'pl' })
+var haveContributedTo = g.newBinaryRule({ RHS: [ auxVerbs.have, contributedTo ], personNumber: 'pl' })
 user.subjFilter.addRule({ RHS: [ haveContributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 
 var contributorsTo = g.newSymbol('contributors', 'to')

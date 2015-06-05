@@ -34,8 +34,7 @@ user.nomUsersPlus = conjunctions.addForSymbol(user.nomUsers, { personNumber: 'pl
 
 
 // (repos) I <stop> (created)
-user.nomUsersPreVerbStopWords = g.newSymbol('nom', 'users', 'pre', 'verb', 'stop', 'words')
-user.nomUsersPreVerbStopWords.addRule({ RHS: [ user.nomUsers, stopWords.preVerb ] })
+user.nomUsersPreVerbStopWords = g.newBinaryRule({ RHS: [ user.nomUsers, stopWords.preVerb ] })
 
 // (repos) I <stop> (contributed to)
 user.nomUsersPlusPreVerbStopWords = g.newSymbol('nom', 'users', 'plus', 'pre', 'verb', 'stop', 'words')

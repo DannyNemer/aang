@@ -27,8 +27,7 @@ exports.created.addWord({
 
 // (repos/pull-requests I) have created
 // (people who) have created ([repos]/[pull-requests])
-exports.haveCreated = g.newSymbol('have', 'created')
-exports.haveCreated.addRule({ RHS: [ auxVerbs.have, exports.created ] })
+exports.haveCreated = g.newBinaryRule({ RHS: [ auxVerbs.have, exports.created ] })
 
 // creators of ([repositories]/[pull-requests])
 exports.creatorsOf = g.newSymbol('creators', 'of')
@@ -51,8 +50,7 @@ mentionedIn.addWord({
 })
 
 // (pull-requests/issues) I-am/{user}-is/[users]-are mentioned in
-exports.beGeneralMentionedIn = g.newSymbol('be', 'general', 'mentioned', 'in')
-exports.beGeneralMentionedIn.addRule({ RHS: [ auxVerbs.beGeneral, mentionedIn ] })
+exports.beGeneralMentionedIn = g.newBinaryRule({ RHS: [ auxVerbs.beGeneral, mentionedIn ] })
 
 // (people mentioned in) [issues]/[pull-requests]
 exports.mentioners = g.newSymbol('mentioners')
@@ -73,8 +71,7 @@ exports.assignedTo.addWord({
 })
 
 // (issues/pull-requests) I-am/{user}-is/[users]-are assigned to
-exports.beGeneralAssignedTo = g.newSymbol('be', 'general', 'assigned', 'to')
-exports.beGeneralAssignedTo.addRule({ RHS: [ auxVerbs.beGeneral, exports.assignedTo ] })
+exports.beGeneralAssignedTo = g.newBinaryRule({ RHS: [ auxVerbs.beGeneral, exports.assignedTo ] })
 
 // (people assigned to) [issues]/[pull-requests]
 exports.assigners = g.newSymbol('assigners')
