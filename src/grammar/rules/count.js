@@ -14,31 +14,29 @@ var andPrepUnder = g.newBinaryRule({ RHS: [ conjunctions.and, preps.under ] })
 
 
 exports.createForItems = function (itemsSymbol) {
-	var itemsName = itemsSymbol.name.slice(1, -1)
-
 	var itemsCountSemantic = g.newSemantic({
-		name: g.hyphenate(itemsName, 'count'),
+		name: g.hyphenate(itemsSymbol.name, 'count'),
 		cost: 0.5,
 		minParams: 1,
 		maxParams: 2
 	})
 
 	var itemsCountOverSemantic = g.newSemantic({
-		name: g.hyphenate(itemsName, 'count', 'over'),
+		name: g.hyphenate(itemsSymbol.name, 'count', 'over'),
 		cost: 0.5,
 		minParams: 1,
 		maxParams: 1
 	})
 
 	var itemsCountUnderSemantic = g.newSemantic({
-		name: g.hyphenate(itemsName, 'count', 'under'),
+		name: g.hyphenate(itemsSymbol.name, 'count', 'under'),
 		cost: 0.5,
 		minParams: 1,
 		maxParams: 1
 	})
 
 
-	var itemsCount = g.newSymbol(itemsName, 'count')
+	var itemsCount = g.newSymbol(itemsSymbol.name, 'count')
 
 	// (issues with) <int> comments
 	var numberItems = g.newBinaryRule({ RHS: [ number, itemsSymbol ] })

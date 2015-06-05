@@ -18,17 +18,9 @@ exports.new = function () {
 }
 
 // Constructor for nonterminal symbols
-// Concatenates arguments after 0th index as Symbol's name
+// Concatenates arguments as Symbol's name
 function Symbol() {
-	var symNameChunks = Array.prototype.slice.call(arguments)
-
-	if (symNameChunks.indexOf(undefined) !== -1) {
-		util.printErrWithLine('undefined String in Symbol name', symNameChunks)
-		throw 'ill-formed Symbol'
-	}
-
-	// Symbol names will be removed from production to conserve memory
-	this.name = '[' + symNameChunks.join('-') + ']'
+	this.name = '[' + exports.hyphenate.apply(null, arguments) + ']'
 
 	if (exports.grammar.hasOwnProperty(this.name)) {
 		util.printErrWithLine('Duplicate Symbol', this.name)
@@ -217,7 +209,7 @@ exports.newBinaryRule = function (opts) {
 	})
 
 	// Create a new Symbol named by the concatenation of the two RHS symbols
-	return exports.new.apply(null, RHS.map(function (sym) { return sym.name.slice(1, -1) })).addRule(opts)
+	return exports.new.apply(null, RHS.map(function (sym) { return sym.name })).addRule(opts)
 }
 
 
@@ -236,4 +228,18 @@ Symbol.prototype.calcCost = function (costPenalty) {
 
 	// Cost of rules for each sym are incremented by 1e-7
 	return this.rules.length * 1e-7 + costPenalty
+}
+
+// Concatenate variadic arguments with hyphens
+// Used by Symbol and Semantic
+exports.hyphenate = function () {
+	var chunks = Array.prototype.slice.call(arguments)
+
+	if (chunks.indexOf(undefined) !== -1) {
+		util.printErrWithLine('undefined String in name', chunks)
+		throw 'ill-formed name'
+	}
+
+	// Concatenate arguments for name; remove brackets from passed Strings (i.e., Symbol names)
+	return chunks.join('-').replace(/[\[\]]/g, '')
 }

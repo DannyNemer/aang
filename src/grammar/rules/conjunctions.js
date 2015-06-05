@@ -21,11 +21,8 @@ exports.union.addWord({
 // Create rules for "and" + "or" to surround 'symbol'
 // Assign gloss property if passed; e.g., [nom-users]: (people) I and/or {user} follow
 exports.addForSymbol = function (symbol, glossProperty) {
-	// Append '+' to original symbol name
-	var symbolNamePlus = symbol.name.slice(1, -1) + '+'
-
 	// (people who follow) [obj-users]
-	var symbolPlus = g.newSymbol(symbolNamePlus)
+	var symbolPlus = g.newSymbol(symbol.name + '+')
 	symbolPlus.addRule({ RHS: [ symbol ] })
 
 	// (people who follow) [obj-users] and [obj-users+]

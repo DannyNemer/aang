@@ -321,7 +321,7 @@ Symbol.prototype.addInt = function (opts) {
 // Returns a new Symbol
 Symbol.prototype.createNonterminalOpt = function () {
 	// Append 'opt' to original symbol name
-	var symbolOpt = g.newSymbol(this.name.slice(1, -1), 'opt')
+	var symbolOpt = g.newSymbol(this.name, 'opt')
 
 	symbolOpt.addRule({ RHS: [ this ] })
 	// <empty> always last for optional nonterminal symbols

@@ -4,6 +4,7 @@ var util = require('../util')
 var symbol = require('./symbol')
 exports.newSymbol = symbol.new
 exports.newBinaryRule = symbol.newBinaryRule
+exports.hyphenate = symbol.hyphenate
 var grammar = symbol.grammar
 
 exports.startSymbol = exports.newSymbol('start')
@@ -23,7 +24,6 @@ require('./ruleFunctions')
 // Extend module with semantic functions
 var semantic = require('./semantic')
 exports.newSemantic = semantic.newSemantic
-exports.hyphenate = semantic.hyphenate
 exports.insertSemantic = semantic.insertSemantic
 
 // Extend module with entity-category functions
