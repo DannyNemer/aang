@@ -104,17 +104,18 @@ exports.costOfSemantic = function (semanticArray) {
 // A and B both always exist
 exports.mergeRHS = function (A, B) {
 	// Check for duplicates
+	var BLength = B.length
 	for (var i = A.length; i-- > 0;) {
 		var semanticNodeA = A[i]
 		var semanticA = semanticNodeA.semantic
 		var semanticAPreventsDups = semanticA.preventDups
 		var semanticAIsNegation = semanticA.name === 'not'
 
-		for (var j = B.length; j-- > 0;) {
+		for (var j = BLength; j-- > 0;) {
 			var semanticNodeB = B[j]
 			var semanticB = semanticNodeB.semantic
 
-			// Prevent multiple instances of this function within a function's args (e.g., repos-by())
+			// Prevent multiple instances of this function within a function's args (e.g., users-gender())
 			if (semanticAPreventsDups && semanticA === semanticB) {
 				return -1
 			}
@@ -139,6 +140,23 @@ exports.mergeRHS = function (A, B) {
 	// And every one with the RHS (being check for dup) has been added to RHS
 
 	return A.concat(B)
+}
+
+// Return true if the two semantics are identical (excluding children) through prevent
+// because duplicates of the semantic are forbidden
+exports.forbiddenDups = function (A, B) {
+	var BLength = B.length
+	for (var i = A.length; i-- > 0;) {
+		var semanticA = A[i].semantic
+		var semanticAPreventsDups = semanticA.preventDups
+
+		for (var j = BLength; j-- > 0;) {
+			// Prevent multiple instances of this function within a function's args (e.g., users-gender())
+			if (semanticAPreventsDups && semanticA === B[j].semantic) {
+				return true
+			}
+		}
+	}
 }
 
 function semanticsMatch(a, b) {

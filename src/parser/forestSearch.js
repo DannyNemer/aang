@@ -123,18 +123,21 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 	// Insertion
 	if (ruleProps.insertionIdx !== undefined) {
 		if (ruleProps.insertedSemantic) {
+			// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
+			var prevSemantic = item.prevSemantics[item.prevSemantics.length-1]
+			if (prevSemantic && prevSemantic.constructor === Array && semantic.forbiddenDups(prevSemantic, newSemantic)) {
+				return -1
+			}
+
 			newItem.prevSemantics = item.prevSemantics.concat({
 				semantic: newSemantic,
 				nextNodesLen: item.nextNodesLen
 			})
-
-			if (ruleProps.insertedSemantic) {
-				newItem.prevSemantics.push(ruleProps.insertedSemantic)
-			}
+			newItem.prevSemantics.push(ruleProps.insertedSemantic)
 		} else if (newSemantic) {
-			if (ruleProps.semanticIsRHS) {
-				var prevSemantic = item.prevSemantics[item.prevSemantics.length - 1]
+			var prevSemantic = item.prevSemantics[item.prevSemantics.length - 1]
 
+			if (ruleProps.semanticIsRHS) {
 				if (prevSemantic.constructor === Object) { // LHS
 					newItem.prevSemantics = item.prevSemantics.slice()
 					newItem.prevSemantics.push(newSemantic) // cannot concat because semantic is array
@@ -145,6 +148,11 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 					newItem.prevSemantics.push(newSemantic)
 				}
 			} else {
+				// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
+				if (prevSemantic.constructor === Array && semantic.forbiddenDups(prevSemantic, newSemantic)) {
+					return -1
+				}
+
 				newItem.prevSemantics = item.prevSemantics.concat({
 					semantic: newSemantic,
 					nextNodesLen: item.nextNodesLen
@@ -183,6 +191,12 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 					newItem.prevSemantics = item.prevSemantics.slice()
 					newItem.prevSemantics.push(newSemantic) // cannot concat because semantic is array
 				} else {
+					// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
+					var prevSemantic = item.prevSemantics[item.prevSemantics.length-1]
+					if (prevSemantic && prevSemantic.constructor === Array && semantic.forbiddenDups(prevSemantic, newSemantic)) {
+						return -1
+					}
+
 					newItem.prevSemantics = item.prevSemantics.concat({
 						semantic: newSemantic,
 						nextNodesLen: item.nextNodesLen
@@ -257,43 +271,6 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 	return newItem
 }
 
-// Determine if newly parsed tree has a unique semantic and unique display text
-// Return true if tree is unique
-function treeIsUnique(trees, item) {
-	if (item.prevSemantics.length > 1) throw 'prevSemantics remain'
-
-	// Check for duplicate semantics by comparing semantic string representation
-	// Return false if new semantic is identical to previously constructed (and cheaper) tree
-	var semanticStr = semantic.semanticToString(item.prevSemantics[0])
-	for (var t = trees.length; t-- > 0;) {
-		var tree = trees[t]
-		if (tree.semanticStr === semanticStr) return false
-		if (tree.disambiguation && tree.disambiguation.indexOf(semanticStr) !== -1) return false
-	}
-
-	// Semantic is new
-	// Check for duplicate display text
-	// If so, save new semantic to previous tree's disambiguation and return false to reject tree
-	var textStr = item.text.join(' ')
-	for (var t = trees.length; t-- > 0;) {
-		var tree = trees[t]
-		if (tree.text === textStr) {
-			if (tree.disambiguation) {
-				tree.disambiguation.push(semanticStr)
-			} else {
-				tree.disambiguation = [ semanticStr ]
-			}
-
-			return false
-		}
-	}
-
-	// Tree is unique
-	item.semanticStr = semanticStr
-	item.text = textStr
-	return true
-}
-
 // textArray is a ruleProps.text
 function conjugateTextArray(item, textArray) {
 	var arraysCopied = false
@@ -345,6 +322,43 @@ function conjugateText(rulePropsArray, text) {
 
 	util.logTrace()
 	util.log('Failed to conjugate:', text, rulePropsArray)
+}
+
+// Determine if newly parsed tree has a unique semantic and unique display text
+// Return true if tree is unique
+function treeIsUnique(trees, item) {
+	if (item.prevSemantics.length > 1) throw 'prevSemantics remain'
+
+	// Check for duplicate semantics by comparing semantic string representation
+	// Return false if new semantic is identical to previously constructed (and cheaper) tree
+	var semanticStr = semantic.semanticToString(item.prevSemantics[0])
+	for (var t = trees.length; t-- > 0;) {
+		var tree = trees[t]
+		if (tree.semanticStr === semanticStr) return false
+		if (tree.disambiguation && tree.disambiguation.indexOf(semanticStr) !== -1) return false
+	}
+
+	// Semantic is new
+	// Check for duplicate display text
+	// If so, save new semantic to previous tree's disambiguation and return false to reject tree
+	var textStr = item.text.join(' ')
+	for (var t = trees.length; t-- > 0;) {
+		var tree = trees[t]
+		if (tree.text === textStr) {
+			if (tree.disambiguation) {
+				tree.disambiguation.push(semanticStr)
+			} else {
+				tree.disambiguation = [ semanticStr ]
+			}
+
+			return false
+		}
+	}
+
+	// Tree is unique
+	item.semanticStr = semanticStr
+	item.text = textStr
+	return true
 }
 
 function spliceTree(tree, sub, ruleProps) {
@@ -427,6 +441,6 @@ exports.print = function (trees, printCost, printTrees) {
 		}
 
 		// Print trees (if constructed during parse forest search)
-		if (printTrees) util.log(tree.tree)
+		if (printTrees) util.log(tree.tree.startNode)
 	})
 }
