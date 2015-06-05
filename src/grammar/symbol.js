@@ -118,9 +118,10 @@ Symbol.prototype.newTerminalRule = function (opts) {
 }
 
 
-// Schema for nonterminal rule
+// Schema for nonterminal rules
 var nontermRuleOptsSchema = {
-	RHS: { type: Array, arrayType: Symbol },
+	// RHS can be an array of Symbols and/or nested arrays of RHS for new binary rules
+	RHS: Array,
 	semantic: { type: Array, optional: true },
 	transpositionCost: { type: Number, optional: true },
 	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
@@ -135,7 +136,24 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 	}
 
 	var newRule = {
-		RHS: opts.RHS.map(function (RHSSymbol) { return RHSSymbol.name }),
+		// RHS can be an array of Symbols and/or nested arrays of RHS for new binary rules
+		RHS: opts.RHS.map(function (sym) {
+			// sym is a nested RHS for a new binary rule
+			// Create new rule and replace array with its new Symbol
+			if (sym.constructor === Array) { // Can nest RHS
+				return exports.newBinaryRule({ RHS: sym }).name
+			}
+
+			// Replace Symbol with its name
+			else if (sym.constructor === Symbol) {
+				return sym.name
+			}
+
+			else {
+				util.printErrWithLine('\'RHS\' not an array of type Symbol or Array', opts.RHS)
+				throw 'ill-formed nonterminal rule'
+			}
+		}),
 		gramCase: opts.gramCase,
 		verbForm: opts.verbForm,
 		personNumber: opts.personNumber
@@ -162,6 +180,44 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 	}
 
 	return newRule
+}
+
+
+// Create a new Symbol with a binary nonterminal rule
+// - Symbol's name is a concatenation of the RHS Symbols
+// Accepts the same 'opts' as Symbol.newNonterminalRule()
+// As the Symbol's name is created from the rule's RHS, this new Symbol is intended only for this rule
+// RHS can be an array of Symbols and/or nested arrays of RHS for new binary rules
+// - However, these sub-rules can only contain a RHS and no other rule properties
+exports.newBinaryRule = function (opts) {
+	if (util.illFormedOpts(nontermRuleOptsSchema, opts)) {
+		throw 'ill-formed binary rule'
+	}
+
+	var RHS = opts.RHS
+
+	// RHS must contain two RHS symbols
+	if (RHS.length !== 2) {
+		util.printErrWithLine('Binary rules must have 2 RHS symbols', RHS)
+		throw 'ill-formed binary rule'
+	}
+
+	// RHS can be an array of Symbols and/or nested arrays of RHS for new binary rules
+	RHS.forEach(function (sym, i) {
+		// sym is a nested RHS for a new binary rule
+		// Create new rule and replace array with its new Symbol
+		if (sym.constructor === Array) {
+			RHS[i] = exports.newBinaryRule({ RHS: sym })
+		}
+
+		else if (sym.constructor !== Symbol) {
+			util.printErrWithLine('RHS not an array of type Symbol or Array', RHS)
+			throw 'ill-formed binary rule'
+		}
+	})
+
+	// Create a new Symbol named by the concatenation of the two RHS symbols
+	return exports.new.apply(null, RHS.map(function (sym) { return sym.name.slice(1, -1) })).addRule(opts)
 }
 
 

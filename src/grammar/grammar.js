@@ -3,6 +3,7 @@ var util = require('../util')
 
 var symbol = require('./symbol')
 exports.newSymbol = symbol.new
+exports.newBinaryRule = symbol.newBinaryRule
 var grammar = symbol.grammar
 
 exports.startSymbol = exports.newSymbol('start')
