@@ -1,8 +1,7 @@
 var util = require('../util.js')
 var fs = require('fs')
 
-var parserNewPath = './Parser.js'
-var parserOldPath = './util/ParserBestFirst.js'
+var parserPath = './Parser.js'
 var forestSearchPath = './forestSearch.js'
 var stateTablePath = './StateTable.js'
 
@@ -223,7 +222,6 @@ var printForest = false
 var printForestGraph = false
 var printTrees = false
 var printCost = false
-var parserPath = parserNewPath
 
 function runCommand(query) {
 	var args = query.split(' ')
@@ -343,7 +341,6 @@ function runCommand(query) {
 		console.log('-g  print forest graph:', printForestGraph)
 		console.log('-tr print trees:', printTrees)
 		console.log('-c  print cost:', printCost)
-		console.log('-p  parser path:', parserPath)
 	} else {
 		return false
 	}
@@ -394,5 +391,5 @@ function buildStateTable() {
 
 // Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
 function deleteModuleCache() {
-	util.deleteCache(parserNewPath, parserOldPath, forestSearchPath, stateTablePath, './BinaryHeap.js', '../grammar/semantic.js', './reduceForest.js')
+	util.deleteCache(parserPath, forestSearchPath, stateTablePath, './BinaryHeap.js', '../grammar/semantic.js', './reduceForest.js')
 }
