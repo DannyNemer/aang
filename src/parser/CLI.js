@@ -1,4 +1,5 @@
 var util = require('../util.js')
+var fs = require('fs')
 
 var parserNewPath = './Parser.js'
 var parserOldPath = './util/ParserBestFirst.js'
@@ -268,6 +269,22 @@ function runCommand(query) {
 		})
 		// Rebuild state table
 		stateTable = buildStateTable()
+	} else if (query === '-out') {
+		var prevSettingPrintOutput = printOutput
+		printOutput = true
+
+		// Redirect process.stdout to file
+		var writable = fs.createWriteStream('/Users/Danny/Desktop/out')
+		var oldWrite = process.stdout.write
+		process.stdout.write = function () {
+			writable.write.apply(writable, arguments)
+		}
+
+		runCommand('-r')
+
+		// Restore process.stdout
+		process.stdout.write = oldWrite
+		printOutput = prevSettingPrintOutput
 	} else if (query === '-d') {
 		deleteModuleCache()
 		console.log('Deleted cache of modules')
