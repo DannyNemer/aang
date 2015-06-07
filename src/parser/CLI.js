@@ -7,7 +7,18 @@ var stateTablePath = './StateTable.js'
 
 var stateTable = buildStateTable()
 
-var rl = require('readline').createInterface(process.stdin, process.stdout)
+
+var rl = require('readline').createInterface(process.stdin, process.stdout, function (line) {
+	var completions = [ '.test', '.logTest', '.testConjugation', '.rebuild', '.deleteCache', '.stateTable', '.testQueries', '.history', '.help', '.k', '.out', '.trees', '.costs', '.time', '.query', '.stack', '.forest', '.graph' ]
+
+	var hits = completions.filter(function (c) { return c.indexOf(line) === 0 })
+
+	// Show nothing if no completions found
+	return [ hits, line ]
+
+	// Show all completions if none found
+	// return [ hits.length ? hits : completions, line ]
+})
 
 rl.prompt()
 rl.on('line', function (line) {
@@ -181,7 +192,7 @@ function runCommand(input) {
 	// Toggle printing parse output
 	else if (input === '.out') {
 		printOutput = !printOutput
-		console.log('Print output:', printOutput)
+		console.log('Print parse output:', printOutput)
 	}
 
 	// Toggle constructing and printing parse trees
@@ -241,14 +252,14 @@ function runCommand(input) {
 
 		console.log('\nParser settings:')
 		console.log('.k       K:', K)
-		console.log('.out     print output:', printOutput)
-		console.log('.trees   print trees:', printTrees)
-		console.log('.costs   print costs:', printCost)
-		console.log('.time    print time:', printTime)
-		console.log('.query   print query:', printQuery)
-		console.log('.stack   print stack:', printStack)
-		console.log('.forest  print forest:', printForest)
-		console.log('.graph   print forest graph:', printForestGraph)
+		console.log('.out     print parse output:', printOutput)
+		console.log('.trees   print parse trees:', printTrees)
+		console.log('.costs   print parse costs:', printCost)
+		console.log('.time    print parse time:', printTime)
+		console.log('.query   print parse query:', printQuery)
+		console.log('.stack   print parse stack:', printStack)
+		console.log('.forest  print parse forest:', printForest)
+		console.log('.graph   print parse forest graph:', printForestGraph)
 	}
 
 	// Input as a command; do not parse as query
