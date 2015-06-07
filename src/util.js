@@ -118,7 +118,7 @@ exports.arraysMatch = function (a, b) {
 	return true
 }
 
-// Print arguments on seperate lines, and pretty-print objects
+// Print arguments on separate lines, and pretty-print objects
 exports.log = function () {
 	Array.prototype.slice.call(arguments).forEach(function (arg) {
 		// Print strings normally to avoid unnecessary stylization
@@ -163,7 +163,7 @@ exports.printCount = function (key) {
 	}
 }
 
-// Print like console.log(), but color first arugment red, prepend 'Err:', and append ':'
+// Print like console.log(), but color first argument red, prepend 'Err:', and append ':'
 exports.printErr = function () {
 	var firstArg = 'Err: ' + arguments[0]
 	if (arguments[1] !== undefined && firstArg[firstArg.length - 1] !== ':') {

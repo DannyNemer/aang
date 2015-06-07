@@ -67,10 +67,11 @@ followersPossessiveTerm.addWord({
 	accepted: [ 'followers\'', 'subscribers\'' ]
 })
 
-var userFollowersPossessiveHead = g.newSymbol(user.nameSg, followersPossessiveTerm.name)
+// (my/{user:'s}) followers' (repos)
+var userFollowersPossessiveHead = g.newSymbol(user.nameSg, 'followers', 'possessive', 'head')
 userFollowersPossessiveHead.addRule({ RHS: [ user.companyOpt, followersPossessiveTerm ] })
 
-// my/{user:'s} followers' repos; my/{user:'s} female followers' repos
+// my/{user:'s} followers' (repos); my/{user:'s} female followers' (repos)
 var followersPossessiveDeterminerSg = g.newSymbol('followers', 'possessive', poss.determinerSg.name)
 followersPossessiveDeterminerSg.addRule({ RHS: [ poss.determinerSg ], semantic: followersSemantic })
 poss.determinerPl.addRule({ RHS: [ followersPossessiveDeterminerSg, [ user.lhs, userFollowersPossessiveHead ] ] })

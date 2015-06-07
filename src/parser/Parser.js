@@ -487,6 +487,6 @@ Parser.prototype.printNodeGraph = function (sub) {
 	if (sub.node) {
 		return newNode
 	} else {
-		console.log(JSON.stringify(newNode, null, 1)) // Start node
+		util.log(newNode) // Start node
 	}
 }

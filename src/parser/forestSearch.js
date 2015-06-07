@@ -386,6 +386,7 @@ function spliceTree(tree, sub, ruleProps) {
 	}
 
 	// Insertion
+	// Nodes for insertions are represented by their ruleProps
 	if (ruleProps.insertionIdx !== undefined) {
 		delete prevNode.props
 		if (ruleProps.insertionIdx) {
@@ -402,7 +403,7 @@ function spliceTree(tree, sub, ruleProps) {
 }
 
 function cloneTree(node, lastNodes) {
-	// Return original ruleProps (stored for insertions)
+	// Node is an insertion, represented in tree by the original ruleProps
 	if (node.cost !== undefined) {
 		return node
 	}
