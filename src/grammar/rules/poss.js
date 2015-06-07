@@ -35,14 +35,10 @@ possUser.addRule({ RHS: [ user.catSg ] })
 possUser.addRule({ terminal: true, RHS: 'mine', text: 'mine', semantic: oneSg.semantic })
 
 var possUsers = g.newSymbol(possStr, 'users')
-// (repos of) people who follow me
+// (repos of) people who follow me; (repos of) followers of mine; (repos of) my followers
 possUsers.addRule({ RHS: [ user.plural ] })
 // (repos of) {user}/mine
 possUsers.addRule({ RHS: [ possUser ] })
-// (repos of) followers of mine
-possUsers.addRule({ RHS: [ user.head ] })
-// (repos of) my followers
-possUsers.addRule({ RHS: [ user.noRelativePossessive ] })
 
 var possUsersPlus = conjunctions.addForSymbol(possUsers)
 
