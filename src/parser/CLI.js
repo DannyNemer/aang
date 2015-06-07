@@ -17,7 +17,7 @@ rl.on('line', function (line) {
 		parse(query, K)
 	}
 
-	// If no '-t' arg (for 'time'), reload modules after for changes to take effect
+	// If no '-t' arg (for 'time'), reload modules after every input to enable module changes
 	if (process.argv.indexOf('-t') === -1) {
 		deleteModuleCache()
 	}
@@ -52,6 +52,251 @@ function parse(query, K) {
 			console.log('Failed to reach start node')
 		}
 	})
+}
+
+
+// Parser settings:
+var K = 7
+var printTime = false
+var printQuery = false
+var printOutput = true
+var printStack = false
+var printForest = false
+var printForestGraph = false
+var printTrees = false
+var printCost = false
+
+// Parse and run CLI commands
+// Return true if input is a command
+function runCommand(input) {
+	// All commands begin with a period
+	if (input[0] !== '.') return false
+
+	var args = input.split(' ')
+
+	// COMMANDS:
+	// Run test queries
+	if (input === '.test') {
+		var prevSettingPrintTrees = printTrees
+		printTrees = false
+
+		// Time test if !printOutput
+		if (printOutput) printQuery = true
+		else console.time('test')
+
+		testQueries.forEach(function (query) {
+			parse(query, 50)
+		})
+
+		if (printOutput) printQuery = false
+		else console.timeEnd('test')
+
+		printTrees = prevSettingPrintTrees
+	}
+
+	// Output a run of test queries to file
+	else if (input === '.logTest') {
+		var prevSettingPrintOutput = printOutput
+		printOutput = true
+
+		// Redirect process.stdout to file
+		var writable = fs.createWriteStream('/Users/Danny/Desktop/out')
+		var oldWrite = process.stdout.write
+		process.stdout.write = function () {
+			writable.write.apply(writable, arguments)
+		}
+
+		runCommand('.test')
+
+		// Restore process.stdout
+		process.stdout.write = oldWrite
+		printOutput = prevSettingPrintOutput
+
+		console.log('Run of test queries saved to:', writable.path)
+	}
+
+	// Run conjugation tests
+	else if (input === '.testConjugation') {
+		var prevSettingPrintTrees = printTrees
+		printTrees = false
+		var prevSettingPrintOutput = printOutput
+		printOutput = false
+
+		conjugationTestQueries.forEach(function (query) {
+			var trees = parse(query, 1)
+			if (!trees || trees[0].text !== query) {
+				util.printErr('Expected', query)
+				console.log('       Actual:', trees[0].text)
+			}
+		})
+
+		printOutput = prevSettingPrintOutput
+		printTrees = prevSettingPrintTrees
+	}
+
+	// Rebuild grammar and state table
+	else if (input === '.rebuild') {
+		console.log('Rebuild grammar and state table:')
+		// Rebuild grammar
+		util.tryCatchWrapper(function () {
+			require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
+		})
+		// Rebuild state table
+		stateTable = buildStateTable()
+	}
+
+	// Delete module cache
+	else if (input === '.deleteCache') {
+		deleteModuleCache()
+		console.log('Deleted cache of modules')
+	}
+
+	// Print state table
+	else if (input === '.stateTable') {
+		stateTable.print()
+	}
+
+	// Print test queries
+	else if (input === '.testQueries') {
+		console.log('Test queries:')
+		console.log(testQueries.join('\n'))
+	}
+
+	// Print CLI history
+	else if (input === '.history') {
+		var historyLen = rl.history.length
+		for (var i = historyLen; i-- > 1;) {
+			var idx = historyLen - i
+			console.log((historyLen > 10 && idx < 10 ? ' ' : '') + idx + '  ' + rl.history[i])
+		}
+	}
+
+	// PARSER SETTINGS:
+	// Set number of parse trees to search for
+	else if (args[0] === '.k') {
+		if (!isNaN(args[1])) K = Number(args[1])
+		console.log('K:', K)
+	}
+
+	// Toggle printing parse output
+	else if (input === '.out') {
+		printOutput = !printOutput
+		console.log('Print output:', printOutput)
+	}
+
+	// Toggle constructing and printing parse trees
+	else if (input === '.trees') {
+		printTrees = !printTrees
+		console.log('Construct and print parse trees:', printTrees)
+	}
+
+	// Toggle printing parse costs
+	else if (input === '.costs') {
+		printCost = !printCost
+		console.log('Print parse costs:', printCost)
+	}
+
+	// Toggle printing parse time
+	else if (input === '.time') {
+		printTime = !printTime
+		console.log('Print parse time:', printTime)
+	}
+
+	// Toggle printing parse query
+	else if (input === '.query') {
+		printQuery = !printQuery
+		console.log('Print parse query:', printQuery)
+	}
+
+	// Toggle printing parse stack
+	else if (input === '.stack') {
+		printStack = !printStack
+		console.log('Print parse stack:', printStack)
+	}
+
+	// Toggle printing parse forest
+	else if (input === '.forest') {
+		printForest = !printForest
+		console.log('Print parse forest:', printForest)
+	}
+
+	// Toggle printing parse forest graph
+	else if (input === '.graph') {
+		printForestGraph = !printForestGraph
+		console.log('Print parse forest graph:', printForestGraph)
+	}
+
+	// Print help screen
+	else {
+		console.log('Commands:')
+		console.log('.test             run test queries')
+		console.log('.logTest          output a run of test queries to file')
+		console.log('.testConjugation  run conjugation tests')
+		console.log('.rebuild          rebuild grammar and state table')
+		console.log('.deleteCache      delete module cache')
+		console.log('.stateTable       print state table')
+		console.log('.testQueries      print test queries')
+		console.log('.history          print CLI history')
+		console.log('.help             print this screen')
+
+		console.log('\nParser settings:')
+		console.log('.k       K:', K)
+		console.log('.out     print output:', printOutput)
+		console.log('.trees   print trees:', printTrees)
+		console.log('.costs   print costs:', printCost)
+		console.log('.time    print time:', printTime)
+		console.log('.query   print query:', printQuery)
+		console.log('.stack   print stack:', printStack)
+		console.log('.forest  print forest:', printForest)
+		console.log('.graph   print forest graph:', printForestGraph)
+	}
+
+	// Input as a command; do not parse as query
+	return true
+}
+
+function buildStateTable() {
+	var inputFilePath = '../aang.json'
+	// If loaded, remove from cache to force reload of file after removing grammar and semantics below
+	util.deleteCache(inputFilePath)
+	var inputFile = require(inputFilePath)
+
+	var grammar = inputFile.grammar
+	var semantics = inputFile.semantics
+	var semanticArgNodes = {}
+
+	Object.keys(grammar).forEach(function (sym) {
+		grammar[sym].forEach(function (rule) {
+			if (rule.semantic) mapSemantic(rule.semantic)
+			if (rule.insertedSemantic) mapSemantic(rule.insertedSemantic)
+		})
+	})
+
+	function mapSemantic(semanticArray) {
+		semanticArray.forEach(function (semanticNode, i) {
+			if (semanticNode.children) {
+				semanticNode.semantic = semantics[semanticNode.semantic.name]
+				mapSemantic(semanticNode.children)
+			} else {
+				// Share nodes for semantic arguments (no 'children' property to differentiate)
+				var name = semanticNode.semantic.name
+				semanticArray[i] = semanticArgNodes[name] || (semanticArgNodes[name] = { semantic: semantics[name] })
+			}
+		})
+	}
+
+	// Build state table
+	var stateTable = new (require(stateTablePath))(grammar, '[start]')
+	// Remove grammar and semantics from cache
+	delete inputFile.grammar
+	delete inputFile.semantics
+
+	return stateTable
+}
+
+// Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
+function deleteModuleCache() {
+	util.deleteCache(parserPath, forestSearchPath, stateTablePath, './BinaryHeap.js', '../grammar/semantic.js', './reduceForest.js', '../util.js')
 }
 
 
@@ -212,184 +457,3 @@ var conjugationTestQueries = [
 	'repos people I follow created that Danny likes',
 	'people people I follow who Danny follows and follow Danny follow'
 ]
-
-var K = 7
-var printTime = false
-var printQuery = false
-var printOutput = true
-var printStack = false
-var printForest = false
-var printForestGraph = false
-var printTrees = false
-var printCost = false
-
-function runCommand(query) {
-	var args = query.split(' ')
-	if (args[0] === '-k') {
-		if (!isNaN(args[1])) K = Number(args[1])
-		console.log('K:', K)
-	} else if (query === '-r') {
-		var prevSettingPrintTrees = printTrees
-		printTrees = false
-
-		if (printOutput) printQuery = true
-		else console.time('test')
-
-		testQueries.forEach(function (query) {
-			parse(query, 50)
-		})
-
-		if (printOutput) printQuery = false
-		else console.timeEnd('test')
-
-		printTrees = prevSettingPrintTrees
-	} else if (query === '-r2') {
-		var prevSettingPrintTrees = printTrees
-		printTrees = false
-		var prevSettingPrintOutput = printOutput
-		printOutput = false
-
-		conjugationTestQueries.forEach(function (query) {
-			var trees = parse(query, 1)
-			if (!trees || trees[0].text !== query) {
-				util.printErr('Expected', query)
-				console.log('       Actual:', trees[0].text)
-			}
-		})
-
-		printOutput = prevSettingPrintOutput
-		printTrees = prevSettingPrintTrees
-	} else if (query === '-rb') {
-		console.log('Rebuild grammar and state table:')
-		// Rebuild grammar
-		util.tryCatchWrapper(function () {
-			require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
-		})
-		// Rebuild state table
-		stateTable = buildStateTable()
-	} else if (query === '-out') {
-		var prevSettingPrintOutput = printOutput
-		printOutput = true
-
-		// Redirect process.stdout to file
-		var writable = fs.createWriteStream('/Users/Danny/Desktop/out')
-		var oldWrite = process.stdout.write
-		process.stdout.write = function () {
-			writable.write.apply(writable, arguments)
-		}
-
-		runCommand('-r')
-
-		// Restore process.stdout
-		process.stdout.write = oldWrite
-		printOutput = prevSettingPrintOutput
-	} else if (query === '-d') {
-		deleteModuleCache()
-		console.log('Deleted cache of modules')
-	} else if (query === '-st') {
-		stateTable.print()
-	} else if (query === '-ts') {
-		console.log('test queries:')
-		console.log(testQueries.join('\n'))
-	} else if (query === '-hs') {
-		var historyLen = rl.history.length - 1
-		for (var i = 0; i < historyLen; ++i) {
-			console.log((historyLen > 10 && i < 10 ? ' ' : '') + i + '  ' + rl.history[i])
-		}
-	} else if (query === '-t') {
-		printTime = !printTime
-		console.log('print time:', printTime)
-	} else if (query === '-q') {
-		printQuery = !printQuery
-		console.log('print query:', printQuery)
-	} else if (query === '-o') {
-		printOutput = !printOutput
-		console.log('print output:', printOutput)
-	} else if (query === '-s') {
-		printStack = !printStack
-		console.log('print stack:', printStack)
-	} else if (query === '-f') {
-		printForest = !printForest
-		console.log('print forest:', printForest)
-	} else if (query === '-g') {
-		printForestGraph = !printForestGraph
-		console.log('print forest graph:', printForestGraph)
-	} else if (query === '-tr') {
-		printTrees = !printTrees
-		console.log('print trees:', printTrees)
-	} else if (query === '-c') {
-		printCost = !printCost
-		console.log('print cost:', printCost)
-	} else if (query === '-p') {
-		parserPath = parserPath === parserNewPath ? parserOldPath : parserNewPath
-		console.log('parser path:', parserPath)
-	} else if (query === '-h') {
-		console.log('Commands:')
-		console.log('-k  K:', K)
-		console.log('-r  run test queries')
-		console.log('-r2 run conjugation tests')
-		console.log('-rb rebuild grammar and state table')
-		console.log('-d  delete module cache')
-		console.log('-st print state table')
-		console.log('-ts print test queries')
-		console.log('-hs print history')
-		console.log('-t  print time:', printTime)
-		console.log('-q  print query:', printQuery)
-		console.log('-o  print output:', printOutput)
-		console.log('-s  print stack:', printStack)
-		console.log('-f  print forest:', printForest)
-		console.log('-g  print forest graph:', printForestGraph)
-		console.log('-tr print trees:', printTrees)
-		console.log('-c  print cost:', printCost)
-	} else {
-		return false
-	}
-
-	return true
-}
-
-
-function buildStateTable() {
-	var inputFilePath = '../aang.json'
-	// If loaded, remove from cache to force reload of file after removing grammar and semantics below
-	util.deleteCache(inputFilePath)
-	var inputFile = require(inputFilePath)
-
-	var grammar = inputFile.grammar
-	var semantics = inputFile.semantics
-	var semanticArgNodes = {}
-
-	Object.keys(grammar).forEach(function (sym) {
-		grammar[sym].forEach(function (rule) {
-			if (rule.semantic) mapSemantic(rule.semantic)
-			if (rule.insertedSemantic) mapSemantic(rule.insertedSemantic)
-		})
-	})
-
-	function mapSemantic(semanticArray) {
-		semanticArray.forEach(function (semanticNode, i) {
-			if (semanticNode.children) {
-				semanticNode.semantic = semantics[semanticNode.semantic.name]
-				mapSemantic(semanticNode.children)
-			} else {
-				// Share nodes for semantic arguments (no 'children' property to differentiate)
-				var name = semanticNode.semantic.name
-				semanticArray[i] = semanticArgNodes[name] || (semanticArgNodes[name] = { semantic: semantics[name] })
-			}
-		})
-	}
-
-	// Build state table
-	var stateTable = new (require(stateTablePath))(grammar, '[start]')
-	// Remove grammar and semantics from cache
-	delete inputFile.grammar
-	delete inputFile.semantics
-
-	return stateTable
-}
-
-
-// Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
-function deleteModuleCache() {
-	util.deleteCache(parserPath, forestSearchPath, stateTablePath, './BinaryHeap.js', '../grammar/semantic.js', './reduceForest.js')
-}
