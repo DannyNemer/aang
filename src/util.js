@@ -121,7 +121,12 @@ exports.arraysMatch = function (a, b) {
 // Print arguments on seperate lines, and pretty-print objects
 exports.log = function () {
 	Array.prototype.slice.call(arguments).forEach(function (arg) {
-		console.dir(arg, { depth: null, colors: true })
+		// Print strings normally to avoid unnecessary stylization
+		if (arg.constructor === String) {
+			console.log(arg)
+		} else {
+			console.dir(arg, { depth: null, colors: true })
+		}
 	})
 
 	console.log() // Print trailing blank line
