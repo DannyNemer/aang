@@ -6,6 +6,8 @@ exports.semantics = {}
 exports.creationLines = {}
 
 exports.newSemantic = function (opts) {
+	opts.name = opts.name.toLowerCase()
+
 	if (exports.semantics.hasOwnProperty(opts.name)) {
 		util.printErrWithLine('Duplicate Semantic', opts.name)
 		throw 'duplicate Semantic'

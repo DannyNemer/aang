@@ -20,7 +20,7 @@ exports.new = function () {
 // Constructor for nonterminal symbols
 // Concatenates arguments as Symbol's name
 function Symbol() {
-	this.name = '[' + exports.hyphenate.apply(null, arguments) + ']'
+	this.name = '[' + exports.hyphenate.apply(null, arguments).toLowerCase() + ']'
 
 	if (exports.grammar.hasOwnProperty(this.name)) {
 		util.printErrWithLine('Duplicate Symbol', this.name)

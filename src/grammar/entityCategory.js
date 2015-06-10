@@ -20,7 +20,7 @@ exports.newEntityCategory = function (opts) {
 		throw 'ill-formed entity category'
 	}
 
-	var categoryName = '{' + opts.name + '}'
+	var categoryName = '{' + opts.name.toLowerCase() + '}'
 
 	if (exports.creationLines.hasOwnProperty(categoryName)) {
 		util.printErrWithLine('Duplicate entity category', categoryName)
