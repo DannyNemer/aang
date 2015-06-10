@@ -7,6 +7,7 @@ var auxVerbs = require('../auxVerbs')
 var count = require('../count')
 var preps = require('../prepositions')
 var date = require('../date')
+var oneSg = require('../oneSg')
 
 
 var repository = category.new({ sg: 'repository', pl: 'repositories', entities: [ 'Node', 'D3', 'Linux' ] })
@@ -177,15 +178,29 @@ var repositoriesPushedSemantic = g.newSemantic({ name: g.hyphenate(repository.na
 repository.inner.addRule({ RHS: [ pushed, date.general ], semantic: repositoriesPushedSemantic })
 
 
-// PUBLIC/PRIVATE
-var repositoriesVisibilitySemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'visibility'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+// PUBLIC/PRIVATE:
+var repositoryPossOneSg = category.newSubcategoryForAdjectives(repository, g.hyphenate(repository.nameSg, 'poss', '1', 'sg'))
+
+var repositoriesVisibilitySemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'visibility'), cost: 0.5, minParams: 1, maxParams: 1 })
 // (my) public (repos); (my repos that are) public
-repository.adjective.addRule({
+repositoryPossOneSg.adjective.addRule({
 	terminal: true, RHS: 'public', text: 'public',
-	semantic: g.insertSemantic(repositoriesVisibilitySemantic, g.newSemantic({ name: 'public', isArg: true, cost: 0 }))
+	semantic: g.insertSemantic(repositoriesVisibilitySemantic, g.newSemantic({ name: 'public', cost: 0, isArg: true }))
 })
 // (my) private (repos); (my repos that are) private
-repository.adjective.addRule({
+repositoryPossOneSg.adjective.addRule({
 	terminal: true, RHS: 'private', text: 'private',
-	semantic: g.insertSemantic(repositoriesVisibilitySemantic, g.newSemantic({ name: 'private', isArg: true, cost: 0 }))
+	semantic: g.insertSemantic(repositoriesVisibilitySemantic, g.newSemantic({ name: 'private', cost: 0, isArg: true }))
 })
+
+
+var repositoryPossOneSgOneSgPoss = g.newSymbol(repositoryPossOneSg.nameSg, '1', 'sg', 'poss')
+repositoryPossOneSgOneSgPoss.addRule({ RHS: [ oneSg.poss ], semantic: g.insertSemantic(repositoriesCreatedSemantic, oneSg.semantic) })
+// my public repos
+repository.noRelativePossessive.addRule({ RHS: [ repositoryPossOneSgOneSgPoss, repositoryPossOneSg.possessible ] })
+
+// (public) repos of mine
+repositoryPossOneSg.head.addRule({ RHS: [ repository.headMayPoss, poss.ofMine ], semantic: repositoriesCreatedSemantic })
+
+
+repositoryPossOneSg.noRelativePossessive.addRule({ RHS: [ repositoryPossOneSgOneSgPoss, repository.possessible ] })
