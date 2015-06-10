@@ -49,5 +49,3 @@ exports.ofPossUsersPlus = g.newBinaryRule({ RHS: [ preps.possessor, possUsersPlu
 // (repos of) mine - must use possessorNoInsertion, otherwise the insertion is too slow
 // For categories that a semantic function for possession that limits to one argument; ex: repositories-created()
 exports.ofPossUsers = g.newBinaryRule({ RHS: [ preps.possessorNoInsertion, possUsers ] })
-
-exports.ofMine = g.newBinaryRule({ RHS: [ preps.possessor, oneSg.mine ] })

@@ -442,38 +442,6 @@ var testQueries = [
 	'people I and {user} follow', // intentionally wrong
 	'issues with <int> comments', // intentionally wrong
 	'my repos me people who follow my followers have been and',
-	'my public repos',
-	'public repos',
-	'repos public',
-	'{left-stop-words} public repos',
-	'my {left-stop-words} public repos',
-	'my public {left-stop-words} repos',
-	'my {left-stop-words} public {left-stop-words} repos',
-	'my {left-stop-words} Java public {left-stop-words} repos',
-	'my private Java repos',
-	'public repos of mine',
-	'Java public repos of mine',
-	'my Java private repos',
-	'repos that are public and written in Java',
-	'repos that are written in Java and public',
-	'Danny\'s repos that are public', // intentionally wrong
-	'my repos that are public',
-	'repos that are private',
-	'my repos that I like and are written in Java and are private',
-	'my repos that I like and are public and are written in Java',
-	'my repos that I like and that are written in Java and that are private',
-	'my repos that I like and that are public and that are written in Java',
-	'my repos that are public repos liked by me',
-	'repos of mine that are public',
-	'my repos that are not Java repos',
-	'my repos I like that are written in Java and Danny likes and that my followers like and are private',
-	'repos that are my public repos',
-	'my public repos created by me',
-	// this might prove we need to use the restricted-friends model
-	'my repos that are public repos',
-	'repos of mine that are public repos',
-	'my repos that are not public repos',
-	'private repos created by me'
 	// 'repos danny by me', // intentionally wrong - requires implementation of deletions
 	// 'repos danny by me danny', // intentionally wrong - requires implementation of deletions
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees

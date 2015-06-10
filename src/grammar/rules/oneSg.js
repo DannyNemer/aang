@@ -17,6 +17,3 @@ exports.poss.addWord({
 	insertionCost: 0,
 	accepted: [ 'my' ]
 })
-
-exports.mine = g.newSymbol('mine')
-exports.mine.addRule({ terminal: true, RHS: 'mine', text: 'mine', semantic: exports.semantic })

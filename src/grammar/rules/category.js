@@ -63,9 +63,9 @@ function Category(opts) {
 		this.possessible.addRule({ RHS: [ this.lhs, this.headMayPoss ], transpositionCost: 1 })
 	}
 
-	this.lhsHead = g.newSymbol(this.nameSg, 'lhs', this.nameSg, 'head')
+	var lhsHead = g.newSymbol(this.nameSg, 'lhs', this.nameSg, 'head')
 	// people (I follow); people (followed by me)
-	this.lhsHead.addRule({ RHS: [ this.lhs, this.head ], transpositionCost: 1 })
+	lhsHead.addRule({ RHS: [ this.lhs, this.head ], transpositionCost: 1 })
 
 	// (people) followed by me
 	this.passive = g.newSymbol(this.nameSg, 'passive')
@@ -103,82 +103,82 @@ function Category(opts) {
 	// rhsExt.addRule({ RHS: [ opts.isPerson ? relPronouns.whoNoInsertion : relPronouns.thatNoInsertion, objFilterPlus ] })
 
 
-	this.rhs = g.newSymbol(this.nameSg, 'rhs')
-	this.rhs.addRule({ terminal: true, RHS: g.emptySymbol })
+	var rhs = g.newSymbol(this.nameSg, 'rhs')
+	rhs.addRule({ terminal: true, RHS: g.emptySymbol })
 	// (people) followed by me
-	this.rhs.addRule({ RHS: [ reduced ] })
+	rhs.addRule({ RHS: [ reduced ] })
 	// (people) I follow
-	this.rhs.addRule({ RHS: [ rhsExt ] })
+	rhs.addRule({ RHS: [ rhsExt ] })
 	// (people) followed by me {user} follows (NOTE: orig has base cost penalty of 0.1)
-	this.rhs.addRule({ RHS: [ reduced, rhsExt ], transpositionCost: 0.1 })
+	rhs.addRule({ RHS: [ reduced, rhsExt ], transpositionCost: 0.1 })
 	// (people) I follow <adverbial-stopword>
-	this.rhs.addRule({ RHS: [ this.rhs, stopWords.sentenceAdverbial ], transpositionCost: 0 })
+	rhs.addRule({ RHS: [ rhs, stopWords.sentenceAdverbial ], transpositionCost: 0 })
 
 
 	var noRelativeBase = g.newSymbol(this.nameSg, 'no', 'relative', 'base')
 	// people I follow; people followed by me
-	noRelativeBase.addRule({ RHS: [ this.lhsHead, this.rhs ], transpositionCost: 1 })
+	noRelativeBase.addRule({ RHS: [ lhsHead, rhs ], transpositionCost: 1 })
 
 	var noRelative = g.newSymbol(this.nameSg, 'no', 'relative')
 	// people followed by me; people I follow
 	noRelative.addRule({ RHS: [ noRelativeBase ] })
 	// my followers; (people who follow) my followers
 	this.noRelativePossessive = g.newSymbol(this.nameSg, 'no', 'relative', 'possessive')
-	noRelative.addRule({ RHS: [ this.noRelativePossessive, this.rhs ], transpositionCost: 1 })
+	noRelative.addRule({ RHS: [ this.noRelativePossessive, rhs ], transpositionCost: 1 })
 	// people <stop> I follow
 	noRelative.addRule({ RHS: [ stopWords.left, noRelative ] })
 	// WHY IS IT NEEDED? noRelativeBase goes to stopWords.left, but not noRelativePossessive and any others that may be added
 
 
-	this.filter = g.newSymbol(this.nameSg, 'filter')
+	var filter = g.newSymbol(this.nameSg, 'filter')
 	// (people who) follow me
-	this.filter.addRule({ RHS: [ this.subjFilter ] })
+	filter.addRule({ RHS: [ this.subjFilter ] })
 	// (people who) I follow
-	this.filter.addRule({ RHS: [ this.objFilter ] })
+	filter.addRule({ RHS: [ this.objFilter ] })
 	// (people who) <stop> follow me, I follow
-	this.filter.addRule({ RHS: [ stopWords.preFilter, this.filter ] })
+	filter.addRule({ RHS: [ stopWords.preFilter, filter ] })
 	// (people who) <stop> follow me, I follow
-	this.filter.addRule({ RHS: [ stopWords.sentenceAdverbial, this.filter ], transpositionCost: 0 })
+	filter.addRule({ RHS: [ stopWords.sentenceAdverbial, filter ], transpositionCost: 0 })
 	// (people who) are followers of mine
-	this.filter.addRule({ RHS: [ auxVerbs.beNon1Sg, noRelative ] })
+	filter.addRule({ RHS: [ auxVerbs.beNon1Sg, noRelative ] })
 	// (issues that) are <stop> open/closed
-	this.filter.addRule({ RHS: [ auxVerbs.beNon1SgSentenceAdverbial, this.adjective ] })
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgSentenceAdverbial, this.adjective ] })
 	// (people who) are <stop> followed by me
-	this.filter.addRule({ RHS: [ auxVerbs.beNon1SgSentenceAdverbial, reducedNoTense ] })
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgSentenceAdverbial, reducedNoTense ] })
 	// (people who) have <stop> been folllowed by me; (people who) have <stop> been following me
-	this.filter.addRule({ RHS: [ auxVerbs.haveSentenceAdverbialBePast, reducedNoTense ] })
+	filter.addRule({ RHS: [ auxVerbs.haveSentenceAdverbialBePast, reducedNoTense ] })
 	// (people who) <stop> follow me, I follow
-	this.filter.addRule({ RHS: [ stopWords.left, this.filter ] })
+	filter.addRule({ RHS: [ stopWords.left, filter ] })
 	// (people who) do not follow me
-	this.filter.addRule({ RHS: [ auxVerbs.doNegation, this.subjFilter ], semantic: auxVerbs.notSemantic })
+	filter.addRule({ RHS: [ auxVerbs.doNegation, this.subjFilter ], semantic: auxVerbs.notSemantic })
 	// (people who) are not followers of mine
-	this.filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, noRelative ], semantic: auxVerbs.notSemantic })
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, noRelative ], semantic: auxVerbs.notSemantic })
 	// (issues that) are not open
-	this.filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, this.adjective ], semantic: auxVerbs.notSemantic })
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, this.adjective ], semantic: auxVerbs.notSemantic })
 	// (people who) are not followed by me
-	this.filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, reduced ], semantic: auxVerbs.notSemantic })
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, reduced ], semantic: auxVerbs.notSemantic })
 	// (people who) have not been followed by me
-	this.filter.addRule({ RHS: [ auxVerbs.haveNegationBePast, reduced ], semantic: auxVerbs.notSemantic })
+	filter.addRule({ RHS: [ auxVerbs.haveNegationBePast, reduced ], semantic: auxVerbs.notSemantic })
 	// (repos that) are 22 KB
 	this.postModifer = g.newSymbol(this.nameSg, 'post', 'modifier')
-	this.filter.addRule({ RHS: [ auxVerbs.beNon1SgSentenceAdverbial, this.postModifer ] })
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgSentenceAdverbial, this.postModifer ] })
 	// (repos that) are not 22 KB
-	this.filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, this.postModifer ], semantic: auxVerbs.notSemantic })
+	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, this.postModifer ], semantic: auxVerbs.notSemantic })
 
 
 	// (people) who follow me and/or I follow
-	this.filterPlus = conjunctions.addForSymbol(this.filter)
+	var filterPlus = conjunctions.addForSymbol(filter)
 
-	var relPronounFilterPlus = g.newBinaryRule({ RHS: [ opts.isPerson ? relPronouns.who : relPronouns.that, this.filterPlus ] })
+	var relPronounFilterPlus = g.newBinaryRule({ RHS: [ opts.isPerson ? relPronouns.who : relPronouns.that, filterPlus ] })
 	// (people) who follow me and who I follow
-	this.filterPlus.addRule({ RHS: [ this.filter, [ conjunctions.and, relPronounFilterPlus ] ] })
+	filterPlus.addRule({ RHS: [ filter, [ conjunctions.and, relPronounFilterPlus ] ] })
 	// (people) who follow me or who I follow
-	this.filterPlus.addRule({ RHS: [ this.filter, [ conjunctions.union, relPronounFilterPlus ] ], semantic: conjunctions.unionSemantic })
+	filterPlus.addRule({ RHS: [ filter, [ conjunctions.union, relPronounFilterPlus ] ], semantic: conjunctions.unionSemantic })
 
 
 	// (people) who are followed by me; (repos) that are liked by me
 	var relativeclause = g.newSymbol(this.nameSg, 'relativeclause')
-	relativeclause.addRule({ RHS: [ opts.isPerson ? relPronouns.who : relPronouns.that, this.filterPlus ] })
+	relativeclause.addRule({ RHS: [ opts.isPerson ? relPronouns.who : relPronouns.that, filterPlus ] })
 
 	this.plural = g.newSymbol(this.nameSg, 'plural')
 	// people followed by me
@@ -210,110 +210,4 @@ function Category(opts) {
 	this.semantic = g.newSemantic({ name: this.namePl, cost: 0.5, minParams: 1, maxParams: 2 })
 
 	g.startSymbol.addRule({ RHS: [ this.catPl ] })
-}
-
-
-exports.newSubcategoryForAdjectives = function (category, subcategoryName) {
-	return new SubcategoryForAdjectives(category, subcategoryName)
-}
-
-function SubcategoryForAdjectives(category, subcategoryNameSg) {
-	this.nameSg = subcategoryNameSg
-
-	lhs = g.newSymbol(this.nameSg, 'lhs') // (NOTE: orig manually makes rules that would be from <empty>)
-	// (my) public/private (repos); (my) public/private ({language} repos)
-	this.adjective = g.newSymbol(this.nameSg, 'adjective')
-	lhs.addRule({ RHS: [ this.adjective ] })
-	lhs.addRule({ RHS: [ this.adjective, lhs ] })
-	// {language} (repos); (repos that are) {language} (repos)
-	// Ensure [pre-modifier] is rightmost of [this-lhs] because adjective must precede
-	// - Ex: (my public) Java (repos); Not: (my) Java (public repos)
-	lhs.addRule({ RHS: [ lhs, category.preModifier ], transpositionCost: 0 })
-	// <stop> (repos); <stop> {language} (repos)
-	lhs.addRule({ RHS: [ stopWords.left, lhs ] })
-	lhs.addRule({ RHS: [ lhs, stopWords.left ] })
-	// NEED TO STOP ABOVE FROM INSERTIONS BEING MADE WITH BLANK THAT TURNS LHS INTO TWO ADDITIONAL PATHS TO JUST THIS.ADJECTIVE, WHICH ONLY SLOWS DOWN
-
-	// (my) public repos; (my) public {left-stop-words} Java repos
-	this.possessible = g.newSymbol(this.nameSg, 'possessible')
-	this.possessible.addRule({ RHS: [ lhs, category.headMayPoss ], transpositionCost: 1 })
-
-	// repos of mine
-	this.head = g.newSymbol(this.nameSg, 'head')
-
-	// public repos of mine (I like)
-	category.lhsHead.addRule({ RHS: [ lhs, this.head ], transpositionCost: 1 })
-
-	// Java repos of mine that are public
-	var lhsHead = g.newBinaryRule({ RHS: [ category.lhs, this.head ], transpositionCost: 1 })
-
-	var noRelativeBase = g.newSymbol(this.nameSg, 'no', 'relative', 'base')
-	noRelativeBase.addRule({ RHS: [ lhsHead, category.rhs ], transpositionCost: 1 })
-
-	var noRelative = g.newSymbol(this.nameSg, 'no', 'relative')
-
-	noRelative.addRule({ RHS: [ noRelativeBase ] })
-
-	this.noRelativePossessive = g.newSymbol(this.nameSg, 'no', 'relative', 'possessive')
-	noRelative.addRule({ RHS: [ this.noRelativePossessive, category.rhs ], transpositionCost: 1 })
-
-	noRelative.addRule({ RHS: [ stopWords.left, noRelative ] })
-
-
-	var filter = g.newSymbol(this.nameSg, 'filter')
-	// (my repos that) are <stop> private
-	filter.addRule({ RHS: [ auxVerbs.beNon1SgSentenceAdverbial, this.adjective ] })
-	// (my repos that) are not private
-	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, this.adjective ], semantic: auxVerbs.notSemantic })
-	// (my repos that) <stop> are private
-	filter.addRule({ RHS: [ stopWords.left, filter ] })
-	// (my repos that) <stop> are private
-	filter.addRule({ RHS: [ stopWords.sentenceAdverbial, filter ], transpositionCost: 0 })
-	// (my repos that) <stop> are private
-	filter.addRule({ RHS: [ stopWords.preFilter, filter ] })
-
-
-	// could rearange rules, so do not need to do [ filter, [and, X ] ], [ filter, [ and, Y ] ]
-
-	var filterPlus = g.newSymbol(filter.name + '+')
-	// (my repos that) are public
-	filterPlus.addRule({ RHS: [ filter ] })
-
-	var filterPlusOrParentFilterPlus = g.newSymbol(filterPlus.name, 'or', category.filterPlus.name)
-	// (my repos that) are private and are public
-	filterPlusOrParentFilterPlus.addRule({ RHS: [ filterPlus ] })
-	// (my repos that) are private and I like
-	filterPlusOrParentFilterPlus.addRule({ RHS: [ category.filterPlus ] })
-
-	// (my repos that) are private and are-public/I-like
-	filterPlus.addRule({ RHS: [ filter, [ conjunctions.and, filterPlusOrParentFilterPlus ] ] })
-	// (my repos that) are private or are-public/I-like
-	filterPlus.addRule({ RHS: [ filter, [ conjunctions.union, filterPlusOrParentFilterPlus ] ], semantic: conjunctions.unionSemantic })
-
-	// (my repos that) I like and are public
-	filterPlus.addRule({ RHS: [ category.filter, [ conjunctions.and, filterPlus ] ] })
-	// (my repos that) I like or are public
-	filterPlus.addRule({ RHS: [ category.filter, [ conjunctions.union, filterPlus ] ], semantic: conjunctions.unionSemantic })
-
-	// (my repos that are public and/or) that are-public/I-like
-	var relPronounFilterPlusOrParentFilterPlus = g.newBinaryRule({ RHS: [ category.isPerson ? relPronouns.who : relPronouns.that, filterPlusOrParentFilterPlus ] })
-	// (my repos that) are public and that are-public/I-like
-	filterPlus.addRule({ RHS: [ filter, [ conjunctions.and, relPronounFilterPlusOrParentFilterPlus ] ] })
-	// (my repos that) are public or that are-public/I-like
-	filterPlus.addRule({ RHS: [ filter, [ conjunctions.union, relPronounFilterPlusOrParentFilterPlus ] ], semantic: conjunctions.unionSemantic })
-
-	// (my repos that) I like and that are public
-	var relPronounFilterPlus = g.newBinaryRule({ RHS: [ category.isPerson ? relPronouns.who : relPronouns.that, filterPlus ] })
-	// (my repos that) I like and that are public
-	filterPlus.addRule({ RHS: [ category.filter, [ conjunctions.and, relPronounFilterPlus ] ] })
-	// (my repos that) I like or that are public
-	filterPlus.addRule({ RHS: [ category.filter, [ conjunctions.union, relPronounFilterPlus ] ], semantic: conjunctions.unionSemantic })
-
-
-	// (my repos) that are public
-	var relativeclause = g.newSymbol(this.nameSg, 'relativeclause')
-	relativeclause.addRule({ RHS: [ category.isPerson ? relPronouns.who : relPronouns.that, filterPlus ] })
-
-	// my repos that are public
-	category.plural.addRule({ RHS: [ noRelative, relativeclause ], semantic: conjunctions.intersectSemantic })
 }
