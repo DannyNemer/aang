@@ -40,10 +40,9 @@ possUsers.addRule({ RHS: [ user.plural ] })
 // (repos of) {user:'s}/{user}/mine
 possUsers.addRule({ RHS: [ possUser ] })
 
-var possUsersPlus = conjunctions.addForSymbol(possUsers)
-
 
 // (followers of) mine
+var possUsersPlus = conjunctions.addForSymbol(possUsers)
 exports.ofPossUsersPlus = g.newBinaryRule({ RHS: [ preps.possessor, possUsersPlus ] })
 
 // (repos of) mine - must use possessorNoInsertion, otherwise the insertion is too slow

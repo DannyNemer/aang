@@ -149,7 +149,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				}
 			} else {
 				// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
-				if (prevSemantic.constructor === Array && semantic.forbiddenDups(prevSemantic, newSemantic)) {
+				if (prevSemantic && prevSemantic.constructor === Array && semantic.forbiddenDups(prevSemantic, newSemantic)) {
 					return -1
 				}
 

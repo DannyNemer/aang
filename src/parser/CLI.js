@@ -9,7 +9,7 @@ var stateTable = buildStateTable()
 
 
 var rl = require('readline').createInterface(process.stdin, process.stdout, function (line) {
-	var completions = [ '.test', '.logTest', '.testConjugation', '.rebuild', '.deleteCache', '.stateTable', '.testQueries', '.history', '.help', '.k', '.out', '.trees', '.costs', '.time', '.query', '.stack', '.forest', '.graph' ]
+	var completions = [ '.test', '.logTest', '.conjugationTest', '.rebuild', '.deleteCache', '.stateTable', '.history', '.help', '.k', '.out', '.trees', '.costs', '.time', '.query', '.stack', '.forest', '.graph' ]
 
 	var hits = completions.filter(function (c) { return c.indexOf(line) === 0 })
 
@@ -127,7 +127,7 @@ function runCommand(input) {
 	}
 
 	// Run conjugation tests
-	else if (input === '.testConjugation') {
+	else if (input === '.conjugationTest') {
 		var prevSettingPrintTrees = printTrees
 		printTrees = false
 		var prevSettingPrintOutput = printOutput
@@ -165,12 +165,6 @@ function runCommand(input) {
 	// Print state table
 	else if (input === '.stateTable') {
 		stateTable.print()
-	}
-
-	// Print test queries
-	else if (input === '.testQueries') {
-		console.log('Test queries:')
-		console.log(testQueries.join('\n'))
 	}
 
 	// Print CLI history
@@ -242,11 +236,10 @@ function runCommand(input) {
 		console.log('Commands:')
 		console.log('.test             run test queries')
 		console.log('.logTest          output a run of test queries to file')
-		console.log('.testConjugation  run conjugation tests')
+		console.log('.conjugationTest  run conjugation test')
 		console.log('.rebuild          rebuild grammar and state table')
 		console.log('.deleteCache      delete module cache')
 		console.log('.stateTable       print state table')
-		console.log('.testQueries      print test queries')
 		console.log('.history          print CLI history')
 		console.log('.help             print this screen')
 
@@ -276,6 +269,9 @@ function buildStateTable() {
 	var semantics = inputFile.semantics
 	var semanticArgNodes = {}
 
+	// Instead of initializing each rule's semantics as a new Object, initialize all semantic
+	// functions from the JSON file and use pointers for each rule's semantics. This allows
+	// semantics to be compared by pointers instead of names.
 	Object.keys(grammar).forEach(function (sym) {
 		grammar[sym].forEach(function (rule) {
 			if (rule.semantic) mapSemantic(rule.semantic)
@@ -444,12 +440,14 @@ var testQueries = [
 	'my repos me people who follow my followers have been and',
 	// 'repos danny by me', // intentionally wrong - requires implementation of deletions
 	// 'repos danny by me danny', // intentionally wrong - requires implementation of deletions
+	// 'repos that I created I like', // intentionally wrong
+	// 'people who I follow Danny follows', // intentionally wrong
 	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
-	// 'my followers who created pull requests of mine my followers who created repositories followers of mine mentioned in issues of my followers who I follow like that are repos created by me I contributed to am mentioned in that I am mentioned in'
+	// 'my followers who created pull requests of mine my followers who created repositories followers of mine mentioned in issues of my followers who I follow like that are repos created by me I contributed to am mentioned in that I am mentioned in',
 	// illegal, but takes a long time for search to fail (produce no results):
 	// 'my repositories people who created my repos created'
+	// 'my' // doesn't work
 	// 'people who like my repos liked by people who follow me that people I follow created'
-	// 'my repos me people who follow my followers have been and', - BROKEN
 ]
 
 // The first result for these queries must match the input exactly
