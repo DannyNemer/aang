@@ -61,8 +61,10 @@ var termRuleOptsSchema = {
 	RHS: String,
 	semantic: { type: Array, optional: true },
 	insertionCost: { type: Number, optional: true },
-	textForms: { type: Object, optional: true },
+	// If text and textForms are undefined, and RHS is not <int>, <empty>, or an entity category, use RHS as text
+	// Use text = '' for a terminal rule with no display text (e.g., stop-words)
 	text: { type: String, optional: true },
+	textForms: { type: Object, optional: true },
 	intMin: { type: Number, optional: true },
 	intMax: { type: Number, optional: true }
 }
@@ -76,10 +78,20 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	var newRule = {
 		RHS: [ opts.RHS.toLowerCase() ],
 		terminal: true,
-		// String for terminal symbols, or Object of inflected forms for conjugation
-		text: opts.text || opts.textForms,
 		intMin: opts.intMin,
 		intMax: opts.intMax
+	}
+
+	// Assign text to display in output when terminal rule is seen in input
+	if (opts.textForms) {
+		// Object of inflected forms for conjugation
+		newRule.text = opts.textForms
+	} else if (opts.text) {
+		// String for symbols not needing conjugation
+		newRule.text = opts.text
+	} else if (opts.text !== '' && opts.RHS !== g.emptySymbol && opts.RHS !== g.intSymbol && !entityCategory.creationLines.hasOwnProperty(opts.RHS)) {
+		// Use RHS as text if textForms and text are undefined
+		newRule.text = opts.RHS
 	}
 
 	if (opts.insertionCost !== undefined) {
@@ -91,13 +103,24 @@ Symbol.prototype.newTerminalRule = function (opts) {
 		newRule.RHSIsPlaceholder = true
 	}
 
-	// If semantic, must be complete and consitute a RHS
+	// If semantic, must be complete and constitute a RHS
 	// Exceptions: terminal symbol is an entity category or <int>
 	else if (opts.semantic && !semantic.semanticIsRHS(opts.semantic)) {
 		util.printErr('Terminal rules can only hold complete (RHS) semantics', this.name, '->', newRule.RHS)
 		util.log(opts.semantic)
 		console.log(util.getLine())
 		throw 'ill-formed terminal rule'
+	}
+
+	// <empty>, <int>, and entities cannot have predefined display text
+	if (newRule.text) {
+		if (opts.RHS === g.emptySymbol || opts.RHS === g.intSymbol) {
+			util.printErrWithLine(opts.RHS + ' cannot have predefined display text', this.name, '->', newRule.RHS)
+			throw 'ill-formed terminal rule'
+		} else if (entityCategory.creationLines.hasOwnProperty(opts.RHS)) {
+			util.printErrWithLine('Entities cannot have predefined display text', this.name, '->', newRule.RHS)
+			throw 'ill-formed terminal rule'
+		}
 	}
 
 	// intMin and intMax can only be used with <int>

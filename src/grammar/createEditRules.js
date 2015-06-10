@@ -41,7 +41,7 @@ function findTermRuleInsertions(insertions) {
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost,
 						insertedSyms: [ { symbol: termSym } ],
-						text: rule.text ? [ rule.text ] : [] // Unused
+						text: []
 					})
 				} else if (rule.insertionCost !== undefined) {
 					addInsertion(insertions, nontermSym, {

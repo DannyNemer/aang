@@ -76,9 +76,9 @@ var usersGenderFemaleSemantic = g.insertSemantic(usersGenderSemantic, g.newSeman
 var usersGenderMaleSemantic = g.insertSemantic(usersGenderSemantic, g.newSemantic({ name: 'male', cost: 0, isArg: true }))
 
 // female (followers of mine); (people who are) female
-user.adjective.addRule({ terminal: true, RHS: 'female', text: 'female', semantic: usersGenderFemaleSemantic })
+user.adjective.addRule({ terminal: true, RHS: 'female', semantic: usersGenderFemaleSemantic })
 // male (followers of mine); (people who are) male
-user.adjective.addRule({ terminal: true, RHS: 'male', text: 'male', semantic: usersGenderMaleSemantic })
+user.adjective.addRule({ terminal: true, RHS: 'male', semantic: usersGenderMaleSemantic })
 
 var womenTerm = g.newSymbol('women', 'term')
 womenTerm.addWord({

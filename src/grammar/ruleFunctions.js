@@ -220,7 +220,7 @@ Symbol.prototype.addStopWord = function (opts) {
 
 	// All stop-word terminal symbols are rejected
 	opts.stopWords.forEach(function (termSym) {
-		this.addRule({ terminal: true, RHS: termSym })
+		this.addRule({ terminal: true, RHS: termSym, text: '' })
 	}, this)
 
 	return this
@@ -254,7 +254,8 @@ Symbol.prototype.addWord = function (opts) {
 		throw 'ill-formed opt-word'
 	}
 
-	// Optional terminal rule -> rule can be omitted from input by accepting empty-string without penalty
+	// Optional terminal rule: rule can be omitted from input by accepting empty-string without penalty
+	// <empty> must always be first for optional terminal rules
 	if (opts.optional) {
 		this.addRule({ terminal: true, RHS: g.emptySymbol })
 	}

@@ -75,7 +75,6 @@ datePhrase.addRule({
 datePhrase.addRule({
   terminal: true,
   RHS: 'today',
-  text: 'today',
   insertionCost: 1,
   semantic: g.newSemantic({ name: g.hyphenate('today'), cost: 0.5, isArg: true })
 })
@@ -83,7 +82,6 @@ datePhrase.addRule({
 datePhrase.addRule({
   terminal: true,
   RHS: 'yesterday',
-  text: 'yesterday',
   semantic: g.newSemantic({ name: g.hyphenate('yesterday'), cost: 0.5, isArg: true })
 })
 

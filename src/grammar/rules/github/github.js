@@ -88,11 +88,11 @@ user.inner.addRule({
 // open/closed (issues/pull-requests); (issues/pull-requests that are) open/closed
 exports.state = g.newSymbol('state')
 exports.state.addRule({
-	terminal: true, RHS: 'open', text: 'open',
+	terminal: true, RHS: 'open',
 	semantic: g.newSemantic({ name: 'open', cost: 0, isArg: true })
 })
 exports.state.addRule({
-	terminal: true, RHS: 'closed', text: 'closed',
+	terminal: true, RHS: 'closed',
 	semantic: g.newSemantic({ name: 'closed', cost: 0, isArg: true })
 })
 
