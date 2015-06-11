@@ -21,23 +21,48 @@ user.head.addRule({ RHS: [ user.companyOpt, user.term ] })
 
 
 // Person-number property only exists for nominative case
-user.nomUsers = g.newSymbol('nom', user.namePl)
+var nomUsers = g.newSymbol('nom', user.namePl)
 // (repos) people who follow me (like)
-user.nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'pl' })
+nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'pl' })
 // (people) {user} (follows)
-user.nomUsers.addRule({ RHS: [ user.catSg ], personNumber: 'threeSg' })
+nomUsers.addRule({ RHS: [ user.catSg ], personNumber: 'threeSg' })
+// nomUsers.addRule({ RHS: [ user.term ], personNumber: 'pl' }) // there is a semantic, no cost
 // (people) I (follow)
-user.nomUsers.addRule({ RHS: [ oneSg.plain ], semantic: oneSg.semantic, gramCase: 'nom', personNumber: 'one' })
+nomUsers.addRule({ RHS: [ oneSg.plain ], semantic: oneSg.semantic, gramCase: 'nom', personNumber: 'one' })
 
-// (people) I and/or {user} follow
-user.nomUsersPlus = conjunctions.addForSymbol(user.nomUsers, { personNumber: 'pl' })
+// No personNumber because only used in conjunctions, which are always plural
+var nomPlUsers = g.newSymbol('nom', 'pl', user.namePl)
+// (people) people who follow me (and/or I follow)
+nomPlUsers.addRule({ RHS: [ user.plural ] })
+// (people) {user} (and/or I follow)
+nomPlUsers.addRule({ RHS: [ user.catSg ] })
+// (people) I (and/or {user} follow)
+nomPlUsers.addRule({ RHS: [ oneSg.plain ], semantic: oneSg.semantic, gramCase: 'nom' })
+
+var nomPlUsersPlus = g.newSymbol(nomPlUsers.name + '+')
+// (people I and/or) {user} (follow)
+nomPlUsersPlus.addRule({ RHS: [ nomPlUsers ] })
+// (people I and/or) {user} and {user} (follow)
+var andNomPlUsersPlus = g.newBinaryRule({ RHS: [ conjunctions.and, nomPlUsersPlus ] })
+nomPlUsersPlus.addRule({ RHS: [ nomPlUsers, andNomPlUsersPlus ] })
+// // (people I and/or) {user} or {user} (follow)
+var unionNomPlUsersPlus = g.newBinaryRule({ RHS: [ conjunctions.union, nomPlUsersPlus ] })
+nomPlUsersPlus.addRule({ RHS: [ nomPlUsers, unionNomPlUsersPlus ], semantic: conjunctions.unionSemantic })
+
+user.nomUsersPlus = g.newSymbol(nomUsers.name + '+')
+// (people) I follow
+user.nomUsersPlus.addRule({ RHS: [ nomUsers ] })
+// (people) I and {user} follow
+user.nomUsersPlus.addRule({ RHS: [ nomPlUsers, andNomPlUsersPlus ], personNumber: 'pl' })
+// (people) I or {user} follow
+user.nomUsersPlus.addRule({ RHS: [ nomPlUsers, unionNomPlUsersPlus ], personNumber: 'pl', semantic: conjunctions.unionSemantic })
 
 
 // (repos) I <stop> (created)
-user.nomUsersPreVerbStopWords = g.newBinaryRule({ RHS: [ user.nomUsers, stopWords.preVerb ] })
+user.nomUsersPreVerbStopWords = g.newBinaryRule({ RHS: [ nomUsers, stopWords.preVerb ] })
 
 // (repos) I <stop> (contributed to)
-user.nomUsersPlusPreVerbStopWords = g.newSymbol('nom', 'users', 'plus', 'pre', 'verb', 'stop', 'words')
+user.nomUsersPlusPreVerbStopWords = g.newSymbol('nom', 'users', 'plus', stopWords.preVerb.name)
 user.nomUsersPlusPreVerbStopWords.addRule({ RHS: [ user.nomUsersPlus, stopWords.preVerb ] })
 
 

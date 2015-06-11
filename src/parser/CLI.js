@@ -438,6 +438,13 @@ var testQueries = [
 	'people I and {user} follow', // intentionally wrong
 	'issues with <int> comments', // intentionally wrong
 	'my repos me people who follow my followers have been and',
+	'people my followers who created repositories of my followers followers of mine who I follow like follow',
+	'contributors to my repos or repos I like or Danny likes',
+	'repos I like or I created',
+	'repos I or Danny like',
+	'repos I or Danny or my followers like',
+	'repos I or Danny and my followers like',
+	'repos I or Danny created',
 	// 'repos danny by me', // intentionally wrong - requires implementation of deletions
 	// 'repos danny by me danny', // intentionally wrong - requires implementation of deletions
 	// 'repos that I created I like', // intentionally wrong
