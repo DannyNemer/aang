@@ -19,25 +19,16 @@ exports.union.addWord({
 })
 
 // Create rules for "and" + "or" to surround 'symbol'
-// Assign gloss property if passed; e.g., [nom-users]: (people) I and/or {user} follow
-exports.addForSymbol = function (symbol, glossProperty) {
+exports.addForSymbol = function (symbol) {
 	// (people who follow) [obj-users]
 	var symbolPlus = g.newSymbol(symbol.name + '+')
 	symbolPlus.addRule({ RHS: [ symbol ] })
 
 	// (people who follow) [obj-users] and [obj-users+]
-	var andRule = { RHS: [ symbol, [ exports.and, symbolPlus ] ] }
-	for (var gloss in glossProperty) {
-		andRule[gloss] = glossProperty[gloss]
-	}
-	symbolPlus.addRule(andRule)
+	symbolPlus.addRule({ RHS: [ symbol, [ exports.and, symbolPlus ] ] })
 
 	// (people who follow) [obj-users] or [obj-users+]
-	var orRule = { RHS: [ symbol, [ exports.union, symbolPlus ] ], semantic: exports.unionSemantic }
-	for (var gloss in glossProperty) {
-		orRule[gloss] = glossProperty[gloss]
-	}
-	symbolPlus.addRule(orRule)
+	symbolPlus.addRule({ RHS: [ symbol, [ exports.union, symbolPlus ] ], semantic: exports.unionSemantic })
 
 	return symbolPlus
 }
