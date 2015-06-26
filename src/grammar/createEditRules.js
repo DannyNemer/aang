@@ -40,15 +40,18 @@ function findTermRuleInsertions(insertions) {
 				if (termSym === g.emptySymbol) { // Empty-string
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost,
-						insertedSyms: [ { symbol: termSym } ],
-						text: []
+						// Yet to use with text
+						text: rule.text ? [ rule.text ] : [],
+						// Yet to be used
+						semantic: rule.semantic,
+						insertedSyms: [ { symbol: termSym } ]
 					})
 				} else if (rule.insertionCost !== undefined) {
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost + rule.insertionCost,
-						insertedSyms: [ { symbol: termSym } ],
 						text: [ rule.text ],
-						semantic: rule.semantic
+						semantic: rule.semantic,
+						insertedSyms: [ { symbol: termSym } ]
 					})
 				}
 			}
@@ -76,8 +79,10 @@ function findNontermRulesProducingInsertions(insertions) {
 							return {
 								cost: insertion.cost,
 								text: insertion.text,
-								semantic: insertion.semantic,
+								gramCase: insertion.gramCase,
+								verbForm: insertion.verbForm,
 								personNumber: insertion.personNumber,
+								semantic: insertion.semantic,
 								insertedSyms: [ { symbol: sym, children: insertion.insertedSyms } ]
 							}
 						})
@@ -93,10 +98,12 @@ function findNontermRulesProducingInsertions(insertions) {
 								mergedInsertions.push({
 									cost: A.cost + B.cost,
 									text: A.text.concat(B.text),
-									semantic: A.semantic || B.semantic,
-									// Person-number only needed for 1st for 2 RHS syms: nominative case (verb precedes subject)
-									// Only used for conjugation of current rule
+									// Yet to use gramCase on a binary reduction
+									gramCase: A.gramCase || B.gramCase,
+									verbForm: A.verbForm || B.verbForm,
+									// Person-number only needed for 1st of 2 RHS syms: nominative case (verb precedes subject)
 									personNumber: A.personNumber,
+									semantic: A.semantic || B.semantic,
 									insertedSyms: A.insertedSyms.concat(B.insertedSyms)
 								})
 							})
@@ -107,31 +114,31 @@ function findNontermRulesProducingInsertions(insertions) {
 					}).forEach(function (insertion) {
 						// Add each insertion the can be produced from the RHS
 
-						var newSemantic
-						if (rule.semantic && insertion.semantic) {
-							newSemantic = semantic.insertSemantic(rule.semantic, insertion.semantic)
-						} else if (rule.semantic) {
-							newSemantic = rule.semantic
-							// Only needed if allowing insertions through <empty> in transpositions
-							// A function without an arugment - currently can only be intersect()
-							// e.g., "issues opened by people"
-							if (!rule.semanticIsRHS) return
-						} else {
-							newSemantic = insertion.semantic
-						}
-
-						// Temp hack:
-						var noConjugation = insertion.text.join(' ') === conjugateText(rule, insertion).join(' ')
-
-						addInsertion(insertions, nontermSym, {
+						var newInsertion = {
 							cost: rule.cost + insertion.cost,
-							text: conjugateText(rule, insertion),
-							semantic: newSemantic,
-							// Person-number only traverses up for 1-to-1; person-number used on first 1-to-2
-							// personNumber: rule.RHS.length === 1 ? (rule.personNumber || insertion.personNumber) : (noConjugation ? rule.personNumber : undefined),
+							// Grammatical properties traverse up tree, and are deleted from object when used in conjugation
+							gramCase: rule.gramCase || insertion.gramCase,
+							verbForm: rule.verbForm || insertion.verbForm,
 							personNumber: rule.personNumber || insertion.personNumber,
 							insertedSyms: insertion.insertedSyms
-						})
+						}
+
+						// Define and conjugate text after determining grammatical properties above
+						newInsertion.text = conjugateText(insertion.text, newInsertion)
+
+						if (rule.semantic && insertion.semantic) {
+							newInsertion.semantic = semantic.insertSemantic(rule.semantic, insertion.semantic)
+						} else if (rule.semantic) {
+							newInsertion.semantic = rule.semantic
+							// Only needed if allowing insertions through <empty> in transpositions
+							// A function without an argument - currently can only be intersect()
+							// E.g., "issues opened by people"
+							if (!rule.semanticIsRHS) return
+						} else {
+							newInsertion.semantic = insertion.semantic
+						}
+
+						addInsertion(insertions, nontermSym, newInsertion)
 					})
 				}
 			})
@@ -203,7 +210,7 @@ function createRulesFromInsertions(insertions) {
 							var newRule = {
 								RHS: [ otherSym ],
 								cost: rule.cost + insertion.cost,
-								insertedSyms: [ { symbol: sym, children: insertion.insertedSyms } ],
+								insertedSyms: [ { symbol: sym, children: insertion.insertedSyms } ]
 							}
 
 							if (insertion.semantic) {
@@ -224,38 +231,25 @@ function createRulesFromInsertions(insertions) {
 							}
 
 							// Discard rule if lacks and cannot produce a RHS semantic needed by this rule or an ancestor
-							var parsingStack
-							if (parsingStack = ruleMissingNeededRHSSemantic(newRule, lhsSym)) {
-								// util.printErr('Rule will not produce needed RHS semantic')
+							var parsingStack = ruleMissingNeededRHSSemantic(newRule, lhsSym)
+							if (parsingStack) {
+								// util.printErr('Rule will not produce needed RHS semantic:')
 								// util.log(parsingStack)
 								return
 							}
 
-							// Empty-strings don't produce text or semantics (for now)
+							// Grammatical properties traverse up tree, and are deleted from object when used in conjugation
+							// Yet to use gramCase on a binary reduction
+							newRule.gramCase = rule.gramCase || insertion.gramCase
+							newRule.verbForm = rule.verbForm || insertion.verbForm
+							// Person-number only needed for 1st of 2 RHS syms: nominative case (verb precedes subject)
+							// Otherwise, the property is for when this lhsSym is used in a reduction (not this text)
+							newRule.personNumber = symIdx === 0 ? (rule.personNumber || insertion.personNumber) : rule.personNumber
+
+							// Empty-strings don't produce text
 							if (insertion.text[0]) {
 								newRule.insertionIdx = symIdx
-								newRule.text = conjugateText(rule, insertion)
-								// If insertion.personNumber or rule.personNumber exists, conjugation will occur on this rule
-								// - Could conjugate now, but keep to check input (if multiple forms of inflection accepted)
-
-								// symIdx === 1:
-								// - (that) [have] been liked -> (that) have been liked
-								// - (who) [follow] me -> (who) follow me
-								// --- need rule.personNumber to conjugate [have]
-								// symIdx === 0:
-								// - [nom-users] like/likes
-
-								// Currently needlessly saves for [have] (been) in rule above after [have] conjugated (because personNumber on a fork, and travels up 1-1)
-								newRule.personNumber = symIdx === 1 ? rule.personNumber : insertion.personNumber
-
-								// [followed] (by me) -> followed (by me)
-								// Currently needlessly saves for "[have] (liked)", where verbForm already conjugated "liked"
-								// No conjugation - temp hack
-								if (insertion.text.join(' ') === newRule.text.join(' ')) {
-									newRule.verbForm = rule.verbForm
-								}
-							} else {
-								newRule.personNumber = rule.personNumber
+								newRule.text = conjugateText(insertion.text, newRule)
 							}
 
 							if (!ruleExists(symRules, newRule)) {
@@ -294,85 +288,52 @@ function createRulesFromTranspositions() {
 // - person-number -> check insertion of preceding branch (1st of two RHS branches)
 // - other -> replace unaccepted synonyms
 // Concatenate adjacent strings
-function conjugateText(rule, insertion) {
-	if (rule.RHS.length === 1) {
-		// Grammatical case check only occurs in 1->1 rules
-		return insertion.text.reduce(function (textArray, text) {
-			// Already conjugated, or no conjugation needed (e.g., noun, preposition)
-			if (typeof text === 'string') {
-				// Concatenate string to prev element if also a string
-				var lastIdx = textArray.length - 1
-				if (typeof textArray[lastIdx] === 'string') {
-					textArray[lastIdx] += ' ' + text
-				} else {
-					textArray.push(text)
-				}
-			}
-
-			// Objective vs. nominative case: "me" vs. "I"
-			else if (rule.gramCase) {
-				if (!text[rule.gramCase]) throw 'looking for a gram case'
-				textArray.push(text[rule.gramCase])
-			}
-
-			else {
-				util.log(text, rule, insertion)
-				throw 'text cannot be conjugated'
-			}
-
-			return textArray
-		}, [])
-	} else {
-		// Tense and person-number check only occurs in 1->2 rules
-		return insertion.text.reduce(function (textArray, text) {
-			// Already conjugated, or no conjugation needed (e.g., noun, preposition)
-			if (typeof text === 'string') {
-				// Concatenate string to prev element if also a string
-				var lastIdx = textArray.length - 1
-				if (typeof textArray[lastIdx] === 'string') {
-					textArray[lastIdx] += ' ' + text
-				} else {
-					textArray.push(text)
-				}
-			}
-
-			// Past tense
-			// - Precedes person number: "I have liked" vs. "I have like" (though, now order doesn't matter)
-			// - Does not fail when text cannot conjugate - does not have to apply to every verb it sees:
-			// --- "[have] liked" - past-tense applies to "liked", not [have]
-			else if (rule.verbForm && text[rule.verbForm]) {
-				textArray.push(text[rule.verbForm])
-			}
-
-			// Could combine verbForm and personNumber because never applied at same time
-			// -- But waiting until making more rules
-
-			// First person, vs. third person singular, vs. plural
-			// - Only used on 1-to-2, where first of two branches determines person-number of second branch
-			// - Only applies to 2nd of 2 RHS branches
-			else if (insertion.personNumber) {
-				if (!text[insertion.personNumber]) throw 'looking for a personNumber'
-				textArray.push(text[insertion.personNumber])
-			}
-
-			// (that) [have] been -> (that) have been
-			// (who) [follow] me -> (who) follow me
-			// - Only applies to 1st of 2 RHS branches
-			else if (rule.personNumber) {
-				if (!text[rule.personNumber]) throw 'looking for a personNumber'
-				textArray.push(text[rule.personNumber])
-			}
-
-			// Text cannot yet be conjugated:
-			// - One of two RHS in new rule -> dependent on other RHS branch
-			// - [have] liked
-			else {
+// Delete grammatical properties from 'ruleProps' when used
+function conjugateText(insertionText, ruleProps) {
+	return insertionText.reduce(function (textArray, text) {
+		// Already conjugated, or no conjugation needed (e.g., noun, preposition)
+		if (text.constructor === String) {
+			// Concatenate string to previous element if also a string
+			var lastIdx = textArray.length - 1
+			if (lastIdx !== -1 && textArray[lastIdx].constructor === String) {
+				textArray[lastIdx] += ' ' + text
+			} else {
 				textArray.push(text)
 			}
+		}
 
-			return textArray
-		}, [])
-	}
+		// Past tense
+		// - Precedes person number: "I have liked" vs. "I have like" (though, now order doesn't matter)
+		// - Does not fail when text cannot conjugate - does not have to apply to every verb it sees:
+		// --- "[have] liked" - past-tense applies to "liked", not [have]
+		// --- ^^ This is why verbForm and personNumber cannot be combined
+		else if (ruleProps.verbForm && text[ruleProps.verbForm]) {
+			textArray.push(text[ruleProps.verbForm])
+			delete ruleProps.verbForm
+		}
+
+		// First person, vs. third person singular, vs. plural
+		// - Only used on 1-to-2, where first of two branches determines person-number of second branch
+		else if (ruleProps.personNumber && text[ruleProps.personNumber]) {
+			textArray.push(text[ruleProps.personNumber])
+			delete ruleProps.personNumber
+		}
+
+		// Objective vs. nominative case: "me" vs. "I"
+		else if (ruleProps.gramCase && text[ruleProps.gramCase]) {
+			textArray.push(text[ruleProps.gramCase])
+			delete ruleProps.gramCase
+		}
+
+		// Text cannot yet be conjugated:
+		// - One of two RHS in new rule -> dependent on other RHS branch
+		// - [have] liked
+		else {
+			textArray.push(text)
+		}
+
+		return textArray
+	}, [])
 }
 
 // Throw err if new rule generated from insertion(s), empty-string(s), or a transposition is a duplicate of an existing rule
