@@ -47,6 +47,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 				// Stop when 'node' is a node
 				if (node.constructor === Object) break
 
+				item.text = item.text.slice() // Copy because shared amongst other trees
 				if (node.constructor === Array) {
 					// Conjugate text of inserted branches which are the second of 2 RHS symbols
 					// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
@@ -55,9 +56,9 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 					// Ignore possibility of ruleProps being copied more than once
 					// - Occurence so rare that setting an extra variable to check if copied costs more time than saved
 					item.ruleProps = item.ruleProps.slice()
-					item.text = item.text.concat(conjugateTextArray(item.ruleProps, node.slice()))
+					Array.prototype.push.apply(item.text, conjugateTextArray(item.ruleProps, node.slice()))
 				} else {
-					item.text = item.text.concat(node)
+					item.text.push(node)
 				}
 			}
 
@@ -138,18 +139,15 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				return -1
 			}
 
-			newItem.prevSemantics = item.prevSemantics.concat({
-				semantic: newSemantic,
-				nextNodesLen: item.nextNodesLen
-			})
-			newItem.prevSemantics.push(ruleProps.insertedSemantic)
+			newItem.prevSemantics = item.prevSemantics.slice()
+			newItem.prevSemantics.push({ semantic: newSemantic, nextNodesLen: item.nextNodesLen }, ruleProps.insertedSemantic)
 		} else if (newSemantic) {
 			var prevSemantic = item.prevSemantics[item.prevSemantics.length - 1]
 
 			if (ruleProps.semanticIsRHS) {
 				if (prevSemantic.constructor === Object) { // LHS
 					newItem.prevSemantics = item.prevSemantics.slice()
-					newItem.prevSemantics.push(newSemantic) // cannot concat because semantic is array
+					newItem.prevSemantics.push(newSemantic)
 				} else {
 					newSemantic = semantic.mergeRHS(prevSemantic, newSemantic)
 					if (newSemantic === -1) return -1
@@ -162,10 +160,8 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 					return -1
 				}
 
-				newItem.prevSemantics = item.prevSemantics.concat({
-					semantic: newSemantic,
-					nextNodesLen: item.nextNodesLen
-				})
+				newItem.prevSemantics = item.prevSemantics.slice()
+				newItem.prevSemantics.push({ semantic: newSemantic, nextNodesLen: item.nextNodesLen })
 			}
 		} else {
 			newItem.prevSemantics = item.prevSemantics
@@ -176,22 +172,24 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 		if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
 			// might copy array twice because copied in conjugation
-			newItem.ruleProps = newItem.ruleProps.concat(ruleProps)
+			newItem.ruleProps = newItem.ruleProps.slice()
+			newItem.ruleProps.push(ruleProps)
 		}
 
+		var text = ruleProps.text
 		if (ruleProps.insertionIdx === 1) {
 			// Conjugate text after completing first branch in this binary reduction
 			// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
 			newItem.nextNodes = newItem.nextNodes.slice()
-			newItem.nextNodes.push(ruleProps.text) // cannot concat because will alter text array
+			newItem.nextNodes.push(text)
 			newItem.text = item.text
 		} else {
-			var text = ruleProps.text
+			newItem.text = item.text.slice()
 			if (text.constructor === Array) {
 				newItem.ruleProps = newItem.ruleProps.slice()
-				newItem.text = item.text.concat(conjugateTextArray(newItem.ruleProps, text.slice()))
+				Array.prototype.push.apply(newItem.text, conjugateTextArray(newItem.ruleProps, text.slice()))
 			} else {
-				newItem.text = item.text.concat(text)
+				newItem.text.push(text)
 			}
 		}
 	}
@@ -203,7 +201,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				if (ruleProps.semanticIsRHS) {
 					// Last in prevSemantics is always LHS (so far we have seen)
 					newItem.prevSemantics = item.prevSemantics.slice()
-					newItem.prevSemantics.push(newSemantic) // cannot concat because semantic is array
+					newItem.prevSemantics.push(newSemantic)
 				} else {
 					// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
 					var prevSemantic = item.prevSemantics[item.prevSemantics.length-1]
@@ -211,10 +209,8 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 						return -1
 					}
 
-					newItem.prevSemantics = item.prevSemantics.concat({
-						semantic: newSemantic,
-						nextNodesLen: item.nextNodesLen
-					})
+					newItem.prevSemantics = item.prevSemantics.slice()
+					newItem.prevSemantics.push({ semantic: newSemantic, nextNodesLen: item.nextNodesLen })
 				}
 			} else {
 				newItem.prevSemantics = item.prevSemantics
@@ -224,12 +220,14 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 			// Can go before text conjugation because there won't be inflection properties on a terminal rule
 			if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
-				newItem.ruleProps = newItem.ruleProps.concat(ruleProps)
+				newItem.ruleProps = newItem.ruleProps.slice()
+				newItem.ruleProps.push(ruleProps)
 			}
 
 			// All binary rules are nonterminal rules (hence, within sub.node.subs) - might change with reduceForest
 			if (sub.next) {
-				newItem.nextNodes = newItem.nextNodes.concat(sub.next.node)
+				newItem.nextNodes = newItem.nextNodes.slice()
+				newItem.nextNodes.push(sub.next.node)
 				newItem.nextNodesLen++
 			}
 		} else {
@@ -276,7 +274,8 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				text = conjugateText(newItem.ruleProps, text)
 			}
 
-			newItem.text = item.text.concat(text)
+			newItem.text = item.text.slice()
+			newItem.text.push(text)
 		} else {
 			newItem.text = item.text // stop words
 		}
