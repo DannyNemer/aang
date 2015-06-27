@@ -20,7 +20,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 		// Used as marker of when can merge with LHS semantic -> have completed full branch
 		nextNodesLen: 0,
 		prevSemantics: [], // Semantics
-		ruleProps: [], // Properties for conjugation
+		gramProps: [], // Properties for conjugation
 		text: [],
 		costSoFar: 0,
 		cost: 0
@@ -51,12 +51,12 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 					// Conjugate text of inserted branches which are the second of 2 RHS symbols
 					// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
 
-					// Copy ruleProps and text because will mutate when conjugating
-					// Ignore possibility of ruleProps being copied more than once
+					// Copy gramProps and text because will mutate when conjugating
+					// Ignore possibility of gramProps being copied more than once
 					// - Occurence so rare that setting an extra variable to check if copied costs more time than saved
-					item.ruleProps = item.ruleProps.slice()
+					item.gramProps = item.gramProps.slice()
 					// concat() is faster here than slice() + push.apply()
-					item.text = item.text.concat(conjugateTextArray(item.ruleProps, node.slice()))
+					item.text = item.text.concat(conjugateTextArray(item.gramProps, node.slice()))
 				} else {
 					item.text = item.text.slice()
 					item.text.push(node)
@@ -120,7 +120,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 	var newItem = {
 		nextNodes: item.nextNodes,
 		nextNodesLen: item.nextNodesLen,
-		ruleProps: item.ruleProps,
+		gramProps: item.gramProps,
 		costSoFar: newCost,
 		cost: newCost + sub.minCost
 	}
@@ -171,10 +171,10 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 		newItem.node = sub.node
 
-		if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
+		if (ruleProps.gramProps) {
 			// might copy array twice because copied in conjugation
-			newItem.ruleProps = newItem.ruleProps.slice()
-			newItem.ruleProps.push(ruleProps)
+			newItem.gramProps = newItem.gramProps.slice()
+			newItem.gramProps.push(ruleProps.gramProps)
 		}
 
 		var text = ruleProps.text
@@ -186,9 +186,9 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			newItem.text = item.text
 		} else {
 			if (text.constructor === Array) {
-				newItem.ruleProps = newItem.ruleProps.slice()
+				newItem.gramProps = newItem.gramProps.slice() // Possibly copied twice because above
 				// concat() is faster here than slice() + push.apply()
-				newItem.text = item.text.concat(conjugateTextArray(newItem.ruleProps, text.slice()))
+				newItem.text = item.text.concat(conjugateTextArray(newItem.gramProps, text.slice()))
 			} else {
 				newItem.text = item.text.slice()
 				newItem.text.push(text)
@@ -221,9 +221,9 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			newItem.node = sub.node
 
 			// Can go before text conjugation because there won't be inflection properties on a terminal rule
-			if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
-				newItem.ruleProps = newItem.ruleProps.slice()
-				newItem.ruleProps.push(ruleProps)
+			if (ruleProps.gramProps) {
+				newItem.gramProps = newItem.gramProps.slice()
+				newItem.gramProps.push(ruleProps.gramProps)
 			}
 
 			// All binary rules are nonterminal rules (hence, within sub.node.subs) - might change with reduceForest
@@ -272,8 +272,8 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 		var text = ruleProps.text
 		if (text) {
 			if (text.constructor === Object) {
-				newItem.ruleProps = newItem.ruleProps.slice()
-				text = conjugateText(newItem.ruleProps, text)
+				newItem.gramProps = newItem.gramProps.slice()
+				text = conjugateText(newItem.gramProps, text)
 			}
 
 			newItem.text = item.text.slice()
@@ -289,47 +289,47 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 // Called for insertion rules, which contain an array for text with symbol(s) needing conjugation
 // - Traverses array and conjugates each text Object
 // textArray is a ruleProps.text
-function conjugateTextArray(rulePropsArray, textArray) {
+function conjugateTextArray(gramPropsArray, textArray) {
 	for (var t = textArray.length; t-- > 0;) {
 		var text = textArray[t]
 		if (text.constructor === Object) {
-			textArray[t] = conjugateText(rulePropsArray, text)
+			textArray[t] = conjugateText(gramPropsArray, text)
 		}
 	}
 
 	return textArray
 }
 
-// Must copy rulePropsArray and text before passing to prevent mutation from affecting other trees
+// Must copy gramPropsArray and text before passing to prevent mutation from affecting other trees
 // Loop through from end of array, find rule most recently added
 // NOTE: does not allow for the same grammatical property to apply to be used in multiple places. Deletion of property occurs afer use.
-function conjugateText(rulePropsArray, text) {
-	for (var r = rulePropsArray.length; r-- > 0;) {
-		var ruleProps = rulePropsArray[r]
+function conjugateText(gramPropsArray, text) {
+	for (var r = gramPropsArray.length; r-- > 0;) {
+		var gramProps = gramPropsArray[r]
 
-		var verbForm = ruleProps.verbForm
+		var verbForm = gramProps.verbForm
 		if (verbForm && text[verbForm]) {
-			rulePropsArray.splice(r, 1)
+			gramPropsArray.splice(r, 1)
 			return text[verbForm]
 		}
 
-		var personNumber = ruleProps.personNumber
+		var personNumber = gramProps.personNumber
 		if (personNumber && text[personNumber]) {
-			rulePropsArray.splice(r, 1)
+			gramPropsArray.splice(r, 1)
 			return text[personNumber]
 		}
 
-		var gramCase = ruleProps.gramCase
+		var gramCase = gramProps.gramCase
 		if (gramCase && text[gramCase]) {
 			// rule with gramCase either has personNumber for nominative (so will be needed again), or doesn't have personNumer (For obj) and can be deleted
-			if (!personNumber) rulePropsArray.splice(r, 1)
+			if (!personNumber) gramPropsArray.splice(r, 1)
 
 			return text[gramCase]
 		}
 	}
 
 	util.logTrace()
-	util.log('Failed to conjugate:', text, rulePropsArray)
+	util.log('Failed to conjugate:', text, gramPropsArray)
 }
 
 // Determine if newly parsed tree has a unique semantic and unique display text

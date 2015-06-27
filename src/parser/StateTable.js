@@ -103,15 +103,29 @@ function createRuleProps(origRule) {
 	}
 
 	if (origRule.verbForm !== undefined) {
-		ruleProps.verbForm = origRule.verbForm
+		ruleProps.gramProps = {
+			verbForm: origRule.verbForm
+		}
 	}
 
 	if (origRule.personNumber !== undefined) {
-		ruleProps.personNumber = origRule.personNumber
+		if (ruleProps.gramProps) {
+			ruleProps.gramProps.personNumber = origRule.personNumber
+		} else {
+			ruleProps.gramProps = {
+				personNumber: origRule.personNumber
+			}
+		}
 	}
 
 	if (origRule.gramCase !== undefined) {
-		ruleProps.gramCase = origRule.gramCase
+		if (ruleProps.gramProps) {
+			ruleProps.gramProps.gramCase = origRule.gramCase
+		} else {
+			ruleProps.gramProps = {
+				gramCase: origRule.gramCase
+			}
+		}
 	}
 
 	if (origRule.intMin !== undefined) {
