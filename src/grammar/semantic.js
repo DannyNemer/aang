@@ -127,8 +127,7 @@ exports.mergeRHS = function (A, B) {
 	}
 
 	// Do not need to sort because will be sorted when added to a LHS
-	// And every one with the RHS (being check for dup) has been added to RHS
-
+	// concat() is faster here than slice() + push.apply()
 	return A.concat(B)
 }
 

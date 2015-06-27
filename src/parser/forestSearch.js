@@ -47,7 +47,6 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 				// Stop when 'node' is a node
 				if (node.constructor === Object) break
 
-				item.text = item.text.slice() // Copy because shared amongst other trees
 				if (node.constructor === Array) {
 					// Conjugate text of inserted branches which are the second of 2 RHS symbols
 					// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
@@ -56,8 +55,10 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 					// Ignore possibility of ruleProps being copied more than once
 					// - Occurence so rare that setting an extra variable to check if copied costs more time than saved
 					item.ruleProps = item.ruleProps.slice()
-					Array.prototype.push.apply(item.text, conjugateTextArray(item.ruleProps, node.slice()))
+					// concat() is faster here than slice() + push.apply()
+					item.text = item.text.concat(conjugateTextArray(item.ruleProps, node.slice()))
 				} else {
+					item.text = item.text.slice()
 					item.text.push(node)
 				}
 			}
@@ -184,11 +185,12 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			newItem.nextNodes.push(text)
 			newItem.text = item.text
 		} else {
-			newItem.text = item.text.slice()
 			if (text.constructor === Array) {
 				newItem.ruleProps = newItem.ruleProps.slice()
-				Array.prototype.push.apply(newItem.text, conjugateTextArray(newItem.ruleProps, text.slice()))
+				// concat() is faster here than slice() + push.apply()
+				newItem.text = item.text.concat(conjugateTextArray(newItem.ruleProps, text.slice()))
 			} else {
+				newItem.text = item.text.slice()
 				newItem.text.push(text)
 			}
 		}
