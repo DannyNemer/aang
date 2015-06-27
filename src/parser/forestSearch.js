@@ -45,11 +45,20 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 				node = item.nextNodes[n]
 
 				// Stop when 'node' is a node
-				if (node.sym) break
+				if (node.constructor === Object) break
 
-				// we are copying item.ruleProps every time, should only be once
-				// Conjugate all nominative cases of text until find a node
-				item.text = item.text.concat(conjugateTextArray(item, node))
+				if (node.constructor === Array) {
+					// Conjugate text of inserted branches which are the second of 2 RHS symbols
+					// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
+
+					// Copy ruleProps and text because will mutate when conjugating
+					// Ignore possibility of ruleProps being copied more than once
+					// - Occurence so rare that setting an extra variable to check if copied costs more time than saved
+					item.ruleProps = item.ruleProps.slice()
+					item.text = item.text.concat(conjugateTextArray(item.ruleProps, node.slice()))
+				} else {
+					item.text = item.text.concat(node)
+				}
 			}
 
 			// No nodes remain; tree construction complete
@@ -165,20 +174,25 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 		newItem.node = sub.node
 
-		if (ruleProps.insertionIdx === 1) {
-			// cannot concat because will alter text array
-			newItem.nextNodes = newItem.nextNodes.slice()
-			newItem.nextNodes.push(ruleProps.text)
-			newItem.text = item.text
-		} else {
-			// conjugates "have" - never person number, because only person number only nominative -> idx = 1
-			newItem.text = item.text.concat(conjugateTextArray(newItem, ruleProps.text))
-		}
-
-		// both can occur for both insertionIdx
-		if (ruleProps.personNumber || ruleProps.verbForm) {
+		if (ruleProps.personNumber || ruleProps.verbForm || ruleProps.gramCase) {
 			// might copy array twice because copied in conjugation
 			newItem.ruleProps = newItem.ruleProps.concat(ruleProps)
+		}
+
+		if (ruleProps.insertionIdx === 1) {
+			// Conjugate text after completing first branch in this binary reduction
+			// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
+			newItem.nextNodes = newItem.nextNodes.slice()
+			newItem.nextNodes.push(ruleProps.text) // cannot concat because will alter text array
+			newItem.text = item.text
+		} else {
+			var text = ruleProps.text
+			if (text.constructor === Array) {
+				newItem.ruleProps = newItem.ruleProps.slice()
+				newItem.text = item.text.concat(conjugateTextArray(newItem.ruleProps, text.slice()))
+			} else {
+				newItem.text = item.text.concat(text)
+			}
 		}
 	}
 
@@ -271,30 +285,23 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 	return newItem
 }
 
+// Called for insertion rules, which contain an array for text with symbol(s) needing conjugation
+// - Traverses array and conjugates each text Object
 // textArray is a ruleProps.text
-function conjugateTextArray(item, textArray) {
-	var arraysCopied = false
-
-	for (var t = 0, textArrayLen = textArray.length; t < textArrayLen; ++t) {
+function conjugateTextArray(rulePropsArray, textArray) {
+	for (var t = textArray.length; t-- > 0;) {
 		var text = textArray[t]
 		if (text.constructor === Object) {
-			if (!arraysCopied) {
-				textArray = textArray.slice()
-				item.ruleProps = item.ruleProps.slice()
-				arraysCopied = true
-			}
-
-			// FIX: if we are conjugating multiple things in the array, then we should not edit it after each
-			// should apply same rule to multiple objs
-			// If so, would need to iterate through textArray WITHIN ruleProps,
-			// maybe not, could lead to wrong ruleProps being applied
-			textArray[t] = conjugateText(item.ruleProps, text)
+			textArray[t] = conjugateText(rulePropsArray, text)
 		}
 	}
 
 	return textArray
 }
 
+// Must copy rulePropsArray and text before passing to prevent mutation from affecting other trees
+// Loop through from end of array, find rule most recently added
+// NOTE: does not allow for the same grammatical property to apply to be used in multiple places. Deletion of property occurs afer use.
 function conjugateText(rulePropsArray, text) {
 	for (var r = rulePropsArray.length; r-- > 0;) {
 		var ruleProps = rulePropsArray[r]

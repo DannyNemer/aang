@@ -249,7 +249,14 @@ function createRulesFromInsertions(insertions) {
 							// Empty-strings don't produce text
 							if (insertion.text[0]) {
 								newRule.insertionIdx = symIdx
-								newRule.text = conjugateText(insertion.text, newRule)
+
+								// Save text as an array only if needs conjugations (contains Object)
+								var text = conjugateText(insertion.text, newRule)
+								if (text.length === 1 && text[0].constructor === String) {
+									newRule.text = text[0]
+								} else {
+									newRule.text = text
+								}
 							}
 
 							if (!ruleExists(symRules, newRule)) {
