@@ -173,6 +173,15 @@ exports.printErr = function () {
 	console.log.apply(null, arguments)
 }
 
+exports.printWarn = function () {
+	var firstArg = 'Warn: ' + arguments[0]
+	if (arguments[1] !== undefined && firstArg[firstArg.length - 1] !== ':') {
+		firstArg += ':'
+	}
+	arguments[0] = colors.yellow(firstArg)
+	console.log.apply(null, arguments)
+}
+
 // Prints error message (concatenation of arguments) and line from which the parent function was called
 exports.printErrWithLine = function () {
 	exports.printErr.apply(null, arguments)

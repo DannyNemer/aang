@@ -47,9 +47,9 @@ exports.checkForUnusedSymbols = function () {
 			}
 		}
 
-		util.printErr('Unused symbol', symbolName)
+		util.printWarn('Unused symbol', symbolName)
 		console.log(symbol.creationLines[symbolName])
-		throw 'unused symbol'
+		// throw 'unused symbol'
 	})
 }
 
@@ -63,9 +63,9 @@ exports.checkForUnusedEntityCategories = function () {
 			}
 		}
 
-		util.printErr('Unused entity category', categorySymbolName)
+		util.printWarn('Unused entity category', categorySymbolName)
 		console.log(entityCategory.creationLines[categorySymbolName])
-		throw 'unused entity category'
+		// throw 'unused entity category'
 	})
 }
 
@@ -92,9 +92,9 @@ exports.checkForUnusedSemantics = function () {
 			}
 		}
 
-		util.printErr('Unused semantic', semanticName)
+		util.printWarn('Unused semantic', semanticName)
 		console.log(semantic.creationLines[semanticName])
-		throw 'unused semantic'
+		// throw 'unused semantic'
 	})
 }
 
