@@ -91,7 +91,9 @@ exports.costOfSemantic = function (semanticArray) {
 	}, 0)
 }
 
-// A and B both always exist
+
+// Combines two semantics into a new array
+// Returns -1 if union of semantics in a RHS contains duplicates
 exports.mergeRHS = function (A, B) {
 	// Check for duplicates
 	var BLength = B.length
@@ -131,8 +133,7 @@ exports.mergeRHS = function (A, B) {
 	return A.concat(B)
 }
 
-// Return true if the two semantics are identical (excluding children) through prevent
-// because duplicates of the semantic are forbidden
+// Return true if the two semantics are identical (excluding children) and duplicates are forbidden
 exports.forbiddenDups = function (A, B) {
 	var BLength = B.length
 	for (var i = A.length; i-- > 0;) {
@@ -148,6 +149,8 @@ exports.forbiddenDups = function (A, B) {
 	}
 }
 
+// Return true if passed semantics and their children are identical
+// Each semantic is a LHS
 function semanticsMatch(a, b) {
 	if (a === b) return true
 
@@ -160,6 +163,8 @@ function semanticsMatch(a, b) {
 	return true // args with same name
 }
 
+// Return true if passed arrays of semantics are identical
+// Each array is a RHS
 exports.semanticArraysMatch = function (a, b) {
 	// Same entity arrays
 	if (a === b) return true
@@ -218,10 +223,10 @@ exports.insertSemantic = function (LHS, RHS) {
 }
 
 
-// arguments before functions, functions and arguments separately sorted alphabetically, identical functions sorted by their arguments
-// if returns less than 0, sort a to a lower index than b
-// if returns greater than 0, sort b to a lower index than a
-// if returns 0, leave a and b unchanged with respect to each other
+// Sort semantics: Arguments before functions, functions and arguments separately sorted alphabetically, identical functions sorted by their arguments
+// If returns less than 0, sort a to a lower index than b
+// If returns greater than 0, sort b to a lower index than a
+// If returns 0, leave a and b unchanged with respect to each other
 function compareSemantics(a, b) {
 	var aIsObject = a.children !== undefined
 	var bIsObject = b.children !== undefined

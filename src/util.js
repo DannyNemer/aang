@@ -95,7 +95,8 @@ exports.getLine = function (getCallingLine) {
 	}
 
 	// Could not find line in stack for file from which funciton calling getLine() was called
-	console.log('sought-after line not found in stack trace (trace limited to 10 most recent\)')
+	// exports.printErr('Sought-after line not found in stack trace (trace limited to 10 most recent)')
+	// exports.logTrace()
 }
 
 // Returns true if arrays a and b are of the same length and same shallow-level contents

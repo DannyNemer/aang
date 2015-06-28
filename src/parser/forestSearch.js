@@ -19,10 +19,14 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 		// Number of elements in nextNodes, excluding text to append
 		// Used as marker of when can merge with LHS semantic -> have completed full branch
 		nextNodesLen: 0,
-		prevSemantics: [], // Semantics
-		gramProps: [], // Properties for conjugation
+		// Semantics
+		prevSemantics: [],
+		// Properties for conjugation
+		gramProps: [],
 		text: [],
+		// Cost of path
 		costSoFar: 0,
+		// Cost of path + cost of cheapest possible path that can follow
 		cost: 0
 	}
 
@@ -53,7 +57,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 
 					// Copy gramProps and text because will mutate when conjugating
 					// Ignore possibility of gramProps being copied more than once
-					// - Occurence so rare that setting an extra variable to check if copied costs more time than saved
+					// - Occurrence so rare that setting an extra variable to check if copied costs more time than saved
 					item.gramProps = item.gramProps.slice()
 					// concat() is faster here than slice() + push.apply()
 					item.text = item.text.concat(conjugateTextArray(item.gramProps, node.slice()))
@@ -91,14 +95,14 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 			if (ruleProps.constructor === Array) {
 				for (var r = 0, rulePropsLen = ruleProps.length; r < rulePropsLen; ++r) {
 					var newItem = createItem(sub, item, ruleProps[r], buildDebugTrees)
-					if (newItem === -1) continue // semantically illegal parse -> throw out
+					if (newItem === -1) continue // semantically illegal parse -> reject
 					heap.push(newItem)
 				}
 			}
 
 			else {
 				var newItem = createItem(sub, item, ruleProps, buildDebugTrees)
-				if (newItem === -1) continue // semantically illegal parse -> throw out
+				if (newItem === -1) continue // semantically illegal parse -> reject
 				heap.push(newItem)
 			}
 		}
@@ -121,7 +125,9 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 		nextNodes: item.nextNodes,
 		nextNodesLen: item.nextNodesLen,
 		gramProps: item.gramProps,
+		// Cost of path
 		costSoFar: newCost,
+		// Cost of path + cost of cheapest possible path that can follow
 		cost: newCost + sub.minCost
 	}
 
@@ -133,6 +139,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 	// Insertion
 	if (ruleProps.insertionIdx !== undefined) {
+		// If 'insertedSemantic' exists, then newSemantic also exists
 		if (ruleProps.insertedSemantic) {
 			// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
 			var prevSemantic = item.prevSemantics[item.prevSemantics.length-1]
@@ -146,10 +153,14 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			var prevSemantic = item.prevSemantics[item.prevSemantics.length - 1]
 
 			if (ruleProps.semanticIsRHS) {
-				if (prevSemantic.constructor === Object) { // LHS
+				// prevSemantic is LHS
+				if (prevSemantic.constructor === Object) {
 					newItem.prevSemantics = item.prevSemantics.slice()
 					newItem.prevSemantics.push(newSemantic)
-				} else {
+				}
+
+				// prevSemantic is RHS -> merge with new semantic
+				else {
 					newSemantic = semantic.mergeRHS(prevSemantic, newSemantic)
 					if (newSemantic === -1) return -1
 					newItem.prevSemantics = item.prevSemantics.slice(0, -1)
@@ -185,11 +196,15 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			newItem.nextNodes.push(text)
 			newItem.text = item.text
 		} else {
+			// Text requires conjugation
 			if (text.constructor === Array) {
 				newItem.gramProps = newItem.gramProps.slice() // Possibly copied twice because above
 				// concat() is faster here than slice() + push.apply()
 				newItem.text = item.text.concat(conjugateTextArray(newItem.gramProps, text.slice()))
-			} else {
+			}
+
+			// No conjugation
+			else {
 				newItem.text = item.text.slice()
 				newItem.text.push(text)
 			}
@@ -197,6 +212,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 	}
 
 	else {
+		// Nonterminal rule
 		if (sub.node.subs) {
 			if (newSemantic) {
 				// A RHS semantic not at the base of the branch because of forestReduction
@@ -220,7 +236,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 			newItem.node = sub.node
 
-			// Can go before text conjugation because there won't be inflection properties on a terminal rule
+			// Grammatical properties are only on nonterminal rules
 			if (ruleProps.gramProps) {
 				newItem.gramProps = newItem.gramProps.slice()
 				newItem.gramProps.push(ruleProps.gramProps)
@@ -232,7 +248,10 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				newItem.nextNodes.push(sub.next.node)
 				newItem.nextNodesLen++
 			}
-		} else {
+		}
+
+		// Terminal rule
+		else {
 			for (var p = item.prevSemantics.length; p-- > 0;) {
 				var prevSemantic = item.prevSemantics[p]
 
@@ -240,7 +259,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				if (prevSemantic.constructor === Array) {
 					if (newSemantic) {
 						newSemantic = semantic.mergeRHS(prevSemantic, newSemantic)
-						// Duplicates
+						// RHS contains duplicates
 						if (newSemantic === -1) return -1
 					} else {
 						newSemantic = prevSemantic
@@ -271,15 +290,16 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 		var text = ruleProps.text
 		if (text) {
+			newItem.text = item.text.slice()
 			if (text.constructor === Object) {
 				newItem.gramProps = newItem.gramProps.slice()
-				text = conjugateText(newItem.gramProps, text)
+				newItem.text.push(conjugateText(newItem.gramProps, text))
+			} else {
+				newItem.text.push(text)
 			}
-
-			newItem.text = item.text.slice()
-			newItem.text.push(text)
 		} else {
-			newItem.text = item.text // stop words
+			// Stop words - no text
+			newItem.text = item.text
 		}
 	}
 
@@ -302,7 +322,7 @@ function conjugateTextArray(gramPropsArray, textArray) {
 
 // Must copy gramPropsArray and text before passing to prevent mutation from affecting other trees
 // Loop through from end of array, find rule most recently added
-// NOTE: does not allow for the same grammatical property to apply to be used in multiple places. Deletion of property occurs afer use.
+// NOTE: Does not allow for same prop to be used in multiple places. Deletion of props occurs after single use.
 function conjugateText(gramPropsArray, text) {
 	for (var r = gramPropsArray.length; r-- > 0;) {
 		var gramProps = gramPropsArray[r]
@@ -379,7 +399,7 @@ function spliceTree(tree, sub, ruleProps) {
 	prevNode.children.push(newNode)
 	prevNode.props = ruleProps
 
-	// Nonterminal sym
+	// Nonterminal symbol
 	if (sub.node.subs) {
 		prevNodes.push(newNode)
 		newNode.children = []
