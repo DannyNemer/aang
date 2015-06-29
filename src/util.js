@@ -156,11 +156,21 @@ exports.count = function (key) {
 
 // Print count of 'key'
 exports.printCount = function (key) {
+	var label = (key || 'count') + ':'
 	if (counts.hasOwnProperty(key)) {
-		console.log((key || 'count') + ':', counts[key])
+		console.log(label, counts[key])
 		delete counts[key] // Reset count
 	} else {
-		exports.printErr('unrecognized counter key:', key)
+		console.log(label, 0)
+	}
+}
+
+// Print all counters
+// Will not print counters that are never reached (and never have their keys initialized)
+exports.printCounts = function () {
+	for (var key in counts) {
+		console.log((key || 'count') + ':', counts[key])
+		delete counts[key] // Reset count
 	}
 }
 
