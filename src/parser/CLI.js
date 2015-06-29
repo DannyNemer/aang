@@ -60,7 +60,7 @@ function parse(query, K) {
 			}
 			return trees
 		} else {
-			console.log('Failed to reach start node')
+			if (printOutput) console.log('Failed to reach start node')
 		}
 	})
 }
