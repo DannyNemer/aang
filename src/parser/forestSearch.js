@@ -23,7 +23,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 		prevSemantics: [],
 		// Properties for conjugation
 		gramProps: [],
-		text: [],
+		text: '',
 		// Cost of path
 		costSoFar: 0,
 		// Cost of path + cost of cheapest possible path that can follow
@@ -59,11 +59,9 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 					// Ignore possibility of gramProps being copied more than once
 					// - Occurrence so rare that setting an extra variable to check if copied costs more time than saved
 					item.gramProps = item.gramProps.slice()
-					// concat() is faster here than slice() + push.apply()
-					item.text = item.text.concat(conjugateTextArray(item.gramProps, node.slice()))
+					item.text += conjugateTextArray(item.gramProps, node)
 				} else {
-					item.text = item.text.slice()
-					item.text.push(node)
+					item.text += ' ' + node
 				}
 			}
 
@@ -199,14 +197,12 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			// Text requires conjugation
 			if (text.constructor === Array) {
 				newItem.gramProps = newItem.gramProps.slice() // Possibly copied twice because above
-				// concat() is faster here than slice() + push.apply()
-				newItem.text = item.text.concat(conjugateTextArray(newItem.gramProps, text.slice()))
+				newItem.text = item.text + conjugateTextArray(newItem.gramProps, text)
 			}
 
 			// No conjugation
 			else {
-				newItem.text = item.text.slice()
-				newItem.text.push(text)
+				newItem.text = item.text + ' ' + text
 			}
 		}
 	}
@@ -290,12 +286,11 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 		var text = ruleProps.text
 		if (text) {
-			newItem.text = item.text.slice()
 			if (text.constructor === Object) {
 				newItem.gramProps = newItem.gramProps.slice()
-				newItem.text.push(conjugateText(newItem.gramProps, text))
+				newItem.text = item.text + ' ' + conjugateText(newItem.gramProps, text)
 			} else {
-				newItem.text.push(text)
+				newItem.text = item.text + ' ' + text
 			}
 		} else {
 			// Stop words - no text
@@ -308,16 +303,20 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 // Called for insertion rules, which contain an array for text with symbol(s) needing conjugation
 // - Traverses array and conjugates each text Object
-// textArray is a ruleProps.text
+// Returns string concatenation of all elements, separated by spaces, prepended with a space
 function conjugateTextArray(gramPropsArray, textArray) {
-	for (var t = textArray.length; t-- > 0;) {
+	var concatStr = ''
+
+	for (var t = 0, textArrayLen = textArray.length; t < textArrayLen; ++t) {
 		var text = textArray[t]
 		if (text.constructor === Object) {
-			textArray[t] = conjugateText(gramPropsArray, text)
+			concatStr += ' ' + conjugateText(gramPropsArray, text)
+		} else {
+			concatStr += ' ' + text
 		}
 	}
 
-	return textArray
+	return concatStr
 }
 
 // Must copy gramPropsArray and text before passing to prevent mutation from affecting other trees
@@ -341,7 +340,8 @@ function conjugateText(gramPropsArray, text) {
 
 		var gramCase = gramProps.gramCase
 		if (gramCase && text[gramCase]) {
-			// rule with gramCase either has personNumber for nominative (so will be needed again), or doesn't have personNumer (For obj) and can be deleted
+			// Rule with gramCase either has personNumber for nominative (so will be needed again),
+			// or doesn't have personNumer (for objective) and can be deleted
 			if (!personNumber) gramPropsArray.splice(r, 1)
 
 			return text[gramCase]
@@ -369,7 +369,7 @@ function treeIsUnique(trees, item) {
 	// Semantic is new
 	// Check for duplicate display text
 	// If so, save new semantic to previous tree's disambiguation and return false to reject tree
-	var textStr = item.text.join(' ')
+	var textStr = item.text.slice(1)
 	for (var t = trees.length; t-- > 0;) {
 		var tree = trees[t]
 		if (tree.text === textStr) {
