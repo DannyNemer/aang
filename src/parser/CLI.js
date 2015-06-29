@@ -9,7 +9,7 @@ var stateTable = buildStateTable()
 
 
 var rl = require('readline').createInterface(process.stdin, process.stdout, function (line) {
-	var completions = [ '.test', '.logTest', '.conjugationTest', '.rebuild', '.deleteCache', '.stateTable', '.history', '.help', '.k', '.out', '.trees', '.costs', '.time', '.query', '.stack', '.forest', '.graph' ]
+	var completions = [ '.test', '.logTest', '.conjugationTest', '.rebuild', '.deleteCache', '.stateTable', '.history', '.help', '.k', '.runs', '.out', '.trees', '.costs', '.time', '.query', '.stack', '.forest', '.graph' ]
 
 	var hits = completions.filter(function (c) { return c.indexOf(line) === 0 })
 
@@ -68,6 +68,7 @@ function parse(query, K) {
 
 // Parser settings:
 var K = 7
+var testRuns = 1
 var printTime = false
 var printQuery = false
 var printOutput = true
@@ -95,9 +96,12 @@ function runCommand(input) {
 		if (printOutput) printQuery = true
 		else console.time('test')
 
-		testQueries.forEach(function (query) {
-			parse(query, 50)
-		})
+		var i = 0
+		while (i++ < testRuns) {
+			testQueries.forEach(function (query) {
+				parse(query, 50)
+			})
+		}
 
 		if (printOutput) printQuery = false
 		else console.timeEnd('test')
@@ -183,6 +187,12 @@ function runCommand(input) {
 		console.log('K:', K)
 	}
 
+	// Set number of times to cycle test queries on test
+	else if (args[0] === '.runs') {
+		if (!isNaN(args[1])) testRuns = Number(args[1])
+		console.log('test runs:', testRuns)
+	}
+
 	// Toggle printing parse output
 	else if (input === '.out') {
 		printOutput = !printOutput
@@ -245,6 +255,7 @@ function runCommand(input) {
 
 		console.log('\nParser settings:')
 		console.log('.k       K:', K)
+		console.log('.runs    cycles of test queries on test:', testRuns)
 		console.log('.out     print parse output:', printOutput)
 		console.log('.trees   print parse trees:', printTrees)
 		console.log('.costs   print parse costs:', printCost)
