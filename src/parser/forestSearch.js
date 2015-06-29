@@ -180,28 +180,36 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 		newItem.node = sub.node
 
-		if (ruleProps.gramProps) {
-			// might copy array twice because copied in conjugation
-			newItem.gramProps = newItem.gramProps.slice()
-			newItem.gramProps.push(ruleProps.gramProps)
-		}
-
 		var text = ruleProps.text
 		if (ruleProps.insertionIdx === 1) {
+			if (ruleProps.gramProps) {
+				newItem.gramProps = newItem.gramProps.slice()
+				newItem.gramProps.push(ruleProps.gramProps)
+			}
+
+			newItem.text = item.text
 			// Conjugate text after completing first branch in this binary reduction
 			// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
 			newItem.nextNodes = newItem.nextNodes.slice()
 			newItem.nextNodes.push(text)
-			newItem.text = item.text
 		} else {
 			// Text requires conjugation
 			if (text.constructor === Array) {
-				newItem.gramProps = newItem.gramProps.slice() // Possibly copied twice because above
+				newItem.gramProps = newItem.gramProps.slice()
+				if (ruleProps.gramProps) {
+					newItem.gramProps.push(ruleProps.gramProps)
+				}
+
 				newItem.text = item.text + conjugateTextArray(newItem.gramProps, text)
 			}
 
 			// No conjugation
 			else {
+				if (ruleProps.gramProps) {
+					newItem.gramProps = newItem.gramProps.slice()
+					newItem.gramProps.push(ruleProps.gramProps)
+				}
+
 				newItem.text = item.text + ' ' + text
 			}
 		}
@@ -319,7 +327,7 @@ function conjugateTextArray(gramPropsArray, textArray) {
 	return concatStr
 }
 
-// Must copy gramPropsArray and text before passing to prevent mutation from affecting other trees
+// Must copy gramPropsArray before passing to avoid mutation affecting other trees
 // Loop through from end of array, find rule most recently added
 // NOTE: Does not allow for same prop to be used in multiple places. Deletion of props occurs after single use.
 function conjugateText(gramPropsArray, text) {
