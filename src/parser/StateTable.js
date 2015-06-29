@@ -1,6 +1,6 @@
 module.exports = StateTable
 
-function StateTable(inputGrammar, startSymbol) {
+function StateTable(inputGrammar, startSymbolStr) {
 	this.symbolTab = {}
 	this.shifts = []
 
@@ -21,7 +21,7 @@ function StateTable(inputGrammar, startSymbol) {
 		}, this)
 	}, this)
 
-	this.generate(this.lookUp(startSymbol))
+	this.generate(this.lookUp(startSymbolStr))
 }
 
 // Could seperate term/nonterm symbol tabs for faster term symbol lookup

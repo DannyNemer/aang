@@ -1,9 +1,10 @@
-module.exports = Parser
 var util = require('../util')
 var intSymbol = require('../grammar/grammar').intSymbol
 var entities = require('../aang.json').entities
 var semantic = require('../grammar/semantic')
 
+
+module.exports = Parser
 
 function Parser(stateTable) {
 	this.stateTable = stateTable
@@ -249,7 +250,8 @@ Parser.prototype.addSub = function (sym, sub) {
 		this.nodeTab.push(node)
 	}
 
-	else if (sub && subIsNew(node.subs, sub)) { // existing nonterminal
+	// Existing nonterminal
+	else if (sub && subIsNew(node.subs, sub)) {
 		node.subs.push(sub)
 
 		// Insertions are arrays of multiple ruleProps (or normal ruleProps if only insertion) - distinguish?
@@ -275,7 +277,8 @@ function subIsNew(existingSubs, newSub) {
 			}
 		}
 
-		return false // sub exists
+		// Sub exists
+		return false
 	}
 
 	return true
@@ -289,9 +292,12 @@ Parser.prototype.addVertex = function (state) {
 	}
 
 	var vertex = {
-		state: state, // idx of state in stateTable of reds or shifts
-		start: this.position, // index in input string tokens array
-		zNodes: [] // zNodes that point to this vertex
+		// Index of state in stateTable of reds + shifts
+		state: state,
+		// Index in input string tokens array
+		start: this.position,
+		// zNodes that point to this vertex
+		zNodes: []
 	}
 
 	this.vertTab.push(vertex)
@@ -362,7 +368,8 @@ Parser.prototype.reduce = function (red) {
 				var zNode = vertexZNodes[z]
 				var subNew
 
-				if (isTransposition) { // Flip RHS for transposition
+				// Flip RHS for transposition
+				if (isTransposition) {
 					subNew = {
 						node: sub.node,
 						size: zNode.node.size + sub.size,

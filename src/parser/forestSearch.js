@@ -6,10 +6,13 @@ var reduceForest = require('./reduceForest')
 
 // Use A* path search to find trees in parse forest returned by parser, beginning at start node
 exports.search = function (startNode, K, buildDebugTrees, printStats) {
-	reduceForest(startNode) // currently slows because of work to condense
+	// Determine minimum possible cost of subtree that can be constructed from each node, which is the heuristic
+	reduceForest(startNode)
 
-	var heap = new BinaryHeap // Min-heap of all partially constructed trees
-	var trees = [] // Array of all completed
+	// Min-heap of all partially constructed trees
+	var heap = new BinaryHeap
+	// Array of all completed parse trees
+	var trees = []
 
 	var newItem = {
 		// When item popped, will look at node's subs for next steps
@@ -19,11 +22,12 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 		// Number of elements in nextNodes, excluding text to append
 		// Used as marker of when can merge with LHS semantic -> have completed full branch
 		nextNodesLen: 0,
-		// Semantics
-		prevSemantics: [],
-		// Properties for conjugation
-		gramProps: [],
+		// Semantics of parse tree, reduced to single semantic when parse complete
+		semantics: [],
+		// Display text of parse tree
 		text: '',
+		// Properties for conjugation of text
+		gramProps: [],
 		// Cost of path
 		costSoFar: 0,
 		// Cost of path + cost of cheapest possible path that can follow
@@ -83,13 +87,12 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 			}
 		}
 
-
 		// Loop through all possible children of this node
 		for (var s = 0, subs = node.subs, subsLen = subs.length; s < subsLen; ++s) {
 			var sub = subs[s]
 			var ruleProps = sub.ruleProps
 
-			// Array of multiple insertions - first can be a 1-1 with an empty
+			// Array of multiple insertions - first can be a unary reduction with an empty
 			if (ruleProps.constructor === Array) {
 				for (var r = 0, rulePropsLen = ruleProps.length; r < rulePropsLen; ++r) {
 					var newItem = createItem(sub, item, ruleProps[r], buildDebugTrees)
@@ -140,29 +143,29 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 		// If 'insertedSemantic' exists, then newSemantic also exists
 		if (ruleProps.insertedSemantic) {
 			// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
-			var prevSemantic = item.prevSemantics[item.prevSemantics.length-1]
+			var prevSemantic = item.semantics[item.semantics.length-1]
 			if (prevSemantic && prevSemantic.constructor === Array && semantic.forbiddenDups(prevSemantic, newSemantic)) {
 				return -1
 			}
 
-			newItem.prevSemantics = item.prevSemantics.slice()
-			newItem.prevSemantics.push({ semantic: newSemantic, nextNodesLen: item.nextNodesLen }, ruleProps.insertedSemantic)
+			newItem.semantics = item.semantics.slice()
+			newItem.semantics.push({ semantic: newSemantic, nextNodesLen: item.nextNodesLen }, ruleProps.insertedSemantic)
 		} else if (newSemantic) {
-			var prevSemantic = item.prevSemantics[item.prevSemantics.length - 1]
+			var prevSemantic = item.semantics[item.semantics.length - 1]
 
 			if (ruleProps.semanticIsRHS) {
 				// prevSemantic is LHS
 				if (prevSemantic.constructor === Object) {
-					newItem.prevSemantics = item.prevSemantics.slice()
-					newItem.prevSemantics.push(newSemantic)
+					newItem.semantics = item.semantics.slice()
+					newItem.semantics.push(newSemantic)
 				}
 
 				// prevSemantic is RHS -> merge with new semantic
 				else {
 					newSemantic = semantic.mergeRHS(prevSemantic, newSemantic)
 					if (newSemantic === -1) return -1
-					newItem.prevSemantics = item.prevSemantics.slice(0, -1)
-					newItem.prevSemantics.push(newSemantic)
+					newItem.semantics = item.semantics.slice(0, -1)
+					newItem.semantics.push(newSemantic)
 				}
 			} else {
 				// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
@@ -170,11 +173,11 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 					return -1
 				}
 
-				newItem.prevSemantics = item.prevSemantics.slice()
-				newItem.prevSemantics.push({ semantic: newSemantic, nextNodesLen: item.nextNodesLen })
+				newItem.semantics = item.semantics.slice()
+				newItem.semantics.push({ semantic: newSemantic, nextNodesLen: item.nextNodesLen })
 			}
 		} else {
-			newItem.prevSemantics = item.prevSemantics
+			newItem.semantics = item.semantics
 		}
 
 
@@ -221,21 +224,21 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			if (newSemantic) {
 				// A RHS semantic not at the base of the branch because of forestReduction
 				if (ruleProps.semanticIsRHS) {
-					// Last in prevSemantics is always LHS (so far we have seen)
-					newItem.prevSemantics = item.prevSemantics.slice()
-					newItem.prevSemantics.push(newSemantic)
+					// Last in semantics is always LHS (so far we have seen)
+					newItem.semantics = item.semantics.slice()
+					newItem.semantics.push(newSemantic)
 				} else {
 					// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
-					var prevSemantic = item.prevSemantics[item.prevSemantics.length-1]
+					var prevSemantic = item.semantics[item.semantics.length-1]
 					if (prevSemantic && prevSemantic.constructor === Array && semantic.forbiddenDups(prevSemantic, newSemantic)) {
 						return -1
 					}
 
-					newItem.prevSemantics = item.prevSemantics.slice()
-					newItem.prevSemantics.push({ semantic: newSemantic, nextNodesLen: item.nextNodesLen })
+					newItem.semantics = item.semantics.slice()
+					newItem.semantics.push({ semantic: newSemantic, nextNodesLen: item.nextNodesLen })
 				}
 			} else {
-				newItem.prevSemantics = item.prevSemantics
+				newItem.semantics = item.semantics
 			}
 
 			newItem.node = sub.node
@@ -256,8 +259,8 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 		// Terminal rule
 		else {
-			for (var p = item.prevSemantics.length; p-- > 0;) {
-				var prevSemantic = item.prevSemantics[p]
+			for (var p = item.semantics.length; p-- > 0;) {
+				var prevSemantic = item.semantics[p]
 
 				// RHS
 				if (prevSemantic.constructor === Array) {
@@ -284,10 +287,10 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			}
 
 			if (newSemantic) {
-				newItem.prevSemantics = item.prevSemantics.slice(0, p + 1)
-				newItem.prevSemantics.push(newSemantic)
+				newItem.semantics = item.semantics.slice(0, p + 1)
+				newItem.semantics.push(newSemantic)
 			} else {
-				newItem.prevSemantics = item.prevSemantics
+				newItem.semantics = item.semantics
 			}
 		}
 
@@ -363,11 +366,11 @@ function conjugateText(gramPropsArray, text) {
 // Determine if newly parsed tree has a unique semantic and unique display text
 // Return true if tree is unique
 function treeIsUnique(trees, item) {
-	if (item.prevSemantics.length > 1) throw 'prevSemantics remain'
+	if (item.semantics.length > 1) throw 'semantics remain'
 
 	// Check for duplicate semantics by comparing semantic string representation
 	// Return false if new semantic is identical to previously constructed (and cheaper) tree
-	var semanticStr = semantic.semanticToString(item.prevSemantics[0])
+	var semanticStr = semantic.semanticToString(item.semantics[0])
 	for (var t = trees.length; t-- > 0;) {
 		var tree = trees[t]
 		if (tree.semanticStr === semanticStr) return false
@@ -397,7 +400,10 @@ function treeIsUnique(trees, item) {
 	return true
 }
 
+// Built a tree representation of the productions in this parse tree
+// Copy tree each time before modifying and return new tree
 function spliceTree(tree, sub, ruleProps) {
+	// Duplicate tree so new instance can be modified
 	var prevNodes = tree.prevNodes.slice()
 	var newTree = cloneTree(tree.startNode, prevNodes)
 
@@ -438,7 +444,8 @@ function spliceTree(tree, sub, ruleProps) {
 	}
 }
 
-function cloneTree(node, lastNodes) {
+// Duplicate tree so new instance can be modified
+function cloneTree(node, prevNodes) {
 	// Node is an insertion, represented in tree by the original ruleProps
 	if (node.cost !== undefined) {
 		return node
@@ -448,13 +455,13 @@ function cloneTree(node, lastNodes) {
 		symbol: node.symbol,
 		props: node.props,
 		children: node.children && node.children.map(function (childNode) {
-			return cloneTree(childNode, lastNodes)
+			return cloneTree(childNode, prevNodes)
 		})
 	}
 
-	// Map lastNodes to point to their new, cloned versions
-	lastNodes.forEach(function (lastNode, i) {
-		if (node === lastNode) lastNodes[i] = newNode
+	// Map prevNodes to point to their new, cloned versions
+	prevNodes.forEach(function (prevNode, i) {
+		if (node === prevNode) prevNodes[i] = newNode
 	})
 
 	return newNode
