@@ -33,70 +33,8 @@ exports.newEntityCategory = entityCategory.newEntityCategory
 // Derive rules from insertion and transposition costs, and empty-strings
 exports.createEditRules = require('./createEditRules')
 
-// Check for nonterminal symbols that are not used in any production
-exports.checkForUnusedSymbols = function () {
-	Object.keys(symbol.creationLines).forEach(function (symbolName) {
-		if (symbolName === exports.startSymbol.name) return
-
-		for (var otherSymbol in grammar) {
-			if (otherSymbol !== symbolName) {
-				var rules = grammar[otherSymbol]
-				for (var r = rules.length; r-- > 0;) {
-					if (rules[r].RHS.indexOf(symbolName) !== -1) return
-				}
-			}
-		}
-
-		util.printWarn('Unused symbol', symbolName)
-		console.log(symbol.creationLines[symbolName])
-		// throw 'unused symbol'
-	})
-}
-
-// Check for entity categories that are not used in any production
-exports.checkForUnusedEntityCategories = function () {
-	Object.keys(entityCategory.creationLines).forEach(function (categorySymbolName) {
-		for (var otherSymbol in grammar) {
-			var rules = grammar[otherSymbol]
-			for (var r = rules.length; r-- > 0;) {
-				if (rules[r].RHS.indexOf(categorySymbolName) !== -1) return
-			}
-		}
-
-		util.printWarn('Unused entity category', categorySymbolName)
-		console.log(entityCategory.creationLines[categorySymbolName])
-		// throw 'unused entity category'
-	})
-}
-
-// Check for semantic functions and arguments that are not used in any production
-exports.checkForUnusedSemantics = function () {
-	Object.keys(semantic.semantics).forEach(function (semanticName) {
-		var thisSemantic = semantic.semantics[semanticName]
-
-		for (var sym in grammar) {
-			var rules = grammar[sym]
-			for (var r = rules.length; r-- > 0;) {
-				var rule = rules[r]
-				if (rule.semantic) {
-					// Initialize stack with rule.semantic, an array (possible of multiple semantic nodes)
-					var semanticStack = rule.semantic.slice()
-					while (semanticStack.length) {
-						var semanticNode = semanticStack.pop()
-						if (semanticNode.semantic === thisSemantic) return
-						if (semanticNode.children) {
-							Array.prototype.push.apply(semanticStack, semanticNode.children)
-						}
-					}
-				}
-			}
-		}
-
-		util.printWarn('Unused semantic', semanticName)
-		console.log(semantic.creationLines[semanticName])
-		// throw 'unused semantic'
-	})
-}
+// Check for unused nonterminal symbols, entity categories, or semantic functions and arguments not used in any productions
+exports.checkForUnusedComponents = require('./checkForUnusedComponents').bind(null, grammar)
 
 // Sort nonterminal symbols alphabetically
 exports.sortGrammar = function () {
