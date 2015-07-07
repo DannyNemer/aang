@@ -409,7 +409,7 @@ function spliceTree(tree, sub, ruleProps) {
 
 	var prevNode = prevNodes.pop()
 
-	var newNode = { symbol: sub.node.sym.name }
+	var newNode = { symbol: sub.node.sym.name, children: undefined, props: undefined }
 	prevNode.children.push(newNode)
 	prevNode.props = ruleProps
 
@@ -417,24 +417,24 @@ function spliceTree(tree, sub, ruleProps) {
 	if (sub.node.subs) {
 		prevNodes.push(newNode)
 		newNode.children = []
-	}
 
-	// Binary reduction
-	if (sub.next) {
-		newNode = { symbol: sub.next.node.sym.name, children: [] }
+		// Binary reduction
+		if (sub.next) {
+			newNode = { symbol: sub.next.node.sym.name, children: [], props: undefined }
 
-		prevNode.children.push(newNode)
-		prevNodes.splice(-1, 0, newNode)
-	}
+			prevNode.children.push(newNode)
+			prevNodes.splice(-1, 0, newNode)
+		}
 
-	// Insertion
-	// Nodes for insertions are represented by their ruleProps
-	if (ruleProps.insertionIdx !== undefined) {
-		delete prevNode.props
-		if (ruleProps.insertionIdx) {
-			prevNode.children.push(ruleProps)
-		} else {
-			prevNode.children.splice(-1, 0, ruleProps)
+		// Insertion
+		// Nodes for insertions are represented by their ruleProps
+		else if (ruleProps.insertionIdx !== undefined) {
+			prevNode.props = undefined // Faster than 'delete'
+			if (ruleProps.insertionIdx) {
+				prevNode.children.push(ruleProps)
+			} else {
+				prevNode.children.splice(-1, 0, ruleProps)
+			}
 		}
 	}
 
@@ -451,18 +451,27 @@ function cloneTree(node, prevNodes) {
 		return node
 	}
 
+	// Recreate each node and its children
 	var newNode = {
 		symbol: node.symbol,
 		props: node.props,
-		children: node.children && node.children.map(function (childNode) {
-			return cloneTree(childNode, prevNodes)
-		})
+		// Performance is hurt when not defining properties at object instantiation
+		children: undefined
 	}
 
-	// Map prevNodes to point to their new, cloned versions
-	prevNodes.forEach(function (prevNode, i) {
-		if (node === prevNode) prevNodes[i] = newNode
-	})
+	var nodeChildren = node.children
+	if (nodeChildren) {
+		var newNodeChildren = newNode.children = []
+		for (var n = 0, nodeChildrenLen = nodeChildren.length; n < nodeChildrenLen; ++n) {
+			newNodeChildren.push(cloneTree(nodeChildren[n], prevNodes))
+		}
+	}
+
+	// Map prevNode to point to new, cloned version
+	var prevNodesIdx = prevNodes.indexOf(node)
+	if (prevNodesIdx !== -1) {
+		prevNodes[prevNodesIdx] = newNode
+	}
 
 	return newNode
 }
