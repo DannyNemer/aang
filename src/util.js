@@ -230,7 +230,7 @@ exports.writeJSONFile = function (path, obj) {
 	console.log('File saved:', fs.realpathSync(path))
 }
 
-// Execute the passed function within a try-catch statement
+// Execute the passed function within a `try` block
 // Remove parentheses from error stack for iTerm open-file shortcut
 exports.tryCatchWrapper = function (callback) {
 	try {
