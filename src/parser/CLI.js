@@ -302,7 +302,7 @@ function buildStateTable() {
 
 // Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
 function deleteModuleCache() {
-	util.deleteCache(parserPath, forestSearchPath, stateTablePath, './BinaryHeap.js', '../grammar/semantic.js', './reduceForest.js')
+	util.deleteCache(parserPath, forestSearchPath, stateTablePath, './BinaryHeap.js', '../grammar/semantic.js', './calcHeuristics.js')
 }
 
 

@@ -1,13 +1,13 @@
 var util = require('../util')
 var BinaryHeap = require('./BinaryHeap')
 var semantic = require('../grammar/semantic')
-var reduceForest = require('./reduceForest')
+var calcHeuristics = require('./calcHeuristics')
 
 
 // Use A* path search to find trees in parse forest returned by parser, beginning at start node
 exports.search = function (startNode, K, buildDebugTrees, printStats) {
 	// Determine minimum possible cost of subtree that can be constructed from each node, which is the heuristic
-	reduceForest(startNode)
+	calcHeuristics(startNode)
 
 	// Min-heap of all partially constructed trees
 	var heap = new BinaryHeap
