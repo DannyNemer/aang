@@ -59,7 +59,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 					// Conjugate text of inserted branches which are the second of 2 RHS symbols
 					// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
 
-					// Copy gramProps and text because will mutate when conjugating
+					// Copy gramProps and text because will change when conjugating
 					// Ignore possibility of gramProps being copied more than once
 					// - Occurrence so rare that setting an extra variable to check if copied costs more time than saved
 					item.gramProps = item.gramProps.slice()
@@ -360,7 +360,7 @@ function conjugateText(gramPropsArray, text) {
 	}
 
 	util.logTrace()
-	util.log('Failed to conjugate:', text, gramPropsArray)
+	util.printWarning('Failed to conjugate', text, gramPropsArray)
 }
 
 // Determine if newly parsed tree has a unique semantic and unique display text
@@ -380,7 +380,7 @@ function treeIsUnique(trees, item) {
 	// Semantic is new
 	// Check for duplicate display text
 	// If so, save new semantic to previous tree's disambiguation and return false to reject tree
-	var textStr = item.text.slice(1)
+	var textStr = item.text.slice(1) // Remove leading space
 	for (var t = trees.length; t-- > 0;) {
 		var tree = trees[t]
 		if (tree.text === textStr) {

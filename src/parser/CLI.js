@@ -15,9 +15,6 @@ var rl = require('readline').createInterface(process.stdin, process.stdout, func
 
 	// Show nothing if no completions found
 	return [ hits, line ]
-
-	// Show all completions if none found
-	// return [ hits.length ? hits : completions, line ]
 })
 
 rl.prompt()
@@ -88,10 +85,7 @@ function runCommand(input) {
 
 	// COMMANDS:
 	// Run test queries
-		var prevSettingPrintTrees = printTrees
-		printTrees = false
 	if (firstArg === '.test') {
-
 		// Set number of times to cycle test queries on test
 		var testRuns = !isNaN(args[1]) ? Number(args[1]) : 1
 
@@ -108,14 +102,10 @@ function runCommand(input) {
 
 		if (printOutput) printQuery = false
 		else console.timeEnd('test')
-
-		util.printCounts()
-
-		printTrees = prevSettingPrintTrees
 	}
 
 	// Output a run of test queries to file
-	else if (input === '.logTest') {
+	else if (firstArg === '.logTest') {
 		var prevSettingPrintOutput = printOutput
 		printOutput = true
 
@@ -136,7 +126,7 @@ function runCommand(input) {
 	}
 
 	// Run conjugation tests
-	else if (input === '.conjugationTest') {
+	else if (firstArg === '.conjugationTest') {
 		var prevSettingPrintTrees = printTrees
 		printTrees = false
 		var prevSettingPrintOutput = printOutput
@@ -155,7 +145,7 @@ function runCommand(input) {
 	}
 
 	// Rebuild grammar and state table
-	else if (input === '.rebuild') {
+	else if (firstArg === '.rebuild') {
 		console.log('Rebuild grammar and state table:')
 		// Rebuild grammar
 		util.tryCatchWrapper(function () {
@@ -166,18 +156,18 @@ function runCommand(input) {
 	}
 
 	// Delete module cache
-	else if (input === '.deleteCache') {
+	else if (firstArg === '.deleteCache') {
 		deleteModuleCache()
 		console.log('Deleted cache of modules')
 	}
 
 	// Print state table
-	else if (input === '.stateTable') {
+	else if (firstArg === '.stateTable') {
 		stateTable.print()
 	}
 
 	// Print CLI history
-	else if (input === '.history') {
+	else if (firstArg === '.history') {
 		var historyLen = rl.history.length
 		for (var i = historyLen; i-- > 1;) {
 			var idx = historyLen - i
@@ -187,55 +177,55 @@ function runCommand(input) {
 
 	// PARSER SETTINGS:
 	// Set number of parse trees to search for
-	else if (args[0] === '.k') {
+	else if (firstArg === '.k') {
 		if (!isNaN(args[1])) K = Number(args[1])
 		console.log('K:', K)
 	}
 
 	// Toggle printing parse output
-	else if (input === '.out') {
+	else if (firstArg === '.out') {
 		printOutput = !printOutput
 		console.log('Print parse output:', printOutput)
 	}
 
 	// Toggle constructing and printing parse trees
-	else if (input === '.trees') {
+	else if (firstArg === '.trees') {
 		printTrees = !printTrees
 		console.log('Construct and print parse trees:', printTrees)
 	}
 
 	// Toggle printing parse costs
-	else if (input === '.costs') {
+	else if (firstArg === '.costs') {
 		printCost = !printCost
 		console.log('Print parse costs:', printCost)
 	}
 
 	// Toggle printing parse time
-	else if (input === '.time') {
+	else if (firstArg === '.time') {
 		printTime = !printTime
 		console.log('Print parse time:', printTime)
 	}
 
 	// Toggle printing parse query
-	else if (input === '.query') {
+	else if (firstArg === '.query') {
 		printQuery = !printQuery
 		console.log('Print parse query:', printQuery)
 	}
 
 	// Toggle printing parse stack
-	else if (input === '.stack') {
+	else if (firstArg === '.stack') {
 		printStack = !printStack
 		console.log('Print parse stack:', printStack)
 	}
 
 	// Toggle printing parse forest
-	else if (input === '.forest') {
+	else if (firstArg === '.forest') {
 		printForest = !printForest
 		console.log('Print parse forest:', printForest)
 	}
 
 	// Toggle printing parse forest graph
-	else if (input === '.graph') {
+	else if (firstArg === '.graph') {
 		printForestGraph = !printForestGraph
 		console.log('Print parse forest graph:', printForestGraph)
 	}
@@ -252,7 +242,7 @@ function runCommand(input) {
 		console.log('.history          print CLI history')
 		console.log('.help             print this screen')
 
-		console.log('\nSettings:')
+		console.log('\nParser settings:')
 		console.log('.k       K:', K)
 		console.log('.out     print parse output:', printOutput)
 		console.log('.trees   print parse trees:', printTrees)

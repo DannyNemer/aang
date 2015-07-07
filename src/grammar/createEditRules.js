@@ -2,7 +2,9 @@
 //   Empty-string - rules that produce empty-strings (i.e., optional)
 //   Insertions - inserting terminal symbols
 //   Transposition - swapped RHS of nonterminal rules
-// Recursively remove nonterminal symbols with no productions, rules whose RHS contain those symbols or the <empty> symbol, and any production-less symbols that result
+// Recursively remove nonterminal symbols with no productions, rules whose RHS containing those symbols or the <empty> symbol, and any production-less nonterminal symbols that result
+// Check non-edit rules for semantic errors: fail to produce a needed RHS semantic
+// - Also avoid creating edit rules with semantic errors
 
 var util = require('../util')
 var g = require('./grammar')
@@ -17,11 +19,12 @@ module.exports = function () {
 
 	findTermRuleInsertions(insertions)
 
-	// Called after rules with '<empty>' have been removed in findTermRuleInsertions()
-	// Called before calling ruleMissingNeededRHSSemantic()
+	// Recursively remove nonterminal symbols with no productions, rules whose RHS containing those symbols or the <empty> symbol, and any production-less nonterminal symbols that result
+	// Called after finding insertions from rules with '<empty>' in findTermRuleInsertions()
 	removeNullNonterminalSymbols()
 
 	// Check non-edit rules for semantic errors: fail to produce a needed RHS semantic
+	// Called after removing rules with production-less symbols in removeNullNonterminalSymbols()
 	checkForSemanticErrors()
 
 	findNontermRulesProducingInsertions(insertions)
@@ -31,7 +34,7 @@ module.exports = function () {
 	createRulesFromTranspositions()
 }
 
-// Find all terminal rules with insertion costs or blanks
+// Find all terminal rules with insertion costs or <empty>
 function findTermRuleInsertions(insertions) {
 	Object.keys(grammar).forEach(function (nontermSym) {
 		grammar[nontermSym].forEach(function (rule) {
@@ -246,7 +249,7 @@ function createRulesFromInsertions(insertions) {
 							// Otherwise, the property is for when this lhsSym is used in a reduction (not this text)
 							newRule.personNumber = symIdx === 0 ? (rule.personNumber || insertion.personNumber) : rule.personNumber
 
-							// Empty-strings don't produce text
+							// Empty-strings do not produce text
 							if (insertion.text[0]) {
 								newRule.insertionIdx = symIdx
 
@@ -378,8 +381,8 @@ function ruleExists(rules, newRule, LHS) {
 }
 
 
-// Recursively remove nonterminal symbols with no productions, rules whose RHS contain those symbols or the <empty> symbol, and any production-less symbols that result
-// Called after rules with '<empty>' have been removed
+// Recursively remove nonterminal symbols with no productions, rules whose RHS containing those symbols or the <empty> symbol, and any production-less nonterminal symbols that result
+// Called after finding insertions from rules with '<empty>' in findTermRuleInsertions()
 function removeNullNonterminalSymbols() {
 	var curRuleCount = g.ruleCount(grammar)
 	var prevRuleCount

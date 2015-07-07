@@ -122,8 +122,9 @@ exports.arraysMatch = function (a, b) {
 // Print arguments on separate lines, and pretty-print objects
 exports.log = function () {
 	Array.prototype.slice.call(arguments).forEach(function (arg) {
-		// Print strings normally to avoid unnecessary stylization
-		if (arg.constructor === String) {
+		// Print strings normally to avoid unnecessary styling
+		// - Use 'typeof' to account for 'undefined'
+		if (typeof arg === 'string') {
 			console.log(arg)
 		} else {
 			console.dir(arg, { depth: null, colors: true })
@@ -169,24 +170,25 @@ exports.printCount = function (key) {
 // Will not print counters that are never reached (and never have their keys initialized)
 exports.printCounts = function () {
 	for (var key in counts) {
-		console.log((key || 'count') + ':', counts[key])
+		console.log((key === undefined ? 'count' : key) + ':', counts[key])
 		delete counts[key] // Reset count
 	}
 }
 
-// Print like console.log(), but color first argument red, prepend 'Err:', and append ':'
+// Print like console.log(), but color first argument red, prepend message with 'Err:' and append ':'
 exports.printErr = function () {
 	var firstArg = 'Err: ' + arguments[0]
-	if (arguments[1] !== undefined && firstArg[firstArg.length - 1] !== ':') {
+	if (firstArg[firstArg.length - 1] !== ':') {
 		firstArg += ':'
 	}
 	arguments[0] = colors.red(firstArg)
 	console.log.apply(null, arguments)
 }
 
-exports.printWarn = function () {
-	var firstArg = 'Warn: ' + arguments[0]
-	if (arguments[1] !== undefined && firstArg[firstArg.length - 1] !== ':') {
+// Print like console.log(), but color first argument yellow, prepend with 'Warning:' and append ':'
+exports.printWarning = function () {
+	var firstArg = 'Warning: ' + arguments[0]
+	if (firstArg[firstArg.length - 1] !== ':') {
 		firstArg += ':'
 	}
 	arguments[0] = colors.yellow(firstArg)
