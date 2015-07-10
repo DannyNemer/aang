@@ -1,5 +1,5 @@
 var util = require('../util')
-
+var ambigSymbols = []
 
 // Find instances of ambiguity in the grammar
 // - Ambiguity exists when different sets of productions produce the same RHS symbols
@@ -19,6 +19,7 @@ console.time('Ambiguity check')
 	// Construct all possible trees from 'nontermSym'
 	for (var nontermSym in grammar) {
 		try {
+			if (ambigSymbols.indexOf(nontermSym) !== -1) continue
 			searchPaths(nontermSym)
 		} catch (e) {
 			// Found ambiguity; search paths from this symbol again while constructing parse trees for debugging
@@ -75,9 +76,11 @@ console.timeEnd('Ambiguity check')
 				} else {
 					if (RHS.length === 2) {
 						newPath.nextNodes = newPath.nextNodes.slice()
+						if (ambigSymbols.indexOf(RHS[1]) !== -1) continue
 						newPath.nextNodes.push(RHS[1])
 					}
 
+					if (ambigSymbols.indexOf(RHS[0]) !== -1) continue
 					newPath.nextNode = RHS[0]
 				}
 
@@ -136,6 +139,7 @@ console.timeEnd('Ambiguity check')
 					var newTerminals = lastTerminals + ' ' + newNode.symbol
 				} else {
 					if (RHS.length === 2) {
+						if (ambigSymbols.indexOf(RHS[1]) !== -1) continue
 						var secondNode = { symbol: RHS[1] }
 						lastNode.children.push(secondNode)
 						nextNodes.push(secondNode)
@@ -143,6 +147,7 @@ console.timeEnd('Ambiguity check')
 
 					// If binary reduction, next sym added to nextNodes first\
 					var newTerminals = lastTerminals
+					if (ambigSymbols.indexOf(RHS[0]) !== -1) continue
 					nextNodes.push(newNode)
 				}
 
@@ -166,12 +171,13 @@ console.timeEnd('Ambiguity check')
 
 function throwIfAmbiguityExists(newPath, paths) {
 	var nextNode = newPath.nextNode
+	var nextNodes = newPath.nextNodes
 
 	for (var p = 0, pathsLen = paths.length; p < pathsLen; ++p) {
 		var otherPath = paths[p]
 
 		// Paths have identical rightmost symbols
-		if (otherPath.nextNode === nextNode && util.arraysMatch(otherPath.nextNodes, newPath.nextNodes)) {
+		if (otherPath.nextNode === nextNode && util.arraysMatch(otherPath.nextNodes, nextNodes)) {
 			// found ambiguity, run aggain building trees for debug
 			throw -1
 		}
@@ -189,15 +195,22 @@ function ambiguityExistsBuildTrees(newPath, paths, terminals) {
 		var otherNextNodesLen = otherNextNodes.length
 
 		if (otherNextNodesLen === nextNodesLen) {
-			for (var i = otherNextNodesLen; i-- > 0;) {
-				if (nextNodes[i].symbol !== otherNextNodes[i].symbol) break
+			for (var n = 0; n < nextNodesLen; ++n) {
+				if (nextNodes[n].symbol !== otherNextNodes[n].symbol) break
 			}
 
-			if (i < 0) {
+			if (n === nextNodesLen) {
+				util.printWarning('Ambiguity')
+
+				var root = diffTrees(otherPath.tree, newPath.tree)
+				ambigSymbols.push(root)
+				console.log(ambigSymbols)
+				console.log('ROOT', root)
+
 				var str = nextNodes.reduce(function (str, node) {
 					return str + ' ' + node.symbol
 				}, terminals)
-				// util.printWarning('Ambiguity')
+
 				// util.log(str, otherPath.tree, newPath.tree)
 				return true
 			}
@@ -205,6 +218,33 @@ function ambiguityExistsBuildTrees(newPath, paths, terminals) {
 	}
 
 	return false
+}
+
+function diffTrees(a, b) {
+	if (a.symbol !== b.symbol) return false
+
+	var aChildren = a.children
+	var bChildren = b.children
+
+	if (!aChildren && !bChildren) return true
+
+	if (aChildren && bChildren && aChildren.length === bChildren.length) {
+		for (var n = aChildren.length; n-- > 0;) {
+			var result = diffTrees(aChildren[n], bChildren[n])
+			if (result === false) {
+				util.log(a, b)
+				return a.symbol
+			}
+			if (result === true) continue
+			return result
+		}
+
+		return true
+	}
+
+	util.log(getTreeBottom(a), a, b)
+	return a.symbol
+	// return false
 }
 
 // Return true if tree contains a rule with the passed lhs and rhs symbols
