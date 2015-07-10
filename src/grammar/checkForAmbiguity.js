@@ -14,13 +14,18 @@ var util = require('../util')
 
 // do we need to account for ruleProps?
 
+// must be after edit rules because after creating rules from blanks
+
+// not going to bother with checking for text and semantics because this is about parsing performance, and if there semantics or conjugation creates something different, then that should still be changed
+
 module.exports = function (grammar) {
-	console.time('ambig')
+	console.time('Ambiguity check')
 	for (var nontermSym in grammar) {
 		searchPaths(nontermSym)
 	}
-	console.timeEnd('ambig')
+	console.timeEnd('Ambiguity check')
 
+	// Search for ambiguous productions that can be built from 'sym'
 	function searchPaths(sym, paths) {
 		if (!paths) {
 			var root = { symbol: sym }
@@ -28,7 +33,7 @@ module.exports = function (grammar) {
 				tree: root,
 				nextNodes: [ root ],
 				symsCount: 1,
-				terminals: []
+				terminals: ''
 			} ]
 		}
 
@@ -39,57 +44,53 @@ module.exports = function (grammar) {
 		for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 			var rule = rules[r]
 			if (rule.insertionIdx === undefined && !rule.transposition) {
+				var RHS = rule.RHS
 
 				// Prevent infinite loops
-				if (treeContainsRule(lastPath.tree, sym, rule.RHS)) continue
+				if (treeContainsRule(lastPath.tree, sym, RHS)) continue
 
+				var nextNodes = lastPath.nextNodes.slice()
 				var newPath = {
-					nextNodes: lastPath.nextNodes.slice(),
-					terminals: lastPath.terminals.slice(),
+					nextNodes: nextNodes,
+					tree: cloneTree(lastPath.tree, nextNodes),
 					symsCount: lastPath.symsCount + 1
 				}
 
-				newPath.tree = cloneTree(lastPath.tree, newPath.nextNodes)
-				var lastNode = newPath.nextNodes.pop()
-
-
-				var newNode = {
-					symbol: rule.RHS[0]
-				}
-
+				var lastNode = nextNodes.pop()
+				var newNode = { symbol: RHS[0] }
 				lastNode.children = [ newNode ]
 
-
-				if (rule.RHS.length === 2) {
-					var secondNode = {
-						symbol: rule.RHS[1]
+				if (rule.terminal) {
+					newPath.terminals = lastPath.terminals + ' ' + newNode.symbol
+				} else {
+					if (RHS.length === 2) {
+						var secondNode = { symbol: RHS[1] }
+						lastNode.children.push(secondNode)
+						nextNodes.push(secondNode)
 					}
 
-					lastNode.children.push(secondNode)
-					newPath.nextNodes.push(secondNode)
-				}
-
-				// If binary reduction, next sym added to nextNodes first\
-				if (rule.terminal) {
-					newPath.terminals.push(newNode.symbol)
-				} else {
-					newPath.nextNodes.push(newNode)
+					// If binary reduction, next sym added to nextNodes first\
+					newPath.terminals = lastPath.terminals
+					nextNodes.push(newNode)
 				}
 
 
-				if (newPath.nextNodes.length <= 1) {
-					var newTreeBottom = getTreeBottom(newPath.tree)
+				if (nextNodes.length <= 1) {
+					var nextNode = nextNodes[nextNodes.length-1]
+					if (nextNode) nextNode = nextNode.symbol
 
 					// Search for another lastPath that leads to same symbol
 					// faster to iterate forward - something at hardware level
 					for (var p = 0, pathsLen = paths.length; p < pathsLen; ++p) {
 						var otherPath = paths[p]
 						if (otherPath.nextNodes.length <= 1) {
-							// Have same RHS of whole trees
-							var otherTreeBottom = getTreeBottom(otherPath.tree)
-							if (util.arraysMatch(otherTreeBottom, newTreeBottom)) {
+							var otherNextNode = otherPath.nextNodes[otherPath.nextNodes.length-1]
+							if (otherNextNode) otherNextNode = otherNextNode.symbol
+
+							// Paths have identical rightmost symbols
+							if (otherNextNode === nextNode && newPath.terminals === otherPath.terminals) {
 								util.printWarning('Ambiguity')
-								util.log(otherTreeBottom, otherPath.tree, newPath.tree)
+								util.log(newPath.terminals.concat(nextNode), otherPath.tree, newPath.tree)
 								break
 							}
 						}
@@ -100,7 +101,7 @@ module.exports = function (grammar) {
 
 
 				// symsCount count limit is random for performance
-				var nextNode = newPath.nextNodes[newPath.nextNodes.length - 1]
+				var nextNode = nextNodes[newPath.nextNodes.length - 1]
 				if (nextNode && newPath.symsCount < 8) {
 					paths.push(newPath)
 					searchPaths(nextNode.symbol, paths)
@@ -110,27 +111,30 @@ module.exports = function (grammar) {
 	}
 }
 
-
-// unsure if this is correct by stopping just if sees same rule twice
+// Return true if tree contains a rule with the passed lhs and rhs symbols
 function treeContainsRule(node, lhsSym, rhs) {
 	var nodeChildren = node.children
 	if (!nodeChildren) return false
 	var nodeChildrenLen = nodeChildren.length
 
 	if (node.symbol === lhsSym && nodeChildrenLen === rhs.length) {
-		for (var n = nodeChildrenLen; n-- > 0;) {
+		for (var n = 0; n < nodeChildrenLen; ++n) {
 			if (nodeChildren[n].symbol !== rhs[n]) break
 		}
 
-		if (n < 0) return true
+		// Same lhs and rhs symbols
+		if (n === nodeChildrenLen) return true
 	}
 
-	for (var n = nodeChildrenLen; n-- > 0;) {
+	// Check children
+	for (var n = 0; n < nodeChildrenLen; ++n) {
 		if (treeContainsRule(nodeChildren[n], lhsSym, rhs)) return true
 	}
 }
 
+// Duplicate tree so new instance can be modified
 function cloneTree(node, nextNodes) {
+	// Recreate each node and its children
 	var newNode = {
 		symbol: node.symbol,
 		children: node.children && node.children.map(function (childNode) {
@@ -147,7 +151,8 @@ function cloneTree(node, nextNodes) {
 	return newNode
 }
 
-
+// Return the rightmost symbols in the tree
+// *Unused*
 function getTreeBottom(node, path) {
 	var path = path || []
 	var nodeChildren = node.children
@@ -163,6 +168,8 @@ function getTreeBottom(node, path) {
 	return path
 }
 
+// Return true if trees are identical
+// *Unused*
 function treesMatch(a, b) {
 	if (a.symbol !== b.symbol) return false
 
