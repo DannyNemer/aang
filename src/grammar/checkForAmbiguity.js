@@ -7,15 +7,15 @@ var util = require('../util')
 // --- E.g., if a parse tree produces the same RHS but different semantics, then that should be changed
 // - Does not examine edit-rules (i.e., insertions or transpositions)
 // --- Ambiguity from insertions (i.e., same output produced with different insertions) is unavoidable; depends input (i.e., possible insertions always different)
-// --- Ambiguity from transposition is prevented at rule creation (i.e., prevents what would be duplicate)
+// --- Ambiguity from transpositions is prevented at rule creation (i.e., prevents what would be duplicate)
 //
-// @param {Object} grammar - Grammar following createEditRules.js
+// @param {Object} grammar - Grammar following processing in createEditRules.js
 module.exports = function (grammar) {
 	// Arbitrary limit on number of symbols in a tree while searching for ambiguity
 	// - Limited for reasonable processing time
 	var symsLimit = 10
 
-	console.time('Ambiguity check')
+console.time('Ambiguity check')
 	// Construct all possible trees from 'nontermSym'
 	for (var nontermSym in grammar) {
 		try {
@@ -29,15 +29,16 @@ module.exports = function (grammar) {
 			}
 		}
 	}
-	console.timeEnd('Ambiguity check')
+console.timeEnd('Ambiguity check')
 
 
-	// Search for ambiguous productions that can be built from 'sym'
-
-	// @param {String} sym
-	// @param {Object} paths
-	// @param {Object} lastPath -
+	// Search for ambiguity in productions built from `sym`
+	//
+	// @param {String} sym - Nonterminal symbol
+	// @param {Object} paths - Mapping of strings of terminal symbols to arrays of all different sets of productions (i.e., paths) that generate that string. Those paths are distinguished by their next nonterminal symbol.
+	// @param {Object} lastPath - Path upon which to
 	// @param {String} lastTerminals - Concatenation of terminal symbols in `lastPath`'s tree, separated by spaces
+	// @param {Number} symsCount
 	function searchPaths(sym, paths, lastPath, lastTerminals, symsCount) {
 		// first function call
 		if (!paths) {
@@ -80,16 +81,14 @@ module.exports = function (grammar) {
 					newPath.nextNode = RHS[0]
 				}
 
+
 				var array = paths[newTerminals] || (paths[newTerminals] = [])
-				if (newPath.nextNodes.length === 0) {
-					// Search for another lastPath that leads to same symbol
-					// faster to iterate forward - something at hardware level
-					if (ambiguityExists(newPath, array)) {
-						continue
-					}
-				}
+				// Search for another lastPath that leads to same symbol
+				// faster to iterate forward - something at hardware level
+				throwIfAmbiguityExists(newPath, array)
 
 				array.push(newPath)
+
 				// symsCount count limit is random for performance
 				if (newPath.nextNode && symsCount < symsLimit) {
 					searchPaths(newPath.nextNode, paths, newPath, newTerminals, symsCount)
@@ -148,18 +147,15 @@ module.exports = function (grammar) {
 				}
 
 				var array = paths[newTerminals] || (paths[newTerminals] = [])
-				var nextNodesLen = nextNodes.length
-				if (nextNodesLen <= 1) {
-					// Search for another lastPath that leads to same symbol
-					// faster to iterate forward - something at hardware level
-					if (ambiguityExistsBuildTrees(newPath, array, newTerminals)) {
-						continue
-					}
+				// Search for another lastPath that leads to same symbol
+				// faster to iterate forward - something at hardware level
+				if (ambiguityExistsBuildTrees(newPath, array, newTerminals)) {
+					continue
 				}
 
 				array.push(newPath)
 				// symsCount count limit is random for performance
-				var nextNode = nextNodes[nextNodesLen - 1]
+				var nextNode = nextNodes[nextNodes.length - 1]
 				if (nextNode && symsCount < symsLimit) {
 					searchPathsAndBuildTrees(nextNode.symbol, paths, newPath, newTerminals, symsCount)
 				}
@@ -168,39 +164,41 @@ module.exports = function (grammar) {
 	}
 }
 
-function ambiguityExists(newPath, paths) {
+function throwIfAmbiguityExists(newPath, paths) {
 	var nextNode = newPath.nextNode
 
 	for (var p = 0, pathsLen = paths.length; p < pathsLen; ++p) {
 		var otherPath = paths[p]
 
 		// Paths have identical rightmost symbols
-		if (otherPath.nextNode === nextNode && otherPath.nextNodes.length === 0) {
+		if (otherPath.nextNode === nextNode && util.arraysMatch(otherPath.nextNodes, newPath.nextNodes)) {
 			// found ambiguity, run aggain building trees for debug
 			throw -1
 		}
 	}
-
-	return false
 }
 
+// Check for ambiguity
 function ambiguityExistsBuildTrees(newPath, paths, terminals) {
-	var nextNode = newPath.nextNodes[newPath.nextNodes.length-1]
-	if (nextNode) nextNode = nextNode.symbol
+	var nextNodes = newPath.nextNodes
+	var nextNodesLen = nextNodes.length
 
 	for (var p = 0, pathsLen = paths.length; p < pathsLen; ++p) {
 		var otherPath = paths[p]
 		var otherNextNodes = otherPath.nextNodes
 		var otherNextNodesLen = otherNextNodes.length
 
-		if (otherNextNodesLen <= 1) {
-			var otherNextNode = otherNextNodes[otherNextNodesLen - 1]
-			if (otherNextNode) otherNextNode = otherNextNode.symbol
+		if (otherNextNodesLen === nextNodesLen) {
+			for (var i = otherNextNodesLen; i-- > 0;) {
+				if (nextNodes[i].symbol !== otherNextNodes[i].symbol) break
+			}
 
-			// Paths have identical rightmost symbols
-			if (otherNextNode === nextNode) {
-				util.printWarning('Ambiguity')
-				util.log(terminals + ' ' + nextNode, otherPath.tree, newPath.tree)
+			if (i < 0) {
+				var str = nextNodes.reduce(function (str, node) {
+					return str + ' ' + node.symbol
+				}, terminals)
+				// util.printWarning('Ambiguity')
+				// util.log(str, otherPath.tree, newPath.tree)
 				return true
 			}
 		}
@@ -232,13 +230,14 @@ function treeContainsRule(node, lhsSym, rhs) {
 
 // Duplicate tree so new instance can be modified
 function cloneTree(node, nextNodes) {
-	// Recreate each node and its children
+	// Recreate each node
 	var newNode = {
 		symbol: node.symbol,
 		// Performance is hurt when not defining properties at object instantiation
 		children: undefined
 	}
 
+	// Recreate each node's children
 	var nodeChildren = node.children
 	if (nodeChildren) {
 		var newNodeChildren = newNode.children = []
@@ -256,8 +255,8 @@ function cloneTree(node, nextNodes) {
 	return newNode
 }
 
-// Return the rightmost symbols in the tree
 // *Unused*
+// Return the rightmost symbols in the tree
 function getTreeBottom(node, path) {
 	var path = path || []
 	var nodeChildren = node.children
@@ -273,8 +272,8 @@ function getTreeBottom(node, path) {
 	return path
 }
 
-// Return true if trees are identical
 // *Unused*
+// Return true if trees are identical
 function treesMatch(a, b) {
 	if (a.symbol !== b.symbol) return false
 
