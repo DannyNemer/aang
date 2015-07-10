@@ -21,23 +21,35 @@ var util = require('../util')
 module.exports = function (grammar) {
 	console.time('Ambiguity check')
 	for (var nontermSym in grammar) {
-		searchPaths(nontermSym)
+		try {
+			searchPaths(nontermSym)
+		} catch (e) {
+			// found ambiguity, run aggain building trees for debug
+			searchPaths(nontermSym, true)
+		}
 	}
+
 	console.timeEnd('Ambiguity check')
 
 	// Search for ambiguous productions that can be built from 'sym'
-	function searchPaths(sym, paths) {
+	function searchPaths(sym, buildTrees, paths, lastPath, lastTerminals) {
 		if (!paths) {
-			var root = { symbol: sym }
-			paths = [ {
-				tree: root,
-				nextNodes: [ root ],
-				symsCount: 1,
-				terminals: ''
-			} ]
+			paths = {}
+			if (buildTrees) {
+				lastPath = {
+					tree: { symbol: sym },
+					symsCount: 1
+				}
+				lastPath.nextNodes = [ lastPath.tree ]
+			} else {
+				lastPath = {
+					symsCount: 1,
+					nextNodes: [ sym ]
+				}
+			}
+			lastTerminals = ''
+			paths[lastTerminals] = [ lastPath ]
 		}
-
-		var lastPath = paths[paths.length - 1]
 
 		var rules = grammar[sym]
 		// faster to iterate forward - something at hardware level
@@ -47,68 +59,105 @@ module.exports = function (grammar) {
 				var RHS = rule.RHS
 
 				// Prevent infinite loops
-				if (treeContainsRule(lastPath.tree, sym, RHS)) continue
+				if (buildTrees && treeContainsRule(lastPath.tree, sym, RHS)) continue
 
-				var nextNodes = lastPath.nextNodes.slice()
+				if (buildTrees) {
+					var nextNodes = lastPath.nextNodes.slice()
+				} else {
+					var nextNodes = lastPath.nextNodes.slice(0, -1)
+				}
 				var newPath = {
 					nextNodes: nextNodes,
-					tree: cloneTree(lastPath.tree, nextNodes),
 					symsCount: lastPath.symsCount + 1
 				}
 
-				var lastNode = nextNodes.pop()
-				var newNode = { symbol: RHS[0] }
-				lastNode.children = [ newNode ]
-
-				if (rule.terminal) {
-					newPath.terminals = lastPath.terminals + ' ' + newNode.symbol
-				} else {
-					if (RHS.length === 2) {
-						var secondNode = { symbol: RHS[1] }
-						lastNode.children.push(secondNode)
-						nextNodes.push(secondNode)
-					}
-
-					// If binary reduction, next sym added to nextNodes first\
-					newPath.terminals = lastPath.terminals
-					nextNodes.push(newNode)
+				if (buildTrees) {
+					newPath.tree = cloneTree(lastPath.tree, nextNodes)
 				}
 
+				if (buildTrees) {
+					var lastNode = nextNodes.pop()
+					var newNode = { symbol: RHS[0] }
+					lastNode.children = [ newNode ]
+				} else {
+					var newNode = RHS[0]
+				}
 
-				if (nextNodes.length <= 1) {
-					var nextNode = nextNodes[nextNodes.length-1]
-					if (nextNode) nextNode = nextNode.symbol
-
-					// Search for another lastPath that leads to same symbol
-					// faster to iterate forward - something at hardware level
-					for (var p = 0, pathsLen = paths.length; p < pathsLen; ++p) {
-						var otherPath = paths[p]
-						if (otherPath.nextNodes.length <= 1) {
-							var otherNextNode = otherPath.nextNodes[otherPath.nextNodes.length-1]
-							if (otherNextNode) otherNextNode = otherNextNode.symbol
-
-							// Paths have identical rightmost symbols
-							if (otherNextNode === nextNode && newPath.terminals === otherPath.terminals) {
-								util.printWarning('Ambiguity')
-								util.log(newPath.terminals.concat(nextNode), otherPath.tree, newPath.tree)
-								break
-							}
+				if (rule.terminal) {
+					// var newTerminals = lastTerminals + ' ' + newNode.symbol
+					var newTerminals = lastTerminals + ' ' + RHS[0]
+				} else {
+					if (RHS.length === 2) {
+						if (buildTrees) {
+							var secondNode = { symbol: RHS[1] }
+							lastNode.children.push(secondNode)
+							nextNodes.push(secondNode)
+						} else {
+							nextNodes.push(RHS[1])
 						}
 					}
 
-					if (p < pathsLen) continue
+					// If binary reduction, next sym added to nextNodes first\
+					var newTerminals = lastTerminals
+					nextNodes.push(newNode)
+				}
+
+				var nextNodesLen = nextNodes.length
+				if (nextNodesLen <= 1) {
+					// Search for another lastPath that leads to same symbol
+					// faster to iterate forward - something at hardware level
+					if (ambiguityExists(newPath, paths[newTerminals], newTerminals, buildTrees)) {
+						continue
+					}
 				}
 
 
+				var array = paths[newTerminals] || (paths[newTerminals] = [])
+				array.push(newPath)
 				// symsCount count limit is random for performance
-				var nextNode = nextNodes[newPath.nextNodes.length - 1]
-				if (nextNode && newPath.symsCount < 8) {
-					paths.push(newPath)
-					searchPaths(nextNode.symbol, paths)
+				var nextNode = nextNodes[nextNodesLen - 1]
+				if (nextNode && newPath.symsCount < 10) {
+					if (buildTrees) {
+						searchPaths(nextNode.symbol, buildTrees, paths, newPath, newTerminals)
+					} else {
+						searchPaths(nextNode, buildTrees, paths, newPath, newTerminals)
+					}
 				}
 			}
 		}
 	}
+}
+
+function ambiguityExists(newPath, paths, terminals, buildTrees) {
+	if (!paths) return false
+
+	var nextNode = newPath.nextNodes[newPath.nextNodes.length-1]
+	if (nextNode && buildTrees) nextNode = nextNode.symbol
+
+	for (var p = 0, pathsLen = paths.length; p < pathsLen; ++p) {
+		var otherPath = paths[p]
+		var otherNextNodes = otherPath.nextNodes
+		var otherNextNodesLen = otherNextNodes.length
+
+		if (otherNextNodesLen <= 1) {
+			var otherNextNode = otherNextNodes[otherNextNodesLen - 1]
+			if (otherNextNode && buildTrees) otherNextNode = otherNextNode.symbol
+
+			// Paths have identical rightmost symbols
+			if (otherNextNode === nextNode) {
+				if (buildTrees) {
+					util.printWarning('Ambiguity')
+					util.log(terminals + ' ' + nextNode, otherPath.tree, newPath.tree)
+					return true
+				} else {
+					// found ambiguity, run aggain building trees for debug
+					throw 'danny'
+				}
+			}
+		}
+	}
+
+	return false
 }
 
 // Return true if tree contains a rule with the passed lhs and rhs symbols
@@ -135,9 +184,10 @@ function treeContainsRule(node, lhsSym, rhs) {
 // Duplicate tree so new instance can be modified
 function cloneTree(node, nextNodes) {
 	// Recreate each node and its children
+	var nodeChildren = node.children
 	var newNode = {
 		symbol: node.symbol,
-		children: node.children && node.children.map(function (childNode) {
+		children: nodeChildren && nodeChildren.map(function (childNode) {
 			return cloneTree(childNode, nextNodes)
 		})
 	}
