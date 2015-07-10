@@ -35,6 +35,8 @@ exports.createEditRules = require('./createEditRules')
 
 // Check for unused nonterminal symbols, entity categories, or semantic functions and arguments not used in any productions
 exports.checkForUnusedComponents = require('./checkForUnusedComponents').bind(null, grammar)
+// Check for instances of ambiguity in the grammar
+exports.checkForAmbiguity = require('./checkForAmbiguity').bind(null, grammar)
 
 // Sort nonterminal symbols alphabetically
 exports.sortGrammar = function () {

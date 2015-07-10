@@ -11,6 +11,7 @@ require('../util').tryCatchWrapper(function () {
 
 	g.checkForUnusedComponents()
 	g.createEditRules()
+	g.checkForAmbiguity()
 	g.sortGrammar()
 	g.printRuleCount(outputFilePath)
 	g.writeGrammarToFile(outputFilePath)
