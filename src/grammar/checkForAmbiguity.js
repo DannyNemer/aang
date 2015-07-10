@@ -1,7 +1,9 @@
 var util = require('../util')
 
+
 module.exports = function (grammar) {
 	var symsLimit = 10
+
 	console.time('Ambiguity check')
 	for (var nontermSym in grammar) {
 		try {
@@ -46,7 +48,6 @@ module.exports = function (grammar) {
 					newPath.nextNode = RHS[0]
 				}
 
-				paths[newPath.terminals] = [ newPath ]
 				initPaths.push(newPath)
 			}
 		}
@@ -55,10 +56,13 @@ module.exports = function (grammar) {
 		if (pathTab.length === 1) return
 
 		for (var p = 0, initPathsLen = initPaths.length; p < initPathsLen; ++p) {
-			// console.log(initPaths[p])
 			var path = initPaths[p]
 			if (path.nextNode) {
 				searchPaths(initPaths[p], pathTab)
+			} else {
+				throwIfAmbiguityExists(path, pathTab)
+
+				pathTab[path.pathTabIdx][newPath.terminals] = [ path ]
 			}
 		}
 	}
@@ -93,13 +97,15 @@ module.exports = function (grammar) {
 					newPath.nextNode = RHS[0]
 				}
 
-				throwIfAmbiguityExists(newPath, pathTab)
-
-				var array = paths[newPath.terminals] || (paths[newPath.terminals] = [])
-				array.push(newPath)
-
 				if (newPath.nextNode && newPath.symsCount < symsLimit) {
 					searchPaths(newPath, pathTab)
+				} else {
+					// only search and compare at end
+					// the ambiguity can be found ealier, but it leads to too many searches
+					throwIfAmbiguityExists(newPath, pathTab)
+
+					var array = paths[newPath.terminals] || (paths[newPath.terminals] = [])
+					array.push(newPath)
 				}
 			}
 		}
@@ -143,16 +149,16 @@ module.exports = function (grammar) {
 
 				paths[newPath.terminals] = [ newPath ]
 
-				var nextNode = newPath.nextNodes[newPath.nextNodes.length - 1]
-				if (nextNode) {
-					searchPathsBuildTrees(newPath, pathTab, nextNode.symbol)
+				if (newPath.nextNodes.length > 0) {
+					searchPathsBuildTrees(newPath, pathTab)
 				}
 			}
 		}
 	}
 
-	function searchPathsBuildTrees(lastPath, pathTab, nextNodeSym) {
+	function searchPathsBuildTrees(lastPath, pathTab) {
 		var paths = pathTab[lastPath.pathTabIdx]
+		var nextNodeSym = lastPath.nextNodes[lastPath.nextNodes.length - 1].symbol
 		var rules = grammar[nextNodeSym]
 		for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 			var rule = rules[r]
@@ -194,9 +200,8 @@ module.exports = function (grammar) {
 				var array = paths[newPath.terminals] || (paths[newPath.terminals] = [])
 				array.push(newPath)
 
-				var nextNode = nextNodes[nextNodes.length - 1]
-				if (nextNode && newPath.symsCount < symsLimit) {
-					searchPathsBuildTrees(newPath, pathTab, nextNode.symbol)
+				if (nextNodes.length > 0 && newPath.symsCount < symsLimit) {
+					searchPathsBuildTrees(newPath, pathTab)
 				}
 			}
 		}
@@ -217,7 +222,7 @@ function throwIfAmbiguityExists(newPath, pathTab) {
 
 			if (otherPath.nextNode === nextNode && util.arraysMatch(otherPath.nextNodes, nextNodes)) {
 				// found ambiguity, run aggain building trees for debug
-				console.log(newPath.terminals, nextNodes)
+				// console.log(newPath.terminals, nextNodes)
 				throw -1
 			}
 		}
@@ -246,9 +251,10 @@ function findAmbiguityBuildTrees(newPath, pathTab) {
 				if (n === nextNodesLen) {
 					util.printWarning('Ambiguity')
 
-					var str = nextNodes.reduce(function (str, node) {
-						return str + ' ' + node.symbol
-					}, newPath.terminals)
+					var str = newPath.terminals
+					for (var n = nextNodesLen; n-- > 0;) {
+						str += ' ' + nextNodes[n].symbol
+					}
 
 					util.log(str, otherPath.tree, newPath.tree)
 					return true // try with allowing to continue to search whole loop
