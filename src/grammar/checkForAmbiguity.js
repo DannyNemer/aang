@@ -185,6 +185,33 @@ module.exports = function (grammar) {
 					newPath.terminals += ' ' + newNode.symbol
 				} else {
 					if (RHS.length === 2) {
+						var nextNodes2 = lastPath.nextNodes.slice()
+						var newPath2 = {
+							nextNodes: nextNodes2,
+							tree: cloneTree(lastPath.tree, nextNodes2),
+							pathTabIdx: lastPath.pathTabIdx,
+							terminals: lastPath.terminals + ' ' + RHS[0],
+							symsCount: lastPath.symsCount + 1
+						}
+						var lastNode2 = nextNodes2.pop()
+						lastNode2.children = [ { symbol: RHS[0], children: undefined } ]
+						var newNode2 = { symbol: RHS[1], children: undefined }
+						lastNode2.children.push(newNode2)
+						newPath2.nextNodes.push(newNode2)
+
+						if (findAmbiguityBuildTrees(newPath2, pathTab)) {
+							continue
+						}
+
+						var array = paths[newPath2.terminals] || (paths[newPath2.terminals] = [])
+						array.push(newPath2)
+
+						if (newPath2.symsCount < symsLimit) {
+							searchPathsBuildTrees(newPath2, pathTab)
+						}
+
+
+
 						var secondNode = { symbol: RHS[1], children: undefined }
 						lastNode.children.push(secondNode)
 						newPath.nextNodes.push(secondNode)
