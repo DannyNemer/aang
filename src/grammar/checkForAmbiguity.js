@@ -59,8 +59,6 @@ module.exports = function (grammar, symsLimit, printOutput) {
 				}
 
 
-				throwIfAmbiguityExists(newPath, pathTab)
-
 				pathTab[newPath.pathTabIdx][newPath.terminals] = [ newPath ]
 				if (newPath.nextNode) {
 					initPaths.push(newPath)
@@ -75,6 +73,9 @@ module.exports = function (grammar, symsLimit, printOutput) {
 		for (var p = 0, initPathsLen = initPaths.length; p < initPathsLen; ++p) {
 			searchPaths(initPaths[p], pathTab)
 		}
+
+		// Search for ambiguity after constructing all paths
+		findAmbiguity(pathTab)
 	}
 
 
@@ -107,13 +108,6 @@ module.exports = function (grammar, symsLimit, printOutput) {
 					newPath.nextNode = RHS[0]
 				}
 
-				// need to add everytime and search everytime, because there are some ambigs that exist ealier but aren't shown at end because when they are both at their symsCount limit they aren't the same (they need a bigger limit)
-				// the instance that showed this doesn't matter in prev implemntation (poss-users), because it just needed to find one and the buildTree would search every one
-				// need to check everyone because of this
-				if (throwIfAmbiguityExists(newPath, pathTab)) {
-					continue
-				}
-
 				var array = paths[newPath.terminals] || (paths[newPath.terminals] = [])
 				array.push(newPath)
 
@@ -124,32 +118,48 @@ module.exports = function (grammar, symsLimit, printOutput) {
 		}
 	}
 
-	function throwIfAmbiguityExists(newPath, pathTab) {
-		var nextNode = newPath.nextNode
-		var nextNodes = newPath.nextNodes
+	// check all at end, faster than every time, except in cases with ambiguity which can stop paths early, but net gain
 
-		for (var t = 0, pathTabLen = pathTab.length; t < pathTabLen; ++t) {
-			if (t === newPath.pathTabIdx) continue
-			var pathsForTerms = pathTab[t][newPath.terminals]
-			if (!pathsForTerms) continue
+	// need to add everytime and search everytime, because there are some ambigs that exist ealier but aren't shown at end because when they are both at their symsCount limit they aren't the same (they need a bigger limit)
+	// the instance that showed this doesn't matter in prev implemntation (poss-users), because it just needed to find one and the buildTree would search every one
+	// need to check everyone because of this
 
-			// When searching for ambiguity produced by a nonterminal symbol, limit to distinct pairs of rules produced by the initial nonterminal symbol.
-			for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
-				var ambig = ambigs[a]
-				if (ambig.indexOf(newPath.pathTabIdx) !== -1 && ambig.indexOf(t) !== -1) break
-			}
+	// cannot stop searching a path we know to have ambiguity, so longer then, but faster for all cases without where never stop early
+	// faster than searching after every reduction
 
-			// already know ambiguity exists for this pair
-			if (a < ambigsLen) continue
+	// Search for ambiguity after constructing all paths
+	// Previously searched for ambiguity after constructing each path, and preventing further construction of a path if ambiguity existed. It is about ~17% faster, however, to search all paths at once even without preventing additional construction from an ambiguous path.
+	function findAmbiguity(pathTab) {
+		// takes from 3s -> 2.5s
+		for (var a = 0, pathTabLen = pathTab.length; a < pathTabLen; ++a) {
+			var pathSetsA = pathTab[a]
+			for (var b = a + 1; b < pathTabLen; ++b) {
+				var pathSetsB = pathTab[b]
 
-			for (var p = 0, pathsLen = pathsForTerms.length; p < pathsLen; ++p) {
-				var otherPath = pathsForTerms[p]
+				for (var terminals in pathSetsA) {
+					var pathsB = pathSetsB[terminals]
+					if (!pathsB) continue
+					var pathsBLen = pathsB.length
 
-				if (otherPath.nextNode === nextNode && util.arraysMatch(otherPath.nextNodes, nextNodes)) {
-					// found ambiguity, run aggain building trees for debug
-					// util.log(newPath, otherPath)
-					ambigs.push([ newPath.pathTabIdx, otherPath.pathTabIdx ])
-					return true // should we be returning? what if ambiguity exists with more than one thing?
+					var pathsA = pathSetsA[terminals]
+					for (var p = 0, pathsALen = pathsA.length; p < pathsALen; ++p) {
+						var pathA = pathsA[p]
+						var nextNode = pathA.nextNode
+						var nextNodes = pathA.nextNodes
+
+						for (var o = 0; o < pathsBLen; ++o) {
+							var pathB = pathsB[o]
+
+							if (pathB.nextNode === nextNode && util.arraysMatch(pathB.nextNodes, nextNodes)) {
+								ambigs.push([a, b])
+								break
+							}
+						}
+
+						if (o < pathsBLen) break
+					}
+
+					if (p < pathsALen) break
 				}
 			}
 		}
