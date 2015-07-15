@@ -48,22 +48,22 @@ module.exports = function (grammar) {
 					newPath.nextNode = RHS[0]
 				}
 
-				initPaths.push(newPath)
+
+				throwIfAmbiguityExists(newPath, pathTab)
+
+				pathTab[newPath.pathTabIdx][newPath.terminals] = [ newPath ]
+				if (newPath.nextNode) {
+					initPaths.push(newPath)
+				}
 			}
 		}
 
 		// only one production possible from this LHS, so no ambiguity will appear ONLY here
+		// check pathTab, not initpaths, in case comparing a sym with terminal and nonterminal rules
 		if (pathTab.length === 1) return
 
 		for (var p = 0, initPathsLen = initPaths.length; p < initPathsLen; ++p) {
-			var path = initPaths[p]
-			if (path.nextNode) {
-				searchPaths(initPaths[p], pathTab)
-			} else {
-				throwIfAmbiguityExists(path, pathTab)
-
-				pathTab[path.pathTabIdx][newPath.terminals] = [ path ]
-			}
+			searchPaths(initPaths[p], pathTab)
 		}
 	}
 
@@ -97,15 +97,18 @@ module.exports = function (grammar) {
 					newPath.nextNode = RHS[0]
 				}
 
+				// need to add everytime and search everytime, because there are some ambigs that exist ealier but aren't shown at end because when they are both at their symsCount limit they aren't the same (they need a bigger limit)
+				// the instance that showed this doesn't matter in prev implemntation (poss-users), because it just needed to find one and the buildTree would search every one
+				// need to check everyone because of this
+				if (throwIfAmbiguityExists(newPath, pathTab)) {
+					continue
+				}
+
+				var array = paths[newPath.terminals] || (paths[newPath.terminals] = [])
+				array.push(newPath)
+
 				if (newPath.nextNode && newPath.symsCount < symsLimit) {
 					searchPaths(newPath, pathTab)
-				} else {
-					// only search and compare at end
-					// the ambiguity can be found ealier, but it leads to too many searches
-					throwIfAmbiguityExists(newPath, pathTab)
-
-					var array = paths[newPath.terminals] || (paths[newPath.terminals] = [])
-					array.push(newPath)
 				}
 			}
 		}
