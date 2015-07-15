@@ -8,21 +8,25 @@ var ambigs
 // if we made a new category with diff name but same term symbols, we won't see problem until [start]
 
 // depth - tells inspect how many times to recurse while formatting the object. <- symsLimit
+module.exports = function (grammar, symsLimit, printOutput) {
+	if (printOutput) {
+		console.log('symLimit:', symsLimit)
+		console.time('Ambiguity check')
+	}
 
-module.exports = function (grammar) {
-	var symsLimit = 10
-
-	console.time('Ambiguity check')
 	// Each instance of ambiguity in the grammar is modeled by a distinct pair of rules from the a given nonterminal symbol. The previous implementation printed the same instance of ambiguity multiple times.
 	for (var nontermSym in grammar) {
 		ambigs = []
+		// > 95% spent in this func
 		searchPathsInit(nontermSym)
 		if (ambigs.length) {
 			if (printOutput) console.log(ambigs)
 			searchPathsBuildTreesInit(nontermSym)
 		}
 	}
-	console.timeEnd('Ambiguity check')
+
+	if (printOutput) console.timeEnd('Ambiguity check')
+
 
 	function searchPathsInit(sym) {
 		var initPaths = []
@@ -115,6 +119,37 @@ module.exports = function (grammar) {
 
 				if (newPath.nextNode && newPath.symsCount < symsLimit) {
 					searchPaths(newPath, pathTab)
+				}
+			}
+		}
+	}
+
+	function throwIfAmbiguityExists(newPath, pathTab) {
+		var nextNode = newPath.nextNode
+		var nextNodes = newPath.nextNodes
+
+		for (var t = 0, pathTabLen = pathTab.length; t < pathTabLen; ++t) {
+			if (t === newPath.pathTabIdx) continue
+			var pathsForTerms = pathTab[t][newPath.terminals]
+			if (!pathsForTerms) continue
+
+			// When searching for ambiguity produced by a nonterminal symbol, limit to distinct pairs of rules produced by the initial nonterminal symbol.
+			for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
+				var ambig = ambigs[a]
+				if (ambig.indexOf(newPath.pathTabIdx) !== -1 && ambig.indexOf(t) !== -1) break
+			}
+
+			// already know ambiguity exists for this pair
+			if (a < ambigsLen) continue
+
+			for (var p = 0, pathsLen = pathsForTerms.length; p < pathsLen; ++p) {
+				var otherPath = pathsForTerms[p]
+
+				if (otherPath.nextNode === nextNode && util.arraysMatch(otherPath.nextNodes, nextNodes)) {
+					// found ambiguity, run aggain building trees for debug
+					// util.log(newPath, otherPath)
+					ambigs.push([ newPath.pathTabIdx, otherPath.pathTabIdx ])
+					return true // should we be returning? what if ambiguity exists with more than one thing?
 				}
 			}
 		}
@@ -227,93 +262,65 @@ module.exports = function (grammar) {
 			}
 		}
 	}
-}
 
+	function findAmbiguityBuildTrees(newPath, pathTab) {
+		var nextNodes = newPath.nextNodes
+		var nextNodesLen = nextNodes.length
 
-function throwIfAmbiguityExists(newPath, pathTab) {
-	var nextNode = newPath.nextNode
-	var nextNodes = newPath.nextNodes
+		for (var t = 0, pathTabLen = pathTab.length; t < pathTabLen; ++t) {
+			if (t === newPath.pathTabIdx) continue
+			var pathsForTerms = pathTab[t][newPath.terminals]
+			if (!pathsForTerms) continue
 
-	for (var t = 0, pathTabLen = pathTab.length; t < pathTabLen; ++t) {
-		if (t === newPath.pathTabIdx) continue
-		var pathsForTerms = pathTab[t][newPath.terminals]
-		if (!pathsForTerms) continue
-
-		// When searching for ambiguity produced by a nonterminal symbol, limit to distinct pairs of rules produced by the initial nonterminal symbol.
-		for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
-			var ambig = ambigs[a]
-			if (ambig.indexOf(newPath.pathTabIdx) !== -1 && ambig.indexOf(t) !== -1) break
-		}
-
-		// already know ambiguity exists for this pair
-		if (a < ambigsLen) continue
-
-		for (var p = 0, pathsLen = pathsForTerms.length; p < pathsLen; ++p) {
-			var otherPath = pathsForTerms[p]
-
-			if (otherPath.nextNode === nextNode && util.arraysMatch(otherPath.nextNodes, nextNodes)) {
-				// found ambiguity, run aggain building trees for debug
-				// util.log(newPath, otherPath)
-				ambigs.push([ newPath.pathTabIdx, otherPath.pathTabIdx ])
-				return true // should we be returning? what if ambiguity exists with more than one thing?
+		// only print one instance of ambiguity for each pair of rules generating ambiguity
+			for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
+				var ambig = ambigs[a]
+				if (ambig.indexOf(newPath.pathTabIdx) !== -1 && ambig.indexOf(t) !== -1) break
 			}
-		}
-	}
-}
+			// already printed ambiguity for it
+			if (a === ambigsLen) {
+				continue
+			}
 
-function findAmbiguityBuildTrees(newPath, pathTab) {
-	var nextNodes = newPath.nextNodes
-	var nextNodesLen = nextNodes.length
+			for (var p = 0, pathsLen = pathsForTerms.length; p < pathsLen; ++p) {
+				var otherPath = pathsForTerms[p]
+				var otherNextNodes = otherPath.nextNodes
+				var otherNextNodesLen = otherNextNodes.length
 
-	for (var t = 0, pathTabLen = pathTab.length; t < pathTabLen; ++t) {
-		if (t === newPath.pathTabIdx) continue
-		var pathsForTerms = pathTab[t][newPath.terminals]
-		if (!pathsForTerms) continue
+				if (otherNextNodesLen === nextNodesLen) {
+					for (var n = 0; n < nextNodesLen; ++n) {
+						if (nextNodes[n].symbol !== otherNextNodes[n].symbol) break
+					}
 
-	// only print one instance of ambiguity for each pair of rules generating ambiguity
-		for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
-			var ambig = ambigs[a]
-			if (ambig.indexOf(newPath.pathTabIdx) !== -1 && ambig.indexOf(t) !== -1) break
-		}
-		// already printed ambiguity for it
-		if (a === ambigsLen) {
-			continue
-		}
-
-		for (var p = 0, pathsLen = pathsForTerms.length; p < pathsLen; ++p) {
-			var otherPath = pathsForTerms[p]
-			var otherNextNodes = otherPath.nextNodes
-			var otherNextNodesLen = otherNextNodes.length
-
-			if (otherNextNodesLen === nextNodesLen) {
-				for (var n = 0; n < nextNodesLen; ++n) {
-					if (nextNodes[n].symbol !== otherNextNodes[n].symbol) break
-				}
-
-				if (n === nextNodesLen) {
-					util.printWarning('Ambiguity')
-					for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
-						var ambig = ambigs[a]
-						if (ambig.indexOf(newPath.pathTabIdx) !== -1 && ambig.indexOf(t) !== -1) {
-							ambigs.splice(a, 1)
-							break
-							// add something to stop if none left
+					if (n === nextNodesLen) {
+						for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
+							var ambig = ambigs[a]
+							if (ambig.indexOf(newPath.pathTabIdx) !== -1 && ambig.indexOf(t) !== -1) {
+								ambigs.splice(a, 1)
+								break
+								// add something to stop if none left
+							}
 						}
-					}
 
-					var str = newPath.terminals
-					for (var n = nextNodesLen; n-- > 0;) {
-						str += ' ' + nextNodes[n].symbol
-					}
+						if (printOutput) {
+							util.printWarning('Ambiguity')
 
-					util.log(str, otherPath.tree, newPath.tree)
-					return true // try with allowing to continue to search whole loop
+							var str = newPath.terminals
+							for (var n = nextNodesLen; n-- > 0;) {
+								str += ' ' + nextNodes[n].symbol
+							}
+
+							util.log(str, otherPath.tree, newPath.tree)
+						}
+
+						return true // try with allowing to continue to search whole loop
+					}
 				}
 			}
 		}
-	}
 
-	return false
+		return false
+	}
 }
 
 
