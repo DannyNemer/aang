@@ -1,6 +1,5 @@
 var util = require('../util')
 
-var ambigs
 
 // we start from a single symbol because must ensure that the ambiguous pair can exist in the same tree
 // - wait, that isn't true, right?
@@ -8,6 +7,7 @@ var ambigs
 // if we made a new category with diff name but same term symbols, we won't see problem until [start]
 
 // depth - tells inspect how many times to recurse while formatting the object. <- symsLimit
+var ambigs
 module.exports = function (grammar, symsLimit, printOutput) {
 	if (printOutput) {
 		console.log('symLimit:', symsLimit)
@@ -282,7 +282,7 @@ module.exports = function (grammar, symsLimit, printOutput) {
 			var pathsForTerms = pathTab[t][newPath.terminals]
 			if (!pathsForTerms) continue
 
-		// only print one instance of ambiguity for each pair of rules generating ambiguity
+			// only print one instance of ambiguity for each pair of rules generating ambiguity
 			for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
 				var ambig = ambigs[a]
 				if (ambig.indexOf(newPath.pathTabIdx) !== -1 && ambig.indexOf(t) !== -1) break
@@ -315,12 +315,9 @@ module.exports = function (grammar, symsLimit, printOutput) {
 						if (printOutput) {
 							util.printWarning('Ambiguity')
 
-							var str = newPath.terminals
-							for (var n = nextNodesLen; n-- > 0;) {
-								str += ' ' + nextNodes[n].symbol
-							}
-
-							util.log(str, otherPath.tree, newPath.tree)
+							// Remove identical parts of pair of ambiguous trees
+							diffTrees(otherPath.tree, newPath.tree)
+							util.log(otherPath.tree, newPath.tree)
 						}
 
 						return true // try with allowing to continue to search whole loop
@@ -380,4 +377,102 @@ function treeContainsRule(node, lhsSym, rhs) {
 	for (var n = 0; n < nodeChildrenLen; ++n) {
 		if (treeContainsRule(nodeChildren[n], lhsSym, rhs)) return true
 	}
+}
+
+// do not need to rmove duplicates
+// just do not print
+// if there is a future duplicate, it will be found on the earlier instance and not waste a comparison on the next
+// if not restricting printing of ambigs to pairs, then use this to prvent printing duplicates
+function printAmbigs(ambigs) {
+	for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
+		var ambigPair = ambigs[a]
+		diffTrees.apply(null, ambigPair)
+
+		for (var a2 = 0; a2 < a; ++a2) {
+			var otherPair = ambigs[a2]
+			if (nodesMatch(ambigPair[0], otherPair[0]) && nodesMatch(ambigPair[1], otherPair[1])) {
+				break // dup
+			}
+
+			if (nodesMatch(ambigPair[0], otherPair[1]) && nodesMatch(ambigPair[1], otherPair[0])) {
+				break // dup
+			}
+		}
+
+		if (a2 === a) {
+			util.log.apply(null, ambigPair)
+		}
+	}
+}
+
+// trim portions of rules that are different (bottom-most)
+// some branches won't find that symbol (different down to terminal rule)
+
+// there might be the same amount of branches, but all consider: x -> "a b", x -> "a", "b"
+// ^^^ make test for thi
+function diffTrees(a, b) {
+	var aInvertedTerms = invertTree(a)
+	var bInvertedTerms = invertTree(b)
+
+
+	var termsLen = Math.min(aInvertedTerms.length, bInvertedTerms.length)
+	for (var n = 0; n < termsLen; ++n) {
+		var nodeObjA = aInvertedTerms[n]
+		var nodeObjB = bInvertedTerms[n]
+		if (!nodeObjA || !nodeObjB) break
+
+		while (nodesMatch(nodeObjA.par.node, nodeObjB.par.node)) {
+			nodeObjA = nodeObjA.par
+			nodeObjB = nodeObjB.par
+		}
+
+		// also, if no mathc, avoid printing `undefined` for `children` for terminals
+		delete nodeObjA.node.children
+		delete nodeObjB.node.children
+	}
+}
+
+function invertTree(node, terminals) {
+	if (!terminals) terminals = []
+
+	var nodeObj = {
+		node: node,
+		par: undefined
+	}
+
+	var childNodes = node.children
+	if (childNodes) {
+		for (var c = 0, childNodesLen = childNodes.length; c < childNodesLen; ++c) {
+			var childObj = invertTree(childNodes[c], terminals)
+			childObj.par = nodeObj
+		}
+	} else {
+		terminals.push(nodeObj)
+	}
+
+	// we do not need to do the last one, connecting to the root
+
+	// return terminals on base call
+	return arguments[1] ? nodeObj : terminals
+}
+
+// *Unused*
+// Return true if trees are identical
+function nodesMatch(a, b) {
+	if (a.symbol !== b.symbol) return false
+
+	var aChildren = a.children
+	var bChildren = b.children
+
+	if (!aChildren && !bChildren) return true
+
+	if (aChildren && bChildren && aChildren.length === bChildren.length) {
+		for (var n = aChildren.length; n-- > 0;) {
+			if (!nodesMatch(aChildren[n], bChildren[n])) return false
+		}
+
+		return true
+	}
+
+	return false
 }
