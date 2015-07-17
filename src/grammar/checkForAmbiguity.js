@@ -7,8 +7,9 @@ var util = require('../util')
 // if we made a new category with diff name but same term symbols, we won't see problem until [start]
 
 // depth - tells inspect how many times to recurse while formatting the object. <- symsLimit
-var ambigs
-module.exports = function (grammar, symsLimit, printOutput) {
+// printAll - When enabled, print every unique pair of ambiguous trees instead of printing at most one pair (for each unique pair of rules from the initial nonterminal symbol).
+var ambigs = []
+module.exports = function (grammar, symsLimit, printOutput, printAll) {
 	if (printOutput) {
 		console.log('symLimit:', symsLimit)
 		console.time('Ambiguity check')
@@ -16,12 +17,12 @@ module.exports = function (grammar, symsLimit, printOutput) {
 
 	// Each instance of ambiguity in the grammar is modeled by a distinct pair of rules from the a given nonterminal symbol. The previous implementation printed the same instance of ambiguity multiple times.
 	for (var nontermSym in grammar) {
-		ambigs = []
 		// > 95% spent in this func
 		searchPathsInit(nontermSym)
 		if (ambigs.length) {
 			if (printOutput) console.log(ambigs)
 			searchPathsBuildTreesInit(nontermSym)
+			ambigs = []
 		}
 	}
 
@@ -169,6 +170,7 @@ module.exports = function (grammar, symsLimit, printOutput) {
 
 	function searchPathsBuildTreesInit(sym) {
 		var pathTab = []
+		var initPaths = []
 		var rules = grammar[sym]
 		for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 			var rule = rules[r]
@@ -219,9 +221,15 @@ module.exports = function (grammar, symsLimit, printOutput) {
 				paths[newPath.terminals] = [ newPath ]
 
 				if (newPath.nextNodes.length > 0) {
-					searchPathsBuildTrees(newPath, pathTab)
+					initPaths.push(newPath)
 				}
 			}
+		}
+
+		// create all path sets first before searching, otherwise will try to check for comparisons with pathIdex that do not exist
+		if (printAll) ammbigs = []
+		for (var p = 0, initPathsLen = initPaths.length; p < initPathsLen; ++p) {
+			searchPathsBuildTrees(initPaths[p], pathTab)
 		}
 	}
 
@@ -270,6 +278,7 @@ module.exports = function (grammar, symsLimit, printOutput) {
 				if (findAmbiguityBuildTrees(newPath, pathTab)) {
 					// stop searching after printing for each pair of rules producing ambiguity
 					if (lastPath.ambigPathTabIdxes.length === 0) return
+					continue // is this correct? regarding other ambiguous pairs existing on same path search
 					// return
 				}
 
@@ -289,9 +298,7 @@ module.exports = function (grammar, symsLimit, printOutput) {
 
 		var ambigPathTabIdxes = newPath.ambigPathTabIdxes
 		for (var a = 0, ambigPathTabIdxesLen = ambigPathTabIdxes.length; a < ambigPathTabIdxesLen; ++a) {
-			var pathSet = pathTab[ambigPathTabIdxes[a]]
-			if (!pathSet) continue // not made yet
-			var pathsForTerms = pathSet[newPath.terminals]
+			var pathsForTerms = pathTab[ambigPathTabIdxes[a]][newPath.terminals]
 			if (!pathsForTerms) continue
 
 			for (var p = 0, pathsLen = pathsForTerms.length; p < pathsLen; ++p) {
@@ -307,14 +314,24 @@ module.exports = function (grammar, symsLimit, printOutput) {
 					if (n === nextNodesLen) {
 						// When finding an instance of ambiguity, remove the `pathTab` index from the other path's array
 						// This stops all other paths in the search (from the same initial paths) from checking for ambiguity with the removed index (or stops path construction if no indexes remain).
-						ambigPathTabIdxes.splice(a, 1)
-						otherPath.ambigPathTabIdxes.splice(otherPath.ambigPathTabIdxes.indexOf(newPath.pathTabIdx), 1)
+
+						if (!printAll) {
+							ambigPathTabIdxes.splice(a, 1)
+							otherPath.ambigPathTabIdxes.splice(otherPath.ambigPathTabIdxes.indexOf(newPath.pathTabIdx), 1)
+						}
 
 						if (printOutput) {
-							util.printWarning('Ambiguity')
-
 							// Remove identical parts of pair of ambiguous trees
 							diffTrees(otherPath.tree, newPath.tree)
+
+							// After finding an ambiguous pair of trees and removing their identical rightmost symbols, check if an identical pair of trees has already been printed; otherwise, print and add the pair to the `ambigs` array.
+							if (printAll) {
+								if (pairIsDuplicate(otherPath.tree, newPath.tree)) return true
+								ambigs.push([ otherPath.tree, newPath.tree ])
+							}
+
+							// printing the one that comes earliest in the rules first, it is the 'other' because the 'new' path, being searched here was constructed after the 'other' path and therefore iterated to after the 'other'
+							util.printWarning('Ambiguity')
 							util.log(otherPath.tree, newPath.tree)
 						}
 
@@ -381,24 +398,18 @@ function treeContainsRule(node, lhsSym, rhs) {
 // just do not print
 // if there is a future duplicate, it will be found on the earlier instance and not waste a comparison on the next
 // if not restricting printing of ambigs to pairs, then use this to prvent printing duplicates
-function printAmbigs(ambigs) {
+
+// return true if pair of ambiguous trees already exists (after having been diff-ed)
+function pairIsDuplicate(treeA, treeB) {
 	for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
 		var ambigPair = ambigs[a]
-		diffTrees.apply(null, ambigPair)
 
-		for (var a2 = 0; a2 < a; ++a2) {
-			var otherPair = ambigs[a2]
-			if (nodesMatch(ambigPair[0], otherPair[0]) && nodesMatch(ambigPair[1], otherPair[1])) {
-				break // dup
-			}
-
-			if (nodesMatch(ambigPair[0], otherPair[1]) && nodesMatch(ambigPair[1], otherPair[0])) {
-				break // dup
-			}
+		if (nodesMatch(ambigPair[0], treeA) && nodesMatch(ambigPair[1], treeB)) {
+			return true
 		}
 
-		if (a2 === a) {
-			util.log.apply(null, ambigPair)
+		if (nodesMatch(ambigPair[0], treeB) && nodesMatch(ambigPair[1], treeA)) {
+			return true
 		}
 	}
 }
@@ -411,7 +422,6 @@ function printAmbigs(ambigs) {
 function diffTrees(a, b) {
 	var aInvertedTerms = invertTree(a)
 	var bInvertedTerms = invertTree(b)
-
 
 	var termsLen = Math.min(aInvertedTerms.length, bInvertedTerms.length)
 	for (var n = 0; n < termsLen; ++n) {
