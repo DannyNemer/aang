@@ -166,6 +166,7 @@ module.exports = function (grammar, symsLimit, printOutput) {
 	}
 
 
+
 	function searchPathsBuildTreesInit(sym) {
 		var pathTab = []
 		var rules = grammar[sym]
@@ -182,8 +183,22 @@ module.exports = function (grammar, symsLimit, printOutput) {
 					tree: { symbol: sym, children: undefined },
 					pathTabIdx: pathTab.push(paths) - 1,
 					terminals: '',
-					symsCount: 2
+					symsCount: 2,
+					ambigPathTabIdxes: []
 				}
+
+				// When constructing parse trees, each initial path has an array of `pathTab` indexes of the paths with which it is ambiguous.
+				// Only build paths for the symbol's rules that are in a pair of rules generating ambiguity
+				for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
+					var ambigPair = ambigs[a]
+					var idx = ambigPair.indexOf(newPath.pathTabIdx)
+					if (idx !== -1) {
+						// ambiguity exists that includes this path
+						newPath.ambigPathTabIdxes.push(ambigPair[Number(!idx)])
+					}
+				}
+
+				if (newPath.ambigPathTabIdxes.length === 0) continue
 
 				var lastNode = newPath.tree
 				var newNode = { symbol: RHS[0], children: undefined }
@@ -204,14 +219,7 @@ module.exports = function (grammar, symsLimit, printOutput) {
 				paths[newPath.terminals] = [ newPath ]
 
 				if (newPath.nextNodes.length > 0) {
-					// Only build paths for the symbol's rules that are in a pair of rules generating ambiguity
-					for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
-						if (ambigs[a].indexOf(newPath.pathTabIdx) !== -1) {
-							// ambiguity exists that includes this path
-							searchPathsBuildTrees(newPath, pathTab)
-							break
-						}
-					}
+					searchPathsBuildTrees(newPath, pathTab)
 				}
 			}
 		}
@@ -219,7 +227,7 @@ module.exports = function (grammar, symsLimit, printOutput) {
 
 	function searchPathsBuildTrees(lastPath, pathTab) {
 		// stop searching after printing for each pair of rules producing ambiguity
-		if (ambigs.length === 0) return
+		if (lastPath.ambigPathTabIdxes.length === 0) return
 
 		var paths = pathTab[lastPath.pathTabIdx]
 		var nextNodeSym = lastPath.nextNodes[lastPath.nextNodes.length - 1].symbol
@@ -238,7 +246,9 @@ module.exports = function (grammar, symsLimit, printOutput) {
 					tree: cloneTree(lastPath.tree, nextNodes),
 					pathTabIdx: lastPath.pathTabIdx,
 					terminals: lastPath.terminals,
-					symsCount: lastPath.symsCount + 1
+					symsCount: lastPath.symsCount + 1,
+					// The array is shared with all subsequent paths built from the initial path
+					ambigPathTabIdxes: lastPath.ambigPathTabIdxes,
 				}
 
 				var lastNode = nextNodes.pop()
@@ -259,8 +269,8 @@ module.exports = function (grammar, symsLimit, printOutput) {
 
 				if (findAmbiguityBuildTrees(newPath, pathTab)) {
 					// stop searching after printing for each pair of rules producing ambiguity
-					if (ambigs.length === 0) return
-					continue
+					if (lastPath.ambigPathTabIdxes.length === 0) return
+					// return
 				}
 
 				var array = paths[newPath.terminals] || (paths[newPath.terminals] = [])
@@ -277,20 +287,12 @@ module.exports = function (grammar, symsLimit, printOutput) {
 		var nextNodes = newPath.nextNodes
 		var nextNodesLen = nextNodes.length
 
-		for (var t = 0, pathTabLen = pathTab.length; t < pathTabLen; ++t) {
-			if (t === newPath.pathTabIdx) continue
-			var pathsForTerms = pathTab[t][newPath.terminals]
+		var ambigPathTabIdxes = newPath.ambigPathTabIdxes
+		for (var a = 0, ambigPathTabIdxesLen = ambigPathTabIdxes.length; a < ambigPathTabIdxesLen; ++a) {
+			var pathSet = pathTab[ambigPathTabIdxes[a]]
+			if (!pathSet) continue // not made yet
+			var pathsForTerms = pathSet[newPath.terminals]
 			if (!pathsForTerms) continue
-
-			// only print one instance of ambiguity for each pair of rules generating ambiguity
-			for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
-				var ambig = ambigs[a]
-				if (ambig.indexOf(newPath.pathTabIdx) !== -1 && ambig.indexOf(t) !== -1) break
-			}
-			// already printed ambiguity for it
-			if (a === ambigsLen) {
-				continue
-			}
 
 			for (var p = 0, pathsLen = pathsForTerms.length; p < pathsLen; ++p) {
 				var otherPath = pathsForTerms[p]
@@ -303,14 +305,10 @@ module.exports = function (grammar, symsLimit, printOutput) {
 					}
 
 					if (n === nextNodesLen) {
-						for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
-							var ambig = ambigs[a]
-							if (ambig.indexOf(newPath.pathTabIdx) !== -1 && ambig.indexOf(t) !== -1) {
-								ambigs.splice(a, 1)
-								break
-								// add something to stop if none left
-							}
-						}
+						// When finding an instance of ambiguity, remove the `pathTab` index from the other path's array
+						// This stops all other paths in the search (from the same initial paths) from checking for ambiguity with the removed index (or stops path construction if no indexes remain).
+						ambigPathTabIdxes.splice(a, 1)
+						otherPath.ambigPathTabIdxes.splice(otherPath.ambigPathTabIdxes.indexOf(newPath.pathTabIdx), 1)
 
 						if (printOutput) {
 							util.printWarning('Ambiguity')
@@ -432,6 +430,7 @@ function diffTrees(a, b) {
 	}
 }
 
+// Return an array of objects holding all of the terminal symbols with pointers to their parents
 function invertTree(node, terminals) {
 	if (!terminals) terminals = []
 
