@@ -240,7 +240,8 @@ exports.tryCatchWrapper = function (callback) {
 
 		if (e.stack) {
 			e.stack.split('\n').forEach(function (stackLine) {
-				console.log(stackLine.replace(/[()]/g, ''))
+				// Only remove parentheses from the stack, avoiding lines in `Error.message`
+				console.log(/^\s/.test(stackLine) ? stackLine.replace(/[()]/g, '') : stackLine)
 			})
 		} else {
 			console.log(e)
