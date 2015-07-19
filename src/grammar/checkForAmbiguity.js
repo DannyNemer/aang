@@ -123,12 +123,19 @@ module.exports = function (grammar, opts) {
 					newPath.nextNode = newPath.nextNodes[newPath.nextNodes.length - 1]
 					newPath.nextNodes = newPath.nextNodes.slice(0, -1)
 				} else {
+					// Prevent recursive rules, where the RHS includes the LHS symbol, in path search. Recursive rules are permitted for the initial nonterminal symbol of a search (where ambiguity can exist).
+					// Any instance of ambiguity demonstrated by a recursive rule (excluding for the root nonterminal symbol) can be represented with a different production because all nonterminal symbols with a recursive rule require a stop case (an error is thrown in grammar construction if otherwise).
+					var firstRHS = RHS[0]
+					if (lastNextNode === firstRHS) continue
+
 					if (RHS.length === 2) {
+						var secondRHS = RHS[1]
+						if (lastNextNode === secondRHS) continue
 						newPath.nextNodes = newPath.nextNodes.slice()
-						newPath.nextNodes.push(RHS[1])
+						newPath.nextNodes.push(secondRHS)
 					}
 
-					newPath.nextNode = RHS[0]
+					newPath.nextNode = firstRHS
 				}
 
 				var array = paths[newPath.terminals] || (paths[newPath.terminals] = [])
@@ -267,8 +274,8 @@ module.exports = function (grammar, opts) {
 			if (rule.insertionIdx === undefined && !rule.transposition) {
 				var RHS = rule.RHS
 
-				// Prevent infinite loops
-				if (treeContainsRule(lastPath.tree, nextNodeSym, RHS)) continue
+				// Prevent recurisve rules (infinite loops)
+				if (nextNodeSym === RHS[0] || nextNodeSym === RHS[1]) continue
 
 				var nextNodes = lastPath.nextNodes.slice()
 				var newPath = {
@@ -395,27 +402,6 @@ function cloneTree(node, nextNodes) {
 	return newNode
 }
 
-// Return true if tree contains a rule with the passed lhs and rhs symbols
-function treeContainsRule(node, lhsSym, rhs) {
-	var nodeChildren = node.children
-	if (!nodeChildren) return false
-	var nodeChildrenLen = nodeChildren.length
-
-	if (node.symbol === lhsSym && nodeChildrenLen === rhs.length) {
-		for (var n = 0; n < nodeChildrenLen; ++n) {
-			if (nodeChildren[n].symbol !== rhs[n]) break
-		}
-
-		// Same lhs and rhs symbols
-		if (n === nodeChildrenLen) return true
-	}
-
-	// Check children
-	for (var n = 0; n < nodeChildrenLen; ++n) {
-		if (treeContainsRule(nodeChildren[n], lhsSym, rhs)) return true
-	}
-}
-
 // do not need to rmove duplicates
 // just do not print
 // if there is a future duplicate, it will be found on the earlier instance and not waste a comparison on the next
@@ -487,7 +473,6 @@ function invertTree(node, terminals) {
 	return arguments[1] ? nodeObj : terminals
 }
 
-// *Unused*
 // Return true if trees are identical
 function nodesMatch(a, b) {
 	if (a.symbol !== b.symbol) return false
@@ -506,4 +491,26 @@ function nodesMatch(a, b) {
 	}
 
 	return false
+}
+
+// *Unused*
+// Return true if tree contains a rule with the passed lhs and rhs symbols
+function treeContainsRule(node, lhsSym, rhs) {
+	var nodeChildren = node.children
+	if (!nodeChildren) return false
+	var nodeChildrenLen = nodeChildren.length
+
+	if (node.symbol === lhsSym && nodeChildrenLen === rhs.length) {
+		for (var n = 0; n < nodeChildrenLen; ++n) {
+			if (nodeChildren[n].symbol !== rhs[n]) break
+		}
+
+		// Same lhs and rhs symbols
+		if (n === nodeChildrenLen) return true
+	}
+
+	// Check children
+	for (var n = 0; n < nodeChildrenLen; ++n) {
+		if (treeContainsRule(nodeChildren[n], lhsSym, rhs)) return true
+	}
 }
