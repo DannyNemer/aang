@@ -8,9 +8,31 @@ var util = require('../util')
 
 // depth - tells inspect how many times to recurse while formatting the object. <- symsLimit
 // printAll - When enabled, print every unique pair of ambiguous trees instead of printing at most one pair (for each unique pair of rules from the initial nonterminal symbol).
+
+// Can find ambiguity in terminal rules: X -> x, X -> Y -> x
+
+// Y -> a | b
+// Z -> a | b
+// X -> Y Z
+// ambiguity imposible within a binary function, only within a single nonterminal symbol
+// which is why we start at every nonterminal symbol and only compare to rules in a different initial path
+// otherwise, it is due to ambiguity within another symbol
 var ambigs = []
-module.exports = function (grammar, symsLimit, printOutput, printAll) {
-	if (printOutput) {
+
+var optsSchema = {
+	symsLimit: Number,
+	printOutput: { type: Boolean, optional: true },
+	printAll: { type: Boolean, optional: true },
+}
+
+module.exports = function (grammar, opts) {
+	if (util.illFormedOpts(optsSchema, opts)) {
+		return
+	}
+
+	var symsLimit = opts.symsLimit
+
+	if (opts.printOutput) {
 		console.log('symLimit:', symsLimit)
 		console.time('Ambiguity check')
 	}
@@ -20,13 +42,13 @@ module.exports = function (grammar, symsLimit, printOutput, printAll) {
 		// > 95% spent in this func
 		searchPathsInit(nontermSym)
 		if (ambigs.length) {
-			if (printOutput) console.log(ambigs)
+			if (opts.printOutput) console.log(ambigs)
 			searchPathsBuildTreesInit(nontermSym)
 			ambigs = []
 		}
 	}
 
-	if (printOutput) console.timeEnd('Ambiguity check')
+	if (opts.printOutput) console.timeEnd('Ambiguity check')
 
 
 	function searchPathsInit(sym) {
@@ -227,7 +249,7 @@ module.exports = function (grammar, symsLimit, printOutput, printAll) {
 		}
 
 		// create all path sets first before searching, otherwise will try to check for comparisons with pathIdex that do not exist
-		if (printAll) ammbigs = []
+		if (opts.printAll) ammbigs = []
 		for (var p = 0, initPathsLen = initPaths.length; p < initPathsLen; ++p) {
 			searchPathsBuildTrees(initPaths[p], pathTab)
 		}
@@ -315,19 +337,19 @@ module.exports = function (grammar, symsLimit, printOutput, printAll) {
 						// When finding an instance of ambiguity, remove the `pathTab` index from the other path's array
 						// This stops all other paths in the search (from the same initial paths) from checking for ambiguity with the removed index (or stops path construction if no indexes remain).
 
-						if (!printAll) {
+						if (!opts.printAll) {
 							ambigPathTabIdxes.splice(a, 1)
 							otherPath.ambigPathTabIdxes.splice(otherPath.ambigPathTabIdxes.indexOf(newPath.pathTabIdx), 1)
 						}
 
-						if (printOutput) {
+						if (opts.printOutput) {
 							// Remove identical parts of pair of ambiguous trees
 							diffTrees(otherPath.tree, newPath.tree)
 
 							// After finding an ambiguous pair of trees and removing their identical rightmost symbols, check if an identical pair of trees has already been printed; otherwise, print and add the pair to the `ambigs` array.
-							if (printAll) {
 								if (pairIsDuplicate(otherPath.tree, newPath.tree)) return true
 								ambigs.push([ otherPath.tree, newPath.tree ])
+							if (opts.printAll) {
 							}
 
 							// printing the one that comes earliest in the rules first, it is the 'other' because the 'new' path, being searched here was constructed after the 'other' path and therefore iterated to after the 'other'
