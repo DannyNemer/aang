@@ -322,6 +322,8 @@ module.exports = function (grammar, opts) {
 	}
 
 	function findAmbiguityBuildTrees(newPath, pathTab) {
+		var foundAmbiguity = false
+
 		var nextNodes = newPath.nextNodes
 		var nextNodesLen = nextNodes.length
 
@@ -347,6 +349,8 @@ module.exports = function (grammar, opts) {
 						if (!opts.printAll) {
 							ambigPathTabIdxes.splice(a, 1)
 							otherPath.ambigPathTabIdxes.splice(otherPath.ambigPathTabIdxes.indexOf(newPath.pathTabIdx), 1)
+							--a
+							--ambigPathTabIdxesLen
 						}
 
 						if (opts.printOutput) {
@@ -364,13 +368,17 @@ module.exports = function (grammar, opts) {
 							util.log(otherPath.tree, newPath.tree)
 						}
 
-						return true // try with allowing to continue to search whole loop
+						// A path can be ambiguous with other paths (in different pathSet)
+						// If a pair of ambiguous paths both are ambiguous with a second path, they both would be stopped here and not print this additional case of ambiguity
+						// can only be ambigious with one path per pathTabIdx, otherwise it is due to ambiguity within a subnode from that path -> i.e., that ambiguity within a different nonterminal symbol
+						foundAmbiguity = true
+						break
 					}
 				}
 			}
 		}
 
-		return false
+		return foundAmbiguity
 	}
 }
 
