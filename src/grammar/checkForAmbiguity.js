@@ -354,18 +354,21 @@ module.exports = function (grammar, opts) {
 						}
 
 						if (opts.printOutput) {
+							// Parse trees must be cloned before removing their rightmost symbols because a path can be ambiguous with two other paths at different depths (the first instance of ambiguity can remove rightmost symbols needed for the second instance).
+							var otherPathTree = cloneTree(otherPath.tree, [])
+							var newPathTree = cloneTree(newPath.tree, [])
 							// Remove identical parts of pair of ambiguous trees
-							diffTrees(otherPath.tree, newPath.tree)
+							diffTrees(otherPathTree, newPathTree)
 
 							// After finding an ambiguous pair of trees and removing their identical rightmost symbols, check if an identical pair of trees has already been printed; otherwise, print and add the pair to the `ambigs` array.
-								if (pairIsDuplicate(otherPath.tree, newPath.tree)) return true
-								ambigs.push([ otherPath.tree, newPath.tree ])
 							if (opts.printAll) {
+								if (pairIsDuplicate(otherPathTree, newPathTree)) return true
+								ambigPairs.push([ otherPathTree, newPathTree ])
 							}
 
 							// printing the one that comes earliest in the rules first, it is the 'other' because the 'new' path, being searched here was constructed after the 'other' path and therefore iterated to after the 'other'
 							util.printWarning('Ambiguity')
-							util.log(otherPath.tree, newPath.tree)
+							util.log(otherPathTree, newPathTree)
 						}
 
 						// A path can be ambiguous with other paths (in different pathSet)
