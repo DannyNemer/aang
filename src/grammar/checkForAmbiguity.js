@@ -307,8 +307,13 @@ module.exports = function (grammar, opts) {
 				if (findAmbiguityBuildTrees(newPath, pathTab)) {
 					// stop searching after printing for each pair of rules producing ambiguity
 					if (lastPath.ambigPathTabIdxes.length === 0) return
-					continue // is this correct? regarding other ambiguous pairs existing on same path search
-					// return
+					// do not `continue` because:
+					// X -> Z
+					// X -> Y -> Z = ambig
+					// X -> a
+					// X -> Y -> Z -> a = ambig with line2, which would have been stopped
+					// different forms of the same path can be ambiguous with other things
+					// a successive version of a path can be ambiguous with a different path than the earlier version
 				}
 
 				var array = paths[newPath.terminals] || (paths[newPath.terminals] = [])
