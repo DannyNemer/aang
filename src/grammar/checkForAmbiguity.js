@@ -17,7 +17,7 @@ var util = require('../util')
 // ambiguity imposible within a binary function, only within a single nonterminal symbol
 // which is why we start at every nonterminal symbol and only compare to rules in a different initial path
 // otherwise, it is due to ambiguity within another symbol
-var ambigs = []
+var ambigPairs = []
 
 var optsSchema = {
 	symsLimit: Number,
@@ -41,10 +41,10 @@ module.exports = function (grammar, opts) {
 	for (var nontermSym in grammar) {
 		// > 95% spent in this func
 		searchPathsInit(nontermSym)
-		if (ambigs.length) {
-			if (opts.printOutput) console.log(ambigs)
+		if (ambigPairs.length) {
+			if (opts.printOutput) console.log(ambigPairs)
 			searchPathsBuildTreesInit(nontermSym)
-			ambigs = []
+			ambigPairs = []
 		}
 	}
 
@@ -64,8 +64,8 @@ module.exports = function (grammar, opts) {
 				var paths = {}
 
 				var newPath = {
-					nextNodes: [],
-					nextNode: undefined,
+					nextSyms: [],
+					nextSym: undefined,
 					pathTabIdx: pathTab.push(paths) - 1,
 					terminals: '',
 					symsCount: 2
@@ -75,15 +75,15 @@ module.exports = function (grammar, opts) {
 					newPath.terminals += ' ' + RHS[0] // add space because all will begin with space
 				} else {
 					if (RHS.length === 2) {
-						newPath.nextNodes.push(RHS[1])
+						newPath.nextSyms.push(RHS[1])
 					}
 
-					newPath.nextNode = RHS[0]
+					newPath.nextSym = RHS[0]
 				}
 
 
-				pathTab[newPath.pathTabIdx][newPath.terminals] = [ newPath ]
-				if (newPath.nextNode) {
+				paths[newPath.terminals] = [ newPath ]
+				if (newPath.nextSym) {
 					initPaths.push(newPath)
 				}
 			}
@@ -98,30 +98,32 @@ module.exports = function (grammar, opts) {
 		}
 
 		// Search for ambiguity after constructing all paths
+		// ~75%% of searchPaths() time
 		findAmbiguity(pathTab)
 	}
 
 
 	function searchPaths(lastPath, pathTab) {
 		var paths = pathTab[lastPath.pathTabIdx]
-		var rules = grammar[lastPath.nextNode]
+		var lastNextNode = lastPath.nextSym
+		var rules = grammar[lastNextNode]
 		for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 			var rule = rules[r]
 			if (rule.insertionIdx === undefined && !rule.transposition) {
 				var RHS = rule.RHS
 
 				var newPath = {
-					nextNodes: lastPath.nextNodes,
-					nextNode: undefined,
+					nextSyms: lastPath.nextSyms,
+					nextSym: undefined,
 					pathTabIdx: lastPath.pathTabIdx,
 					terminals: lastPath.terminals,
-					symsCount: lastPath.symsCount + 1
+					symsCount: lastPath.symsCount + 1,
 				}
 
 				if (rule.terminal) {
 					newPath.terminals += ' ' + RHS[0]
-					newPath.nextNode = newPath.nextNodes[newPath.nextNodes.length - 1]
-					newPath.nextNodes = newPath.nextNodes.slice(0, -1)
+					newPath.nextSym = newPath.nextSyms[newPath.nextSyms.length - 1]
+					newPath.nextSyms = newPath.nextSyms.slice(0, -1)
 				} else {
 					// Prevent recursive rules, where the RHS includes the LHS symbol, in path search. Recursive rules are permitted for the initial nonterminal symbol of a search (where ambiguity can exist).
 					// Any instance of ambiguity demonstrated by a recursive rule (excluding for the root nonterminal symbol) can be represented with a different production because all nonterminal symbols with a recursive rule require a stop case (an error is thrown in grammar construction if otherwise).
@@ -131,17 +133,21 @@ module.exports = function (grammar, opts) {
 					if (RHS.length === 2) {
 						var secondRHS = RHS[1]
 						if (lastNextNode === secondRHS) continue
-						newPath.nextNodes = newPath.nextNodes.slice()
-						newPath.nextNodes.push(secondRHS)
+						newPath.nextSyms = newPath.nextSyms.slice()
+						newPath.nextSyms.push(secondRHS)
 					}
 
-					newPath.nextNode = firstRHS
+					newPath.nextSym = firstRHS
 				}
 
-				var array = paths[newPath.terminals] || (paths[newPath.terminals] = [])
-				array.push(newPath)
+				var pathSet = paths[newPath.terminals]
+				if (pathSet) {
+					pathSet.push(newPath)
+				} else {
+					paths[newPath.terminals] = [ newPath ]
+				}
 
-				if (newPath.nextNode && newPath.symsCount < symsLimit) {
+				if (newPath.nextSym && newPath.symsCount < symsLimit) {
 					searchPaths(newPath, pathTab)
 				}
 			}
@@ -150,7 +156,7 @@ module.exports = function (grammar, opts) {
 
 	// check all at end, faster than every time, except in cases with ambiguity which can stop paths early, but net gain
 
-	// need to add everytime and search everytime, because there are some ambigs that exist ealier but aren't shown at end because when they are both at their symsCount limit they aren't the same (they need a bigger limit)
+	// need to add everytime and search everytime, because there are some ambigPairs that exist ealier but aren't shown at end because when they are both at their symsCount limit they aren't the same (they need a bigger limit)
 	// the instance that showed this doesn't matter in prev implemntation (poss-users), because it just needed to find one and the buildTree would search every one
 	// need to check everyone because of this
 
@@ -159,6 +165,9 @@ module.exports = function (grammar, opts) {
 
 	// Search for ambiguity after constructing all paths
 	// Previously searched for ambiguity after constructing each path, and preventing further construction of a path if ambiguity existed. It is about ~17% faster, however, to search all paths at once even without preventing additional construction from an ambiguous path.
+
+	// tried sorting by nextSymsLen and breaking when too long, an went from 8.5 -> 7.5
+	// tried sorting be nextSym alphabetically and no perf difference
 	function findAmbiguity(pathTab) {
 		// takes from 3s -> 2.5s
 		for (var a = 0, pathTabLen = pathTab.length; a < pathTabLen; ++a) {
@@ -174,14 +183,14 @@ module.exports = function (grammar, opts) {
 					var pathsA = pathSetsA[terminals]
 					for (var p = 0, pathsALen = pathsA.length; p < pathsALen; ++p) {
 						var pathA = pathsA[p]
-						var nextNode = pathA.nextNode
-						var nextNodes = pathA.nextNodes
+						var nextSym = pathA.nextSym
+						var nextSyms = pathA.nextSyms
 
 						for (var o = 0; o < pathsBLen; ++o) {
 							var pathB = pathsB[o]
 
-							if (pathB.nextNode === nextNode && util.arraysMatch(pathB.nextNodes, nextNodes)) {
-								ambigs.push([a, b])
+							if (pathB.nextSym === nextSym && util.arraysMatch(pathB.nextSyms, nextSyms)) {
+								ambigPairs.push([a, b])
 								break
 							}
 						}
@@ -220,8 +229,8 @@ module.exports = function (grammar, opts) {
 
 				// When constructing parse trees, each initial path has an array of `pathTab` indexes of the paths with which it is ambiguous.
 				// Only build paths for the symbol's rules that are in a pair of rules generating ambiguity
-				for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
-					var ambigPair = ambigs[a]
+				for (var a = 0, ambigPairsLen = ambigPairs.length; a < ambigPairsLen; ++a) {
+					var ambigPair = ambigPairs[a]
 					var idx = ambigPair.indexOf(newPath.pathTabIdx)
 					if (idx !== -1) {
 						// ambiguity exists that includes this path
@@ -275,6 +284,7 @@ module.exports = function (grammar, opts) {
 				var RHS = rule.RHS
 
 				// Prevent recurisve rules (infinite loops)
+				// We could instead use treeContainsRule(), and output more (perf barely hurt), but best be consitent with what we find in searchPaths()
 				if (nextNodeSym === RHS[0] || nextNodeSym === RHS[1]) continue
 
 				var nextNodes = lastPath.nextNodes.slice()
@@ -304,6 +314,15 @@ module.exports = function (grammar, opts) {
 					newPath.nextNodes.push(newNode)
 				}
 
+				// Need to save path even if ambiguous, because other paths yet to be built may be ambiguous to this path
+				// Can add before findAmbiguityBuildTrees because the search does not look in this `paths`
+				var pathSet = paths[newPath.terminals]
+				if (pathSet) {
+					pathSet.push(newPath)
+				} else {
+					paths[newPath.terminals] = [ newPath ]
+				}
+
 				if (findAmbiguityBuildTrees(newPath, pathTab)) {
 					// stop searching after printing for each pair of rules producing ambiguity
 					if (lastPath.ambigPathTabIdxes.length === 0) return
@@ -315,9 +334,6 @@ module.exports = function (grammar, opts) {
 					// different forms of the same path can be ambiguous with other things
 					// a successive version of a path can be ambiguous with a different path than the earlier version
 				}
-
-				var array = paths[newPath.terminals] || (paths[newPath.terminals] = [])
-				array.push(newPath)
 
 				if (nextNodes.length > 0 && newPath.symsCount < symsLimit) {
 					searchPathsBuildTrees(newPath, pathTab)
@@ -365,15 +381,20 @@ module.exports = function (grammar, opts) {
 							// Remove identical parts of pair of ambiguous trees
 							diffTrees(otherPathTree, newPathTree)
 
-							// After finding an ambiguous pair of trees and removing their identical rightmost symbols, check if an identical pair of trees has already been printed; otherwise, print and add the pair to the `ambigs` array.
+							// After finding an ambiguous pair of trees and removing their identical rightmost symbols, check if an identical pair of trees has already been printed; otherwise, print and add the pair to the `ambigPairs` array.
 							if (opts.printAll) {
 								if (pairIsDuplicate(otherPathTree, newPathTree)) return true
 								ambigPairs.push([ otherPathTree, newPathTree ])
 							}
 
-							// printing the one that comes earliest in the rules first, it is the 'other' because the 'new' path, being searched here was constructed after the 'other' path and therefore iterated to after the 'other'
+							// Print paths by index of initial nonterminal rule to maintain order
+							// Nearly always, `otherPath` has lower index because it was built before `newPath`. However, if `otherPath` has only one production, then it was built in the init() function and can have a higher index than `newPath` which has more than one production
 							util.printWarning('Ambiguity')
-							util.log(otherPathTree, newPathTree)
+							if (newPath.pathTabIdx < otherPath.pathTabIdx) {
+								util.log(newPathTree, otherPathTree)
+							} else {
+								util.log(otherPathTree, newPathTree)
+							}
 						}
 
 						// A path can be ambiguous with other paths (in different pathSet)
@@ -421,12 +442,12 @@ function cloneTree(node, nextNodes) {
 // do not need to rmove duplicates
 // just do not print
 // if there is a future duplicate, it will be found on the earlier instance and not waste a comparison on the next
-// if not restricting printing of ambigs to pairs, then use this to prvent printing duplicates
+// if not restricting printing of ambigPairs to pairs, then use this to prvent printing duplicates
 
 // return true if pair of ambiguous trees already exists (after having been diff-ed)
 function pairIsDuplicate(treeA, treeB) {
-	for (var a = 0, ambigsLen = ambigs.length; a < ambigsLen; ++a) {
-		var ambigPair = ambigs[a]
+	for (var a = 0, ambigPairsLen = ambigPairs.length; a < ambigPairsLen; ++a) {
+		var ambigPair = ambigPairs[a]
 
 		if (nodesMatch(ambigPair[0], treeA) && nodesMatch(ambigPair[1], treeB)) {
 			return true
@@ -440,13 +461,13 @@ function pairIsDuplicate(treeA, treeB) {
 
 // trim portions of rules that are different (bottom-most)
 // some branches won't find that symbol (different down to terminal rule)
-
-// there might be the same amount of branches, but all consider: x -> "a b", x -> "a", "b"
-// ^^^ make test for thi
 function diffTrees(a, b) {
 	var aInvertedTerms = invertTree(a)
 	var bInvertedTerms = invertTree(b)
 
+	// If there is a different number of terminal symbols (i.e., branches), use the minimum length and diff as much of the trees as possible
+	// EX: X -> A -> "a"   X -> "a b"
+	//       -> B -> "b"
 	var termsLen = Math.min(aInvertedTerms.length, bInvertedTerms.length)
 	for (var n = 0; n < termsLen; ++n) {
 		var nodeObjA = aInvertedTerms[n]
