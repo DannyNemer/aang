@@ -3,6 +3,7 @@
 require('../util').tryCatchWrapper(function () {
 	var g = require('./grammar')
 
+	require('./ambiguityExamples')
 	require('./rules/user')
 	require('./rules/follow')
 	require('./rules/github/github')
