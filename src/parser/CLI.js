@@ -27,7 +27,7 @@ rl.on('line', function (line) {
 
 	// If no '-t' arg (for 'time'), reload modules after every input to enable module changes
 	if (process.argv.indexOf('-t') === -1) {
-		deleteModuleCache()
+		deleteModuleCaches()
 	}
 
 	rl.prompt()
@@ -157,7 +157,7 @@ function runCommand(input) {
 
 	// Delete module cache
 	else if (firstArg === '.deleteCache') {
-		deleteModuleCache()
+		deleteModuleCaches()
 		console.log('Deleted cache of modules')
 	}
 
@@ -261,7 +261,7 @@ function runCommand(input) {
 function buildStateTable() {
 	var inputFilePath = '../aang.json'
 	// If loaded, remove from cache to force reload of file after removing grammar and semantics below
-	util.deleteCache(inputFilePath)
+	util.deleteModuleCache(inputFilePath)
 	var inputFile = require(inputFilePath)
 
 	var grammar = inputFile.grammar
@@ -301,8 +301,8 @@ function buildStateTable() {
 }
 
 // Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
-function deleteModuleCache() {
-	util.deleteCache(parserPath, forestSearchPath, stateTablePath, './BinaryHeap.js', '../grammar/semantic.js', './calcHeuristics.js')
+function deleteModuleCaches() {
+	util.deleteModuleCache(parserPath, forestSearchPath, stateTablePath, './BinaryHeap.js', '../grammar/semantic.js', './calcHeuristics.js')
 }
 
 
