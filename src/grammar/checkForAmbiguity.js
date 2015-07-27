@@ -23,11 +23,21 @@ var optsSchema = {
 	symsLimit: Number,
 	printOutput: { type: Boolean, optional: true },
 	printAll: { type: Boolean, optional: true },
+	useTestRules: { type: Boolean, optional: true },
 }
 
 module.exports = function (grammar, opts) {
 	if (util.illFormedOpts(optsSchema, opts)) {
 		return
+	}
+
+	if (opts.useTestRules) {
+		// Delete existing rules
+		for (var sym in grammar) {
+			delete grammar[sym]
+		}
+
+		require('./ambiguityExamples')
 	}
 
 	var symsLimit = opts.symsLimit

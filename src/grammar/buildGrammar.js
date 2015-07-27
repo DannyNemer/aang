@@ -3,16 +3,15 @@
 require('../util').tryCatchWrapper(function () {
 	var g = require('./grammar')
 
-	require('./ambiguityExamples')
 	require('./rules/user')
 	require('./rules/follow')
 	require('./rules/github/github')
 
-	var outputFilePath = __dirname + '/../aang.json'
+	var outputFilePath = '../aang.json'
 
 	g.checkForUnusedComponents()
 	g.createEditRules()
-	g.checkForAmbiguity({ symsLimit: 12, printOutput: true, printAll: true })
+	g.checkForAmbiguity({ symsLimit: 12, printOutput: true, printAll: true, useTestRules: true })
 	g.sortGrammar()
 	g.printRuleCount(outputFilePath)
 	g.writeGrammarToFile(outputFilePath)
