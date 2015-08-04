@@ -55,6 +55,9 @@ module.exports = function (grammar, opts) {
 			if (opts.printOutput) console.log(ambigPairs)
 			searchPathsBuildTreesInit(nontermSym)
 			ambigPairs = []
+		} else if (opts.useTestRules && nontermSym.indexOf('ambig') === 1) {
+			// Ensures this algorithm finds all possible forms of ambiguity
+			util.printErr('Ambiguity not found in test rule', nontermSym)
 		}
 	}
 
