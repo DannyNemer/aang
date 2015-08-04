@@ -1,4 +1,5 @@
-// Examples of ambiguous rules
+// Examples of ambiguous rules.
+// The ambiguity checker should print warnings for each of these cases.
 
 var g = require('./grammar')
 
@@ -7,8 +8,8 @@ var x = g.newSymbol('x').addRule({ terminal: true, RHS: 'x' })
 var y = g.newSymbol('y').addRule({ terminal: true, RHS: 'y' })
 var z = g.newSymbol('z').addRule({ terminal: true, RHS: 'z' })
 
-var xy = g.newSymbol('xy').addRule({ terminal: true, RHS: 'x y'})
-var yz = g.newSymbol('yz').addRule({ terminal: true, RHS: 'y z'})
+var xyTerm = g.newSymbol('xy', 'term').addRule({ terminal: true, RHS: 'x y'})
+var yzTerm = g.newSymbol('yz', 'term').addRule({ terminal: true, RHS: 'y z'})
 
 var xPar = g.newSymbol('x', 'par').addRule({ RHS: [ x ] })
 var yPar = g.newSymbol('y', 'par').addRule({ RHS: [ y ] })
@@ -20,6 +21,14 @@ var xParDup = g.newSymbol('x', 'par', 'dup').addRule({ RHS: [ x ] })
 var xOrY = g.newSymbol('x', 'or', 'y')
 xOrY.addRule({ RHS: [ x ] })
 xOrY.addRule({ RHS: [ y ] })
+
+var xx = g.newBinaryRule({ RHS: [ x, x ] })
+
+var xyRecursive = g.newSymbol('x', 'y', 'recursive')
+xyRecursive.addRule({ RHS: [ x, xyRecursive ] })
+xyRecursive.addRule({ RHS: [ x ] })
+xyRecursive.addRule({ RHS: [ y, xyRecursive ] })
+xyRecursive.addRule({ RHS: [ y ] })
 
 
 // Ambiguity at terminal symbols with paths of identical lengths.
@@ -66,15 +75,15 @@ ambigBinary.addRule({ RHS: [ x, xParPar ] })
 // S -> X  -> 'x'
 //   -> YZ -> 'y z'
 var ambigSameNumTerms = g.newSymbol('ambig', 'same', 'num', 'terms')
-ambigSameNumTerms.addRule({ RHS: [ xy, z ] })
-ambigSameNumTerms.addRule({ RHS: [ x, yz ] })
+ambigSameNumTerms.addRule({ RHS: [ xyTerm, z ] })
+ambigSameNumTerms.addRule({ RHS: [ x, yzTerm ] })
 
 // Ambiguity with terminal rules, different number of terminal symbols (i.e., branches).
 // S -> X -> 'x'
 //   -> Y -> 'y'
 // S -> 'x y'
 var ambigDiffNumTerms = g.newSymbol('ambig', 'diff', 'num', 'terms')
-ambigDiffNumTerms.addRule({ RHS: [ xy ] })
+ambigDiffNumTerms.addRule({ RHS: [ xyTerm ] })
 ambigDiffNumTerms.addRule({ RHS: [ x, y ] })
 
 // The same instance of ambiguity represented at different depths by multiple pairs of paths.
@@ -94,31 +103,70 @@ ambigBuiltFromEarlierAmbig.addRule({ RHS: [ x ] })
 ambigBuiltFromEarlierAmbig.addRule({ RHS: [ xPar ] })
 ambigBuiltFromEarlierAmbig.addRule({ RHS: [ xParPar ] })
 
-// Multiple instances of ambiguity within the same pair of initial rules from the root nonterminal symbol.
+// Multiple instances of ambiguity within the same pair of start rules from the root nonterminal symbol.
 // By default, when the `printAll` option is set to `false`, the ambiguity check will only print one instance of ambiguity for each pair of rules from the root nonterminal symbol.
+// This exemplifies when one would want `printAll` set to `true`.
 // S -> X-or-Y -> X   S -> X-or-Y -> Y
 // S -> X             S -> Y
-var ambigMultSameInitRules = g.newSymbol('ambig', 'mult', 'same', 'init', 'rules')
-ambigMultSameInitRules.addRule({ RHS: [ xOrY ] })
-ambigMultSameInitRules.addRule({ RHS: [ x ] })
-ambigMultSameInitRules.addRule({ RHS: [ y ] })
+var ambigMultSameStartRules = g.newSymbol('ambig', 'mult', 'same', 'start', 'rules')
+ambigMultSameStartRules.addRule({ RHS: [ xOrY ] })
+ambigMultSameStartRules.addRule({ RHS: [ x ] })
+ambigMultSameStartRules.addRule({ RHS: [ y ] })
 
-// Multiple instances of ambiguity within the same pair of initial rules from the root nonterminal symbol.
+// Ambiguity with a recursive rule (i.e., a rule whose RHS contains the LHS).
+// - The grammar enforces symbols with recursive rules to require a non-recursive rule to be the stop case.
+// - In the grammar, recursive rules are made with `<empty>` in createEditRules; however, here they are made manually (without createEditRules).
+// S -> X
+//   -> S -> Y
+// S -> S -> X
+//   -> Y
+var ambigRecursive = g.newSymbol('ambig', 'recursive')
+ambigRecursive.addRule({ RHS: [ x, ambigRecursive ] })
+ambigRecursive.addRule({ RHS: [ x ] })
+ambigRecursive.addRule({ RHS: [ ambigRecursive, y ] })
+ambigRecursive.addRule({ RHS: [ y ] })
+
+// Ambiguity where one of the rules' RHS contains a non-ambiguous recursive symbol.
+// Ambiguity occurs only in these rules, not in the recursive symbol's rules alone.
+// Hence, cannot prevent recursive rules in path search.
+// S -> recur -> X
+//            -> recur -> Y
+// S -> X
+//   -> Y
+var ambigRecursiveRHS = g.newSymbol('ambig', 'recursive', 'rhs')
+ambigRecursiveRHS.addRule({ RHS: [ xyRecursive ] })
+ambigRecursiveRHS.addRule({ RHS: [ x, xyRecursive ] })
+ambigRecursiveRHS.addRule({ RHS: [ x, y ] })
+ambigRecursiveRHS.addRule({ RHS: [ xx, y ] })
+
+// Ambiguity where the start rule is recursive and the path uses multiple instances of a single rule.
+// Hence, cannot prevent paths where start rule is recursive and contains multiple instances of the same rule.
+// S -> X (start rule is ambiguous)
+//   -> S -> X (second instance of same rule)
+//        -> S -> X
+// S -> X
+//   -> XX -> X
+//         -> X
+var ambigRecursiveMultRule = g.newSymbol('ambig', 'recursive', 'mult', 'rule')
+ambigRecursiveMultRule.addRule({ RHS: [ x, ambigRecursiveMultRule ] })
+ambigRecursiveMultRule.addRule({ RHS: [ x ] })
+ambigRecursiveMultRule.addRule({ RHS: [ x, xx ] })
+
+// Multiple instances of ambiguity within the same pair of start rules from the root nonterminal symbol.
 // The presence of multiple instances, as opposed to one, is caused by an ambiguous symbol in one of the rules' RHS.
 // By default, when the `printAll` option is set to `false`, the ambiguity check will only print one instance of ambiguity for each pair of rules from the root nonterminal symbol.
-// This is also an example of a single instance of a path being ambiguous with multiple paths from the same initial rule. Hence, when `printAll` is `true`, cannot `break` after finding ambiguity with a pair of paths.
+// This is also an example of a single instance of a path being ambiguous with multiple paths from the same start rule. Hence, when `printAll` is `true`, cannot `break` after finding ambiguity with a pair of paths.
 // S -> X-or-X-dup -> X -> x   S -> X-or-X-dup -> X-dup -> x
 // S -> X -> x                 S -> X -> x
-// printAll shows more because ambig in subsymbol
-var ambigMultSameInitRulesSubambig = g.newSymbol('ambig', 'mult', 'same', 'init', 'rules', 'subambig')
-ambigMultSameInitRulesSubambig.addRule({ RHS: [ x ] })
-ambigMultSameInitRulesSubambig.addRule({ RHS: [ ambigTermsSameLengths ] })
+var ambigMultSameStartRulesSubambig = g.newSymbol('ambig', 'mult', 'same', 'start', 'rules', 'subambig')
+ambigMultSameStartRulesSubambig.addRule({ RHS: [ ambigTermsSameLengths ] })
+ambigMultSameStartRulesSubambig.addRule({ RHS: [ x ] })
 
 // A path ambiguous with two other paths at different rightmost symbols.
 // Hence, parse trees must be cloned before removing their rightmost symbols (when found ambiguous).
 // In a binary rule, the first branch is completed down to the terminal symbol. That path can be found ambiguous, have rightmost symbols removed. Then, it might be found ambiguous again, but using symbols that were previously removed.
 // S -> X-par -> X -> 'x'                   S -> X-par                   S -> X -> 'x'
-//   -> X-par                        (trim)   -> X-par      (other ambig)  -> X -> 'x'
+//   -> X-par                         (trim)  -> X-par      (other ambig)  -> X -> 'x'
 // S -> X-par-par -> X-par -> X -> 'x'  =>  S -> X-par-par -> X-par  =>  S -> X-par-par -> X-par (missing syms)
 //   -> X-par-par -> X-par                    -> X-par-par -> X-par        -> X-par-par -> X-par -> X -> 'x'
 var ambigMultPathsAtDiffDepths = g.newSymbol('ambig', 'mult', 'paths', 'at', 'diff', 'depths')
