@@ -395,26 +395,37 @@ module.exports = function (grammar, opts) {
 							diffTrees(otherPathTree, newPathTree)
 
 							// After finding an ambiguous pair of trees and removing their identical rightmost symbols, check if an identical pair of trees has already been printed; otherwise, print and add the pair to the `ambigPairs` array.
+							var pairIsDuplicate = false
 							if (opts.printAll) {
-								if (pairIsDuplicate(otherPathTree, newPathTree)) return true
-								ambigPairs.push([ otherPathTree, newPathTree ])
+								if (pairExists(otherPathTree, newPathTree)) {
+									pairIsDuplicate = true
+								} else {
+									ambigPairs.push([ otherPathTree, newPathTree ])
+								}
 							}
 
 							// Print paths by index of initial nonterminal rule to maintain order
 							// Nearly always, `otherPath` has lower index because it was built before `newPath`. However, if `otherPath` has only one production, then it was built in the init() function and can have a higher index than `newPath` which has more than one production
-							util.printWarning('Ambiguity')
-							if (newPath.pathTabIdx < otherPath.pathTabIdx) {
-								util.log(newPathTree, otherPathTree)
-							} else {
-								util.log(otherPathTree, newPathTree)
+							if (!pairIsDuplicate) {
+								util.printWarning('Ambiguity')
+								if (newPath.pathTabIdx < otherPath.pathTabIdx) {
+									util.log(newPathTree, otherPathTree)
+								} else {
+									util.log(otherPathTree, newPathTree)
+								}
 							}
 						}
 
-						// A path can be ambiguous with other paths (in different pathSet)
-						// If a pair of ambiguous paths both are ambiguous with a second path, they both would be stopped here and not print this additional case of ambiguity
-						// can only be ambigious with one path per pathTabIdx, otherwise it is due to ambiguity within a subnode from that path -> i.e., that ambiguity within a different nonterminal symbol
+						// Do not `return` because a path can be ambiguous with other paths (in a different pathSet).
+						// Though, when a path is ambiguous with multiple other paths, calling `return` here will sometimes be ok if the other respective paths find the ambiguity later. This depends on the ordering of the rules in the grammar.
+						// If a pair of ambiguous paths both are ambiguous with a second path, they both would be stopped here and not print this additional case of ambiguity.
 						foundAmbiguity = true
-						break
+						// Cannot stop if `printAll` because multiple paths within the same `pathSet` can be found ambiguous with `newPath`.
+						// - If a single path is ambiguous with multiple paths from the same start rule (`pathSet`), then that other start rule is ambiguous.
+						// It would be reasonable to `break` and not print the superfluous cases (caused by ambiguity within another symbol). Based on the ordering of the start rules in the grammar, however, these same ambiguous path pairs could be found at different times and thus cannot stopped in the same way. Hence, to avoid inconsistency due to ordering of the start rules in the grammar, always show the ambiguity and do not break.
+						// S -> X-or-X-dup -> X -> x  (other ambig)  S -> X-or-X-dup -> X-dup -> x
+						// S -> X -> x                     =>        S -> X -> x
+						if (!opts.printAll) break
 					}
 				}
 			}
@@ -458,7 +469,7 @@ function cloneTree(node, nextNodes) {
 // if not restricting printing of ambigPairs to pairs, then use this to prvent printing duplicates
 
 // return true if pair of ambiguous trees already exists (after having been diff-ed)
-function pairIsDuplicate(treeA, treeB) {
+function pairExists(treeA, treeB) {
 	for (var a = 0, ambigPairsLen = ambigPairs.length; a < ambigPairsLen; ++a) {
 		var ambigPair = ambigPairs[a]
 
@@ -470,6 +481,8 @@ function pairIsDuplicate(treeA, treeB) {
 			return true
 		}
 	}
+
+	return false
 }
 
 // trim portions of rules that are different (bottom-most)
