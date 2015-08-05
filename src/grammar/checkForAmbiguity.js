@@ -118,8 +118,8 @@ module.exports = function (grammar, opts) {
 
 	function searchPaths(lastPath, pathTab) {
 		var paths = pathTab[lastPath.pathTabIdx]
-		var lastNextNode = lastPath.nextSym
-		var rules = grammar[lastNextNode]
+		var rules = grammar[lastPath.nextSym]
+
 		for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 			var rule = rules[r]
 			if (rule.insertionIdx === undefined && !rule.transposition) {
@@ -138,19 +138,12 @@ module.exports = function (grammar, opts) {
 					newPath.nextSym = newPath.nextSyms[newPath.nextSyms.length - 1]
 					newPath.nextSyms = newPath.nextSyms.slice(0, -1)
 				} else {
-					// Prevent recursive rules, where the RHS includes the LHS symbol, in path search. Recursive rules are permitted for the initial nonterminal symbol of a search (where ambiguity can exist).
-					// Any instance of ambiguity demonstrated by a recursive rule (excluding for the root nonterminal symbol) can be represented with a different production because all nonterminal symbols with a recursive rule require a stop case (an error is thrown in grammar construction if otherwise).
-					var firstRHS = RHS[0]
-					if (lastNextNode === firstRHS) continue
-
 					if (RHS.length === 2) {
-						var secondRHS = RHS[1]
-						if (lastNextNode === secondRHS) continue
 						newPath.nextSyms = newPath.nextSyms.slice()
-						newPath.nextSyms.push(secondRHS)
+						newPath.nextSyms.push(RHS[1])
 					}
 
-					newPath.nextSym = firstRHS
+					newPath.nextSym = RHS[0]
 				}
 
 				var pathSet = paths[newPath.terminals]
@@ -289,16 +282,13 @@ module.exports = function (grammar, opts) {
 		if (lastPath.ambigPathTabIdxes.length === 0) return
 
 		var paths = pathTab[lastPath.pathTabIdx]
-		var nextNodeSym = lastPath.nextNodes[lastPath.nextNodes.length - 1].symbol
-		var rules = grammar[nextNodeSym]
+		var lhsSym = lastPath.nextNodes[lastPath.nextNodes.length - 1].symbol
+		var rules = grammar[lhsSym]
+
 		for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 			var rule = rules[r]
 			if (rule.insertionIdx === undefined && !rule.transposition) {
 				var RHS = rule.RHS
-
-				// Prevent recurisve rules (infinite loops)
-				// We could instead use treeContainsRule(), and output more (perf barely hurt), but best be consitent with what we find in searchPaths()
-				if (nextNodeSym === RHS[0] || nextNodeSym === RHS[1]) continue
 
 				var nextNodes = lastPath.nextNodes.slice()
 				var newPath = {
