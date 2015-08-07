@@ -73,6 +73,7 @@ module.exports = function (grammar, opts) {
 			if (rule.insertionIdx === undefined && !rule.transposition) {
 				// need terminal rules because what if it is X -> x, X -> Y -> x
 				var RHS = rule.RHS
+				var RHSLen = RHS.length
 
 				var paths = {}
 
@@ -81,13 +82,13 @@ module.exports = function (grammar, opts) {
 					nextSym: undefined,
 					pathTabIdx: pathTab.push(paths) - 1,
 					terminals: '',
-					symsCount: 2
+					symsCount: 1 + RHSLen,
 				}
 
 				if (rule.terminal) {
 					newPath.terminals += ' ' + RHS[0] // add space because all will begin with space
 				} else {
-					if (RHS.length === 2) {
+					if (RHSLen === 2) {
 						newPath.nextSyms.push(RHS[1])
 					}
 
@@ -124,13 +125,14 @@ module.exports = function (grammar, opts) {
 			var rule = rules[r]
 			if (rule.insertionIdx === undefined && !rule.transposition) {
 				var RHS = rule.RHS
+				var RHSLen = RHS.length
 
 				var newPath = {
 					nextSyms: lastPath.nextSyms,
 					nextSym: undefined,
 					pathTabIdx: lastPath.pathTabIdx,
 					terminals: lastPath.terminals,
-					symsCount: lastPath.symsCount + 1,
+					symsCount: lastPath.symsCount + RHSLen,
 				}
 
 				if (rule.terminal) {
@@ -138,7 +140,7 @@ module.exports = function (grammar, opts) {
 					newPath.nextSym = newPath.nextSyms[newPath.nextSyms.length - 1]
 					newPath.nextSyms = newPath.nextSyms.slice(0, -1)
 				} else {
-					if (RHS.length === 2) {
+					if (RHSLen === 2) {
 						newPath.nextSyms = newPath.nextSyms.slice()
 						newPath.nextSyms.push(RHS[1])
 					}
@@ -221,6 +223,7 @@ module.exports = function (grammar, opts) {
 			if (rule.insertionIdx === undefined && !rule.transposition) {
 				// need terminal rules because what if it is X -> x, X -> Y -> x
 				var RHS = rule.RHS
+				var RHSLen = RHS.length
 
 				var paths = {}
 
@@ -229,8 +232,8 @@ module.exports = function (grammar, opts) {
 					tree: { symbol: sym, children: undefined },
 					pathTabIdx: pathTab.push(paths) - 1,
 					terminals: '',
-					symsCount: 2,
 					ambigPathTabIdxes: []
+					symsCount: 1 + RHSLen,
 				}
 
 				// When constructing parse trees, each initial path has an array of `pathTab` indexes of the paths with which it is ambiguous.
@@ -253,7 +256,7 @@ module.exports = function (grammar, opts) {
 				if (rule.terminal) {
 					newPath.terminals += ' ' + newNode.symbol // add space because all will begin with space
 				} else {
-					if (RHS.length === 2) {
+					if (RHSLen === 2) {
 						var secondNode = { symbol: RHS[1], children: undefined }
 						lastNode.children.push(secondNode)
 						newPath.nextNodes.push(secondNode)
@@ -289,6 +292,7 @@ module.exports = function (grammar, opts) {
 			var rule = rules[r]
 			if (rule.insertionIdx === undefined && !rule.transposition) {
 				var RHS = rule.RHS
+				var RHSLen = RHS.length
 
 				var nextNodes = lastPath.nextNodes.slice()
 				var newPath = {
@@ -296,7 +300,7 @@ module.exports = function (grammar, opts) {
 					tree: cloneTree(lastPath.tree, nextNodes),
 					pathTabIdx: lastPath.pathTabIdx,
 					terminals: lastPath.terminals,
-					symsCount: lastPath.symsCount + 1,
+					symsCount: lastPath.symsCount + RHSLen,
 					// The array is shared with all subsequent paths built from the initial path
 					ambigPathTabIdxes: lastPath.ambigPathTabIdxes,
 				}
@@ -308,7 +312,7 @@ module.exports = function (grammar, opts) {
 				if (rule.terminal) {
 					newPath.terminals += ' ' + newNode.symbol
 				} else {
-					if (RHS.length === 2) {
+					if (RHSLen === 2) {
 						var secondNode = { symbol: RHS[1], children: undefined }
 						lastNode.children.push(secondNode)
 						newPath.nextNodes.push(secondNode)
