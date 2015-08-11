@@ -80,7 +80,7 @@ module.exports = function (grammar, opts) {
 					nextSym: undefined,
 					terminals: '',
 					symsCount: 1 + RHSLen,
-					rules: [ RHS ],
+					rules: { RHS: RHS }, // linked list
 				}
 
 				if (rule.terminal) {
@@ -132,14 +132,12 @@ module.exports = function (grammar, opts) {
 				var RHS = rule.RHS
 				var RHSLen = RHS.length
 
-				var newRules = lastRules.slice()
-				newRules.push(RHS)
 				var newPath = {
 					nextSyms: lastNextSyms,
 					nextSym: undefined,
 					terminals: lastPath.terminals,
 					symsCount: lastPath.symsCount + RHSLen,
-					rules: newRules,
+					rules: { RHS: RHS, next: lastRules },
 				}
 
 				if (rule.terminal) {
@@ -226,8 +224,8 @@ module.exports = function (grammar, opts) {
 								// Might need to always copy rules because
 								// Need to always copy rules (even if !opts.printAll) because the same path can match 2 other paths (with diff start rules)
 
-								var treeA = buildTreeFromRules(nontermSym, pathA.rules.slice())
-								var treeB = buildTreeFromRules(nontermSym, pathB.rules.slice())
+								var treeA = buildTreeFromRules(nontermSym, convertListToArray(pathA.rules))
+								var treeB = buildTreeFromRules(nontermSym, convertListToArray(pathB.rules))
 								diffTrees(treeA, treeB)
 
 								if (!opts.printAll || !pairExists(ambigPairs, treeA, treeB)) {
@@ -293,6 +291,18 @@ module.exports = function (grammar, opts) {
 
 		return false
 	}
+}
+
+// Convert an inverted linked list (root node is last element) to an array
+function convertListToArray(list) {
+	var array = []
+
+	while (list) {
+		array.unshift(list.RHS)
+		list = list.next
+	}
+
+	return array
 }
 
 // trim portions of rules that are different (bottom-most)
