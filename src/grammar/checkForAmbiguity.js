@@ -76,8 +76,11 @@ module.exports = function (grammar, opts) {
 				var RHSLen = RHS.length
 
 				var newPath = {
-					nextSyms: [],
+					// The next symbol from which to expand this path.
 					nextSym: undefined,
+					// Second branches of binary rules
+					// Linked list
+					nextSyms: undefined,
 					terminals: '',
 					symsCount: 1 + RHSLen,
 					rules: { RHS: RHS }, // linked list
@@ -87,7 +90,8 @@ module.exports = function (grammar, opts) {
 					newPath.terminals += ' ' + RHS[0] // add space because all will begin with space
 				} else {
 					if (RHSLen === 2) {
-						newPath.nextSyms.push(RHS[1])
+						// Return to second symbol in binary rule after completing this branch
+						newPath.nextSyms = { sym: RHS[1] }
 					}
 
 					newPath.nextSym = RHS[0]
@@ -133,8 +137,9 @@ module.exports = function (grammar, opts) {
 				var RHSLen = RHS.length
 
 				var newPath = {
-					nextSyms: lastNextSyms,
 					nextSym: undefined,
+					// linked list
+					nextSyms: lastNextSyms,
 					terminals: lastPath.terminals,
 					symsCount: lastPath.symsCount + RHSLen,
 					rules: { RHS: RHS, next: lastRules },
@@ -142,12 +147,14 @@ module.exports = function (grammar, opts) {
 
 				if (rule.terminal) {
 					newPath.terminals += ' ' + RHS[0]
-					newPath.nextSym = lastNextSyms[lastNextSyms.length - 1]
-					newPath.nextSyms = lastNextSyms.slice(0, -1)
+
+					if (lastNextSyms) {
+						newPath.nextSym = lastNextSyms.sym
+						newPath.nextSyms = lastNextSyms.next
+					}
 				} else {
 					if (RHSLen === 2) {
-						newPath.nextSyms = lastNextSyms.slice()
-						newPath.nextSyms.push(RHS[1])
+						newPath.nextSyms = { sym: RHS[1], next: lastNextSyms }
 					}
 
 					newPath.nextSym = RHS[0]
@@ -218,6 +225,7 @@ module.exports = function (grammar, opts) {
 								// This method, with the computational cost of maintaining rules
 								//   old: printAll: 4% faster, not: 21% faster
 								// worth easier to read?
+							if (pathB.nextSym === nextSym && listsEqual(pathB.nextSyms, nextSyms)) {
 
 								if (!opts.printOutput) break
 
@@ -307,6 +315,22 @@ function convertListToArray(list) {
 
 // trim portions of rules that are different (bottom-most)
 // some branches won't find that symbol (different down to terminal rule)
+/**
+ * Compares two linked lists of symbols to determine if they are equivalent.
+ *
+ * @param {Object} a The list to compare.
+ * @param {Object} b The other list to compare.
+ * @return {Boolean} `true` if the lists are equivalent, else `false`.
+ */
+function listsEqual(a, b) {
+	if (!a && !b) return true
+
+	if (!a || !b) return false
+
+	if (a.sym !== b.sym) return false
+
+	return listsEqual(a.next, b.next)
+}
 function diffTrees(a, b) {
 	var aInvertedTerms = invertTree(a)
 	var bInvertedTerms = invertTree(b)
