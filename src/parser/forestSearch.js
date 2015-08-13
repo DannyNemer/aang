@@ -22,8 +22,8 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 		// Number of elements in nextNodes, excluding text to append
 		// Used as marker of when can merge with LHS semantic -> have completed full branch
 		nextNodesLen: 0,
-		// Semantics of parse tree, reduced to single semantic when parse complete
-		semantics: [],
+		// Linked list of semantics of parse tree, reduces to single semantic when parse complete
+		semantics: undefined,
 		// Display text of parse tree
 		text: '',
 		// Properties for conjugation of text
@@ -143,38 +143,50 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 		// If 'insertedSemantic' exists, then newSemantic also exists
 		if (ruleProps.insertedSemantic) {
 			// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
-			var prevSemantic = item.semantics[item.semantics.length-1]
-			if (prevSemantic && prevSemantic.constructor === Array && semantic.forbiddenDups(prevSemantic, newSemantic)) {
+			var prevSemantic = item.semantics
+			if (prevSemantic && prevSemantic.isRHS && semantic.forbiddenDups(prevSemantic.semantic, newSemantic)) {
 				return -1
 			}
 
-			newItem.semantics = item.semantics.slice()
-			newItem.semantics.push({ semantic: newSemantic, nextNodesLen: item.nextNodesLen }, ruleProps.insertedSemantic)
+			newItem.semantics = {
+				isRHS: true,
+				semantic: ruleProps.insertedSemantic,
+				prev: {
+					semantic: newSemantic,
+					nextNodesLen: item.nextNodesLen,
+					prev: prevSemantic,
+				}
+			}
 		} else if (newSemantic) {
-			var prevSemantic = item.semantics[item.semantics.length - 1]
+			var prevSemantic = item.semantics
 
 			if (ruleProps.semanticIsRHS) {
-				// prevSemantic is LHS
-				if (prevSemantic.constructor === Object) {
-					newItem.semantics = item.semantics.slice()
-					newItem.semantics.push(newSemantic)
-				}
-
-				// prevSemantic is RHS -> merge with new semantic
-				else {
-					newSemantic = semantic.mergeRHS(prevSemantic, newSemantic)
+				if (prevSemantic.isRHS) {
+					newSemantic = semantic.mergeRHS(prevSemantic.semantic, newSemantic)
 					if (newSemantic === -1) return -1
-					newItem.semantics = item.semantics.slice(0, -1)
-					newItem.semantics.push(newSemantic)
+					newItem.semantics = {
+						isRHS: true,
+						semantic: newSemantic,
+						prev: prevSemantic.prev,
+					}
+				} else {
+					newItem.semantics = {
+						isRHS: true,
+						semantic: newSemantic,
+						prev: prevSemantic
+					}
 				}
 			} else {
 				// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
-				if (prevSemantic && prevSemantic.constructor === Array && semantic.forbiddenDups(prevSemantic, newSemantic)) {
+				if (prevSemantic && prevSemantic.isRHS && semantic.forbiddenDups(prevSemantic.semantic, newSemantic)) {
 					return -1
 				}
 
-				newItem.semantics = item.semantics.slice()
-				newItem.semantics.push({ semantic: newSemantic, nextNodesLen: item.nextNodesLen })
+				newItem.semantics = {
+					semantic: newSemantic,
+					nextNodesLen: item.nextNodesLen,
+					prev: prevSemantic,
+				}
 			}
 		} else {
 			newItem.semantics = item.semantics
@@ -225,17 +237,23 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				// A RHS semantic not at the base of the branch because of forestReduction
 				if (ruleProps.semanticIsRHS) {
 					// Last in semantics is always LHS (so far we have seen)
-					newItem.semantics = item.semantics.slice()
-					newItem.semantics.push(newSemantic)
+					newItem.semantics = {
+						isRHS: true,
+						semantic: newSemantic,
+						prev: item.semantics
+					}
 				} else {
 					// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
-					var prevSemantic = item.semantics[item.semantics.length-1]
-					if (prevSemantic && prevSemantic.constructor === Array && semantic.forbiddenDups(prevSemantic, newSemantic)) {
+					var prevSemantic = item.semantics
+					if (prevSemantic && prevSemantic.isRHS && semantic.forbiddenDups(prevSemantic.semantic, newSemantic)) {
 						return -1
 					}
 
-					newItem.semantics = item.semantics.slice()
-					newItem.semantics.push({ semantic: newSemantic, nextNodesLen: item.nextNodesLen })
+					newItem.semantics = {
+						semantic: newSemantic,
+						nextNodesLen: item.nextNodesLen,
+						prev: prevSemantic
+					}
 				}
 			} else {
 				newItem.semantics = item.semantics
@@ -259,18 +277,20 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 		// Terminal rule
 		else {
-			for (var p = item.semantics.length; p-- > 0;) {
-				var prevSemantic = item.semantics[p]
-
+			var prevSemantic = item.semantics
+			while (prevSemantic) {
 				// RHS
-				if (prevSemantic.constructor === Array) {
+				if (prevSemantic.isRHS) {
 					if (newSemantic) {
-						newSemantic = semantic.mergeRHS(prevSemantic, newSemantic)
+						newSemantic = semantic.mergeRHS(prevSemantic.semantic, newSemantic)
+
 						// RHS contains duplicates
 						if (newSemantic === -1) return -1
 					} else {
-						newSemantic = prevSemantic
+						newSemantic = prevSemantic.semantic
 					}
+
+					prevSemantic = prevSemantic.prev
 				}
 
 				// LHS after parsing the right-most branch that follows the semantic (completed the reduction)
@@ -280,6 +300,8 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 					if (!newSemantic) return -1
 
 					newSemantic = semantic.insertSemantic(prevSemantic.semantic, newSemantic)
+
+					prevSemantic = prevSemantic.prev
 				}
 
 				// On left side of a reduction and cannot continue merging with LHS w/o completing its RHS (children)
@@ -287,10 +309,13 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			}
 
 			if (newSemantic) {
-				newItem.semantics = item.semantics.slice(0, p + 1)
-				newItem.semantics.push(newSemantic)
+				newItem.semantics = {
+					isRHS: true,
+					semantic: newSemantic,
+					prev: prevSemantic
+				}
 			} else {
-				newItem.semantics = item.semantics
+				newItem.semantics = prevSemantic
 			}
 		}
 
@@ -366,11 +391,11 @@ function conjugateText(gramPropsArray, text) {
 // Determine if newly parsed tree has a unique semantic and unique display text
 // Return true if tree is unique
 function treeIsUnique(trees, item) {
-	if (item.semantics.length > 1) throw 'semantics remain'
+	if (item.semantics.prev) throw 'semantics remain'
 
 	// Check for duplicate semantics by comparing semantic string representation
 	// Return false if new semantic is identical to previously constructed (and cheaper) tree
-	var semanticStr = semantic.semanticToString(item.semantics[0])
+	var semanticStr = semantic.semanticToString(item.semantics.semantic)
 	for (var t = trees.length; t-- > 0;) {
 		var tree = trees[t]
 		if (tree.semanticStr === semanticStr) return false
