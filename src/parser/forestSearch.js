@@ -18,11 +18,13 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 		// When item popped, will look at node's subs for next steps
 		node: startNode,
 		// If no 'node', because reached end of branch, go to next branch - either node or text array
-		nextNodes: [],
+		// Linked list
+		nextNodes: undefined,
 		// Number of elements in nextNodes, excluding text to append
 		// Used as marker of when can merge with LHS semantic -> have completed full branch
 		nextNodesLen: 0,
 		// Linked list of semantics of parse tree, reduces to single semantic when parse complete
+		// Reverse linked list, pointing to previously seen semantics
 		semantics: undefined,
 		// Display text of parse tree
 		text: '',
@@ -49,8 +51,9 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 
 		// Previously reached end of a branch
 		if (!node) {
-			for (var n = item.nextNodes.length; n-- > 0;) {
-				node = item.nextNodes[n]
+			var nextNodes = item.nextNodes
+			while (nextNodes) {
+				node = nextNodes.node
 
 				// Stop when 'node' is a node
 				if (node.constructor === Object) break
@@ -67,10 +70,12 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 				} else {
 					item.text += ' ' + node
 				}
+
+				nextNodes = nextNodes.next
 			}
 
 			// No nodes remain; tree construction complete
-			if (n < 0) {
+			if (!nextNodes) {
 				// Tree is unique - not semantically or textually identical to previous trees
 				// Discard tree if no unique
 				if (treeIsUnique(trees, item)) {
@@ -82,7 +87,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 			} else {
 				// Copy nextNodes (because array shared by multiple items)
 				// Exclude copying items examined in above loop
-				item.nextNodes = item.nextNodes.slice(0, n)
+				item.nextNodes = nextNodes.next
 				item.nextNodesLen--
 			}
 		}
@@ -206,10 +211,13 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 			}
 
 			newItem.text = item.text
+
 			// Conjugate text after completing first branch in this binary reduction
 			// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
-			newItem.nextNodes = newItem.nextNodes.slice()
-			newItem.nextNodes.push(text)
+			newItem.nextNodes = {
+				node: text,
+				next: newItem.nextNodes,
+			}
 		} else {
 			// Text requires conjugation
 			if (text.constructor === Array) {
@@ -272,8 +280,11 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 			// All binary rules are nonterminal rules (hence, within sub.node.subs) - might change with reduceForest
 			if (sub.next) {
-				newItem.nextNodes = newItem.nextNodes.slice()
-				newItem.nextNodes.push(sub.next.node)
+				newItem.nextNodes = {
+					node: sub.next.node,
+					next: newItem.nextNodes,
+				}
+
 				newItem.nextNodesLen++
 			}
 		}
