@@ -89,7 +89,13 @@ function runCommand(input) {
 		// Set number of times to cycle test queries on test
 		var testRuns = !isNaN(args[1]) ? Number(args[1]) : 1
 
-		// Time test if !printOutput
+		// If testRuns > 1, then test is a benchmark and prevent output
+		if (testRuns > 1) {
+			var prevPrintOutput = printOutput
+			printOutput = false
+		}
+
+		// Benchmark test if !printOutput
 		if (printOutput) printQuery = true
 		else console.time('test')
 
@@ -102,6 +108,10 @@ function runCommand(input) {
 
 		if (printOutput) printQuery = false
 		else console.timeEnd('test')
+
+		if (testRuns > 1) {
+			printOutput = prevPrintOutput
+		}
 	}
 
 	// Output a run of test queries to file
