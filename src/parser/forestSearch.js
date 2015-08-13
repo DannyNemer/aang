@@ -123,6 +123,9 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 	var newCost = item.costSoFar + ruleProps.cost
 
 	var newItem = {
+		node: undefined,
+		semantics: undefined,
+		text: undefined,
 		nextNodes: item.nextNodes,
 		nextNodesLen: item.nextNodesLen,
 		gramProps: item.gramProps,
