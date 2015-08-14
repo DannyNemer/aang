@@ -144,15 +144,18 @@ function runCommand(input) {
 		printTrees = false
 		var prevSettingPrintOutput = printOutput
 		printOutput = false
+		var failed = false
 
 		testQueries.conjugation.forEach(function (query) {
 			var trees = parse(query, 1)
 			if (!trees || trees[0].text !== query) {
 				util.printErr('Expected', query)
 				console.log('       Actual:', trees[0].text)
+				failed = true
 			}
 		})
 
+		if (!failed) console.log('All conjugation tests passed')
 		printOutput = prevSettingPrintOutput
 		printTrees = prevSettingPrintTrees
 	}
