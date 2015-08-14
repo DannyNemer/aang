@@ -29,7 +29,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 		// Display text of parse tree
 		text: '',
 		// Properties for conjugation of text
-		gramProps: [],
+		gramProps: undefined,
 		// Cost of path
 		costSoFar: 0,
 		// Cost of path + cost of cheapest possible path that can follow
@@ -61,12 +61,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 				if (node.constructor === Array) {
 					// Conjugate text of inserted branches which are the second of 2 RHS symbols
 					// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
-
-					// Copy gramProps and text because will change when conjugating
-					// Ignore possibility of gramProps being copied more than once
-					// - Occurrence so rare that setting an extra variable to check if copied costs more time than saved
-					item.gramProps = item.gramProps.slice()
-					item.text += conjugateTextArray(item.gramProps, node)
+					item.text += conjugateTextArray(item, node)
 				} else {
 					item.text += ' ' + node
 				}
@@ -85,8 +80,6 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 
 				continue
 			} else {
-				// Copy nextNodes (because array shared by multiple items)
-				// Exclude copying items examined in above loop
 				item.nextNodes = nextNodes.next
 				item.nextNodesLen--
 			}
@@ -203,13 +196,15 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 		newItem.node = sub.node
 
+		if (ruleProps.gramProps) {
+			newItem.gramProps = {
+				gramProps: ruleProps.gramProps,
+				next: newItem.gramProps,
+			}
+		}
+
 		var text = ruleProps.text
 		if (ruleProps.insertionIdx === 1) {
-			if (ruleProps.gramProps) {
-				newItem.gramProps = newItem.gramProps.slice()
-				newItem.gramProps.push(ruleProps.gramProps)
-			}
-
 			newItem.text = item.text
 
 			// Conjugate text after completing first branch in this binary reduction
@@ -219,23 +214,11 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 				next: newItem.nextNodes,
 			}
 		} else {
-			// Text requires conjugation
 			if (text.constructor === Array) {
-				newItem.gramProps = newItem.gramProps.slice()
-				if (ruleProps.gramProps) {
-					newItem.gramProps.push(ruleProps.gramProps)
-				}
-
-				newItem.text = item.text + conjugateTextArray(newItem.gramProps, text)
-			}
-
-			// No conjugation
-			else {
-				if (ruleProps.gramProps) {
-					newItem.gramProps = newItem.gramProps.slice()
-					newItem.gramProps.push(ruleProps.gramProps)
-				}
-
+				// Text requires conjugation
+				newItem.text = item.text + conjugateTextArray(newItem, text)
+			} else {
+				// No conjugation
 				newItem.text = item.text + ' ' + text
 			}
 		}
@@ -274,8 +257,10 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 
 			// Grammatical properties are only on nonterminal rules
 			if (ruleProps.gramProps) {
-				newItem.gramProps = newItem.gramProps.slice()
-				newItem.gramProps.push(ruleProps.gramProps)
+				newItem.gramProps = {
+					gramProps: ruleProps.gramProps,
+					next: newItem.gramProps,
+				}
 			}
 
 			// All binary rules are nonterminal rules (hence, within sub.node.subs) - might change with reduceForest
@@ -337,8 +322,7 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 		var text = ruleProps.text
 		if (text) {
 			if (text.constructor === Object) {
-				newItem.gramProps = newItem.gramProps.slice()
-				newItem.text = item.text + ' ' + conjugateText(newItem.gramProps, text)
+				newItem.text = item.text + ' ' + conjugateText(newItem, text)
 			} else {
 				newItem.text = item.text + ' ' + text
 			}
@@ -354,13 +338,13 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 // Called for insertion rules, which contain an array for text with symbol(s) needing conjugation
 // - Traverses array and conjugates each text Object
 // Returns string concatenation of all elements, separated by spaces, prepended with a space
-function conjugateTextArray(gramPropsArray, textArray) {
+function conjugateTextArray(item, textArray) {
 	var concatStr = ''
 
 	for (var t = 0, textArrayLen = textArray.length; t < textArrayLen; ++t) {
 		var text = textArray[t]
 		if (text.constructor === Object) {
-			concatStr += ' ' + conjugateText(gramPropsArray, text)
+			concatStr += ' ' + conjugateText(item, text)
 		} else {
 			concatStr += ' ' + text
 		}
@@ -369,22 +353,35 @@ function conjugateTextArray(gramPropsArray, textArray) {
 	return concatStr
 }
 
-// Must copy gramPropsArray before passing to avoid mutation affecting other trees
-// Loop through from end of array, find rule most recently added
+// Loop through from end of linked list, find rule most recently added
 // NOTE: Does not allow for same prop to be used in multiple places. Deletion of props occurs after single use.
-function conjugateText(gramPropsArray, text) {
-	for (var r = gramPropsArray.length; r-- > 0;) {
-		var gramProps = gramPropsArray[r]
+function conjugateText(item, text) {
+	var gramPropsList = item.gramProps
+	if (!gramPropsList) return
+	var prevGramProps
+
+	while (gramPropsList) {
+		var gramProps = gramPropsList.gramProps
 
 		var verbForm = gramProps.verbForm
 		if (verbForm && text[verbForm]) {
-			gramPropsArray.splice(r, 1)
+			if (prevGramProps) {
+				prevGramProps.next = gramPropsList.next
+			} else {
+				item.gramProps = gramPropsList.next
+			}
+
 			return text[verbForm]
 		}
 
 		var personNumber = gramProps.personNumber
 		if (personNumber && text[personNumber]) {
-			gramPropsArray.splice(r, 1)
+			if (prevGramProps) {
+				prevGramProps.next = gramPropsList.next
+			} else {
+				item.gramProps = gramPropsList.next
+			}
+
 			return text[personNumber]
 		}
 
@@ -392,14 +389,35 @@ function conjugateText(gramPropsArray, text) {
 		if (gramCase && text[gramCase]) {
 			// Rule with gramCase either has personNumber for nominative (so will be needed again),
 			// or doesn't have personNumer (for objective) and can be deleted
-			if (!personNumber) gramPropsArray.splice(r, 1)
+			if (!personNumber) {
+				if (prevGramProps) {
+					prevGramProps.next = gramPropsList.next
+				} else {
+					item.gramProps = gramPropsList.next
+				}
+			} else if (prevGramProps) {
+				prevGramProps.next = gramPropsList
+			}
 
 			return text[gramCase]
 		}
+
+		// The `gramProps` that will be used is not the most recent. Will need to rebuild list up to the `gramProps` that will be used because the list elements are shared amongst paths.
+		if (prevGramProps) {
+			prevGramProps = prevGramProps.next = {
+				gramProps: gramProps
+			}
+		} else {
+			prevGramProps = item.gramProps = {
+				gramProps: gramProps
+			}
+		}
+
+		gramPropsList = gramPropsList.next
 	}
 
 	util.logTrace()
-	util.printWarning('Failed to conjugate', text, gramPropsArray)
+	util.printWarning('Failed to conjugate', text, gramPropsList)
 }
 
 // Determine if newly parsed tree has a unique semantic and unique display text
