@@ -1,4 +1,5 @@
 var util = require('../util')
+var fs = require('fs')
 
 /**
  * Initialize the grammar and semantics, and instantiate the StateTable used in parsing.
@@ -8,6 +9,10 @@ var util = require('../util')
  * @return {Object} The StateTable used in parsing.
  */
 module.exports = function (inputFilePath, stateTablePath) {
+	// Resolve relative paths
+	inputFilePath = fs.realpathSync(inputFilePath)
+	stateTablePath = fs.realpathSync(stateTablePath)
+
 	// If loaded, remove input file from cache to force reload after removing `grammar` and `semantics` below
 	util.deleteModuleCache(inputFilePath)
 	var inputFile = require(inputFilePath)
