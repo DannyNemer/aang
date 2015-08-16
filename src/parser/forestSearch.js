@@ -36,12 +36,6 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 		cost: 0
 	}
 
-	// If buildDebugTrees option is true, construct and print the parse trees for debugging
-	if (buildDebugTrees) {
-		var tree = { symbol: startNode.sym.name, children: [] }
-		newItem.tree = { startNode: tree, prevNodes: [ tree ] }
-	}
-
 	heap.push(newItem)
 
 	while (heap.content.length > 0) {
@@ -93,15 +87,29 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 			// Array of multiple insertions - first can be a unary reduction with an empty
 			if (ruleProps.constructor === Array) {
 				for (var r = 0, rulePropsLen = ruleProps.length; r < rulePropsLen; ++r) {
-					var newItem = createItem(sub, item, ruleProps[r], buildDebugTrees)
-					if (newItem === -1) continue // semantically illegal parse -> reject
+					var newItem = createItem(sub, item, ruleProps[r])
+					if (newItem === -1) continue // Semantically illegal parse -> reject
+
+					// If `buildDebugTrees` is `true`, add a reverse linked list in order to construct and print parse trees for debugging at parse completion
+					if (buildDebugTrees) {
+						newItem.ruleProps = ruleProps[r]
+						newItem.prevItem = item
+					}
+
 					heap.push(newItem)
 				}
 			}
 
 			else {
-				var newItem = createItem(sub, item, ruleProps, buildDebugTrees)
+				var newItem = createItem(sub, item, ruleProps)
 				if (newItem === -1) continue // semantically illegal parse -> reject
+
+				// If `buildDebugTrees` is `true`, add a reverse linked list in order to construct and print parse trees for debugging at parse completion
+				if (buildDebugTrees) {
+					newItem.ruleProps = ruleProps
+					newItem.prevItem = item
+				}
+
 				heap.push(newItem)
 			}
 		}
@@ -117,7 +125,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 }
 
 // Create new item as an extension of current tree down this sub
-function createItem(sub, item, ruleProps, buildDebugTrees) {
+function createItem(sub, item, ruleProps) {
 	var newCost = item.costSoFar + ruleProps.cost
 
 	var newItem = {
@@ -131,10 +139,6 @@ function createItem(sub, item, ruleProps, buildDebugTrees) {
 		costSoFar: newCost,
 		// Cost of path + cost of cheapest possible path that can follow
 		cost: newCost + sub.minCost
-	}
-
-	if (buildDebugTrees) {
-		newItem.tree = spliceTree(item.tree, sub, ruleProps)
 	}
 
 	var newSemantic = ruleProps.semantic
@@ -457,80 +461,82 @@ function treeIsUnique(trees, item) {
 	return true
 }
 
-// Built a tree representation of the productions in this parse tree
-// Copy tree each time before modifying and return new tree
-function spliceTree(tree, sub, ruleProps) {
-	// Duplicate tree so new instance can be modified
-	var prevNodes = tree.prevNodes.slice()
-	var newTree = cloneTree(tree.startNode, prevNodes)
+// When `buildDebugTrees` is `true`, link each `item` to the previous `item` and its new `ruleProps`. After parse completion, construct tree representations from the linked lists of the `K` best paths.
+// Path is a reverse linked list of the items used to construct this path, ending at the start node.
+function pathToTree(item) {
+	// Stack of previous nodes lower in the parse tree (which become child nodes)
+	var prevNodes = []
 
-	var prevNode = prevNodes.pop()
+	while (true) {
+		var node = item.node
+		var parNode
 
-	var newNode = { symbol: sub.node.sym.name, children: undefined, props: undefined }
-	prevNode.children.push(newNode)
-	prevNode.props = ruleProps
+		// Terminal rule
+		if (!node) {
+			var node = item.prevItem.node
 
-	// Nonterminal symbol
-	if (sub.node.subs) {
-		prevNodes.push(newNode)
-		newNode.children = []
+			if (!node) {
+				// Find last node (`nextNodes` also holds insertion text)
+				var prevNextNodes = item.prevItem.prevItem.nextNodes
+				while (prevNextNodes.node.constructor !== Object) {
+					prevNextNodes = prevNextNodes.next
+				}
 
-		// Binary reduction
-		if (sub.next) {
-			newNode = { symbol: sub.next.node.sym.name, children: [], props: undefined }
+				node = prevNextNodes.node
+			}
 
-			prevNode.children.push(newNode)
-			prevNodes.splice(-1, 0, newNode)
-		}
-
-		// Insertion
-		// Nodes for insertions are represented by their ruleProps
-		else if (ruleProps.insertionIdx !== undefined) {
-			prevNode.props = undefined // Faster than 'delete'
-			if (ruleProps.insertionIdx) {
-				prevNode.children.push(ruleProps)
-			} else {
-				prevNode.children.splice(-1, 0, ruleProps)
+			parNode = {
+				symbol: undefined,
+				props: item.ruleProps,
+				children: children = [ {
+					symbol: node.subs[0].node.sym.name
+				} ],
 			}
 		}
-	}
 
-	return {
-		startNode: newTree,
-		prevNodes: prevNodes
-	}
-}
+		// Binary nonterminal rule
+		else if (item.nextNodes && item.nextNodes !== item.prevItem.nextNodes && item.ruleProps.insertionIdx === undefined) {
+			var newNodeA = prevNodes.pop()
+			newNodeA.symbol = node.sym.name
 
-// Duplicate tree so new instance can be modified
-function cloneTree(node, prevNodes) {
-	// Node is an insertion, represented in tree by the original ruleProps
-	if (node.cost !== undefined) {
-		return node
-	}
+			var newNodeB = prevNodes.pop()
+			newNodeB.symbol = item.nextNodes.node.sym.name
 
-	// Recreate each node and its children
-	var newNode = {
-		symbol: node.symbol,
-		props: node.props,
-		// Performance is hurt when not defining properties at object instantiation
-		children: undefined
-	}
-
-	var nodeChildren = node.children
-	if (nodeChildren) {
-		var newNodeChildren = newNode.children = []
-		for (var n = 0, nodeChildrenLen = nodeChildren.length; n < nodeChildrenLen; ++n) {
-			newNodeChildren.push(cloneTree(nodeChildren[n], prevNodes))
+			parNode = {
+				symbol: undefined,
+				props: item.ruleProps,
+				children: [ newNodeA, newNodeB ],
+			}
 		}
-	}
 
-	// Map prevNode to point to new, cloned version
-	var prevNodesIdx = prevNodes.indexOf(node)
-	if (prevNodesIdx !== -1) {
-		prevNodes[prevNodesIdx] = newNode
-	}
+		// Unary nonterminal rule
+		else {
+			var newNode = prevNodes.pop()
+			newNode.symbol = node.sym.name
 
-	return newNode
+			// Start node
+			if (!item.prevItem) return newNode
+
+			// Order properties for insertions to be printed in order
+			if (item.ruleProps.insertionIdx === 1) {
+				parNode = {
+					symbol: undefined,
+					children: [ newNode ],
+					props: item.ruleProps,
+				}
+			} else {
+				parNode = {
+					symbol: undefined,
+					props: item.ruleProps,
+					children: [ newNode ],
+				}
+			}
+		}
+
+		prevNodes.push(parNode)
+
+		item = item.prevItem
+	}
 }
 
 
@@ -551,6 +557,6 @@ exports.print = function (trees, printCost, printTrees) {
 		}
 
 		// Print trees (if constructed during parse forest search)
-		if (printTrees) util.log(tree.tree.startNode)
+		if (printTrees) util.log(pathToTree(tree))
 	})
 }
