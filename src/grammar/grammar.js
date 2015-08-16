@@ -75,6 +75,7 @@ exports.ruleCount = function (grammar) {
 // Write grammar and semantics to files
 exports.writeGrammarToFile = function (outputFilePath) {
 	util.writeJSONFile(outputFilePath, {
+		startSymbol: exports.startSymbol.name,
 		grammar: grammar,
 		semantics: semantic.semantics,
 		entities: entityCategory.entities

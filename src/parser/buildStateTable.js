@@ -43,5 +43,5 @@ module.exports = function (inputFilePath, stateTablePath) {
 
 	// Build state table
 	// Reload StateTable module to enable any changes (after removing it from cache)
-	return new (require(stateTablePath))(grammar, '[start]')
+	return new (require(stateTablePath))(grammar, inputFile.startSymbol)
 }
