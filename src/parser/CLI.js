@@ -21,6 +21,7 @@ var rl = require('readline').createInterface(process.stdin, process.stdout, func
 	return [ matches, line ]
 })
 
+rl.setPrompt('❯ ')
 rl.prompt()
 rl.on('line', function (line) {
 	var query = line.trim()
