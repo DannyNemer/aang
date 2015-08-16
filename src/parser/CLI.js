@@ -1,22 +1,24 @@
 var util = require('../util.js')
 var fs = require('fs')
 
+var inputFilePath = '../aang.json'
 var parserPath = './Parser.js'
 var forestSearchPath = './forestSearch.js'
 var stateTablePath = './StateTable.js'
 
 var testQueries = require('./testQueries')
 
+var buildStateTable = require('./buildStateTable').bind(null, inputFilePath, stateTablePath)
 var stateTable = buildStateTable()
 
 
 var rl = require('readline').createInterface(process.stdin, process.stdout, function (line) {
 	var completions = [ '.test', '.logTest', '.conjugationTest', '.rebuild', '.deleteCache', '.stateTable', '.history', '.help', '.k', '.out', '.trees', '.costs', '.time', '.query', '.stack', '.forest', '.graph' ]
 
-	var hits = completions.filter(function (c) { return c.indexOf(line) === 0 })
+	var matches = completions.filter(function (c) { return c.indexOf(line) === 0 })
 
 	// Show nothing if no completions found
-	return [ hits, line ]
+	return [ matches, line ]
 })
 
 rl.prompt()
@@ -163,10 +165,12 @@ function runCommand(input) {
 	// Rebuild grammar and state table
 	else if (firstArg === '.rebuild') {
 		console.log('Rebuild grammar and state table:')
+
 		// Rebuild grammar
 		util.tryCatchWrapper(function () {
 			require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
 		})
+
 		// Rebuild state table
 		stateTable = buildStateTable()
 	}
@@ -272,48 +276,6 @@ function runCommand(input) {
 
 	// Input as a command; do not parse as query
 	return true
-}
-
-function buildStateTable() {
-	var inputFilePath = '../aang.json'
-	// If loaded, remove from cache to force reload of file after removing grammar and semantics below
-	util.deleteModuleCache(inputFilePath)
-	var inputFile = require(inputFilePath)
-
-	var grammar = inputFile.grammar
-	var semantics = inputFile.semantics
-	var semanticArgNodes = {}
-
-	// Instead of initializing each rule's semantics as a new Object, initialize all semantic
-	// functions from the JSON file and use pointers for each rule's semantics. This allows
-	// semantics to be compared by pointers instead of names.
-	Object.keys(grammar).forEach(function (sym) {
-		grammar[sym].forEach(function (rule) {
-			if (rule.semantic) mapSemantic(rule.semantic)
-			if (rule.insertedSemantic) mapSemantic(rule.insertedSemantic)
-		})
-	})
-
-	function mapSemantic(semanticArray) {
-		semanticArray.forEach(function (semanticNode, i) {
-			if (semanticNode.children) {
-				semanticNode.semantic = semantics[semanticNode.semantic.name]
-				mapSemantic(semanticNode.children)
-			} else {
-				// Share nodes for semantic arguments (no 'children' property to differentiate)
-				var name = semanticNode.semantic.name
-				semanticArray[i] = semanticArgNodes[name] || (semanticArgNodes[name] = { semantic: semantics[name] })
-			}
-		})
-	}
-
-	// Build state table
-	var stateTable = new (require(stateTablePath))(grammar, '[start]')
-	// Remove grammar and semantics from cache
-	delete inputFile.grammar
-	delete inputFile.semantics
-
-	return stateTable
 }
 
 // Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
