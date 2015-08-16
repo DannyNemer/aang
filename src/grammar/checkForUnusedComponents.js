@@ -1,13 +1,13 @@
 var util = require('../util')
-var startSymbol = require('./grammar.js').startSymbol
+var startSymbol = require('./grammar').startSymbol
 var symbolCreationLines = require('./symbol').creationLines
 var entityCategoryCreationLines = require('./entityCategory').creationLines
 var semantic = require('./semantic')
 
 
-// Check for unused nonterminal symbols, entity categories, or semantic functions and arguments not used in any productions
+// Check for unused nonterminal symbols, entity categories, or semantic functions and arguments not used in any rules
 module.exports = function (grammar) {
-	// Check for nonterminal symbols not used in any productions
+	// Check for nonterminal symbols not used in any rules
 	Object.keys(symbolCreationLines).forEach(function (symbolName) {
 		if (symbolName === startSymbol.name) return
 
@@ -24,7 +24,7 @@ module.exports = function (grammar) {
 		console.log(symbolCreationLines[symbolName])
 	})
 
-	// Check for entity categories not used in any productions
+	// Check for entity categories not used in any rules
 	Object.keys(entityCategoryCreationLines).forEach(function (categorySymbolName) {
 		for (var otherSymbol in grammar) {
 			var rules = grammar[otherSymbol]
@@ -37,7 +37,7 @@ module.exports = function (grammar) {
 		console.log(entityCategoryCreationLines[categorySymbolName])
 	})
 
-	// Check for semantic functions and arguments not used in any productions
+	// Check for semantic functions and arguments not used in any rules
 	Object.keys(semantic.creationLines).forEach(function (semanticName) {
 		var thisSemantic = semantic.semantics[semanticName]
 

@@ -4,7 +4,7 @@ var semantic = require('./semantic')
 var entityCategory = require('./entityCategory')
 
 
-// A mapping of symbols to productions
+// A mapping of symbols to rules
 exports.grammar = {}
 // A mapping of Symbol names to creation lines; used for error reporting
 exports.creationLines = {}
@@ -175,7 +175,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 	}
 
 	if (opts.semantic) {
-		// True if semantic is complete and constitutes a RHS
+		// `true` if semantic is complete and constitutes a RHS
 		// Otherwise semantic is to accept other semantics as arguments
 		newRule.semanticIsRHS = semantic.semanticIsRHS(opts.semantic)
 	}
@@ -200,7 +200,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 
 // Create a new Symbol with a binary nonterminal rule
 // - Symbol's name is a concatenation of the RHS Symbols
-// Accepts the same 'opts' as Symbol.newNonterminalRule()
+// Accepts the same `opts` as `Symbol.newNonterminalRule()`
 // As the Symbol's name is created from the rule's RHS, this new Symbol is intended only for this rule
 // RHS can be an array of Symbols and/or nested arrays of RHS for new binary rules
 // - However, these sub-rules can only contain a RHS and no other rule properties
@@ -236,10 +236,15 @@ exports.newBinaryRule = function (opts) {
 }
 
 
-// Returns true if newRule already exists
+/**
+ * Checks if the RHS symbols of a new rule already exist for this symbol
+ *
+ * @param {Object} newRule The new rule to check.
+ * @return {Boolean} `true` if `newRule`'s RHS symbols already exist for this symbol, else `false`.
+ */
 Symbol.prototype.ruleExists = function (newRule) {
 	return this.rules.some(function (existingRule) {
-		return util.arraysMatch(existingRule.RHS, newRule.RHS)
+		return util.arraysEqual(existingRule.RHS, newRule.RHS)
 	})
 }
 

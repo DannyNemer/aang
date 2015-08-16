@@ -17,10 +17,10 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 	var newItem = {
 		// When item popped, will look at node's subs for next steps
 		node: startNode,
-		// If no 'node', because reached end of branch, go to next branch - either node or text array
+		// If no `node`, because reached end of branch, go to next branch - either node or text array
 		// Linked list
 		nextNodes: undefined,
-		// Number of elements in nextNodes, excluding text to append
+		// Number of elements in `nextNodes`, excluding text to append
 		// Used as marker of when can merge with LHS semantic -> have completed full branch
 		nextNodesLen: 0,
 		// Linked list of semantics of parse tree, reduces to single semantic when parse complete
@@ -49,7 +49,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 			while (nextNodes) {
 				node = nextNodes.node
 
-				// Stop when 'node' is a node
+				// Stop when `node` is a node
 				if (node.constructor === Object) break
 
 				if (node.constructor === Array) {
@@ -168,7 +168,10 @@ function createItem(sub, item, ruleProps) {
 			if (ruleProps.semanticIsRHS) {
 				if (prevSemantic.isRHS) {
 					newSemantic = semantic.mergeRHS(prevSemantic.semantic, newSemantic)
+
+					// RHS contains duplicates
 					if (newSemantic === -1) return -1
+
 					newItem.semantics = {
 						isRHS: true,
 						semantic: newSemantic,
@@ -425,13 +428,13 @@ function conjugateText(item, text) {
 }
 
 // Determine if newly parsed tree has a unique semantic and unique display text
-// Return true if tree is unique
+// Returns `true` if tree is unique
 function treeIsUnique(trees, item) {
-	if (item.semantics.prev) throw 'semantics remain'
+	if (item.semantics.prev) throw new Error('semantics remain')
 
 	// Check for duplicate semantics by comparing semantic string representation
-	// Return false if new semantic is identical to previously constructed (and cheaper) tree
-	var semanticStr = semantic.semanticToString(item.semantics.semantic)
+	// Returns `false` if new semantic is identical to previously constructed (and cheaper) tree
+	var semanticStr = semantic.toString(item.semantics.semantic)
 	for (var t = trees.length; t-- > 0;) {
 		var tree = trees[t]
 		if (tree.semanticStr === semanticStr) return false
@@ -458,6 +461,7 @@ function treeIsUnique(trees, item) {
 	// Tree is unique
 	item.semanticStr = semanticStr
 	item.text = textStr
+
 	return true
 }
 

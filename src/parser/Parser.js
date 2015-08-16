@@ -237,7 +237,7 @@ Parser.prototype.addSub = function (sym, sub) {
 	if (n < 0) {
 		node = {
 			sym: sym,
-			size: size
+			size: size,
 		}
 
 		if (sub) { // nonterminal

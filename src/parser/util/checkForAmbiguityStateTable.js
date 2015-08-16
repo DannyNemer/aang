@@ -1,9 +1,8 @@
 // A failed attempt at finding ambgiuity in a state table.
 // This alogorithm will likely need to be top-down
 
-var util = require('../util')
-var grammar = require('../aang.json').grammar
-var st = new (require('../parser/StateTable'))(grammar, '[start]')
+var util = require('../../util')
+var st = require('../buildStateTable')('../../aang.json', '../StateTable.js')
 
 
 console.time('test')
@@ -22,7 +21,7 @@ function shiftForward(path, stateIdx) {
 	if (state.isFinal || paths.length > 3e5 || path.stateIdxes.length > 3) {
 		// for (var p = 0, pathsLen = paths.length; p < pathsLen; ++p) {
 		// 	var otherPath = paths[p]
-		// 	if (util.arraysMatch(path.stateIdxes, otherPath.stateIdxes)) {
+		// 	if (util.arraysEqual(path.stateIdxes, otherPath.stateIdxes)) {
 		// 		util.log(path, otherPath)
 		// 	}
 		// }
@@ -90,7 +89,7 @@ function shiftForward(path, stateIdx) {
 			for (var p = 0, pathsLen = paths.length; p < pathsLen; ++p) {
 				var otherPath = paths[p]
 				// Match identical right-most symbols by their shifts
-				if (util.arraysMatch(newPath.stateIdxes, otherPath.stateIdxes)) {
+				if (util.arraysEqual(newPath.stateIdxes, otherPath.stateIdxes)) {
 					util.log(path, otherPath)
 				}
 			}

@@ -60,6 +60,8 @@ function parse(query, K) {
 				if (trees.length) forestSearch.print(trees, printCost, printTrees)
 				else console.log('Failed to find legal parse trees')
 			}
+
+			// Return trees for conjguation test
 			return trees
 		} else {
 			if (printOutput) console.log('Failed to reach start node')
@@ -80,7 +82,7 @@ var printTrees = false
 var printCost = false
 
 // Parse and run CLI commands
-// Return true if input is a command
+// Returns `true` if input is a command
 function runCommand(input) {
 	// All commands begin with a period
 	if (input[0] !== '.') return false
@@ -106,8 +108,9 @@ function runCommand(input) {
 
 		var i = 0
 		var queries = testQueries.basic
+		var queriesLen = queries.length
 		while (i++ < testRuns) {
-			for (var q = 0, queriesLen = queries.length; q < queriesLen; ++q) {
+			for (var q = 0; q < queriesLen; ++q) {
 				parse(queries[q], 50)
 			}
 		}

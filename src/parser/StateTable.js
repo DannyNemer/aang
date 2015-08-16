@@ -4,7 +4,7 @@ function StateTable(inputGrammar, startSymbolStr) {
 	this.symbolTab = {}
 	this.shifts = []
 
-	Object.keys(inputGrammar).forEach(function (nontermSym) {
+	for (var nontermSym in inputGrammar) {
 		var LHS = this.lookUp(nontermSym)
 		var symBuf = [ LHS ]
 
@@ -19,7 +19,7 @@ function StateTable(inputGrammar, startSymbolStr) {
 				insertRule(LHS, newRuleRHS, rule)
 			}
 		}, this)
-	}, this)
+	}
 
 	this.generate(this.lookUp(startSymbolStr))
 }
@@ -269,7 +269,7 @@ StateTable.prototype.generate = function (startSym) {
 		this.shifts.push(newState)
 	}
 
-	// Remove 'index' property from because no longer needed
+	// Remove `index` property from because no longer needed
 	for (var symName in this.symbolTab) {
 		delete this.symbolTab[symName].index
 	}

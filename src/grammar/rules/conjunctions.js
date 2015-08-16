@@ -18,7 +18,7 @@ exports.union.addWord({
 	accepted: [ 'or' ]
 })
 
-// Create rules for "and" + "or" to surround 'symbol'
+// Create rules for "and" + "or" to surround `symbol`
 exports.addForSymbol = function (symbol) {
 	// (people who follow) [obj-users]
 	var symbolPlus = g.newSymbol(symbol.name + '+')

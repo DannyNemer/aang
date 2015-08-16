@@ -113,16 +113,16 @@ exports.mergeRHS = function (A, B) {
 			}
 
 			// Prevent contradiction with not() function
-			if (semanticAIsNegation && semanticsMatch(semanticNodeA.children[0], semanticNodeB)) {
+			if (semanticAIsNegation && semanticsEqual(semanticNodeA.children[0], semanticNodeB)) {
 				return -1
 			}
 
 			// Prevent contradiction with not() function
-			if (semanticB.name === 'not' && semanticsMatch(semanticNodeA, semanticNodeB.children[0])) {
+			if (semanticB.name === 'not' && semanticsEqual(semanticNodeA, semanticNodeB.children[0])) {
 				return -1
 			}
 
-			if (semanticsMatch(semanticNodeA, semanticNodeB)) {
+			if (semanticsEqual(semanticNodeA, semanticNodeB)) {
 				return -1
 			}
 		}
@@ -133,7 +133,7 @@ exports.mergeRHS = function (A, B) {
 	return A.concat(B)
 }
 
-// Return true if the two semantics are identical (excluding children) and duplicates are forbidden
+// Returns `true` if the two semantics are identical (excluding children) and duplicates are forbidden
 exports.forbiddenDups = function (A, B) {
 	var BLength = B.length
 	for (var i = A.length; i-- > 0;) {
@@ -149,23 +149,23 @@ exports.forbiddenDups = function (A, B) {
 	}
 }
 
-// Return true if passed semantics and their children are identical
+// Returns `true` if passed semantics and their children are identical
 // Each semantic is a LHS
-function semanticsMatch(a, b) {
+function semanticsEqual(a, b) {
 	if (a === b) return true
 
 	if (a.semantic !== b.semantic) return false
 
 	if (a.children && b.children) {
-		return exports.semanticArraysMatch(a.children, b.children)
+		return exports.semanticArraysEqual(a.children, b.children)
 	}
 
 	return true // args with same name
 }
 
-// Return true if passed arrays of semantics are identical
+// Returns `true` if passed arrays of semantics are identical
 // Each array is a RHS
-exports.semanticArraysMatch = function (a, b) {
+exports.semanticArraysEqual = function (a, b) {
 	// Same entity arrays
 	if (a === b) return true
 
@@ -176,7 +176,7 @@ exports.semanticArraysMatch = function (a, b) {
 	if (i !== b.length) return false
 
 	while (i-- > 0) {
-		if (semanticsMatch(a[i], b[i])) return true
+		if (semanticsEqual(a[i], b[i])) return true
 	}
 
 	return false
@@ -267,7 +267,7 @@ function compareSemantics(a, b) {
 	return a === b ? 0 : (a.semantic.name < b.semantic.name ? -1 : 1)
 }
 
-// Return true if semantic is legal and thereby constitutes a RHS (called in grammar generation)
+// Returns `true` if semantic is legal and thereby constitutes a RHS (called in grammar generation)
 // Otherwise, semantic expected to accept other semantics as arguments
 exports.semanticIsRHS = function (semanticArray) {
 	return semanticArray.every(function (semanticNode) {
@@ -281,7 +281,7 @@ exports.semanticIsRHS = function (semanticArray) {
 }
 
 // Convert semantic tree to a string represenation (used in Parser)
-exports.semanticToString = function (semanticArray) {
+exports.toString = function (semanticArray) {
 	var str = ''
 
 	for (var s = 0, semanticArrayLen = semanticArray.length; s < semanticArrayLen; ++s) {
@@ -289,7 +289,7 @@ exports.semanticToString = function (semanticArray) {
 		var semanticName = semanticNode.semantic.name
 
 		if (semanticNode.children) {
-			str += (s ? ',' : '') + semanticName + '(' + exports.semanticToString(semanticNode.children) + ')'
+			str += (s ? ',' : '') + semanticName + '(' + exports.toString(semanticNode.children) + ')'
 		} else {
 			str += (s ? ',' : '') + semanticName
 		}

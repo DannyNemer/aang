@@ -12,7 +12,7 @@ module.exports = function (startNode) {
 	}
 }
 
-// Determine the minimum cost of 'parentSub' by exaxming each of its 'subs'
+// Determine the minimum cost of `parentSub` by exaxming each of its `subs`
 function reduce(parentSub, subs) {
 	var minCost
 

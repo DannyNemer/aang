@@ -45,7 +45,7 @@ nomPlUsersPlus.addRule({ RHS: [ nomPlUsers ] })
 // (people I and/or) {user} and {user} (follow)
 var andNomPlUsersPlus = g.newBinaryRule({ RHS: [ conjunctions.and, nomPlUsersPlus ] })
 nomPlUsersPlus.addRule({ RHS: [ nomPlUsers, andNomPlUsersPlus ] })
-// // (people I and/or) {user} or {user} (follow)
+// (people I and/or) {user} or {user} (follow)
 var unionNomPlUsersPlus = g.newBinaryRule({ RHS: [ conjunctions.union, nomPlUsersPlus ] })
 nomPlUsersPlus.addRule({ RHS: [ nomPlUsers, unionNomPlUsersPlus ], semantic: conjunctions.unionSemantic })
 

@@ -216,7 +216,7 @@ function reduce(parentSub, subs) {
 		// Occurs after simplication above so if a reduce() is called for a .next, it is appended to end
 		if (parentSub.next) {
 			if (sub.node.subs) {
-				parentSub.node = sub.node // do not copy 'sub', which has ruleProps
+				parentSub.node = sub.node // do not copy `sub`, which has ruleProps
 			} else {
 				parentSub.node = parentSub.next.node
 				delete parentSub.next // delete next before reduct() so doesn't get skipped

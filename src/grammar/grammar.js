@@ -30,11 +30,12 @@ exports.insertSemantic = semantic.insertSemantic
 var entityCategory = require('./entityCategory')
 exports.newEntityCategory = entityCategory.newEntityCategory
 
+// Check for unused nonterminal symbols, entity categories, or semantic functions and arguments not used in any rules
+exports.checkForUnusedComponents = require('./checkForUnusedComponents').bind(null, grammar)
+
 // Derive rules from insertion and transposition costs, and empty-strings
 exports.createEditRules = require('./createEditRules')
 
-// Check for unused nonterminal symbols, entity categories, or semantic functions and arguments not used in any productions
-exports.checkForUnusedComponents = require('./checkForUnusedComponents').bind(null, grammar)
 // Check for instances of ambiguity in the grammar
 exports.checkForAmbiguity = require('./checkForAmbiguity').bind(null, grammar)
 
@@ -48,14 +49,14 @@ exports.sortGrammar = function () {
 }
 
 // Print the total count of rules in the grammar
-// Print change if 'oldGrammarPath' passed
-exports.printRuleCount = function (outputFilePath) {
+// Print change if `prevOutputFilePath` exists
+exports.printRuleCount = function (prevOutputFilePath) {
 	var fs = require('fs')
 
 	var newRuleCount = exports.ruleCount(grammar)
 
-	if (fs.existsSync(outputFilePath)) {
-		var oldRuleCount = exports.ruleCount(require(fs.realpathSync(outputFilePath)).grammar)
+	if (fs.existsSync(prevOutputFilePath)) {
+		var oldRuleCount = exports.ruleCount(require(fs.realpathSync(prevOutputFilePath)).grammar)
 		if (oldRuleCount !== newRuleCount) {
 			console.log('Rules:', oldRuleCount, '->', newRuleCount)
 			return

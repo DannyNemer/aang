@@ -2,7 +2,7 @@
 //   Empty-string - rules that produce empty-strings (i.e., optional)
 //   Insertions - inserting terminal symbols
 //   Transposition - swapped RHS of nonterminal rules
-// Recursively remove nonterminal symbols with no productions, rules whose RHS containing those symbols or the <empty> symbol, and any production-less nonterminal symbols that result
+// Recursively remove nonterminal symbols with no rules, rules whose RHS containing those symbols or the <empty> symbol, and any rule-less nonterminal symbols that result
 // Check non-edit rules for semantic errors: fail to produce a needed RHS semantic
 // - Also avoid creating edit rules with semantic errors
 
@@ -19,12 +19,12 @@ module.exports = function () {
 
 	findTermRuleInsertions(insertions)
 
-	// Recursively remove nonterminal symbols with no productions, rules whose RHS containing those symbols or the <empty> symbol, and any production-less nonterminal symbols that result
+	// Recursively remove nonterminal symbols with no rules, rules whose RHS containing those symbols or the <empty> symbol, and any rule-less nonterminal symbols that result
 	// Called after finding insertions from rules with '<empty>' in findTermRuleInsertions()
 	removeNullNonterminalSymbols()
 
 	// Check non-edit rules for semantic errors: fail to produce a needed RHS semantic
-	// Called after removing rules with production-less symbols in removeNullNonterminalSymbols()
+	// Called after removing rules with rule-less symbols in removeNullNonterminalSymbols()
 	checkForSemanticErrors()
 
 	findNontermRulesProducingInsertions(insertions)
@@ -67,7 +67,8 @@ function findNontermRulesProducingInsertions(insertions) {
 	var curInsertionsSerial = JSON.stringify(insertions)
 	var prevInsertionsSerial
 
-	do { // Loop until no longer finding new productions
+	// Loop until no longer finding new rules
+	do {
 		prevInsertionsSerial = curInsertionsSerial
 
 		Object.keys(grammar).forEach(function (nontermSym) {
@@ -149,7 +150,7 @@ function findNontermRulesProducingInsertions(insertions) {
 	} while (prevInsertionsSerial !== (curInsertionsSerial = JSON.stringify(insertions)))
 }
 
-// Every sym in production is a terminal symbol with an insertion cost, an empty-string, or a nonterminal symbol that produces a sequence of the these
+// Every sym in `RHS` is a terminal symbol with an insertion cost, an empty-string, or a nonterminal symbol that produces a sequence of the these
 function RHSCanBeInserted(insertions, RHS) {
 	return RHS.every(function (sym) {
 		return insertions.hasOwnProperty(sym)
@@ -157,7 +158,7 @@ function RHSCanBeInserted(insertions, RHS) {
 }
 
 // Add new insertion if does not already exist
-// Return true if new insertion is added
+// Returns `true` if new insertion is added
 function addInsertion(insertions, nontermSym, newInsertion) {
 	// if (newInsertion.cost > 5) return false
 
@@ -171,15 +172,15 @@ function addInsertion(insertions, nontermSym, newInsertion) {
 	return false
 }
 
-// Return true if insertion exists
+// Returns `true` if insertion exists
 // If new insertion is cheaper than an existing insertion with identical text, remove existing insertion and return false
-// Otherwise return false
+// Otherwise returns `false`
 function insertionExists(symInsertions, newInsertion) {
 	for (var s = symInsertions.length; s-- > 0;) {
 		var existingInsertion = symInsertions[s]
 
 		// New insertion and existing insertion have identical display text
-		if (util.arraysMatch(existingInsertion.text, newInsertion.text)) {
+		if (util.arraysEqual(existingInsertion.text, newInsertion.text)) {
 			if (existingInsertion.cost < newInsertion.cost) {
 				return true
 			} else {
@@ -193,7 +194,7 @@ function insertionExists(symInsertions, newInsertion) {
 	return false
 }
 
-// Add new rules from inserted terminal symbol productions and empty-string productions to grammar
+// Add new rules from inserted terminal symbols and empty-strings
 function createRulesFromInsertions(insertions) {
 	Object.keys(grammar).forEach(function (lhsSym) {
 		// true for all except: [nom-users-or-author-pages+] [obj-users-penalize-1+] [user-filter+]
@@ -313,7 +314,7 @@ function conjugateText(insertionText, ruleProps) {
 		}
 
 		// Past tense
-		// - Precedes person number: "I have liked" vs. "I have like" (though, now order doesn't matter)
+		// - Precedes person number: "I have liked" vs. "I have like"
 		// - Does not fail when text cannot conjugate - does not have to apply to every verb it sees:
 		// --- "[have] liked" - past-tense applies to "liked", not [have]
 		// --- ^^ This is why verbForm and personNumber cannot be combined
@@ -323,7 +324,7 @@ function conjugateText(insertionText, ruleProps) {
 		}
 
 		// First person, vs. third person singular, vs. plural
-		// - Only used on 1-to-2, where first of two branches determines person-number of second branch
+		// - Only used on binary reudctions, where first of two branches determines person-number of second branch
 		else if (ruleProps.personNumber && text[ruleProps.personNumber]) {
 			textArray.push(text[ruleProps.personNumber])
 			delete ruleProps.personNumber
@@ -352,8 +353,8 @@ function ruleExists(rules, newRule, LHS) {
 	for (var r = rules.length; r-- > 0;) {
 		var existingRule = rules[r]
 
-		if (util.arraysMatch(existingRule.RHS, newRule.RHS)) {
-			if (util.arraysMatch(existingRule.text, newRule.text)) {
+		if (util.arraysEqual(existingRule.RHS, newRule.RHS)) {
+			if (util.arraysEqual(existingRule.text, newRule.text)) {
 				if (existingRule.insertedSyms) {
 					util.printErr('Two identical rules produced by insertion(s)')
 				} else {
@@ -365,7 +366,7 @@ function ruleExists(rules, newRule, LHS) {
 			}
 
 			// New rule and previously created rule have identical RHS and semantics
-			if (semantic.semanticArraysMatch(existingRule.semantic, newRule.semantic) && semantic.semanticArraysMatch(existingRule.insertedSemantic, newRule.insertedSemantic)) {
+			if (semantic.semanticArraysEqual(existingRule.semantic, newRule.semantic) && semantic.semanticArraysEqual(existingRule.insertedSemantic, newRule.insertedSemantic)) {
 				if (existingRule.cost < newRule.cost) {
 					return true
 				} else {
@@ -381,20 +382,20 @@ function ruleExists(rules, newRule, LHS) {
 }
 
 
-// Recursively remove nonterminal symbols with no productions, rules whose RHS containing those symbols or the <empty> symbol, and any production-less nonterminal symbols that result
+// Recursively remove nonterminal symbols with no rules, rules whose RHS containing those symbols or the <empty> symbol, and any rule-less nonterminal symbols that result
 // Called after finding insertions from rules with '<empty>' in findTermRuleInsertions()
 function removeNullNonterminalSymbols() {
 	var curRuleCount = g.ruleCount(grammar)
 	var prevRuleCount
 
-	// Loop until no new production-less symbols are found
+	// Loop until no new rule-less symbols are found
 	do {
 		prevRuleCount = curRuleCount
 
 		for (var nontermSym in grammar) {
 			var rules = grammar[nontermSym]
 
-			// Nonterminal symbol has no productions
+			// Nonterminal symbol has no rules
 			if (rules.length === 0) {
 				delete grammar[nontermSym]
 			} else {
@@ -408,7 +409,7 @@ function removeNullNonterminalSymbols() {
 							r--
 						}
 					} else for (var RHS = rule.RHS, s = RHS.length; s-- > 0;) {
-						// Nonterminal RHS contains previously deleted symbol which had no productions
+						// Nonterminal RHS contains previously deleted symbol which had no rules
 						if (!grammar.hasOwnProperty(RHS[s])) {
 							rules.splice(r, 1)
 							r--
