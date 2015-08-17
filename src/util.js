@@ -102,7 +102,8 @@ exports.illFormedOpts = function (schema, opts) {
  * @return {String} The file path and line number of calling line.
  */
 exports.getLine = function (getCallingLine) {
-	var stack = Error().stack.split('\n').slice(2)
+	// Get stack sans lines for `Error` and this file
+	var stack = Error().stack.split('\n').slice(3)
 	var callingFileName
 
 	for (var i = 0, stackLength = stack.length; i < stackLength; ++i) {
@@ -319,12 +320,13 @@ exports.printErrWithLine = function () {
 exports.logTrace = function (msg) {
 	console.log('Trace' + (msg ? ': ' + msg : ''))
 
-	// Remove lines for `Error` and current file
-	var stack = Error().stack.split('\n').slice(2)
+	// Get stack sans lines for `Error` and this file
+	var stack = Error().stack.split('\n').slice(3)
 
-	stack.forEach(function (stackLine) {
-		console.log(stackLine.replace(/[()]/g, ''))
-	})
+	// Remove parentheses
+	stack = stack.join('\n').replace(/[()]/gm, '')
+
+	console.log(stack)
 }
 
 /**
@@ -358,7 +360,7 @@ exports.tryCatchWrapper = function (callback) {
 		if (e.stack) {
 			e.stack.split('\n').forEach(function (stackLine) {
 				// Only remove parentheses from the stack, avoiding lines in `Error.message`
-				console.log(/^\s/.test(stackLine) ? stackLine.replace(/[()]/g, '') : stackLine)
+				console.log(/^\s+at/.test(stackLine) ? stackLine.replace(/[()]/g, '') : stackLine)
 			})
 		} else {
 			console.log(e)
