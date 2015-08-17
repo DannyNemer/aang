@@ -40,7 +40,7 @@ Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, text
 					ruleProps: {
 						cost: ruleProps.cost,
 						semantic: ruleProps.semantic ? semantic.insertSemantic(ruleProps.semantic, semanticArg) : semanticArg,
-						text: entity.text
+						text: entity.text,
 					},
 					minCost: undefined,
 				}
@@ -52,7 +52,7 @@ Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, text
 			var words = wordTab[endPos] || (wordTab[endPos] = [])
 			words.push({
 				start: this.position,
-				nodes: wordNodes
+				nodes: wordNodes,
 			})
 		}
 	}
@@ -105,7 +105,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 					var words = wordTab[endPos] || (wordTab[endPos] = [])
 					words.push({
 						start: this.position,
-						nodes: wordNodes
+						nodes: wordNodes,
 					})
 				}
 
@@ -137,7 +137,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 						ruleProps: {
 							cost: ruleProps.cost,
 							semantic: semanticArg,
-							text: nGram
+							text: nGram,
 						},
 						minCost: undefined,
 					}
@@ -150,7 +150,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 			// will only be one term sym match (<int>) and only of length 1
 			wordTab[this.position] = [ {
 				start: this.position,
-				nodes: wordNodes
+				nodes: wordNodes,
 			} ]
 		}
 	}
@@ -302,7 +302,7 @@ Parser.prototype.addVertex = function (state) {
 		// Index in input string tokens array
 		start: this.position,
 		// zNodes that point to this vertex
-		zNodes: []
+		zNodes: [],
 	}
 
 	this.vertTab.push(vertex)
@@ -346,7 +346,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 				zNode: zNode,
 				LHS: red.LHS,
 				binary: red.binary,
-				ruleProps: red.ruleProps
+				ruleProps: red.ruleProps,
 			})
 		}
 	}
@@ -382,7 +382,7 @@ Parser.prototype.reduce = function (red) {
 						size: zNode.node.size + sub.size,
 						next: {
 							node: zNode.node,
-							size: zNode.node.size
+							size: zNode.node.size,
 						},
 						ruleProps: red.ruleProps,
 						minCost: undefined,

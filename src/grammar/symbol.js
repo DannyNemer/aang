@@ -66,7 +66,7 @@ var termRuleOptsSchema = {
 	text: { type: String, optional: true },
 	textForms: { type: Object, optional: true },
 	intMin: { type: Number, optional: true },
-	intMax: { type: Number, optional: true }
+	intMax: { type: Number, optional: true },
 }
 
 // Create a new terminal rule from passed opts
@@ -79,7 +79,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 		RHS: [ opts.RHS.toLowerCase() ],
 		terminal: true,
 		intMin: opts.intMin,
-		intMax: opts.intMax
+		intMax: opts.intMax,
 	}
 
 	// Assign text to display in output when terminal rule is seen in input
@@ -141,7 +141,7 @@ var nontermRuleOptsSchema = {
 	transpositionCost: { type: Number, optional: true },
 	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
 	verbForm: { type: [ 'past' ], optional: true }, // "like" vs. "liked"
-	personNumber: { type: [ 'one', 'threeSg', 'pl' ], optional: true } // "like" vs "likes"
+	personNumber: { type: [ 'one', 'threeSg', 'pl' ], optional: true }, // "like" vs "likes"
 }
 
 // Create a new nonterminal rule from passed opts
@@ -171,7 +171,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 		}),
 		gramCase: opts.gramCase,
 		verbForm: opts.verbForm,
-		personNumber: opts.personNumber
+		personNumber: opts.personNumber,
 	}
 
 	if (opts.semantic) {

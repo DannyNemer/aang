@@ -34,7 +34,7 @@ StateTable.prototype.lookUp = function (name, isLiteral, symIsPlaceholder) {
 	sym = this.symbolTab[name] = {
 		name: name, // Not needed in production (only debugging)
 		index: Object.keys(this.symbolTab).length,
-		rules: []
+		rules: [],
 	}
 
 	if (isLiteral) {
@@ -76,7 +76,7 @@ function insertRule(sym, symBuf, origRule) {
 
 	existingRules.splice(i, 0, {
 		RHS: symBuf, // for term syms, this is the LHS (that produces the term syms)
-		ruleProps: createRuleProps(origRule)
+		ruleProps: createRuleProps(origRule),
 	})
 }
 
@@ -104,7 +104,7 @@ function createRuleProps(origRule) {
 
 	if (origRule.verbForm !== undefined) {
 		ruleProps.gramProps = {
-			verbForm: origRule.verbForm
+			verbForm: origRule.verbForm,
 		}
 	}
 
@@ -113,7 +113,7 @@ function createRuleProps(origRule) {
 			ruleProps.gramProps.personNumber = origRule.personNumber
 		} else {
 			ruleProps.gramProps = {
-				personNumber: origRule.personNumber
+				personNumber: origRule.personNumber,
 			}
 		}
 	}
@@ -123,7 +123,7 @@ function createRuleProps(origRule) {
 			ruleProps.gramProps.gramCase = origRule.gramCase
 		} else {
 			ruleProps.gramProps = {
-				gramCase: origRule.gramCase
+				gramCase: origRule.gramCase,
 			}
 		}
 	}
@@ -194,7 +194,7 @@ function addRule(items, rule) {
 		LHS: rule.LHS,
 		RHS: rule.RHS,
 		RHSIdx: rule.RHSIdx,
-		ruleProps: rule.ruleProps
+		ruleProps: rule.ruleProps,
 	})
 }
 
@@ -216,7 +216,7 @@ function getItems(XTab, ruleSet, RHSSym) {
 			LHS: RHSSym,
 			RHS: rule.RHS,
 			RHSIdx: 0,
-			ruleProps: rule.ruleProps
+			ruleProps: rule.ruleProps,
 		})
 	})
 
@@ -257,7 +257,7 @@ StateTable.prototype.generate = function (startSym) {
 					LHS: rule.LHS,
 					// RHS: rule.RHS, // Only useful for printing
 					binary: rule.RHS.length === 2,
-					ruleProps: rule.ruleProps
+					ruleProps: rule.ruleProps,
 				})
 			}
 		})

@@ -130,10 +130,10 @@ function createItem(sub, prevItem, ruleProps) {
 
 	var newItem = {
 		node: undefined,
-		semantics: undefined,
-		text: undefined,
 		nextNodes: prevItem.nextNodes,
 		nextNodesLen: prevItem.nextNodesLen,
+		semantics: undefined,
+		text: undefined,
 		gramProps: prevItem.gramProps,
 		// Cost of path
 		costSoFar: newCost,
@@ -412,11 +412,11 @@ function conjugateText(item, text) {
 		// The `gramProps` that will be used is not the most recent. Will need to rebuild list up to the `gramProps` that will be used because the list elements are shared amongst paths.
 		if (prevGramProps) {
 			prevGramProps = prevGramProps.next = {
-				gramProps: gramProps
+				gramProps: gramProps,
 			}
 		} else {
 			prevGramProps = item.gramProps = {
-				gramProps: gramProps
+				gramProps: gramProps,
 			}
 		}
 
@@ -493,7 +493,7 @@ function pathToTree(item) {
 				symbol: undefined,
 				props: item.ruleProps,
 				children: children = [ {
-					symbol: node.subs[0].node.sym.name
+					symbol: node.subs[0].node.sym.name,
 				} ],
 			}
 		}

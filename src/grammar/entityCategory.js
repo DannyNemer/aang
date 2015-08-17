@@ -11,7 +11,7 @@ var entityCount = 0
 // Schema for an entity category
 var entityCategoryOptsSchema = {
 	name: String,
-	entities: { type: Array, arrayType: String }
+	entities: { type: Array, arrayType: String },
 }
 
 // Create a new entity category containing the passed entities
@@ -51,7 +51,7 @@ exports.newEntityCategory = function (opts) {
 			text: entity,
 			category: categoryName,
 			// Save id as String for semantic arguments ordering
-			id: String(entityCount++)
+			id: String(entityCount++),
 		})
 	})
 

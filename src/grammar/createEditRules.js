@@ -47,14 +47,14 @@ function findTermRuleInsertions(insertions) {
 						text: rule.text ? [ rule.text ] : [],
 						// Yet to be used
 						semantic: rule.semantic,
-						insertedSyms: [ { symbol: termSym } ]
+						insertedSyms: [ { symbol: termSym } ],
 					})
 				} else if (rule.insertionCost !== undefined) {
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost + rule.insertionCost,
 						text: [ rule.text ],
 						semantic: rule.semantic,
-						insertedSyms: [ { symbol: termSym } ]
+						insertedSyms: [ { symbol: termSym } ],
 					})
 				}
 			}
@@ -87,7 +87,7 @@ function findNontermRulesProducingInsertions(insertions) {
 								verbForm: insertion.verbForm,
 								personNumber: insertion.personNumber,
 								semantic: insertion.semantic,
-								insertedSyms: [ { symbol: sym, children: insertion.insertedSyms } ]
+								insertedSyms: [ { symbol: sym, children: insertion.insertedSyms } ],
 							}
 						})
 					}).reduce(function (AInsertions, BInsertions) {
@@ -108,7 +108,7 @@ function findNontermRulesProducingInsertions(insertions) {
 									// Person-number only needed for 1st of 2 RHS syms: nominative case (verb precedes subject)
 									personNumber: A.personNumber,
 									semantic: A.semantic || B.semantic,
-									insertedSyms: A.insertedSyms.concat(B.insertedSyms)
+									insertedSyms: A.insertedSyms.concat(B.insertedSyms),
 								})
 							})
 						})
@@ -124,7 +124,7 @@ function findNontermRulesProducingInsertions(insertions) {
 							gramCase: rule.gramCase || insertion.gramCase,
 							verbForm: rule.verbForm || insertion.verbForm,
 							personNumber: rule.personNumber || insertion.personNumber,
-							insertedSyms: insertion.insertedSyms
+							insertedSyms: insertion.insertedSyms,
 						}
 
 						// Define and conjugate text after determining grammatical properties above
@@ -214,7 +214,7 @@ function createRulesFromInsertions(insertions) {
 							var newRule = {
 								RHS: [ otherSym ],
 								cost: rule.cost + insertion.cost,
-								insertedSyms: [ { symbol: sym, children: insertion.insertedSyms } ]
+								insertedSyms: [ { symbol: sym, children: insertion.insertedSyms } ],
 							}
 
 							if (insertion.semantic) {
@@ -282,7 +282,7 @@ function createRulesFromTranspositions() {
 				var newRule = {
 					RHS: rule.RHS.slice().reverse(),
 					cost: rule.cost + rule.transpositionCost,
-					transposition: true
+					transposition: true,
 				}
 
 				if (!ruleExists(symRules, newRule)) {

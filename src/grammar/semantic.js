@@ -25,7 +25,7 @@ var semanticFuncOptsSchema = {
 	// When a DB object can only have one value for a specific property (e.g., repos only created by 1 person)
 	// prevent multiple instances of the corresponding semantic function within another semantic's arguments
 	// Otherwise, an intersection of objects with different values for this property will return an empty set
-	preventDups: { type: Boolean, optional: true }
+	preventDups: { type: Boolean, optional: true },
 }
 
 // Create a new semantic function from passed opts
@@ -44,7 +44,7 @@ function newSemanticFunc(opts) {
 		cost: opts.cost,
 		minParams: opts.minParams,
 		maxParams: opts.maxParams,
-		preventDups: opts.preventDups
+		preventDups: opts.preventDups,
 	}
 
 	// Save calling line for error reporting
@@ -52,7 +52,7 @@ function newSemanticFunc(opts) {
 
 	return [ {
 		semantic: semantic,
-		children: []
+		children: [],
 	} ]
 }
 
@@ -61,7 +61,7 @@ function newSemanticFunc(opts) {
 var semanticArgOptsSchema = {
 	name: String,
 	cost: Number,
-	isArg: Boolean
+	isArg: Boolean,
 }
 
 // Create a new semantic argument from passed opts
@@ -73,14 +73,14 @@ function newSemanticArg(opts) {
 	var semantic = exports.semantics[opts.name] = {
 		name: opts.name,
 		cost: opts.cost,
-		isArg: true
+		isArg: true,
 	}
 
 	// Save calling line for error reporting
 	exports.creationLines[opts.name] = util.getLine()
 
 	return [ {
-		semantic: semantic
+		semantic: semantic,
 	} ]
 }
 
@@ -207,7 +207,7 @@ exports.insertSemantic = function (LHS, RHS) {
 		for (var s = 0; s < rhsLen; ++s) {
 			newLHS[s] = {
 				semantic: lhsSemantic,
-				children: [ RHS[s] ]
+				children: [ RHS[s] ],
 			}
 		}
 
@@ -215,7 +215,7 @@ exports.insertSemantic = function (LHS, RHS) {
 	} else {
 		return [ {
 			semantic: lhsSemantic,
-			children: RHS.sort(compareSemantics)
+			children: RHS.sort(compareSemantics),
 		} ]
 	}
 

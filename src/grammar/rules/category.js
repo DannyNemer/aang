@@ -11,7 +11,7 @@ var categoryOptsSchema = {
 	sg: String,
 	pl: String,
 	isPerson: { type: Boolean, optional: true }, // "that" vs. "who" for relative pronoun
-	entities: { type: Array, arrayType: String, optional: true }
+	entities: { type: Array, arrayType: String, optional: true },
 }
 
 exports.new = function (opts) {

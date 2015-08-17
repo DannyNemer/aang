@@ -10,7 +10,7 @@ var pronounOptsSchema = {
 	insertionCost: { type: Number, optional: true },
 	nom: String,
 	obj: String,
-	substitutions: { type: Array, arrayType: String }
+	substitutions: { type: Array, arrayType: String },
 }
 
 // Add all terminal symbols for a pronoun to the grammar; ex: "I", "me"
@@ -58,7 +58,7 @@ var verbOptSchema = {
 	threeSg: { type: Array, arrayType: String, optional: true },
 	oneOrThreeSg: { type: Array, arrayType: String, optional: true },
 	past: { type: Array, arrayType: String, optional: true },
-	substitutions: { type: Array, arrayType: String, optional: true }
+	substitutions: { type: Array, arrayType: String, optional: true },
 }
 
 // Add all terminal symbols for a verb to the grammar
@@ -92,7 +92,7 @@ Symbol.prototype.addVerb = function (opts) {
 		// "are", "were", "like"
 		pl: opts.pl ? opts.pl[0] : opts.oneOrPl[0],
 		// "is", "was", "likes"
-		threeSg: opts.threeSg ? opts.threeSg[0] : opts.oneOrThreeSg[0]
+		threeSg: opts.threeSg ? opts.threeSg[0] : opts.oneOrThreeSg[0],
 	}
 
 	// Past tense is optional (e.g.: [have])
@@ -107,7 +107,7 @@ Symbol.prototype.addVerb = function (opts) {
 				one: termSym,
 				pl: defaultTextForms.pl,
 				threeSg: defaultTextForms.threeSg,
-				past: defaultTextForms.past
+				past: defaultTextForms.past,
 			} }
 
 			// Insertion cost added to first terminal rule (though, inconsequential)
@@ -126,7 +126,7 @@ Symbol.prototype.addVerb = function (opts) {
 				one: defaultTextForms.one,
 				pl: termSym,
 				threeSg: defaultTextForms.threeSg,
-				past: defaultTextForms.past
+				past: defaultTextForms.past,
 			} }
 
 			// Insertion cost added to first terminal rule (though, inconsequential)
@@ -145,7 +145,7 @@ Symbol.prototype.addVerb = function (opts) {
 				one: termSym,
 				pl: termSym,
 				threeSg: defaultTextForms.threeSg,
-				past: defaultTextForms.past
+				past: defaultTextForms.past,
 			} }
 
 			// Insertion cost added to first terminal rule (though, inconsequential)
@@ -164,7 +164,7 @@ Symbol.prototype.addVerb = function (opts) {
 				one: defaultTextForms.one,
 				pl: defaultTextForms.pl,
 				threeSg: termSym,
-				past: defaultTextForms.past
+				past: defaultTextForms.past,
 			} })
 		}, this)
 	}
@@ -176,7 +176,7 @@ Symbol.prototype.addVerb = function (opts) {
 				one: termSym,
 				pl: defaultTextForms.pl,
 				threeSg: termSym,
-				past: defaultTextForms.past
+				past: defaultTextForms.past,
 			} })
 		}, this)
 	}
@@ -188,7 +188,7 @@ Symbol.prototype.addVerb = function (opts) {
 				one: defaultTextForms.one,
 				pl: defaultTextForms.pl,
 				threeSg: defaultTextForms.threeSg,
-				past: termSym
+				past: termSym,
 			} })
 		}, this)
 	}
@@ -206,7 +206,7 @@ Symbol.prototype.addVerb = function (opts) {
 
 // Schema for stop-words
 var stopWordOptSchema = {
-	stopWords: { type: Array, arrayType: String }
+	stopWords: { type: Array, arrayType: String },
 }
 
 // Add a stop-word to the grammar - replaces terminal symbols with an empty-string
@@ -232,7 +232,7 @@ var wordOptsSchema = {
 	optional: { type: Boolean, optional: true },
 	insertionCost: { type: Number, optional: true },
 	accepted: { type: Array, arrayType: String },
-	substitutions: { type: Array, arrayType: String, optional: true }
+	substitutions: { type: Array, arrayType: String, optional: true },
 }
 
 // Add a set of terminal symbols to the grammar
@@ -290,7 +290,7 @@ Symbol.prototype.addWord = function (opts) {
 var intOptsSchema = {
 	min: Number,
 	// If max undefined, set to Number.MAX_SAFE_INTEGER
-	max: { type: Number, optional: true }
+	max: { type: Number, optional: true },
 }
 
 // Create a terminal rule to for integers within an accepted range
@@ -311,7 +311,7 @@ Symbol.prototype.addInt = function (opts) {
 		intMin: opts.min,
 		// If maximum value undefined, set to Number.MAX_SAFE_INTEGER
 		// - Infinity unrecognized in JSON.stringify() and will accept 'Infinity' in input
-		intMax: opts.max !== undefined ? opts.max : Number.MAX_SAFE_INTEGER
+		intMax: opts.max !== undefined ? opts.max : Number.MAX_SAFE_INTEGER,
 	})
 
 	return this

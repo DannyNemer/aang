@@ -342,7 +342,7 @@ function pathToTree(path) {
 		if (RHS.length === 1) {
 			var newNode = {
 				symbol: RHS[0],
-				children: undefined
+				children: undefined,
 			}
 
 			// Nonterminal symbol
