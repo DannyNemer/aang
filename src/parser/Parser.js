@@ -41,7 +41,8 @@ Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, text
 						cost: ruleProps.cost,
 						semantic: ruleProps.semantic ? semantic.insertSemantic(ruleProps.semantic, semanticArg) : semanticArg,
 						text: entity.text
-					}
+					},
+					minCost: undefined,
 				}
 
 				// create node with LHS of terminal rule
@@ -92,7 +93,8 @@ Parser.prototype.matchTerminalRules = function (query) {
 						var sub = {
 							size: wordSize, // size of literal
 							node: wordNode,
-							ruleProps: rule.ruleProps
+							ruleProps: rule.ruleProps,
+							minCost: undefined,
 						}
 
 						// create node with LHS of terminal rule
@@ -136,7 +138,8 @@ Parser.prototype.matchTerminalRules = function (query) {
 							cost: ruleProps.cost,
 							semantic: semanticArg,
 							text: nGram
-						}
+						},
+						minCost: undefined,
 					}
 
 					// create node with LHS of terminal rule
@@ -238,6 +241,8 @@ Parser.prototype.addSub = function (sym, sub) {
 		node = {
 			sym: sym,
 			size: size,
+			start: undefined,
+			subs: undefined,
 		}
 
 		if (sub) { // nonterminal
@@ -356,6 +361,8 @@ Parser.prototype.reduce = function (red) {
 	var sub = {
 		node: red.zNode.node,
 		size: red.zNode.node.size,
+		minCost: undefined,
+		ruleProps: undefined,
 	}
 
 	if (red.binary) {
@@ -377,14 +384,16 @@ Parser.prototype.reduce = function (red) {
 							node: zNode.node,
 							size: zNode.node.size
 						},
-						ruleProps: red.ruleProps
+						ruleProps: red.ruleProps,
+						minCost: undefined,
 					}
 				} else {
 					subNew = {
 						node: zNode.node,
 						size: zNode.node.size + sub.size,
 						next: sub,
-						ruleProps: red.ruleProps
+						ruleProps: red.ruleProps,
+						minCost: undefined,
 					}
 				}
 
@@ -478,7 +487,8 @@ Parser.prototype.printNodeGraph = function (sub) {
 
 	var newNode = {
 		symbol: node.sym.name,
-		ruleProps: sub.ruleProps
+		ruleProps: sub.ruleProps,
+		subs: undefined,
 	}
 
 	if (node.subs) {
