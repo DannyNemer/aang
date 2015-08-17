@@ -4,9 +4,9 @@ var semantic = require('../grammar/semantic')
 var calcHeuristics = require('./calcHeuristics')
 
 
-// Use A* path search to find trees in parse forest returned by parser, beginning at start node
+// Use A* path search to find K-best trees in parse forest returned by parser, beginning at start node
 exports.search = function (startNode, K, buildDebugTrees, printStats) {
-	// Determine minimum possible cost of subtree that can be constructed from each node, which is the heuristic
+	// Determine minimum possible cost of subtree that can be constructed from each node, which is the (admissible) heuristic
 	calcHeuristics(startNode)
 
 	// Min-heap of all partially constructed trees
@@ -32,8 +32,8 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 		gramProps: undefined,
 		// Cost of path
 		costSoFar: 0,
-		// Cost of path + cost of cheapest possible path that can follow
-		cost: 0
+		// Cost of path + cost of cheapest possible path that can follow (i.e., admissible heuristic)
+		cost: 0,
 	}
 
 	heap.push(newItem)
@@ -93,7 +93,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 					// If `buildDebugTrees` is `true`, add a reverse linked list in order to construct and print parse trees for debugging at parse completion
 					if (buildDebugTrees) {
 						newItem.ruleProps = ruleProps[r]
-						newItem.prevItem = item
+						newItem.prev = item
 					}
 
 					heap.push(newItem)
@@ -107,7 +107,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 				// If `buildDebugTrees` is `true`, add a reverse linked list in order to construct and print parse trees for debugging at parse completion
 				if (buildDebugTrees) {
 					newItem.ruleProps = ruleProps
-					newItem.prevItem = item
+					newItem.prev = item
 				}
 
 				heap.push(newItem)
@@ -125,20 +125,20 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 }
 
 // Create new item as an extension of current tree down this sub
-function createItem(sub, item, ruleProps) {
-	var newCost = item.costSoFar + ruleProps.cost
+function createItem(sub, prevItem, ruleProps) {
+	var newCost = prevItem.costSoFar + ruleProps.cost
 
 	var newItem = {
 		node: undefined,
 		semantics: undefined,
 		text: undefined,
-		nextNodes: item.nextNodes,
-		nextNodesLen: item.nextNodesLen,
-		gramProps: item.gramProps,
+		nextNodes: prevItem.nextNodes,
+		nextNodesLen: prevItem.nextNodesLen,
+		gramProps: prevItem.gramProps,
 		// Cost of path
 		costSoFar: newCost,
-		// Cost of path + cost of cheapest possible path that can follow
-		cost: newCost + sub.minCost
+		// Cost of path + cost of cheapest possible path that can follow (i.e., admissible heuristic)
+		cost: newCost + sub.minCost,
 	}
 
 	var newSemantic = ruleProps.semantic
@@ -148,7 +148,7 @@ function createItem(sub, item, ruleProps) {
 		// If 'insertedSemantic' exists, then newSemantic also exists
 		if (ruleProps.insertedSemantic) {
 			// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
-			var prevSemantic = item.semantics
+			var prevSemantic = prevItem.semantics
 			if (prevSemantic && prevSemantic.isRHS && semantic.forbiddenDups(prevSemantic.semantic, newSemantic)) {
 				return -1
 			}
@@ -158,12 +158,12 @@ function createItem(sub, item, ruleProps) {
 				semantic: ruleProps.insertedSemantic,
 				prev: {
 					semantic: newSemantic,
-					nextNodesLen: item.nextNodesLen,
+					nextNodesLen: prevItem.nextNodesLen,
 					prev: prevSemantic,
 				}
 			}
 		} else if (newSemantic) {
-			var prevSemantic = item.semantics
+			var prevSemantic = prevItem.semantics
 
 			if (ruleProps.semanticIsRHS) {
 				if (prevSemantic.isRHS) {
@@ -181,7 +181,7 @@ function createItem(sub, item, ruleProps) {
 					newItem.semantics = {
 						isRHS: true,
 						semantic: newSemantic,
-						prev: prevSemantic
+						prev: prevSemantic,
 					}
 				}
 			} else {
@@ -192,12 +192,12 @@ function createItem(sub, item, ruleProps) {
 
 				newItem.semantics = {
 					semantic: newSemantic,
-					nextNodesLen: item.nextNodesLen,
+					nextNodesLen: prevItem.nextNodesLen,
 					prev: prevSemantic,
 				}
 			}
 		} else {
-			newItem.semantics = item.semantics
+			newItem.semantics = prevItem.semantics
 		}
 
 
@@ -212,7 +212,7 @@ function createItem(sub, item, ruleProps) {
 
 		var text = ruleProps.text
 		if (ruleProps.insertionIdx === 1) {
-			newItem.text = item.text
+			newItem.text = prevItem.text
 
 			// Conjugate text after completing first branch in this binary reduction
 			// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
@@ -223,10 +223,10 @@ function createItem(sub, item, ruleProps) {
 		} else {
 			if (text.constructor === Array) {
 				// Text requires conjugation
-				newItem.text = item.text + conjugateTextArray(newItem, text)
+				newItem.text = prevItem.text + conjugateTextArray(newItem, text)
 			} else {
 				// No conjugation
-				newItem.text = item.text + ' ' + text
+				newItem.text = prevItem.text + ' ' + text
 			}
 		}
 	}
@@ -241,23 +241,23 @@ function createItem(sub, item, ruleProps) {
 					newItem.semantics = {
 						isRHS: true,
 						semantic: newSemantic,
-						prev: item.semantics
+						prev: prevItem.semantics,
 					}
 				} else {
 					// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
-					var prevSemantic = item.semantics
+					var prevSemantic = prevItem.semantics
 					if (prevSemantic && prevSemantic.isRHS && semantic.forbiddenDups(prevSemantic.semantic, newSemantic)) {
 						return -1
 					}
 
 					newItem.semantics = {
 						semantic: newSemantic,
-						nextNodesLen: item.nextNodesLen,
-						prev: prevSemantic
+						nextNodesLen: prevItem.nextNodesLen,
+						prev: prevSemantic,
 					}
 				}
 			} else {
-				newItem.semantics = item.semantics
+				newItem.semantics = prevItem.semantics
 			}
 
 			newItem.node = sub.node
@@ -283,7 +283,7 @@ function createItem(sub, item, ruleProps) {
 
 		// Terminal rule
 		else {
-			var prevSemantic = item.semantics
+			var prevSemantic = prevItem.semantics
 			while (prevSemantic) {
 				// RHS
 				if (prevSemantic.isRHS) {
@@ -300,7 +300,7 @@ function createItem(sub, item, ruleProps) {
 				}
 
 				// LHS after parsing the right-most branch that follows the semantic (completed the reduction)
-				else if (item.nextNodesLen <= prevSemantic.nextNodesLen) {
+				else if (prevItem.nextNodesLen <= prevSemantic.nextNodesLen) {
 					// A function without an argument - currently can only be intersect()
 					// This will need to be modified if we incorporate functions that don't require args
 					if (!newSemantic) return -1
@@ -318,7 +318,7 @@ function createItem(sub, item, ruleProps) {
 				newItem.semantics = {
 					isRHS: true,
 					semantic: newSemantic,
-					prev: prevSemantic
+					prev: prevSemantic,
 				}
 			} else {
 				newItem.semantics = prevSemantic
@@ -329,13 +329,13 @@ function createItem(sub, item, ruleProps) {
 		var text = ruleProps.text
 		if (text) {
 			if (text.constructor === Object) {
-				newItem.text = item.text + ' ' + conjugateText(newItem, text)
+				newItem.text = prevItem.text + ' ' + conjugateText(newItem, text)
 			} else {
-				newItem.text = item.text + ' ' + text
+				newItem.text = prevItem.text + ' ' + text
 			}
 		} else {
 			// Stop words - no text
-			newItem.text = item.text
+			newItem.text = prevItem.text
 		}
 	}
 
@@ -477,11 +477,11 @@ function pathToTree(item) {
 
 		// Terminal rule
 		if (!node) {
-			var node = item.prevItem.node
+			var node = item.prev.node
 
 			if (!node) {
 				// Find last node (`nextNodes` also holds insertion text)
-				var prevNextNodes = item.prevItem.prevItem.nextNodes
+				var prevNextNodes = item.prev.prev.nextNodes
 				while (prevNextNodes.node.constructor !== Object) {
 					prevNextNodes = prevNextNodes.next
 				}
@@ -499,7 +499,7 @@ function pathToTree(item) {
 		}
 
 		// Binary nonterminal rule
-		else if (item.nextNodes && item.nextNodes !== item.prevItem.nextNodes && item.ruleProps.insertionIdx === undefined) {
+		else if (item.nextNodes && item.nextNodes !== item.prev.nextNodes && item.ruleProps.insertionIdx === undefined) {
 			var newNodeA = prevNodes.pop()
 			newNodeA.symbol = node.sym.name
 
@@ -519,7 +519,7 @@ function pathToTree(item) {
 			newNode.symbol = node.sym.name
 
 			// Start node
-			if (!item.prevItem) return newNode
+			if (!item.prev) return newNode
 
 			// Order properties for insertions to be printed in order
 			if (item.ruleProps.insertionIdx === 1) {
@@ -539,7 +539,7 @@ function pathToTree(item) {
 
 		prevNodes.push(parNode)
 
-		item = item.prevItem
+		item = item.prev
 	}
 }
 

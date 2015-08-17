@@ -1,7 +1,7 @@
 var util = require('../util')
 
 // Determine minimum possible cost of subtree that can be constructed from each node
-// Values serve as heuristics in A* search of parse forest
+// Values serve as admissible heuristics in A* search of parse forest
 module.exports = function (startNode) {
 	for (var subs = startNode.subs, s = subs.length; s-- > 0;) {
 		var sub = subs[s]
@@ -12,7 +12,7 @@ module.exports = function (startNode) {
 	}
 }
 
-// Determine the minimum cost of `parentSub` by exaxming each of its `subs`
+// Determine the minimum cost of `parentSub` by examining each of its `subs`
 function reduce(parentSub, subs) {
 	var minCost
 
@@ -37,7 +37,7 @@ function reduce(parentSub, subs) {
 			}
 		}
 
-		// Get cost after calling reduce() on children and derving their minimum costs
+		// Get cost after calling reduce() on children and deriving their minimum costs
 		var subRuleProps = sub.ruleProps
 		var cost = sub.minCost + (subRuleProps.constructor === Array ? subRuleProps[0].cost : subRuleProps.cost)
 
