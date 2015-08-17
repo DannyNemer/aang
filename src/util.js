@@ -156,7 +156,7 @@ exports.arraysEqual = function (a, b) {
 }
 
 /**
- * Print-print objects (on separate lines).
+ * Pretty-prints objects in color (on separate lines). Will recurse at infinite depth to format the object. This is useful for inspecting large complicated objects.
  *
  * @param {...Mixed} [valN] The values to print.
  */
@@ -176,7 +176,16 @@ exports.log = function () {
 }
 
 /**
- * Print calling file path and line number to mark reaching a section of code, prepended by `msg`.
+ * Pretty-prints objects in color (on separate lines). Will recurse 2 times while formatting the object.
+ *
+ * @param {...Mixed} [valN] The values to print.
+ */
+exports.dir = function () {
+	Array.prototype.slice.call(arguments).forEach(function (arg) {
+		console.dir(arg, { colors: true })
+	})
+}
+
 /**
  * Prints calling file path and line number to mark reaching a section of code, prepended by `msg`.
  *
