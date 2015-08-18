@@ -5,7 +5,8 @@ exports.semantics = {}
 // A mapping of semantic names to creation lines; used for error reporting
 exports.creationLines = {}
 
-exports.newSemantic = function (opts) {
+// Create a new semantic func or arg
+exports.new = function (opts) {
 	opts.name = opts.name.toLowerCase()
 
 	if (exports.semantics.hasOwnProperty(opts.name)) {
