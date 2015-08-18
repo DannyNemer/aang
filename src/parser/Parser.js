@@ -39,7 +39,7 @@ Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, text
 					node: wordNode,
 					ruleProps: {
 						cost: ruleProps.cost,
-						semantic: ruleProps.semantic ? semantic.insertSemantic(ruleProps.semantic, semanticArg) : semanticArg,
+						semantic: ruleProps.semantic ? semantic.reduce(ruleProps.semantic, semanticArg) : semanticArg,
 						text: entity.text,
 					},
 					minCost: undefined,

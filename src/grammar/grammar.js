@@ -24,7 +24,7 @@ require('./ruleFunctions')
 // Extend module with semantic functions
 var semantic = require('./semantic')
 exports.newSemantic = semantic.newSemantic
-exports.insertSemantic = semantic.insertSemantic
+exports.reduceSemantic = semantic.reduce
 
 // Extend module with entity-category functions
 var entityCategory = require('./entityCategory')

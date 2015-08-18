@@ -96,10 +96,10 @@ function reduce(parentSub, subs) {
 
 			// BUT we are not checking about what is coming down the tree
 			if (parentRuleProps.semantic) {
-				newRuleProps.semantic = semantic.insertSemantic(parentRuleProps.semantic, insertedSemantic)
+				newRuleProps.semantic = semantic.reduce(parentRuleProps.semantic, insertedSemantic)
 			} else if (subRuleProps.semantic) {
 				// what if the sub is a RHS - never appears to be
-				newRuleProps.semantic = semantic.insertSemantic(subRuleProps.semantic, insertedSemantic)
+				newRuleProps.semantic = semantic.reduce(subRuleProps.semantic, insertedSemantic)
 			} else {
 				newRuleProps.semantic = insertedSemantic
 			}
@@ -117,17 +117,17 @@ function reduce(parentSub, subs) {
 					}
 
 					// util.mark()
-					newRuleProps.semantic = semantic.insertSemantic(parentRuleProps.semantic, RHS)
+					newRuleProps.semantic = semantic.reduce(parentRuleProps.semantic, RHS)
 					newRuleProps.semanticIsRHS = true
 				} else {
-					newRuleProps.semantic = semantic.insertSemantic(parentRuleProps.semantic, subRuleProps.semantic)
+					newRuleProps.semantic = semantic.reduce(parentRuleProps.semantic, subRuleProps.semantic)
 					newRuleProps.semanticIsRHS = true
 				}
 			} else {
 				// if (subRuleProps.semanticRHS) {
 				// 	// if previous in binary had a semantic
 				// 	// it is possible there are other semantics down this branch, which will mess this up
-				// 	newRuleProps.semantic = semantic.insertSemantic(subRuleProps.semantic, subRuleProps.semanticRHS)
+				// 	newRuleProps.semantic = semantic.reduce(subRuleProps.semantic, subRuleProps.semanticRHS)
 				// 	newRuleProps.semanticIsRHS = true
 				// } else {
 					if (subRuleProps.semanticRHS) {
@@ -156,7 +156,7 @@ function reduce(parentSub, subs) {
 			if (parentRuleProps.semanticRHS) {
 				// if previous in binary had a semantic
 				// it is possible there are other semantics down this branch, which will mess this up
-				newRuleProps.semantic = semantic.insertSemantic(parentRuleProps.semantic, parentRuleProps.semanticRHS)
+				newRuleProps.semantic = semantic.reduce(parentRuleProps.semantic, parentRuleProps.semanticRHS)
 				newRuleProps.semanticIsRHS = true
 			} else {
 				if (parentRuleProps.semanticIsRHS) { // will never be both

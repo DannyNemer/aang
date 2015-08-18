@@ -131,7 +131,7 @@ function findNontermRulesProducingInsertions(insertions) {
 						newInsertion.text = conjugateText(insertion.text, newInsertion)
 
 						if (rule.semantic && insertion.semantic) {
-							newInsertion.semantic = semantic.insertSemantic(rule.semantic, insertion.semantic)
+							newInsertion.semantic = semantic.reduce(rule.semantic, insertion.semantic)
 						} else if (rule.semantic) {
 							newInsertion.semantic = rule.semantic
 							// Only needed if allowing insertions through <empty> in transpositions

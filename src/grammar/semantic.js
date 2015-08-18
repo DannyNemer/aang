@@ -182,11 +182,13 @@ exports.semanticArraysEqual = function (a, b) {
 	return false
 }
 
-// LHS and RHS both always defined
-// not slicing RHS here because did before
-// the LHS should always be empty
-// We are assuming the LHS is always one function, not more than 1 where we intended to insert in the innermost
-exports.insertSemantic = function (LHS, RHS) {
+
+// Applies a completed semantic tree (`RHS`) to a more recent semantic (`LHS`), joining them together as semantic with `LHS` as the root function
+// - LHS and RHS both always defined
+// - not slicing RHS here because did before
+// - the LHS should always be empty
+// - We are assuming the LHS is always one function, not more than 1 where we intended to insert in the innermost
+exports.reduce = function (LHS, RHS) {
 	var lhsSemantic = LHS[0].semantic
 	var rhsLen = RHS.length
 
@@ -194,11 +196,11 @@ exports.insertSemantic = function (LHS, RHS) {
 	if (rhsLen === 1 && lhsSemantic.name === 'intersect') return RHS
 
 	if (rhsLen < lhsSemantic.minParams) {
-		throw 'insertSemantic: RHS.length < minParams'
+		throw 'semantic.reduce: RHS.length < minParams'
 		return -1
 	} else if (rhsLen > lhsSemantic.maxParams) {
-		if (lhsSemantic.maxParams > 1) throw 'insertSemantic: rhsLen > LHS.maxParams && LHS.maxParams > 1'
-		if (lhsSemantic.preventDups) throw 'insertSemantic: rhsLen > LHS.maxParams && LHS.preventDups'
+		if (lhsSemantic.maxParams > 1) throw 'semantic.reduce: rhsLen > LHS.maxParams && LHS.maxParams > 1'
+		if (lhsSemantic.preventDups) throw 'semantic.reduce: rhsLen > LHS.maxParams && LHS.preventDups'
 
 		// Copy LHS semantic for each RHS
 		// repos liked by me and my followers -> copy "repos-liked()" for each child

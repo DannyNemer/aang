@@ -305,7 +305,7 @@ function createItem(sub, prevItem, ruleProps) {
 					// This will need to be modified if we incorporate functions that don't require args
 					if (!newSemantic) return -1
 
-					newSemantic = semantic.insertSemantic(prevSemantic.semantic, newSemantic)
+					newSemantic = semantic.reduce(prevSemantic.semantic, newSemantic)
 
 					prevSemantic = prevSemantic.prev
 				}
