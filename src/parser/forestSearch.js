@@ -364,60 +364,33 @@ function conjugateTextArray(item, textArray) {
 // NOTE: Does not allow for same prop to be used in multiple places. Deletion of props occurs after single use.
 function conjugateText(item, text) {
 	var gramPropsList = item.gramProps
-	if (!gramPropsList) return
-	var prevGramProps
 
 	while (gramPropsList) {
 		var gramProps = gramPropsList.gramProps
 
 		var verbForm = gramProps.verbForm
 		if (verbForm && text[verbForm]) {
-			if (prevGramProps) {
-				prevGramProps.next = gramPropsList.next
-			} else {
-				item.gramProps = gramPropsList.next
-			}
-
+			// Remove gramProps from linked list and rebuild end of list up to it
+			spliceGramPropsList(item, gramPropsList)
 			return text[verbForm]
 		}
 
 		var personNumber = gramProps.personNumber
 		if (personNumber && text[personNumber]) {
-			if (prevGramProps) {
-				prevGramProps.next = gramPropsList.next
-			} else {
-				item.gramProps = gramPropsList.next
-			}
-
+			// Remove gramProps from linked list and rebuild end of list up to it
+			spliceGramPropsList(item, gramPropsList)
 			return text[personNumber]
 		}
 
 		var gramCase = gramProps.gramCase
 		if (gramCase && text[gramCase]) {
-			// Rule with gramCase either has personNumber for nominative (so will be needed again),
-			// or doesn't have personNumer (for objective) and can be deleted
+			// Rule with gramCase either has personNumber for nominative (so will be needed again), or doesn't have personNumer (for objective) and can be deleted
 			if (!personNumber) {
-				if (prevGramProps) {
-					prevGramProps.next = gramPropsList.next
-				} else {
-					item.gramProps = gramPropsList.next
-				}
-			} else if (prevGramProps) {
-				prevGramProps.next = gramPropsList
+				// Remove gramProps from linked list and rebuild end of list up to it
+				spliceGramPropsList(item, gramPropsList)
 			}
 
 			return text[gramCase]
-		}
-
-		// The `gramProps` that will be used is not the most recent. Will need to rebuild list up to the `gramProps` that will be used because the list elements are shared amongst paths.
-		if (prevGramProps) {
-			prevGramProps = prevGramProps.next = {
-				gramProps: gramProps,
-			}
-		} else {
-			prevGramProps = item.gramProps = {
-				gramProps: gramProps,
-			}
 		}
 
 		gramPropsList = gramPropsList.next
@@ -425,6 +398,36 @@ function conjugateText(item, text) {
 
 	util.logTrace()
 	util.printWarning('Failed to conjugate', text, gramPropsList)
+}
+
+// Remove the element `gramPropsToRemove` from the `gramProps` list `item.gramProps`
+// The `gramProps` that will be used may not be the most recent, which requires the list to be rebuilt up to the `gramProps` used because the list elements are shared amongst paths.
+// - Better to construct new portion of linked list after finding the gramProps, instead of while traversing, because list does not need splicing when it is `gramCase` match for a `gramProps` also with a `personNumber`
+function spliceGramPropsList(item, gramPropsToRemove) {
+	var thisGramProps = item.gramProps
+	var prevGramProps
+
+	// Find which element in `item.gramProps` is to be removed
+	while (thisGramProps !== gramPropsToRemove) {
+		if (prevGramProps) {
+			prevGramProps = prevGramProps.next = {
+				gramProps: thisGramProps.gramProps,
+			}
+		} else {
+			prevGramProps = item.gramProps = {
+				gramProps: thisGramProps.gramProps,
+			}
+		}
+
+		thisGramProps = thisGramProps.next
+	}
+
+	// Point the predecessor 'next' to successor of the element to be removed
+	if (prevGramProps) {
+		prevGramProps.next = gramPropsToRemove.next
+	} else {
+		item.gramProps = gramPropsToRemove.next
+	}
 }
 
 // Determine if newly parsed tree has a unique semantic and unique display text
