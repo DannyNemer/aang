@@ -282,6 +282,8 @@ function createRulesFromTranspositions() {
 				var newRule = {
 					RHS: rule.RHS.slice().reverse(),
 					cost: rule.cost + rule.transpositionCost,
+					semantic: rule.semantic,
+					semanticIsRHS: rule.semanticIsRHS,
 					transposition: true,
 				}
 
