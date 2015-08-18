@@ -89,11 +89,11 @@ user.inner.addRule({
 exports.state = g.newSymbol('state')
 exports.state.addRule({
 	terminal: true, RHS: 'open',
-	semantic: g.newSemantic({ name: 'open', cost: 0, isArg: true })
+	semantic: g.newSemantic({ isArg: true, name: 'open', cost: 0 })
 })
 exports.state.addRule({
 	terminal: true, RHS: 'closed',
-	semantic: g.newSemantic({ name: 'closed', cost: 0, isArg: true })
+	semantic: g.newSemantic({ isArg: true, name: 'closed', cost: 0 })
 })
 
 

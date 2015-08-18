@@ -59,9 +59,9 @@ function newSemanticFunc(opts) {
 
 // Schema for semantic arguments
 var semanticArgOptsSchema = {
+	isArg: Boolean,
 	name: String,
 	cost: Number,
-	isArg: Boolean,
 }
 
 // Create a new semantic argument from passed opts
@@ -71,9 +71,9 @@ function newSemanticArg(opts) {
 	}
 
 	var semantic = exports.semantics[opts.name] = {
+		isArg: true,
 		name: opts.name,
 		cost: opts.cost,
-		isArg: true,
 	}
 
 	// Save calling line for error reporting

@@ -97,8 +97,8 @@ user.possessive.addRule({
 
 // GENDER:
 var usersGenderSemantic = g.newSemantic({ name: g.hyphenate(user.namePl, 'gender'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
-var usersGenderFemaleSemantic = g.insertSemantic(usersGenderSemantic, g.newSemantic({ name: 'female', cost: 0, isArg: true }))
-var usersGenderMaleSemantic = g.insertSemantic(usersGenderSemantic, g.newSemantic({ name: 'male', cost: 0, isArg: true }))
+var usersGenderFemaleSemantic = g.insertSemantic(usersGenderSemantic, g.newSemantic({ isArg: true, name: 'female', cost: 0 }))
+var usersGenderMaleSemantic = g.insertSemantic(usersGenderSemantic, g.newSemantic({ isArg: true, name: 'male', cost: 0 }))
 
 // female (followers of mine); (people who are) female
 user.adjective.addRule({ terminal: true, RHS: 'female', semantic: usersGenderFemaleSemantic })

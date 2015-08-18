@@ -31,12 +31,12 @@ var yearPhrase = g.newSymbol('year', 'phrase')
 // (repos created) this year
 yearPhrase.addRule({
   RHS: [ thisDate, yearTerm ],
-  semantic: g.newSemantic({ name: g.hyphenate('this', 'year'), cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: g.hyphenate('this', 'year'), cost: 0.5 })
 })
 // (repos created) last year
 yearPhrase.addRule({
   RHS: [ lastDate, yearTerm ],
-  semantic: g.newSemantic({ name: g.hyphenate('last', 'year'), cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: g.hyphenate('last', 'year'), cost: 0.5 })
 })
 datePhrase.addRule({ RHS: [ yearPhrase ] })
 
@@ -47,12 +47,12 @@ monthTerm.addWord({
 // (repos created) this month
 datePhrase.addRule({
   RHS: [ thisDate, monthTerm ],
-  semantic: g.newSemantic({ name: g.hyphenate('this', 'month'), cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: g.hyphenate('this', 'month'), cost: 0.5 })
 })
 // (repos created) last month
 datePhrase.addRule({
   RHS: [ lastDate, monthTerm ],
-  semantic: g.newSemantic({ name: g.hyphenate('last', 'month'), cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: g.hyphenate('last', 'month'), cost: 0.5 })
 })
 
 var weekTerm = g.newSymbol('week', 'term')
@@ -63,12 +63,12 @@ weekTerm.addWord({
 // (repos created) this week
 datePhrase.addRule({
   RHS: [ thisDate, weekTerm ],
-  semantic: g.newSemantic({ name: g.hyphenate('this', 'week'), cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: g.hyphenate('this', 'week'), cost: 0.5 })
 })
 // (repos created) last week
 datePhrase.addRule({
   RHS: [ lastDate, weekTerm ],
-  semantic: g.newSemantic({ name: g.hyphenate('last', 'week'), cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: g.hyphenate('last', 'week'), cost: 0.5 })
 })
 
 // (repos created) today
@@ -76,13 +76,13 @@ datePhrase.addRule({
   terminal: true,
   RHS: 'today',
   insertionCost: 1,
-  semantic: g.newSemantic({ name: g.hyphenate('today'), cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: g.hyphenate('today'), cost: 0.5 })
 })
 // (repos created) yesterday
 datePhrase.addRule({
   terminal: true,
   RHS: 'yesterday',
-  semantic: g.newSemantic({ name: g.hyphenate('yesterday'), cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: g.hyphenate('yesterday'), cost: 0.5 })
 })
 
 
@@ -95,51 +95,51 @@ year.addInt({ min: 1950, max: 2050 })
 var month = g.newSymbol('month')
 month.addRule({
   RHS: [ g.newSymbol('january').addWord({ accepted: [ 'January', '01' ] }) ],
-  semantic: g.newSemantic({ name: 'jan', cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: 'jan', cost: 0.5 })
 })
 month.addRule({
   RHS: [ g.newSymbol('february').addWord({ accepted: [ 'February', '02' ] }) ],
-  semantic: g.newSemantic({ name: 'feb', cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: 'feb', cost: 0.5 })
 })
 month.addRule({
   RHS: [ g.newSymbol('march').addWord({ accepted: [ 'March', '03' ] }) ],
-  semantic: g.newSemantic({ name: 'mar', cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: 'mar', cost: 0.5 })
 })
 month.addRule({
   RHS: [ g.newSymbol('april').addWord({ accepted: [ 'April', '04' ] }) ],
-  semantic: g.newSemantic({ name: 'apr', cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: 'apr', cost: 0.5 })
 })
 month.addRule({
   RHS: [ g.newSymbol('may').addWord({ accepted: [ 'May', '05' ] }) ],
-  semantic: g.newSemantic({ name: 'may', cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: 'may', cost: 0.5 })
 })
 month.addRule({
   RHS: [ g.newSymbol('june').addWord({ accepted: [ 'June', '06' ] }) ],
-  semantic: g.newSemantic({ name: 'jun', cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: 'jun', cost: 0.5 })
 })
 month.addRule({
   RHS: [ g.newSymbol('july').addWord({ accepted: [ 'July', '07' ] }) ],
-  semantic: g.newSemantic({ name: 'jul', cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: 'jul', cost: 0.5 })
 })
 month.addRule({
   RHS: [ g.newSymbol('august').addWord({ accepted: [ 'August', '08' ] }) ],
-  semantic: g.newSemantic({ name: 'aug', cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: 'aug', cost: 0.5 })
 })
 month.addRule({
   RHS: [ g.newSymbol('september').addWord({ accepted: [ 'September', '09' ] }) ],
-  semantic: g.newSemantic({ name: 'sep', cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: 'sep', cost: 0.5 })
 })
 month.addRule({
   RHS: [ g.newSymbol('october').addWord({ accepted: [ 'October', '10' ] }) ],
-  semantic: g.newSemantic({ name: 'oct', cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: 'oct', cost: 0.5 })
 })
 month.addRule({
   RHS: [ g.newSymbol('november').addWord({ accepted: [ 'November', '11' ] }) ],
-  semantic: g.newSemantic({ name: 'nov', cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: 'nov', cost: 0.5 })
 })
 month.addRule({
   RHS: [ g.newSymbol('december').addWord({ accepted: [ 'December', '12' ] }) ],
-  semantic: g.newSemantic({ name: 'dec', cost: 0.5, isArg: true })
+  semantic: g.newSemantic({ isArg: true, name: 'dec', cost: 0.5 })
 })
 // (repos created in) [month] [year]
 var monthYear = g.newSymbol('month', 'year')

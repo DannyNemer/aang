@@ -1,6 +1,6 @@
 var g = require('../grammar')
 
-exports.semantic = g.newSemantic({ name: 'me', cost: 0.2, isArg: true })
+exports.semantic = g.newSemantic({ isArg: true, name: 'me', cost: 0.2 })
 
 // (people) I (follow); (people followed by) me; (people who follow) me
 exports.plain = g.newSymbol('1', 'sg')
