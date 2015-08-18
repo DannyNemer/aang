@@ -269,11 +269,11 @@ function compareSemantics(a, b) {
 
 // Returns `true` if semantic is legal and thereby constitutes a RHS (called in grammar generation)
 // Otherwise, semantic expected to accept other semantics as arguments
-exports.semanticIsRHS = function (semanticArray) {
+exports.isRHS = function (semanticArray) {
 	return semanticArray.every(function (semanticNode) {
 		var semanticChildren = semanticNode.children
 		if (semanticChildren) {
-			return semanticChildren.length === 0 ? false : exports.semanticIsRHS(semanticChildren)
+			return semanticChildren.length === 0 ? false : exports.isRHS(semanticChildren)
 		}
 
 		return true

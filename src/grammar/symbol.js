@@ -105,7 +105,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 
 	// If semantic, must be complete and constitute a RHS
 	// Exceptions: terminal symbol is an entity category or <int>
-	else if (opts.semantic && !semantic.semanticIsRHS(opts.semantic)) {
+	else if (opts.semantic && !semantic.isRHS(opts.semantic)) {
 		util.printErr('Terminal rules can only hold complete (RHS) semantics', this.name, '->', newRule.RHS)
 		util.log(opts.semantic)
 		console.log(util.getLine())
@@ -177,7 +177,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 	if (opts.semantic) {
 		// `true` if semantic is complete and constitutes a RHS
 		// Otherwise semantic is to accept other semantics as arguments
-		newRule.semanticIsRHS = semantic.semanticIsRHS(opts.semantic)
+		newRule.semanticIsRHS = semantic.isRHS(opts.semantic)
 	}
 
 	if (opts.RHS.length > 2) {
