@@ -96,7 +96,7 @@ exports.illFormedOpts = function (schema, opts) {
 }
 
 /**
- * Gets the file path and line number of the first item in the stack of the parent module from where this function was called.
+ * Gets the file path and line number of the first item in the stack of the parent module from where this function was called. This is useful for logging where an object is instantiated.
  *
  * @param {Boolean} getCallingLine If `true`, return line of where this function was called, else the line of the parent module.
  * @return {String} The file path and line number of calling line.
@@ -217,40 +217,34 @@ exports.assertTrue = function (value, msg) {
  * Key-value map used by `count()`.
  *
  * @private
- * @type {Object}
+ * @type Map
  */
-var _counts = Object.create(null)
+var _counts = new Map()
 
 /**
- * Counts the number of times a section of code is reached, identified by `key`.
- * Use `printCount(key)` to print value.
+ * Counts the number of times a section of code is reached, identified by `label`.
+ * Use `printCount(label)` to print value.
  *
- * @param {String} key The id to refer to a section of code.
+ * @param {String} label The id to refer to a section of code.
  */
-exports.count = function (key) {
-	if (_counts.hasOwnProperty(key)) {
-		_counts[key]++
-	} else {
-		_counts[key] = 1
-	}
+exports.count = function (label) {
+	var val = _counts.get(label) || 0
+	_counts.set(label, val + 1)
 }
 
 /**
- * Prints the number of calls of `count()` with `key`.
- * Resets the count of calls to `key` when called.
+ * Prints the number of calls of `count()` with `label`.
+ * Resets the count of calls to `label` when called.
  *
- * @param {String} key The id to refer to calls to `count()`.
+ * @param {String} label The id to refer to calls to `count()`.
  */
-exports.printCount = function (key) {
-	var label = (key || 'count') + ':'
-	if (_counts.hasOwnProperty(key)) {
-		console.log(label, _counts[key])
+exports.printCount = function (label) {
+	// Print even if no value to acknowledge never being reached
+	var count = _counts.get(label) || 0
+	console.log('%s: %d', label === undefined ? 'count' : label, count)
 
-		// Reset count
-		delete _counts[key]
-	} else {
-		console.log(label, 0)
-	}
+	// Reset count
+	_counts.delete(label)
 }
 
 /**
@@ -259,12 +253,12 @@ exports.printCount = function (key) {
  * Reset all counts.
  */
 exports.printCounts = function () {
-	for (var key in _counts) {
-		console.log((key === undefined ? 'count' : key) + ':', _counts[key])
-	}
+	_counts.forEach(function(count, label) {
+	  console.log(label + ':', count)
+	})
 
 	// Reset all counts
-	_counts = {}
+	_counts.clear()
 }
 
 /**
