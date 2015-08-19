@@ -223,7 +223,7 @@ var _counts = new Map()
 
 /**
  * Counts the number of times a section of code is reached, identified by `label`.
- * Use `printCount(label)` to print value.
+ * Use `countEnd(label)` to print value.
  *
  * @param {String} label The id to refer to a section of code.
  */
@@ -238,7 +238,7 @@ exports.count = function (label) {
  *
  * @param {String} label The id to refer to calls to `count()`.
  */
-exports.printCount = function (label) {
+exports.countEnd = function (label) {
 	// Print even if no value to acknowledge never being reached
 	var count = _counts.get(label) || 0
 	console.log('%s: %d', label === undefined ? 'count' : label, count)
