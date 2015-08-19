@@ -216,10 +216,10 @@ exports.assertTrue = function (value, msg) {
 /**
  * Key-value map used by `count()`.
  *
- * @type {Object}
  * @private
+ * @type {Object}
  */
-var counts = {}
+var _counts = {}
 
 /**
  * Counts the number of times a section of code is reached, identified by `key`.
@@ -228,10 +228,10 @@ var counts = {}
  * @param {String} key The id to refer to a section of code.
  */
 exports.count = function (key) {
-	if (counts.hasOwnProperty(key)) {
-		counts[key]++
+	if (_counts.hasOwnProperty(key)) {
+		_counts[key]++
 	} else {
-		counts[key] = 1
+		_counts[key] = 1
 	}
 }
 
@@ -243,11 +243,11 @@ exports.count = function (key) {
  */
 exports.printCount = function (key) {
 	var label = (key || 'count') + ':'
-	if (counts.hasOwnProperty(key)) {
-		console.log(label, counts[key])
+	if (_counts.hasOwnProperty(key)) {
+		console.log(label, _counts[key])
 
 		// Reset count
-		delete counts[key]
+		delete _counts[key]
 	} else {
 		console.log(label, 0)
 	}
@@ -259,12 +259,12 @@ exports.printCount = function (key) {
  * Reset all counts.
  */
 exports.printCounts = function () {
-	for (var key in counts) {
-		console.log((key === undefined ? 'count' : key) + ':', counts[key])
+	for (var key in _counts) {
+		console.log((key === undefined ? 'count' : key) + ':', _counts[key])
 	}
 
 	// Reset all counts
-	counts = {}
+	_counts = {}
 }
 
 /**
