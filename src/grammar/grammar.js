@@ -39,12 +39,22 @@ exports.createEditRules = require('./createEditRules')
 // Check for instances of ambiguity in the grammar
 exports.checkForAmbiguity = require('./checkForAmbiguity').bind(null, grammar)
 
-// Sort nonterminal symbols alphabetically
+/**
+ * Sort nonterminal symbols alphabetically.
+ * Sort symbols' rules by increasing cost.
+ */
 exports.sortGrammar = function () {
 	Object.keys(grammar).sort().forEach(function (symbolName) {
+		// Sort nonterminal symbols alphabetically
 		var rules = grammar[symbolName]
 		delete grammar[symbolName]
 		grammar[symbolName] = rules
+
+
+		// Sort rules by increasing cost
+		rules.sort(function (ruleA, ruleB) {
+			return ruleA.cost - ruleB.cost
+		})
 	})
 }
 

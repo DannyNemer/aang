@@ -62,6 +62,8 @@ function insertRule(sym, symBuf, origRule) {
 
 		if (diff === 0 && !existingRuleRHS[j]) {
 			if (!symBuf[j]) {
+				// When multiple insertions exist for the same symbol with the same non-inserted RHS symbol, the `ruleProps` for those insertions are stored in an array for a single action in the state table, and hence a single node in the parse forest.
+				// assuming grammar rules are sorted by increasing cost
 				// assuming grammar doesn't have duplicates
 				// store as array - only for insertions
 				existingRule.ruleProps = [].concat(existingRule.ruleProps, createRuleProps(origRule))
