@@ -396,3 +396,17 @@ exports.deleteModuleCache = function () {
 		delete require.cache[fs.realpathSync(path)]
 	})
 }
+
+/**
+ * Remove extraneous digits from numbers resulting from operations limited by JavaScript's floating point number precision, such as `0.1 * 0.2` (which does not equal `0.02`). This limitation results from being unable to map `0.1` to a finite binary floating point number.
+ *
+ * @param {Number} number The number to trim.
+ * @return {Number} The number trimmed.
+ * @example
+ * var number = 0.1 * 0.2 // 0.020000000000000004
+ * number = dannyUtil.cleanFloat(number) // 0.02
+ */
+exports.cleanNumber = function (number) {
+	// JavaScript's floating point number precision 13 digits after the decimal point
+	return Number(number.toFixed(13))
+}
