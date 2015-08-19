@@ -219,7 +219,7 @@ exports.assertTrue = function (value, msg) {
  * @private
  * @type {Object}
  */
-var _counts = {}
+var _counts = Object.create(null)
 
 /**
  * Counts the number of times a section of code is reached, identified by `key`.
