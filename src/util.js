@@ -332,12 +332,10 @@ exports.logTrace = function (msg) {
 	console.log('Trace' + (msg ? ': ' + msg : ''))
 
 	// Get stack sans lines for `Error` and this file
-	var stack = Error().stack.split('\n').slice(3)
+	var stack = Error().stack.split('\n').slice(3).join('\n')
 
-	// Remove parentheses
-	stack = stack.join('\n').replace(/[()]/gm, '')
-
-	console.log(stack)
+	// Remove parentheses of file paths for iTerm open-file-path shortcut
+	console.log(stack.replace(/[()]/gm, ''))
 }
 
 /**
@@ -358,6 +356,7 @@ exports.writeJSONFile = function (path, obj) {
 /**
  * Executes the passed function within a `try` block.
  * Removes parentheses from error stack for iTerm open-file-path shortcut.
+ * Colors error type name red (e.g., 'ReferenceError').
  *
  * @param {Function} callback The function to execute within `try` block.
  * @return {Mixed} The value returned by `callback`.
@@ -369,9 +368,16 @@ exports.tryCatchWrapper = function (callback) {
 		console.log()
 
 		if (e.stack) {
-			e.stack.split('\n').forEach(function (stackLine) {
-				// Only remove parentheses from the stack, avoiding lines in `Error.message`
-				console.log(/^\s+at/.test(stackLine) ? stackLine.replace(/[()]/g, '') : stackLine)
+			e.stack.split('\n').forEach(function (stackFrame) {
+				if (e.message.indexOf(stackFrame) !== -1) {
+					console.log(stackFrame)
+				} else if (stackFrame.indexOf(e.name) !== -1) {
+					// Color error type name red
+					console.log(stackFrame.replace(e.name, colors.red(e.name)))
+				} else {
+					// Remove parentheses of file paths for iTerm open-file-path shortcut
+					console.log(stackFrame.replace(/[()]/g, ''))
+				}
 			})
 		} else {
 			console.log(e)
