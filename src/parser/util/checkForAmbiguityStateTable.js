@@ -22,7 +22,7 @@ function shiftForward(path, stateIdx) {
 		// for (var p = 0, pathsLen = paths.length; p < pathsLen; ++p) {
 		// 	var otherPath = paths[p]
 		// 	if (util.arraysEqual(path.stateIdxes, otherPath.stateIdxes)) {
-		// 		util.log(path, otherPath)
+		// 		util.dir(path, otherPath)
 		// 	}
 		// }
 
@@ -90,7 +90,7 @@ function shiftForward(path, stateIdx) {
 				var otherPath = paths[p]
 				// Match identical right-most symbols by their shifts
 				if (util.arraysEqual(newPath.stateIdxes, otherPath.stateIdxes)) {
-					util.log(path, otherPath)
+					util.dir(path, otherPath)
 				}
 			}
 

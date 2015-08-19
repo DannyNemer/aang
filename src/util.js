@@ -156,33 +156,41 @@ exports.arraysEqual = function (a, b) {
 }
 
 /**
- * Pretty-prints objects in color (on separate lines). Will recurse at infinite depth to format the object. This is useful for inspecting large complicated objects.
+ * Prints objects in color (on separate lines), recursing 2 times while formatting the object (which is identical to `console.log()`).
  *
  * @param {...Mixed} [valN] The values to print.
  */
 exports.log = function () {
-	Array.prototype.slice.call(arguments).forEach(function (arg) {
-		// Print strings normally to avoid unnecessary styling
-		// - Use `typeof` to account for `undefined`
-		if (typeof arg === 'string') {
-			console.log(arg)
-		} else {
-			console.dir(arg, { depth: null, colors: true })
-		}
-	})
+	prettyPrint(arguments, { colors: true })
+}
+
+/**
+ * Prints objects in color (on separate lines), recursing indefinitely while formatting the object. This is useful for inspecting large, complicated objects.
+ *
+ * @param {...Mixed} [valN] The values to print.
+ */
+exports.dir = function () {
+	prettyPrint(arguments, { depth: null, colors: true })
 
 	// Print trailing blank line
 	console.log()
 }
 
 /**
- * Pretty-prints objects in color (on separate lines). Will recurse 2 times while formatting the object.
+ * Prints objects according to the formattings options of `opts` (as defined for `console.dir()`) on seperate lines.
  *
- * @param {...Mixed} [valN] The values to print.
+ * @private
+ * @param {Object} args The `arguments` object (passed to the callee) with the values to print.
+ * @param {Object} opts The options object (as defined for `console.dir()`).
  */
-exports.dir = function () {
-	Array.prototype.slice.call(arguments).forEach(function (arg) {
-		console.dir(arg, { colors: true })
+function prettyPrint(args, opts) {
+	Array.prototype.slice.call(args).forEach(function (arg) {
+		// Print strings passed as arguments (i.e., not Object properties) without styling
+		if (typeof arg === 'string') {
+			console.log(arg)
+		} else {
+			console.dir(arg, opts)
+		}
 	})
 }
 
@@ -262,7 +270,7 @@ exports.printCounts = function () {
 /**
  * Prints like `console.log()`, but color first argument red, prepend message with "Err:".
  *
- * @param {String} [msg] THe error message to color red and append to "Err:".
+ * @param {String} [msg] The error message to color red and append to "Err:".
  * @param {...Mixed} [valN] The values to print following error message.
  */
 exports.printErr = function (msg) {

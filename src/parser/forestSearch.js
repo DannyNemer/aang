@@ -564,6 +564,6 @@ exports.print = function (trees, printCost, printTrees) {
 		}
 
 		// Print trees (if constructed during parse forest search)
-		if (printTrees) util.log(pathToTree(tree))
+		if (printTrees) util.dir(pathToTree(tree))
 	})
 }

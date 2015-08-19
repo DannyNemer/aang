@@ -504,6 +504,6 @@ Parser.prototype.printNodeGraph = function (sub) {
 	if (sub.node) {
 		return newNode
 	} else {
-		util.log(newNode) // Start node
+		util.dir(newNode) // Start node
 	}
 }
