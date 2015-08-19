@@ -252,7 +252,7 @@ exports.countEnd = function (label) {
  * Will not print counters that are never reached (and never have their keys initialized).
  * Reset all counts.
  */
-exports.printCounts = function () {
+exports.countEndAll = function () {
 	_counts.forEach(function(count, label) {
 	  console.log(label + ':', count)
 	})
