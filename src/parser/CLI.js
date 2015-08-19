@@ -1,12 +1,13 @@
-var util = require('../util.js')
 var fs = require('fs')
 
+var utilPath = '../util.js'
 var inputFilePath = '../aang.json'
 var parserPath = './Parser.js'
 var forestSearchPath = './forestSearch.js'
 var stateTablePath = './StateTable.js'
 
 var testQueries = require('./testQueries')
+var util
 
 var buildStateTable = require('./buildStateTable').bind(null, inputFilePath, stateTablePath)
 var stateTable = buildStateTable()
@@ -24,6 +25,9 @@ var rl = require('readline').createInterface(process.stdin, process.stdout, func
 rl.setPrompt('❯ ')
 rl.prompt()
 rl.on('line', function (line) {
+	// Reload `util` module (to enable changes)
+	util = require(utilPath)
+
 	var query = line.trim()
 
 	if (query && !runCommand(query)) {
@@ -284,5 +288,5 @@ function runCommand(input) {
 
 // Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
 function deleteModuleCaches() {
-	util.deleteModuleCache(parserPath, forestSearchPath, stateTablePath, './BinaryHeap.js', '../grammar/semantic.js', './calcHeuristics.js')
+	util.deleteModuleCache(parserPath, forestSearchPath, stateTablePath, utilPath, './BinaryHeap.js', '../grammar/semantic.js', './calcHeuristics.js')
 }
