@@ -1,7 +1,8 @@
 var util = require('../util')
-var intSymbol = require('../grammar/grammar').intSymbol
-var entities = require('../aang.json').entities
 var semantic = require('../grammar/semantic')
+var inputFile = require('../aang.json')
+var entities = inputFile.entities
+var intSymbol = inputFile.intSymbol
 
 
 module.exports = Parser
