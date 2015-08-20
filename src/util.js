@@ -386,10 +386,19 @@ exports.tryCatchWrapper = function (callback) {
 }
 
 /**
- * Deletes modules from cache, forcing them to be reloaded at next `require()` call.
- * Useful for debugging code on a server without restarting the server.
+ * Deletes modules from cache, forcing them to be reloaded at next `require()` call. Without removing a module from cache, subsequent `require()` calls to the same module will not enable changes to its file(s).
+ * This is useful for debugging code on a server without restarting the server.
  *
  * @param {...String} pathN The paths of modules to remove from cache.
+ * @example
+ * // Load module
+ * var myModule = require('./myModule.js')
+ *
+ * // Remove module from cache
+ * dannyUtil.deleteModuleCache('./myModule.js')
+ *
+ * // Load module again, enabling changes to './myModule.js'
+ * myModule = require('./myModule.js')
  */
 exports.deleteModuleCache = function () {
 	Array.prototype.slice.call(arguments).forEach(function (path) {
