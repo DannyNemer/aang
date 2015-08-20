@@ -254,7 +254,7 @@ exports.countEnd = function (label) {
  */
 exports.countEndAll = function () {
 	_counts.forEach(function(count, label) {
-	  console.log(label + ':', count)
+		console.log(label + ':', count)
 	})
 
 	// Reset all counts
@@ -403,10 +403,24 @@ exports.deleteModuleCache = function () {
  * @param {Number} number The number to trim.
  * @return {Number} The number trimmed.
  * @example
- * var number = 0.1 * 0.2 // 0.020000000000000004
- * number = dannyUtil.cleanFloat(number) // 0.02
+ * var number = 0.1 * 0.2 // -> 0.020000000000000004
+ * number = dannyUtil.cleanFloat(number) // -> 0.02
  */
 exports.cleanNumber = function (number) {
 	// JavaScript's floating point number precision 13 digits after the decimal point
 	return Number(number.toFixed(13))
+}
+
+/**
+ * Convert a dash-separated string to camelCase.
+ *
+ * @param {String} dashedString The dash-separated string to convert.
+ * @return {String} The input string in camelCase.
+ * @example
+ * dannyUtil.camelCase('my-long-variable-name') // -> 'myLongVariableName'
+ */
+exports.dashedToCamelCase = function (dashedString) {
+	return dashedString.replace(/-(\w)/g, function (match, group1) {
+		return group1.toUpperCase()
+	})
 }
