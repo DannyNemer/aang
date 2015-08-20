@@ -42,7 +42,13 @@ rl.on('line', function (line) {
 	rl.prompt()
 })
 
-
+/**
+ * Exexcute a parse.
+ *
+ * @param {String} query The query to search.
+ * @param {Number} K The maximum number of suggestions to find.
+ * @return {Array} The parse trees output by the search if the parser reaches the start node, else `undefined`.
+ */
 function parse(query, K) {
 	return util.tryCatchWrapper(function () {
 		if (printQuery) console.log('\nquery:', query)
@@ -86,20 +92,25 @@ var printForestGraph = false
 var printTrees = false
 var printCost = false
 
-// Parse and run CLI commands
-// Returns `true` if input is a command
+/**
+ * Evaluate a line of input from the CLI as either a command to execute, or a search query to parse.
+ *
+ * @param {String} `input` The input to execute as a command if recognized, else a search query.
+ * @return {Boolean} `true` if `input` is a recognized command, else `false`.
+ */
 function runCommand(input) {
 	// All commands begin with a period
 	if (input[0] !== '.') return false
 
 	var args = input.split(' ')
 	var firstArg = args[0]
+	var secondArg = args[1]
 
 	// COMMANDS:
 	// Run test queries
 	if (firstArg === '.test') {
 		// Set number of times to cycle test queries on test
-		var testRuns = !isNaN(args[1]) ? Number(args[1]) : 1
+		var testRuns = isNaN(secondArg) ? 1 : Number(secondArg)
 
 		// If testRuns > 1, then test is a benchmark and prevent output
 		if (testRuns > 1) {
@@ -207,7 +218,7 @@ function runCommand(input) {
 	// PARSER SETTINGS:
 	// Set number of parse trees to search for
 	else if (firstArg === '.k') {
-		if (!isNaN(args[1])) K = Number(args[1])
+		if (!isNaN(secondArg)) K = Number(secondArg)
 		console.log('K:', K)
 	}
 
@@ -287,7 +298,9 @@ function runCommand(input) {
 	return true
 }
 
-// Delete the cache of these modules, such that they are reloaded and their changes applied for the next parse
+/**
+ *  Delete the cache of modules in use, forcing them to reload and enable any file changes for the next input.
+ */
 function deleteModuleCaches() {
 	util.deleteModuleCache(parserPath, forestSearchPath, stateTablePath, utilPath, './BinaryHeap.js', '../grammar/semantic.js', './calcHeuristicCosts.js')
 }
