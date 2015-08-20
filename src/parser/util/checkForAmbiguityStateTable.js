@@ -5,14 +5,14 @@ var util = require('../../util')
 var st = require('../buildStateTable')('../../aang.json', '../StateTable.js')
 
 
-console.time('test')
+util.time('Ambiguity check')
 var states = st.shifts
 // Attempt at not beginning with statetable to limit search scope
 for (var s = 2, statesLen = states.length; s < statesLen; ++s) {
 	var paths = []
 	shiftForward({ syms: [], prevStateIdxes: [ s ], stateIdxes: [] }, s)
 }
-console.timeEnd('test')
+util.timeEnd('Ambiguity check')
 
 function shiftForward(path, stateIdx) {
 	var state = states[stateIdx]

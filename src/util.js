@@ -194,6 +194,52 @@ function prettyPrint(args, opts) {
 	})
 }
 
+ /**
+	* Key-value map used by `time()`.
+	*
+	* @private
+	* @type Map
+	*/
+var _times = new Map()
+
+/**
+ * Starts a high-resolution timer (with precision in nanoseconds) identified by `label`. Use `dannyUtil.timeEnd(label)` to print the timer's current value.
+ *
+ * @param {String} label The identifier of the timer.
+ * @example
+ * // Start timer
+ * dannyUtil.time('my test')
+ *
+ * // ...stuff...
+ *
+ * // Prints "my test: 23.264491ms"
+ * dannyUtil.timeEnd('my test')
+ *
+ * // ...more stuff...
+ *
+ * // Prints "my test: 36.183837ms"
+ * dannyUtil.timeEnd('my test')
+ */
+exports.time = function (label) {
+	_times.set(label, process.hrtime())
+}
+
+/**
+ * Prints the current high-resolution value of a timer initiated with `dannyUtil.time(label)`.
+ *
+ * @param {String} label The identifier of the timer.
+ */
+exports.timeEnd = function (label) {
+	var time = _times.get(label)
+
+	if (!time) {
+		throw new Error('No such label:', label)
+	}
+
+	var duration = process.hrtime(time)
+	console.log('%s: %dms', label, duration[0] * 1e3 + duration[1] / 1e6)
+}
+
 /**
  * Prints calling file path and line number to mark reaching a section of code, prepended by `msg`.
  *

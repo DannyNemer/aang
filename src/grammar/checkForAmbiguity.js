@@ -43,14 +43,14 @@ module.exports = function (grammar, opts) {
 		require('./ambiguityExamples')
 	}
 
-	if (!opts.noOutput) console.time('Ambiguity check')
+	if (!opts.noOutput) util.time('Ambiguity check')
 
 	// Construct all possible paths from `nontermSym`.
 	for (var nontermSym in grammar) {
 		searchPaths(nontermSym)
 	}
 
-	if (!opts.noOutput) console.timeEnd('Ambiguity check')
+	if (!opts.noOutput) util.timeEnd('Ambiguity check')
 
 	/**
 	 * Check for ambiguity created by a nonterminal symbol's rules. Compares paths created by each rules from the symbol to paths created by the other rules. Does not compare paths produced by the same inital rule, because if ambiguity exists there, then it is caused by another symbol.

@@ -48,9 +48,9 @@ function parse(query, K) {
 		if (printQuery) console.log('\nquery:', query)
 		var parser = new (require(parserPath))(stateTable)
 
-		if (printTime) console.time('parse')
+		if (printTime) util.time('parse')
 		var startNode = parser.parse(query)
-		if (printTime) console.timeEnd('parse')
+		if (printTime) util.timeEnd('parse')
 
 		if (printForest) parser.printForest(startNode)
 		if (printStack) parser.printStack()
@@ -58,7 +58,8 @@ function parse(query, K) {
 		if (startNode) {
 			var forestSearch = require(forestSearchPath)
 			var trees = forestSearch.search(startNode, K, printTrees, printOutput)
-			if (printTime) console.timeEnd('parse')
+			if (printTime) util.timeEnd('parse')
+
 			if (printForestGraph) parser.printNodeGraph(startNode)
 			if (printOutput) {
 				if (trees.length) forestSearch.print(trees, printCost, printTrees)
@@ -108,7 +109,7 @@ function runCommand(input) {
 
 		// Benchmark test if !printOutput
 		if (printOutput) printQuery = true
-		else console.time('test')
+		else util.time('test')
 
 		var i = 0
 		var queries = testQueries.basic
@@ -120,7 +121,7 @@ function runCommand(input) {
 		}
 
 		if (printOutput) printQuery = false
-		else console.timeEnd('test')
+		else util.timeEnd('test')
 
 		if (testRuns > 1) {
 			printOutput = prevPrintOutput
