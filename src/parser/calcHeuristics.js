@@ -3,13 +3,7 @@ var util = require('../util')
 // Determine minimum possible cost of subtree that can be constructed from each node
 // Values serve as admissible heuristics in A* search of parse forest
 module.exports = function (startNode) {
-	for (var subs = startNode.subs, s = subs.length; s-- > 0;) {
-		var sub = subs[s]
-
-		// Initialize to 0 because value will be added to
-		sub.minCost = 0
-		reduce(sub, sub.node.subs)
-	}
+	reduce({}, startNode.subs)
 }
 
 // Determine the minimum cost of `parentSub` by examining each of its `subs`
