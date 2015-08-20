@@ -25,14 +25,16 @@ function calcMinCost(parentSub, subs) {
 
 			var childSubs = sub.node.subs
 			if (childSubs) {
-				// Only nonterminal symbols have a `minCost` (which does not include the cost of the subnode itself)
+				// Only nonterminal nodes have a `minCost` (which does not include the cost of the subnode itself)
 				calcMinCost(sub, childSubs)
 
 				// Only nonterminal rules are binary (hence, within `childSubs` check)
 				var subNext = sub.next
 				if (subNext) {
 					// `sub.next` will never be terminal (because binary terminal rules are prohibited)
-					calcMinCost(sub, subNext.node.subs)
+					subNext.minCost = 0
+					calcMinCost(subNext, subNext.node.subs)
+					sub.minCost += subNext.minCost
 				}
 			}
 		}

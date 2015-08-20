@@ -138,7 +138,9 @@ function createItem(sub, prevItem, ruleProps) {
 		// Cost of path from the start node
 		costSoFar: newCost,
 		// Cost of path + heuristic estimate of the minimum cost to complete the parse tree
-		cost: newCost + sub.minCost,
+		// If rule is binary, `sub.minCost` includes cost of both RHS symbols (i.e., `sub.next`)
+		// `nextNodes.minCost` is total heuristic cost of incomplete branches from previous binary rules
+		cost: newCost + sub.minCost + (prevItem.nextNodes ? prevItem.nextNodes.minCost : 0),
 	}
 
 	var newSemantic = ruleProps.semantic
@@ -219,6 +221,7 @@ function createItem(sub, prevItem, ruleProps) {
 			newItem.nextNodes = {
 				node: text,
 				next: newItem.nextNodes,
+				minCost: newItem.nextNodes ? newItem.nextNodes.minCost : 0
 			}
 		} else {
 			if (text.constructor === Array) {
@@ -271,10 +274,12 @@ function createItem(sub, prevItem, ruleProps) {
 			}
 
 			// All binary rules are nonterminal rules (hence, within sub.node.subs) - might change with reduceForest
-			if (sub.next) {
+			var subNext = sub.next
+			if (subNext) {
 				newItem.nextNodes = {
-					node: sub.next.node,
+					node: subNext.node,
 					next: newItem.nextNodes,
+					minCost: subNext.minCost + (newItem.nextNodes ? newItem.nextNodes.minCost : 0)
 				}
 
 				newItem.nextNodesLen++
