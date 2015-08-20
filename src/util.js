@@ -35,7 +35,7 @@ var colors = require('colors/safe')
  *
  * function myFunc(opts) {
  *   if (dannyUtil.illFormedOpts(schema, opts)) {
- *     // Descriptive, helpful errors are printed to console
+ *     // Prints descriptive, helpful error messages
  *     // Handle ill-formed `opts` how you choose
  *     throw new Error('ill-formed opts')
  *   }
@@ -268,8 +268,7 @@ exports.assertTrue = function (value, msg) {
 var _counts = new Map()
 
 /**
- * Counts the number of times a section of code is reached, identified by `label`.
- * Use `countEnd(label)` to print value.
+ * Counts the number of times a section of code is reached, identified by `label`. Use `dannyUtil.countEnd(label)` to print value. This is useful for profiling complex programs.
  *
  * @param {String} label The id to refer to a section of code.
  */
@@ -279,7 +278,7 @@ exports.count = function (label) {
 }
 
 /**
- * Prints the number of calls of `count()` with `label`.
+ * Prints the number of calls of `dannyUtil.count(label)`.
  * Resets the count of calls to `label` when called.
  *
  * @param {String} label The id to refer to calls to `count()`.
@@ -433,7 +432,7 @@ exports.tryCatchWrapper = function (callback) {
 
 /**
  * Deletes modules from cache, forcing them to be reloaded at next `require()` call. Without removing a module from cache, subsequent `require()` calls to the same module will not enable changes to its file(s).
- * This is useful for debugging code on a server without restarting the server.
+ * This is useful for enabling changes on a server without restarting the server.
  *
  * @param {...String} pathN The paths of modules to remove from cache.
  * @example
@@ -453,7 +452,7 @@ exports.deleteModuleCache = function () {
 }
 
 /**
- * Remove extraneous digits from numbers resulting from operations limited by JavaScript's floating point number precision, such as `0.1 * 0.2` (which does not equal `0.02`). This limitation results from being unable to map `0.1` to a finite binary floating point number.
+ * Removes extraneous digits from numbers resulting from operations limited by JavaScript's floating point number precision, such as `0.1 * 0.2` (which does not equal `0.02`). This limitation results from being unable to map `0.1` to a finite binary floating point number.
  *
  * @param {Number} number The number to trim.
  * @return {Number} The number trimmed.
@@ -467,7 +466,7 @@ exports.cleanNumber = function (number) {
 }
 
 /**
- * Convert a dash-separated string to camelCase.
+ * Converts a dash-separated string to camelCase.
  *
  * @param {String} dashedString The dash-separated string to convert.
  * @return {String} The input string in camelCase.
