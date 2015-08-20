@@ -6,7 +6,7 @@ var calcHeuristicCosts = require('./calcHeuristicCosts')
 
 // Use A* path search to find K-best trees in parse forest returned by parser, beginning at start node
 exports.search = function (startNode, K, buildDebugTrees, printStats) {
-	// Determine minimum possible cost of subtree that can be constructed from each node, which is the (admissible) heuristic
+	// Calculate the (admissible) heuristic estimates of the minimum costs of a subtree that can be constructed from each node
 	calcHeuristicCosts(startNode)
 
 	// Min-heap of all partially constructed trees
@@ -30,9 +30,9 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 		text: '',
 		// Properties for conjugation of text
 		gramProps: undefined,
-		// Cost of path
+		// Cost of path from the start node
 		costSoFar: 0,
-		// Cost of path + cost of cheapest possible path that can follow (i.e., admissible heuristic)
+		// Cost of path + heuristic estimate of the minimum cost to complete the parse tree
 		cost: 0,
 	}
 
@@ -135,9 +135,9 @@ function createItem(sub, prevItem, ruleProps) {
 		semantics: undefined,
 		text: undefined,
 		gramProps: prevItem.gramProps,
-		// Cost of path
+		// Cost of path from the start node
 		costSoFar: newCost,
-		// Cost of path + cost of cheapest possible path that can follow (i.e., admissible heuristic)
+		// Cost of path + heuristic estimate of the minimum cost to complete the parse tree
 		cost: newCost + sub.minCost,
 	}
 
