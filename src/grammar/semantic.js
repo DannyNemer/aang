@@ -300,3 +300,23 @@ exports.toString = function (semanticArray) {
 
 	return str
 }
+
+// Converts a semantic tree to a simple Object representation for printing
+exports.toSimpleObject = function (semanticArray) {
+	var array = []
+
+	for (var s = 0, semanticArrayLen = semanticArray.length; s < semanticArrayLen; ++s) {
+		var semanticNode = semanticArray[s]
+		var semanticName = semanticNode.semantic.name
+
+		if (semanticNode.children) {
+			var obj = {}
+			obj[semanticName] = exports.toSimpleObject(semanticNode.children)
+			array.push(obj)
+		} else {
+			array.push(semanticName)
+		}
+	}
+
+	return array
+}
