@@ -8,14 +8,23 @@ exports.creationLines = {}
 // Counter for entity ids
 var entityCount = 0
 
+
+/**
+ * Create a new entity category containing the passed entities.
+ *
+ * @param {Object} opts The options object containing the entities.
+ * @return {String} The terminal symbol for the category.
+ */
+
 // Schema for an entity category
 var entityCategoryOptsSchema = {
+	// Unique name for etity category
 	name: String,
+	// The entities
 	entities: { type: Array, arrayType: String },
 }
 
-// Create a new entity category containing the passed entities
-exports.newEntityCategory = function (opts) {
+exports.new = function (opts) {
 	if (util.illFormedOpts(entityCategoryOptsSchema, opts)) {
 		throw 'ill-formed entity category'
 	}

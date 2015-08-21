@@ -28,7 +28,7 @@ exports.reduceSemantic = semantic.reduce
 
 // Extend module with entity-category functions
 var entityCategory = require('./entityCategory')
-exports.newEntityCategory = entityCategory.newEntityCategory
+exports.newEntityCategory = entityCategory.new
 
 // Check for unused nonterminal symbols, entity categories, or semantic functions and arguments not used in any rules
 exports.checkForUnusedComponents = require('./checkForUnusedComponents').bind(null, grammar)
