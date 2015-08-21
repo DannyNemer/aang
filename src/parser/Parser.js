@@ -182,8 +182,9 @@ Parser.prototype.parse = function (query) {
 			// scanned entire input
 			if (this.position === this.tokensLen) break
 
-			// no token at index - either unrecognized word, or a multi-token term sym
-			this.vertTab = this.vertTabs[++this.position] = this.vertTab
+			// No token at index - either unrecognized word, or a multi-token terminal symbol
+			// This array will not be used, but creating and checking its length is faster than always checking for if array exists
+			this.vertTabs[++this.position] = []
 			continue
 		}
 
