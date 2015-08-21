@@ -8,33 +8,32 @@
 
 var util = require('../util')
 var g = require('./grammar')
-var grammar = require('./symbol').grammar
 var semantic = require('./semantic')
 
 
-module.exports = function () {
+module.exports = function (grammar) {
 	// Symbols that produce terminal symbols with insertion costs or empty-strings
 	var insertions = {}
 
-	findTermRuleInsertions(insertions)
+	findTermRuleInsertions(grammar, insertions)
 
 	// Recursively remove nonterminal symbols with no rules, rules whose RHS containing those symbols or the <empty> symbol, and any rule-less nonterminal symbols that result
 	// Called after finding insertions from rules with '<empty>' in findTermRuleInsertions()
-	removeNullNonterminalSymbols()
+	removeNullNonterminalSymbols(grammar)
 
 	// Check non-edit rules for semantic errors: fail to produce a needed RHS semantic
 	// Called after removing rules with rule-less symbols in removeNullNonterminalSymbols()
-	checkForSemanticErrors()
+	checkForSemanticErrors(grammar)
 
-	findNontermRulesProducingInsertions(insertions)
+	findNontermRulesProducingInsertions(grammar, insertions)
 
-	createRulesFromInsertions(insertions)
+	createRulesFromInsertions(grammar, insertions)
 
-	createRulesFromTranspositions()
+	createRulesFromTranspositions(grammar)
 }
 
 // Find all terminal rules with insertion costs or <empty>
-function findTermRuleInsertions(insertions) {
+function findTermRuleInsertions(grammar, insertions) {
 	Object.keys(grammar).forEach(function (nontermSym) {
 		grammar[nontermSym].forEach(function (rule) {
 			if (rule.terminal) {
@@ -62,7 +61,7 @@ function findTermRuleInsertions(insertions) {
 }
 
 // Find sequences of syms that produce inserted terminal symbols or empty-strings
-function findNontermRulesProducingInsertions(insertions) {
+function findNontermRulesProducingInsertions(grammar, insertions) {
 	var curInsertionsSerial = JSON.stringify(insertions)
 	var prevInsertionsSerial
 
@@ -194,7 +193,7 @@ function insertionExists(symInsertions, newInsertion) {
 }
 
 // Add new rules from inserted terminal symbols and empty-strings
-function createRulesFromInsertions(insertions) {
+function createRulesFromInsertions(grammar, insertions) {
 	Object.keys(grammar).forEach(function (lhsSym) {
 		// true for all except: [nom-users-or-author-pages+] [obj-users-penalize-1+] [user-filter+]
 		if (/\+/.test(lhsSym)) return
@@ -274,7 +273,7 @@ function createRulesFromInsertions(insertions) {
 }
 
 // Add new rules from transpositions to grammar
-function createRulesFromTranspositions() {
+function createRulesFromTranspositions(grammar) {
 	Object.keys(grammar).forEach(function (nontermSym) {
 		grammar[nontermSym].forEach(function (rule, ruleIdx, symRules) {
 			if (rule.transpositionCost !== undefined) {
@@ -385,7 +384,7 @@ function ruleExists(rules, newRule, LHS) {
 
 // Recursively remove nonterminal symbols with no rules, rules whose RHS containing those symbols or the <empty> symbol, and any rule-less nonterminal symbols that result
 // Called after finding insertions from rules with '<empty>' in findTermRuleInsertions()
-function removeNullNonterminalSymbols() {
+function removeNullNonterminalSymbols(grammar) {
 	var curRuleCount = g.ruleCount(grammar)
 	var prevRuleCount
 
@@ -425,7 +424,7 @@ function removeNullNonterminalSymbols() {
 
 
 // Throw an error if a default (non-edit) rule lacks and cannot produce a needed RHS semantic
-function checkForSemanticErrors() {
+function checkForSemanticErrors(grammar) {
 	for (var nontermSym in grammar) {
 		var rules = grammar[nontermSym]
 		for (var r = 0; r < rules.length; ++r) {

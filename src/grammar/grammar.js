@@ -34,7 +34,7 @@ exports.newEntityCategory = entityCategory.newEntityCategory
 exports.checkForUnusedComponents = require('./checkForUnusedComponents').bind(null, grammar)
 
 // Derive rules from insertion and transposition costs, and empty-strings
-exports.createEditRules = require('./createEditRules')
+exports.createEditRules = require('./createEditRules').bind(null, grammar)
 
 // Checks if `rule` lacks and cannot produce a RHS semantic needed by this rule or an ancestor
 // Used by `createEditRules()`
