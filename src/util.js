@@ -135,6 +135,20 @@ exports.getLine = function (getCallingLine) {
  * @param {Array} a The array to compare.
  * @param {Array} b The other array to compare.
  * @return {Boolean} `true` if the arrays are equivalent, else `false`.
+ * @example
+ * dannyUtil.arraysEqual([], []) // -> true
+ *
+ * dannyUtil.arraysEqual([1, 2, 3, 'danny'], [1, 2, 3, 'danny']) // -> true
+ *
+ * dannyUtil.arraysEqual([ false, true ], [ true ]) // -> false
+ *
+ * // A shallow comparison will not compare object properties
+ * var objA = { prop: 'val' }
+ * var objB = { prop: 'val' }
+ * dannyUtil.arraysEqual([ 1, 2, objA ], [ 1, 2, objB ]) // -> false
+ *
+ * // Rather, objects are only equal if they are the same instance
+ * dannyUtil.arraysEqual([ objA, objB ], [ objA, objB ]) // -> true
  */
 exports.arraysEqual = function (a, b) {
 	// Identical arrays (or, both undefined)
