@@ -4,7 +4,6 @@ module.exports = BinaryHeap
 function BinaryHeap() {
 	this.content = []
 	this.pushCount = 0
-	this.popCount = 0
 }
 
 BinaryHeap.prototype.push = function (element) {
@@ -19,7 +18,6 @@ BinaryHeap.prototype.push = function (element) {
 BinaryHeap.prototype.pop = function () {
 	// Store the first element so we can return it later
 	var result = this.content[0]
-	this.popCount++
 
 	// Get the element at the end of the array
 	var end = this.content.pop()

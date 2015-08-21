@@ -116,9 +116,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 	}
 
 	if (printStats) {
-		console.log('heap size:', heap.content.length)
-		console.log('push:', heap.pushCount)
-		console.log('pop:', heap.popCount)
+		console.log('paths created:', heap.pushCount)
 	}
 
 	return trees
