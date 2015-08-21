@@ -427,10 +427,13 @@ exports.tryCatchWrapper = function (callback) {
 		console.log()
 
 		if (e.stack) {
+			// Error message without source code (if present)
+			var message = e.message.split('\n').pop()
+
 			e.stack.split('\n').forEach(function (stackFrame) {
 				if (e.message.indexOf(stackFrame) !== -1) {
 					console.log(stackFrame)
-				} else if (stackFrame.indexOf(e.name) !== -1) {
+				} else if (stackFrame.indexOf(message) !== -1) {
 					// Color error type name red
 					console.log(stackFrame.replace(e.name, colors.red(e.name)))
 				} else {
