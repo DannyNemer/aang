@@ -14,10 +14,16 @@ function Parser(stateTable) {
 	// this.matchTerminalRules = require('./util/matchTerminalRulesWithSearchIndex')(this)
 }
 
-// Check if nGram is an entity
-// This simple entity resolution implementation will be replaced by language models for each category
-Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, text) {
-	var entityInstances = entities[text]
+/**
+ * Checks if an n-gram from the input query is an entity. This is a simple, temporary entity resolution implementation that will be replaced by language models for each category and Elasticsearch for look up.
+ *
+ * @param {Array} wordTab The match terminal symbols.
+ * @param  {[type]} endPos The end index in the input query of `nGram`.
+ * @param  {[type]} newSemanticArgs The semantic arguments created for this parse; used to avoid duplicates.
+ * @param  {[type]} nGram A token from the input query.
+ */
+Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, nGram) {
+	var entityInstances = entities[nGram]
 	if (entityInstances) {
 		for (var e = 0, entityInstancesLen = entityInstances.length; e < entityInstancesLen; ++e) {
 			var entity = entityInstances[e]
@@ -37,7 +43,8 @@ Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, text
 				var ruleProps = rule.ruleProps
 
 				var sub = {
-					size: wordSize, // size of literal
+					// Number of tokens in terminal symbol
+					size: wordSize,
 					node: wordNode,
 					ruleProps: {
 						cost: ruleProps.cost,
@@ -60,7 +67,12 @@ Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, text
 	}
 }
 
-// Look up terminal symbol matches in input
+/**
+ * Tokenize the input query and look for terminal symbol matches using n-gram analysis.
+ *
+ * @param {String} query The input query.
+ * @return {Array} The array of matches for each index of `query`.
+ */
 Parser.prototype.matchTerminalRules = function (query) {
 	var tokens = query.toLowerCase().split(/\s+/)
 	this.tokensLen = tokens.length
@@ -80,7 +92,6 @@ Parser.prototype.matchTerminalRules = function (query) {
 			while (true) {
 				this.entityLookup(wordTab, endPos, newSemanticArgs, nGram)
 
-				// this.nodeTab = this.nodeTabs[endPos] // should I be doing this?
 				var wordSym = this.stateTable.symbolTab[nGram]
 				// Prevent terminal symbol match with placeholder symbols: <int>, entities category names (e.g., {user})
 				if (wordSym && !wordSym.isPlaceholder) {
@@ -94,7 +105,8 @@ Parser.prototype.matchTerminalRules = function (query) {
 					for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 						var rule = rules[r]
 						var sub = {
-							size: wordSize, // size of literal
+							// Number of tokens in terminal symbol
+							size: wordSize,
 							node: wordNode,
 							ruleProps: rule.ruleProps,
 							minCost: undefined,
@@ -136,7 +148,8 @@ Parser.prototype.matchTerminalRules = function (query) {
 
 				if (nGram <= ruleProps.intMax && nGram >= ruleProps.intMin) {
 					var sub = {
-						size: wordSize, // size of literal
+						// Number of tokens in terminal symbol
+						size: wordSize,
 						node: wordNode,
 						ruleProps: {
 							cost: ruleProps.cost,
@@ -164,12 +177,18 @@ Parser.prototype.matchTerminalRules = function (query) {
 	return wordTab
 }
 
+/**
+ * Parse and construct a parse forest for an input query using the state table generated for the grammar.
+ *
+ * @param {String} query The input query to parse.
+ * @return {Object} The start node of the parse forest if the parse succeeds, else `null`.
+ */
 Parser.prototype.parse = function (query) {
 	this.nodeTabs = []
 	this.position = 0
 	// var wordTab = this.lunr(query)
+	// An array of arrays of matched terms, sorted where the matched term is at the wordTab index of its end idx
 	var wordTab = this.matchTerminalRules(query)
-	// util.log(wordTab)
 
 	this.reds = []
 	var redsIdx = 0
@@ -179,10 +198,11 @@ Parser.prototype.parse = function (query) {
 	this.addVertex(this.stateTable.shifts[0])
 
 	while (true) {
+		// Terminal symbol matches who span ends at this index
 		var words = wordTab[this.position]
 
 		if (!words) {
-			// scanned entire input
+			// Scanned entire input
 			if (this.position === this.tokensLen) break
 
 			// No token at index - either unrecognized word, or a multi-token terminal symbol
@@ -196,10 +216,11 @@ Parser.prototype.parse = function (query) {
 
 		for (var w = 0, wordsLen = words.length; w < wordsLen; ++w) {
 			var word = words[w]
+			// The previous vertices at the start of this terminal symbol's span
 			var oldVertTab = this.vertTabs[word.start]
 			var oldVertTabLen = oldVertTab.length
 
-			// Loop through all term rules that produce term sym
+			// Loop through all term rules that produce the terminal symbol
 			var nodes = word.nodes
 			for (var n = 0, nodesLen = nodes.length; n < nodesLen; ++n) {
 				var node = nodes[n]
@@ -222,6 +243,7 @@ Parser.prototype.parse = function (query) {
 	}
 
 	// ACCEPT
+	// Find the start node; otherwise the parse failed
 	// Tests show 1.9x more likely to find the start node by iterating backward
 	for (var v = this.vertTab.length - 1; v > -1; --v) {
 		var vertex = this.vertTab[v]
@@ -234,10 +256,14 @@ Parser.prototype.parse = function (query) {
 	return null
 }
 
-// no sub for term syms
-// sym is either term sym or nonterm sym
+/**
+ * Add a new subnode.
+ *
+ * @param {[type]} sym The new symbol.
+ * @param {[type]} [sub] The subnode (i.e., RHS) which is produced by `sym`. Does not exist if `sym` is a terminal symbol.
+ */
 Parser.prototype.addSub = function (sym, sub) {
-	var size = sub ? sub.size : sym.size // no sub -> literal
+	var size = sub ? sub.size : sym.size // no sub -> terminal symbol
 	var node
 
 	// Tests show 1.25x more likely to find the node by iterating backward
@@ -246,11 +272,15 @@ Parser.prototype.addSub = function (sym, sub) {
 		if (node.sym === sym && node.size === size) break
 	}
 
+	// Create a new node
 	if (n === -1) {
 		node = {
 			sym: sym,
-			size: size,
+			// The token index of input at which this node's span begin; only used for debuging
 			start: undefined,
+			// The number of tokens in input this node spans
+			size: size,
+			// The child nodes produces by this node's rules (i.e., the RHS)
 			subs: undefined,
 		}
 
@@ -268,20 +298,26 @@ Parser.prototype.addSub = function (sym, sub) {
 			node.start = this.position
 		}
 
+		// Save the new node
 		this.nodeTab.push(node)
 	}
 
 	// Existing nonterminal
+	// Add subnode if does not exist
 	else if (sub && subIsNew(node.subs, sub)) {
 		node.subs.push(sub)
-
-		// Insertions are arrays of multiple ruleProps (or normal ruleProps if only insertion) - distinguish?
-		// 1 ruleProps per sub (matched by idx) - do not check for duplicate ruleProps - done in grammar
 	}
 
 	return node
 }
 
+/**
+ * Checks if `newSub` already exists in `existingSubs`.
+ *
+ * @param {Array} existingSubs The subnodes of the parent node.
+ * @param {Object} newSub The new subnode.
+ * @return {Boolean} `true` if `newSub` already exists, else `falase.
+ */
 function subIsNew(existingSubs, newSub) {
 	var newSubNext = newSub.next
 
@@ -306,7 +342,12 @@ function subIsNew(existingSubs, newSub) {
 	return true
 }
 
-// one vertex for each state
+/**
+ * Create a vertex for a new state if no vertex exists; otherwise return the existing vertex.
+ *
+ * @param {Object} state The new state.
+ * @return {Object} A new vertex if no vertex for `state` exists, else the existing vertex for `state`.
+ */
 Parser.prototype.addVertex = function (state) {
 	// Tests show 3x more likely to find the vertex by iterating backward
 	for (var v = this.vertTab.length - 1; v > -1; --v) {
@@ -317,7 +358,7 @@ Parser.prototype.addVertex = function (state) {
 	var vertex = {
 		// Index of state in stateTable of reds + shifts
 		state: state,
-		// Index in input string tokens array
+		// Index in input string tokens array; only used for debugging
 		start: this.position,
 		// zNodes that point to this vertex
 		zNodes: [],
@@ -328,6 +369,13 @@ Parser.prototype.addVertex = function (state) {
 	return vertex
 }
 
+/**
+ * Get the next state.
+ *
+ * @param {Object} state The previous state.
+ * @param {Object} sym The symbol to check.
+ * @return {Object} The next state.
+ */
 Parser.prototype.nextState = function (state, sym) {
 	var stateShifts = state.shifts
 
@@ -340,13 +388,19 @@ Parser.prototype.nextState = function (state, sym) {
 	}
 }
 
+/**
+ * Add a new node.
+ *
+ * @param {Object} node The new node.
+ * @param {Objkect} oldVertex The vertex which points to the new node (i.e., the previous state).
+ */
 Parser.prototype.addNode = function (node, oldVertex) {
 	var state = this.nextState(oldVertex.state, node.sym)
 	if (!state) return
 
 	var vertex = this.addVertex(state)
 	var vertexZNodes = vertex.zNodes
-	var zNode
+	var zNode // holds a node and vertices that point to that node
 
 	// Tests show 1.5x more likely to find the zNode by iterating backward
 	for (var v = vertexZNodes.length - 1; v > -1; --v) {
@@ -370,6 +424,12 @@ Parser.prototype.addNode = function (node, oldVertex) {
 	}
 }
 
+/**
+ * Reduce a node using reductions.
+ *
+ * @param  {[type]} redZNode The zNode from which to build subnodes using the reductions.
+ * @param  {[type]} red The reduction to execute on `redZNode`.
+ */
 Parser.prototype.reduce = function (redZNode, red) {
 	var vertices = redZNode.vertices
 	var sub = {
@@ -387,24 +447,25 @@ Parser.prototype.reduce = function (redZNode, red) {
 
 			for (var z = 0, vertexZNodesLen = vertexZNodes.length; z < vertexZNodesLen; ++z) {
 				var zNode = vertexZNodes[z]
+				var zNodeNode = zNode.node
 				var subNew
 
 				// Flip RHS for transposition
 				if (isTransposition) {
 					subNew = {
 						node: sub.node,
-						size: zNode.node.size + sub.size,
+						size: zNodeNode.size + sub.size,
 						next: {
-							node: zNode.node,
-							size: zNode.node.size,
+							node: zNodeNode,
+							size: zNodeNode.size,
 						},
 						ruleProps: red.ruleProps,
 						minCost: undefined,
 					}
 				} else {
 					subNew = {
-						node: zNode.node,
-						size: zNode.node.size + sub.size,
+						node: zNodeNode,
+						size: zNodeNode.size + sub.size,
 						next: sub,
 						ruleProps: red.ruleProps,
 						minCost: undefined,
@@ -508,9 +569,11 @@ Parser.prototype.printNodeGraph = function (sub) {
 	if (node.subs) {
 		newNode.subs = node.subs.map(function (sub) {
 			var children = []
+
 			for (; sub; sub = sub.next) {
 				children.push(this.printNodeGraph(sub))
 			}
+
 			return children
 		}, this)
 	}
