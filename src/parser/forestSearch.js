@@ -168,7 +168,7 @@ function createItem(sub, prevItem, ruleProps) {
 			var prevSemantic = prevItem.semantics
 
 			if (ruleProps.semanticIsRHS) {
-				if (prevSemantic.isRHS) {
+				if (prevSemantic && prevSemantic.isRHS) {
 					newSemantic = semantic.mergeRHS(prevSemantic.semantic, newSemantic)
 
 					// RHS contains duplicates
