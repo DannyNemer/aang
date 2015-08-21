@@ -36,6 +36,10 @@ exports.checkForUnusedComponents = require('./checkForUnusedComponents').bind(nu
 // Derive rules from insertion and transposition costs, and empty-strings
 exports.createEditRules = require('./createEditRules')
 
+// Checks if `rule` lacks and cannot produce a RHS semantic needed by this rule or an ancestor
+// Used by `createEditRules()`
+exports.ruleMissingNeededRHSSemantic = require('./ruleMissingNeededRHSSemantic').bind(null, grammar)
+
 // Check for instances of ambiguity in the grammar
 exports.checkForAmbiguity = require('./checkForAmbiguity').bind(null, grammar)
 

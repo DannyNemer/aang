@@ -10,7 +10,6 @@ var util = require('../util')
 var g = require('./grammar')
 var grammar = require('./symbol').grammar
 var semantic = require('./semantic')
-var ruleMissingNeededRHSSemantic = require('./ruleMissingNeededRHSSemantic')
 
 
 module.exports = function () {
@@ -235,7 +234,7 @@ function createRulesFromInsertions(insertions) {
 							}
 
 							// Discard rule if lacks and cannot produce a RHS semantic needed by this rule or an ancestor
-							var parsingStack = ruleMissingNeededRHSSemantic(newRule, lhsSym)
+							var parsingStack = g.ruleMissingNeededRHSSemantic(newRule, lhsSym)
 							if (parsingStack) {
 								// util.printErr('Rule will not produce needed RHS semantic:')
 								// util.dir(parsingStack)
@@ -433,7 +432,7 @@ function checkForSemanticErrors() {
 			var rule = rules[r]
 			if (rule.insertionIdx === undefined) {
 				var parsingStack
-				if (parsingStack = ruleMissingNeededRHSSemantic(rule, nontermSym)) {
+				if (parsingStack = g.ruleMissingNeededRHSSemantic(rule, nontermSym)) {
 					util.printErr('Rule will not produce needed RHS semantic')
 					util.dir(parsingStack)
 					throw 'semantic error'

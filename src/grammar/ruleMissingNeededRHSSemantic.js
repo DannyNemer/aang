@@ -1,16 +1,14 @@
 var util = require('../util')
-var grammar = require('./symbol').grammar
-
 
 // Checks if rule lacks and cannot produce a RHS semantic needed by this rule or an ancestor
 // If true, returns an parsing stack array: starts at the rule with a LHS semantic, ends with passed rule
-module.exports = function ruleMissingNeededRHSSemantic(rule, lhsSym, symsSeen) {
+module.exports = function ruleMissingNeededRHSSemantic(grammar, rule, lhsSym, symsSeen) {
 	// Rule has no RHS semantic
 	if (!ruleHasRHSSemantic(rule)) {
 		if (!rule.terminal && !symsSeen) {
 			// Root function call - check if RHS produces a RHS semantic
 			for (var s = rule.RHS.length; s-- > 0;) {
-				if (symProducesRHSSemantic(rule.RHS[s])) return false
+				if (symProducesRHSSemantic(grammar, rule.RHS[s])) return false
 			}
 		}
 
@@ -39,9 +37,9 @@ module.exports = function ruleMissingNeededRHSSemantic(rule, lhsSym, symsSeen) {
 					if (rhsIdx !== -1) {
 						// Check if a (needed) RHS semantic can be found in the other branch of a binary reduction
 						var otherSym = parRHS[+!rhsIdx]
-						if (otherSym && symProducesRHSSemantic(otherSym)) return false
+						if (otherSym && symProducesRHSSemantic(grammar, otherSym)) return false
 
-						var demandingRule = ruleMissingNeededRHSSemantic(parentRule, nontermSym, symsSeen)
+						var demandingRule = ruleMissingNeededRHSSemantic(grammar, parentRule, nontermSym, symsSeen)
 						if (demandingRule) {
 							// Format parsing stack for printing and debugging
 							var node = {}
@@ -56,7 +54,7 @@ module.exports = function ruleMissingNeededRHSSemantic(rule, lhsSym, symsSeen) {
 }
 
 // Returns `true` if `lhsSym` has a RHS semantic, or its RHS symbols produce a rule with a RHS semantic
-function symProducesRHSSemantic(lhsSym, symsSeen) {
+function symProducesRHSSemantic(grammar, lhsSym, symsSeen) {
 	var symsSeen = symsSeen || []
 	symsSeen.push(lhsSym)
 
@@ -70,7 +68,7 @@ function symProducesRHSSemantic(lhsSym, symsSeen) {
 			// Check if RHS produces any rules with a RHS semantic
 			return rule.RHS.some(function (sym) {
 				if (symsSeen.indexOf(sym) === -1) {
-					return symProducesRHSSemantic(sym, symsSeen)
+					return symProducesRHSSemantic(grammar, sym, symsSeen)
 				}
 			})
 		}
