@@ -134,6 +134,8 @@ function runCommand(input) {
 		if (printOutput) printQuery = false
 		else util.timeEnd('test')
 
+		util.countEndAll()
+
 		if (testRuns > 1) {
 			printOutput = prevPrintOutput
 		}
