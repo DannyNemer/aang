@@ -102,7 +102,7 @@ exports.illFormedOpts = function (schema, opts) {
  * @return {String} The file path and line number of calling line.
  */
 exports.getLine = function (getCallingLine) {
-	// Get stack sans lines for `Error` and this file
+	// Get stack without lines for `Error` and this file
 	var stack = Error().stack.split('\n').slice(3)
 	var callingFileName
 
@@ -274,7 +274,7 @@ exports.assertTrue = function (value, msg) {
 }
 
 /**
- * Key-value map used by `count()`.
+ * Key-value map used by `dannyUtil.count()`.
  *
  * @private
  * @type Map
@@ -295,7 +295,7 @@ exports.count = function (label) {
  * Prints the number of calls of `dannyUtil.count(label)`.
  * Resets the count of calls to `label` when called.
  *
- * @param {String} label The id to refer to calls to `count()`.
+ * @param {String} label The id to refer to calls to `dannyUtil.count()`.
  */
 exports.countEnd = function (label) {
 	// Print even if no value to acknowledge never being reached
@@ -307,7 +307,7 @@ exports.countEnd = function (label) {
 }
 
 /**
- * Prints the values of all counters used on `count()`.
+ * Prints the values of all counters used on `dannyUtil.count()`.
  * Will not print counters that are never reached (and never have their keys initialized).
  * Reset all counts.
  */
@@ -390,7 +390,7 @@ exports.printErrWithLine = function () {
 exports.logTrace = function (msg) {
 	console.log('Trace' + (msg ? ': ' + msg : ''))
 
-	// Get stack sans lines for `Error` and this file
+	// Get stack without lines for `Error` and this file
 	var stack = Error().stack.split('\n').slice(3).join('\n')
 
 	// Remove parentheses of file paths for iTerm open-file-path shortcut
