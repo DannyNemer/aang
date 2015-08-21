@@ -254,8 +254,15 @@ Parser.prototype.addSub = function (sym, sub) {
 			subs: undefined,
 		}
 
-		if (sub) { // nonterminal
-			node.start = sub.node.start
+		// Nonterminal
+		if (sub) {
+			// Only used for debugging
+			if (sub.ruleProps.transposition) {
+				node.start = sub.next.node.start
+			} else {
+				node.start = sub.node.start
+			}
+
 			node.subs = [ sub ]
 		} else {
 			node.start = this.position
