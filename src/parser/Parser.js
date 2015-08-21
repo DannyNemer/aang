@@ -207,7 +207,12 @@ Parser.prototype.parse = function (query) {
 
 		// REDUCE
 		while (redsIdx < this.reds.length) {
-			this.reduce(this.reds[redsIdx++])
+			var red = this.reds[redsIdx++]
+			var zNode = red.zNode
+			var reds = red.reds
+			for (var r = 0, redLen = reds.length; r < redLen; ++r) {
+				this.reduce(zNode, reds[r])
+			}
 		}
 	}
 
@@ -341,16 +346,10 @@ Parser.prototype.addNode = function (node, oldVertex) {
 		zNode = { node: node, vertices: [ oldVertex ] }
 		vertexZNodes.push(zNode)
 
-		var stateReds = state.reds
-		for (var r = stateReds.length; r-- > 0;) {
-			var red = stateReds[r]
-			this.reds.push({
-				zNode: zNode,
-				LHS: red.LHS,
-				binary: red.binary,
-				ruleProps: red.ruleProps,
-			})
-		}
+		this.reds.push({
+			zNode: zNode,
+			reds: state.reds
+		})
 	}
 
 	else if (zNode.vertices.indexOf(oldVertex) === -1) {
@@ -358,11 +357,11 @@ Parser.prototype.addNode = function (node, oldVertex) {
 	}
 }
 
-Parser.prototype.reduce = function (red) {
-	var vertices = red.zNode.vertices
+Parser.prototype.reduce = function (redZNode, red) {
+	var vertices = redZNode.vertices
 	var sub = {
-		node: red.zNode.node,
-		size: red.zNode.node.size,
+		node: redZNode.node,
+		size: redZNode.node.size,
 		minCost: undefined,
 		ruleProps: undefined,
 	}
