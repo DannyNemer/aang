@@ -220,13 +220,8 @@ Parser.prototype.parse = function (query) {
 	for (var v = this.vertTab.length; v-- > 0;) {
 		var vertex = this.vertTab[v]
 		if (vertex.state.isFinal) {
-			var zNodes = vertex.zNodes
-			for (var z = zNodes.length; z-- > 0;) {
-				var node = zNodes[z].node
-				if (node.size === this.tokensLen) {
-					return node
-				}
-			}
+			// Only one zNode because only the start node can point to the vertex for the accept state
+			return vertex.zNodes[0].node
 		}
 	}
 
