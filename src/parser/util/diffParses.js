@@ -1,5 +1,11 @@
-// Confirm best-first search parser has identical output and function calls to breadth-first search (BFS) parser
+var util = require('../../util')
 
+/**
+ * Compares the state of two instances of `Parser` (i.e., their output after a parse).
+ *
+ * @param {Parser} parserOld The instance of `Parser` to compare.
+ * @param {Parser} parserNew The other instance of `Parser` to compare.
+ */
 module.exports = function (parserOld, parserNew) {
 	compCounters(parserOld, parserNew, 'addNodeCalls')
 	compCounters(parserOld, parserNew, 'addSubCalls')
@@ -21,17 +27,17 @@ function compCounters(parserOld, parserNew, counterName) {
 	if (parserOld[counterName] === parserNew[counterName]) {
 		// console.log(counterName + ':', parserNew[counterName])
 	} else {
-		console.log('Err:', counterName, '(want ' + parserOld[counterName] + '):', parserNew[counterName])
+		util.printErr(counterName + ' (want ' + parserOld[counterName] + ')', parserNew[counterName])
 	}
 }
 
 function diffArrays(arrayA, arrayB, msg) {
-	var diff = arrayA.filter(function (el) {
-		return arrayB.indexOf(el) === -1
+	var diff = arrayA.filter(function (arrayAEl, i) {
+		return arrayB[i] !== arrayAEl
 	})
 
 	if (diff.length) {
-		console.log('Err:', msg + ' (of ' + arrayA.length + '):', diff.length)
+		util.printErr(msg + ' (of ' + arrayA.length + ')', diff.length)
 	} else {
 		// console.log(msg + ':', diff.length)
 	}
