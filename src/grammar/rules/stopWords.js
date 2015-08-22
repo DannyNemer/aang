@@ -6,7 +6,7 @@ var g = require('../grammar')
 // (people I follow) <stop>
 exports.sentenceAdverbial = g.newSymbol('sentence', 'adverbial')
 exports.sentenceAdverbial.addStopWord({
-	stopWords: [ 'never', 'this|the morning|afternoon|evening|weekend|week|month|year' ]
+	stopWords: [ 'never', 'frequently|mostly|often|usually|always', 'currently', 'this|the morning|afternoon|evening|weekend|week|month|year' ]
 })
 
 // Stopwords that preceed verbs
