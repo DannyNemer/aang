@@ -1,5 +1,3 @@
-var fs = require('fs')
-
 var utilPath = '../util.js'
 var inputFilePath = '../aang.json'
 var parserPath = './Parser.js'
@@ -146,20 +144,11 @@ function runCommand(input) {
 		var prevSettingPrintOutput = printOutput
 		printOutput = true
 
-		// Redirect process.stdout to file
-		var writable = fs.createWriteStream('/Users/Danny/Desktop/out')
-		var oldWrite = process.stdout.write
-		process.stdout.write = function () {
-			writable.write.apply(writable, arguments)
-		}
+		util.redirectOutputToFile('~/Desktop/out', function () {
+			runCommand('.test')
+		})
 
-		runCommand('.test')
-
-		// Restore process.stdout
-		process.stdout.write = oldWrite
 		printOutput = prevSettingPrintOutput
-
-		console.log('Run of test queries saved to:', writable.path)
 	}
 
 	// Run conjugation tests

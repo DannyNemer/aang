@@ -418,7 +418,7 @@ exports.writeJSONFile = function (path, obj) {
  * Colors error type name red (e.g., 'ReferenceError').
  *
  * @param {Function} callback The function to execute within a `try` block.
- * @return {Mixed} The value returned by `callback`.
+ * @return {Mixed} The value returned by `callback`, if any.
  */
 exports.tryCatchWrapper = function (callback) {
 	try {
@@ -494,6 +494,55 @@ exports.dashedToCamelCase = function (dashedString) {
 	return dashedString.replace(/-(\w)/g, function (match, group1) {
 		return group1.toUpperCase()
 	})
+}
+
+/**
+ * Synchronously writes the output of a function to a file instead of the console. Overwrites the file if it already exists.
+ *
+ * @param {String} path The path where to write output.
+ * @param {Function} callback The function producing output.
+ * @return {Mixed} The value returned by `callback`, if any.
+ * @example
+ * // Prints to console
+ * console.log('Begin output to file')
+ *
+ * // Redirects process output from console to file
+ * dannyUtil.redirectOutputToFile('~/Desktop/out.txt', function () {
+ *   // Writes to '~/Desktop/out.txt'
+ *   console.log('Numbers:')
+ *   for (var i = 0; i < 100; ++i) {
+ *     console.log(i)
+ *   }
+ * })
+ * // Restores output to console and prints: "Output saved to: ~/Desktop/out.txt"
+ *
+ * // Prints to console (after restoring output)
+ * console.log('Output to file complete')
+ */
+exports.redirectOutputToFile = function (path, callback) {
+	// Expand '~' if present
+	path = exports.expandHomeDir(path)
+
+	// Create file if does not exist, overwrite existing file if exists, or throw an error if `path` is a directory
+	fs.writeFileSync(path)
+
+	// Redirect `process.stdout` to `path`
+	var writable = fs.createWriteStream(path)
+	var oldWrite = process.stdout.write
+	process.stdout.write = function () {
+		writable.write.apply(writable, arguments)
+	}
+
+	// Write output to `path`
+	var returnVal = callback()
+
+	// Restore `process.stdout`
+	process.stdout.write = oldWrite
+
+	console.log('Output saved to:', path)
+
+	return returnVal
+}
 
 /**
  * Replaces `'~'` in a path (if present and at the path's start) with the home directory path.
