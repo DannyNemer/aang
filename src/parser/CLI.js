@@ -26,11 +26,13 @@ rl.on('line', function (line) {
 	// Reload `util` module (to enable changes)
 	util = require(utilPath)
 
-	var query = line.trim()
+	util.tryCatchWrapper(function () {
+		var query = line.trim()
 
-	if (query && !runCommand(query)) {
-		parse(query, K)
-	}
+		if (query && !runCommand(query)) {
+			parse(query, K)
+		}
+	})
 
 	// If no '-t' arg (for 'time'), reload modules after every input to enable module changes
 	if (process.argv.indexOf('-t') === -1) {
@@ -48,34 +50,32 @@ rl.on('line', function (line) {
  * @return {Array} The parse trees output by the search if the parser reaches the start node, else `undefined`.
  */
 function parse(query, K) {
-	return util.tryCatchWrapper(function () {
-		if (printQuery) console.log('\nquery:', query)
-		var parser = new (require(parserPath))(stateTable)
+	if (printQuery) console.log('\nquery:', query)
+	var parser = new (require(parserPath))(stateTable)
 
-		if (printTime) util.time('parse')
-		var startNode = parser.parse(query)
+	if (printTime) util.time('parse')
+	var startNode = parser.parse(query)
+	if (printTime) util.timeEnd('parse')
+
+	if (printForest) parser.printForest(startNode)
+	if (printStack) parser.printStack()
+
+	if (startNode) {
+		var forestSearch = require(forestSearchPath)
+		var trees = forestSearch.search(startNode, K, printTrees, printOutput)
 		if (printTime) util.timeEnd('parse')
 
-		if (printForest) parser.printForest(startNode)
-		if (printStack) parser.printStack()
-
-		if (startNode) {
-			var forestSearch = require(forestSearchPath)
-			var trees = forestSearch.search(startNode, K, printTrees, printOutput)
-			if (printTime) util.timeEnd('parse')
-
-			if (printForestGraph) parser.printNodeGraph(startNode)
-			if (printOutput) {
-				if (trees.length) forestSearch.print(trees, printCost, printTrees)
-				else console.log('Failed to find legal parse trees')
-			}
-
-			// Return trees for conjguation test
-			return trees
-		} else {
-			if (printOutput) console.log('Failed to reach start node')
+		if (printForestGraph) parser.printNodeGraph(startNode)
+		if (printOutput) {
+			if (trees.length) forestSearch.print(trees, printCost, printTrees)
+			else console.log('Failed to find legal parse trees')
 		}
-	})
+
+		// Return trees for conjugation test
+		return trees
+	} else {
+		if (printOutput) console.log('Failed to reach start node')
+	}
 }
 
 
