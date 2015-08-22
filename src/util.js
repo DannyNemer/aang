@@ -49,7 +49,8 @@ exports.illFormedOpts = function (schema, opts) {
 		var val = schema[prop]
 
 		if (!val.optional && !opts.hasOwnProperty(prop)) {
-			return exports.printErrWithLine('Missing \'' + prop + '\' property')
+			exports.printErrWithLine('Missing \'' + prop + '\' property')
+			return true
 		}
 	}
 
@@ -57,7 +58,8 @@ exports.illFormedOpts = function (schema, opts) {
 	for (var prop in opts) {
 		// Unrecognized property
 		if (!schema.hasOwnProperty(prop)) {
-			return exports.printErrWithLine('Unrecognized property', prop)
+			exports.printErrWithLine('Unrecognized property', prop)
+			return true
 		}
 
 		var optsVal = opts[prop]
@@ -66,7 +68,8 @@ exports.illFormedOpts = function (schema, opts) {
 
 		// Accidentally passed an `undefined` object; ex: `undefined`, `[]`, `[ 1, undefined ]`
 		if (optsVal === undefined || (Array.isArray(optsVal) && (optsVal.length === 0 || optsVal.indexOf(undefined) !== -1))) {
-			return exports.printErrWithLine('undefined ' + prop, optsVal)
+			exports.printErrWithLine('undefined ' + prop, optsVal)
+			return true
 		}
 
 		// Schema contains an `Array` of predefined accepted values
@@ -81,12 +84,14 @@ exports.illFormedOpts = function (schema, opts) {
 		} else {
 			// Passed value of incorrect type; ex: `num: String`, `str: Array`
 			if (optsVal.constructor !== schemaPropType) {
-				return exports.printErrWithLine('\'' + prop + '\' not of type ' + schemaPropType.name, optsVal)
+				exports.printErrWithLine('\'' + prop + '\' not of type ' + schemaPropType.name, optsVal)
+				return true
 			}
 
 			// Passed Array contains elements not of `arrayType` (if `arrayType` is defined)
 			if (Array.isArray(optsVal) && schemaVal.arrayType && !optsVal.every(function (el) { return el.constructor === schemaVal.arrayType })) {
-				return exports.printErrWithLine('\'' + prop + '\' not an array of type ' + schemaVal.arrayType.name, optsVal)
+				exports.printErrWithLine('\'' + prop + '\' not an array of type ' + schemaVal.arrayType.name, optsVal)
+				return true
 			}
 		}
 	}
@@ -356,8 +361,6 @@ function logPrependColorMsg(color, label, msg, args) {
 exports.printErrWithLine = function () {
 	exports.printErr.apply(null, arguments)
 	console.log(exports.getLine())
-
-	return true
 }
 
 /**
