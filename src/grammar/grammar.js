@@ -1,3 +1,4 @@
+var fs = require('fs')
 var util = require('../util')
 
 
@@ -49,24 +50,20 @@ exports.checkForAmbiguity = require('./checkForAmbiguity').bind(null, grammar)
  */
 exports.sortGrammar = function () {
 	Object.keys(grammar).sort().forEach(function (symbolName) {
-		// Sort nonterminal symbols alphabetically
-		var rules = grammar[symbolName]
-		delete grammar[symbolName]
-		grammar[symbolName] = rules
-
-
 		// Sort rules by increasing cost
-		rules.sort(function (ruleA, ruleB) {
+		var rules = grammar[symbolName].sort(function (ruleA, ruleB) {
 			return ruleA.cost - ruleB.cost
 		})
+
+		// Sort nonterminal symbols alphabetically
+		delete grammar[symbolName]
+		grammar[symbolName] = rules
 	})
 }
 
 // Print the total count of rules in the grammar
 // Print change if `prevOutputFilePath` exists
 exports.printRuleCount = function (prevOutputFilePath) {
-	var fs = require('fs')
-
 	var newRuleCount = exports.ruleCount(grammar)
 
 	if (fs.existsSync(prevOutputFilePath)) {
