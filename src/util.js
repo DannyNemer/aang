@@ -404,12 +404,12 @@ exports.logTrace = function (msg) {
  * @param {Object} obj The object to save to file.
  */
 exports.writeJSONFile = function (path, obj) {
-	fs.writeFileSync(path, JSON.stringify(obj, function (key, val) {
+	fs.writeFileSync(exports.expandHomeDir(path), JSON.stringify(obj, function (key, val) {
 		// Convert RegExp to strings for `JSON.stringify()`
 		return val instanceof RegExp ? val.source : val
 	}, '\t'))
 
-	console.log('File saved:', fs.realpathSync(path))
+	console.log('File saved:', path)
 }
 
 /**
@@ -417,7 +417,7 @@ exports.writeJSONFile = function (path, obj) {
  * Removes parentheses from error stack for iTerm open-file-path shortcut.
  * Colors error type name red (e.g., 'ReferenceError').
  *
- * @param {Function} callback The function to execute within `try` block.
+ * @param {Function} callback The function to execute within a `try` block.
  * @return {Mixed} The value returned by `callback`.
  */
 exports.tryCatchWrapper = function (callback) {
@@ -494,4 +494,15 @@ exports.dashedToCamelCase = function (dashedString) {
 	return dashedString.replace(/-(\w)/g, function (match, group1) {
 		return group1.toUpperCase()
 	})
+
+/**
+ * Replaces `'~'` in a path (if present and at the path's start) with the home directory path.
+ *
+ * @param {String} path The file path.
+ * @return {String} `path` with '~' (if present) replaced with the home directory path.
+ * @example
+ * dannyUtil.expandHomeDir('~/Desktop') // -> '/Users/Danny/Desktop'
+ */
+exports.expandHomeDir = function (path) {
+	return path.replace(/^~/, process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME'])
 }
