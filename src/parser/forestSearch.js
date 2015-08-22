@@ -17,18 +17,19 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 	var newItem = {
 		// When item popped, will look at node's subs for next steps
 		node: startNode,
-		// If no `node`, because reached end of branch, go to next branch - either node or text array
-		// Linked list
+		// If no `node`, because reached end of branch, go to next branch - either node or text array needing conjugation
+		// Reverse linked list, pointing to previously incompleted binary rules
 		nextNodes: undefined,
 		// Number of elements in `nextNodes`, excluding text to append
 		// Used as marker of when can merge with LHS semantic -> have completed full branch
 		nextNodesLen: 0,
 		// Linked list of semantics of parse tree, reduces to single semantic when parse complete
-		// Reverse linked list, pointing to previously seen semantics
+		// Reverse linked list, pointing to previously added semantic in tree
 		semantics: undefined,
 		// Display text of parse tree
 		text: '',
-		// Properties for conjugation of text
+		// Linked list of properties for conjugation of text
+		// Reverse linked list, pointing to previously added semantic `gramProps` in tree
 		gramProps: undefined,
 		// Cost of path from the start node
 		costSoFar: 0,
@@ -60,7 +61,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 					item.text += ' ' + node
 				}
 
-				nextNodes = nextNodes.next
+				nextNodes = nextNodes.prev
 			}
 
 			// No nodes remain; tree construction complete
@@ -74,7 +75,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 
 				continue
 			} else {
-				item.nextNodes = nextNodes.next
+				item.nextNodes = nextNodes.prev
 				item.nextNodesLen--
 			}
 		}
@@ -130,8 +131,10 @@ function createItem(sub, prevItem, ruleProps) {
 		node: undefined,
 		nextNodes: prevItem.nextNodes,
 		nextNodesLen: prevItem.nextNodesLen,
+		// Linked list of semantics
 		semantics: undefined,
 		text: undefined,
+		// Linked list of properties for conjugation of text
 		gramProps: prevItem.gramProps,
 		// Cost of path from the start node
 		costSoFar: newCost,
@@ -206,7 +209,7 @@ function createItem(sub, prevItem, ruleProps) {
 		if (ruleProps.gramProps) {
 			newItem.gramProps = {
 				gramProps: ruleProps.gramProps,
-				next: newItem.gramProps,
+				prev: newItem.gramProps,
 			}
 		}
 
@@ -218,8 +221,8 @@ function createItem(sub, prevItem, ruleProps) {
 			// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
 			newItem.nextNodes = {
 				node: text,
-				next: newItem.nextNodes,
-				minCost: newItem.nextNodes ? newItem.nextNodes.minCost : 0
+				prev: newItem.nextNodes,
+				minCost: prevItem.nextNodes ? prevItem.nextNodes.minCost : 0,
 			}
 		} else {
 			if (text.constructor === Array) {
@@ -267,7 +270,7 @@ function createItem(sub, prevItem, ruleProps) {
 			if (ruleProps.gramProps) {
 				newItem.gramProps = {
 					gramProps: ruleProps.gramProps,
-					next: newItem.gramProps,
+					prev: newItem.gramProps,
 				}
 			}
 
@@ -276,8 +279,8 @@ function createItem(sub, prevItem, ruleProps) {
 			if (subNext) {
 				newItem.nextNodes = {
 					node: subNext.node,
-					next: newItem.nextNodes,
-					minCost: subNext.minCost + (newItem.nextNodes ? newItem.nextNodes.minCost : 0)
+					prev: newItem.nextNodes,
+					minCost: subNext.minCost + (prevItem.nextNodes ? prevItem.nextNodes.minCost : 0),
 				}
 
 				newItem.nextNodesLen++
@@ -396,7 +399,7 @@ function conjugateText(item, text) {
 			return text[gramCase]
 		}
 
-		gramPropsList = gramPropsList.next
+		gramPropsList = gramPropsList.prev
 	}
 
 	util.logTrace()
@@ -413,7 +416,7 @@ function spliceGramPropsList(item, gramPropsToRemove) {
 	// Find which element in `item.gramProps` is to be removed
 	while (thisGramProps !== gramPropsToRemove) {
 		if (prevGramProps) {
-			prevGramProps = prevGramProps.next = {
+			prevGramProps = prevGramProps.prev = {
 				gramProps: thisGramProps.gramProps,
 			}
 		} else {
@@ -422,14 +425,14 @@ function spliceGramPropsList(item, gramPropsToRemove) {
 			}
 		}
 
-		thisGramProps = thisGramProps.next
+		thisGramProps = thisGramProps.prev
 	}
 
-	// Point the predecessor 'next' to successor of the element to be removed
+	// Point the predecessor 'prev' to successor of the element to be removed
 	if (prevGramProps) {
-		prevGramProps.next = gramPropsToRemove.next
+		prevGramProps.prev = gramPropsToRemove.prev
 	} else {
-		item.gramProps = gramPropsToRemove.next
+		item.gramProps = gramPropsToRemove.prev
 	}
 }
 
