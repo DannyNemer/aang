@@ -101,7 +101,7 @@ exports.illFormedOpts = function (schema, opts) {
 }
 
 /**
- * Synchronously writes the output of a function to a file instead of the console. Overwrites the file if it already exists.
+ * Synchronously writes the output of a function to a file instead of the console. Overwrites the file if it already exists. Restores output to console if an error is thrown.
  *
  * @param {String} path The path where to write output.
  * @param {Function} callback The function producing output.
@@ -137,15 +137,22 @@ exports.redirectOutputToFile = function (path, callback) {
 		writable.write.apply(writable, arguments)
 	}
 
-	// Write output to `path`
-	var returnVal = callback()
+	try {
+		// Write output to `path`
+		var returnVal = callback()
 
-	// Restore `process.stdout`
-	process.stdout.write = oldWrite
+		// Restore `process.stdout`
+		process.stdout.write = oldWrite
 
-	console.log('Output saved to:', fs.realpathSync(path))
+		console.log('Output saved to:', fs.realpathSync(path))
 
-	return returnVal
+		return returnVal
+	} catch (e) {
+		// Restore `process.stdout`
+		process.stdout.write = oldWrite
+
+		throw e
+	}
 }
 
 /**
