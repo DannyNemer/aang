@@ -67,7 +67,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 			// No nodes remain; tree construction complete
 			if (!nextNodes) {
 				// Tree is unique - not semantically or textually identical to previous trees
-				// Discard tree if no unique
+				// Discard tree if not unique
 				if (treeIsUnique(trees, item)) {
 					// Add new tree to array; stop parsing if is K-th tree
 					if (trees.push(item) === K) break
@@ -436,38 +436,47 @@ function spliceGramPropsList(item, gramPropsToRemove) {
 	}
 }
 
-// Determine if newly parsed tree has a unique semantic and unique display text
-// Returns `true` if tree is unique
-function treeIsUnique(trees, item) {
-	// Check for duplicate semantics by comparing semantic string representation
-	// Returns `false` if new semantic is identical to previously constructed (and cheaper) tree
-	var semanticStr = semantic.toString(item.semantics.semantic)
-	for (var t = trees.length; t-- > 0;) {
-		var tree = trees[t]
-		if (tree.semanticStr === semanticStr) return false
-		if (tree.disambiguation && tree.disambiguation.indexOf(semanticStr) !== -1) return false
-	}
+/**
+ * Determines if a new, completed parse tree has a unique semantic and unique display text.
+ *
+ * @param {Array} trees The previously completed unique parse trees to compare against.
+ * @param {Object} newTree The new parse tree.
+ * @return {Boolean} `true` if `newTree` is unique.
+ */
+function treeIsUnique(trees, newTree) {
+	var semanticStr = semantic.toString(newTree.semantics.semantic)
+	var textStr = newTree.text.slice(1) // Remove leading space
 
-	// Semantic is new
+	// Check for duplicate semantics by comparing semantic string representation
+	// - Return `false` if new semantic is identical to previously constructed (and cheaper) tree
 	// Check for duplicate display text
-	// If so, save new semantic to previous tree's disambiguation and return false to reject tree
-	var textStr = item.text.slice(1) // Remove leading space
-	for (var t = trees.length; t-- > 0;) {
+	// - If so, save new semantic to previous tree's `disambiguation` and return false to reject tree
+	// Tests show 1.3x more likely to find the zNode faster by iterating backward
+	for (var t = trees.length - 1; t > -1; --t) {
 		var tree = trees[t]
-		if (tree.text === textStr) {
-			if (tree.disambiguation) {
-				tree.disambiguation.push(semanticStr)
-			} else {
-				tree.disambiguation = [ semanticStr ]
+
+		if (tree.semanticStr === semanticStr) {
+			return false
+		}
+
+		if (tree.disambiguation) {
+			if (tree.disambiguation.indexOf(semanticStr) !== -1) {
+				return false
 			}
 
+			if (tree.text === textStr) {
+				tree.disambiguation.push(semanticStr)
+				return false
+			}
+		} else if (tree.text === textStr) {
+			tree.disambiguation = [ semanticStr ]
 			return false
 		}
 	}
 
 	// Tree is unique
-	item.semanticStr = semanticStr
-	item.text = textStr
+	newTree.semanticStr = semanticStr
+	newTree.text = textStr
 
 	return true
 }
