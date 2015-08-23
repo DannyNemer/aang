@@ -403,7 +403,7 @@ function conjugateText(item, text) {
 	}
 
 	util.logTrace()
-	util.printWarning('Failed to conjugate', text, gramPropsList)
+	util.printWarning('Failed to conjugate:', text, gramPropsList)
 }
 
 // Remove the element `gramPropsToRemove` from the `gramProps` list `item.gramProps`
@@ -580,11 +580,11 @@ exports.print = function (trees, printCost, printTrees) {
 
 		// Clean costs because of JS float precision
 		if (t < treesLen - 1 && util.cleanNumber(tree.cost) > util.cleanNumber(trees[t + 1].cost)) {
-			util.printErr('Costs out of order')
+			util.printErr('Costs out of order:')
 		}
 
 		if (tree.cost !== tree.costSoFar) {
-			util.printErr('Costs incorrect', 'cost: ' + tree.cost + ', costSoFar: ' + tree.costSoFar)
+			util.printErr('Costs incorrect:', 'cost: ' + tree.cost + ', costSoFar: ' + tree.costSoFar)
 		}
 
 		// Print display text (and cost)

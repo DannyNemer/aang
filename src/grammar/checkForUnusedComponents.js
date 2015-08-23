@@ -20,7 +20,7 @@ module.exports = function (grammar) {
 			}
 		}
 
-		util.printWarning('Unused symbol', symbolName)
+		util.printWarning('Unused symbol:', symbolName)
 		console.log(symbolCreationLines[symbolName])
 	})
 
@@ -33,7 +33,7 @@ module.exports = function (grammar) {
 			}
 		}
 
-		util.printWarning('Unused entity category', categorySymbolName)
+		util.printWarning('Unused entity category:', categorySymbolName)
 		console.log(entityCategoryCreationLines[categorySymbolName])
 	})
 
@@ -59,7 +59,7 @@ module.exports = function (grammar) {
 			}
 		}
 
-		util.printWarning('Unused semantic', semanticName)
+		util.printWarning('Unused semantic:', semanticName)
 		console.log(semantic.creationLines[semanticName])
 	})
 }

@@ -32,7 +32,7 @@ exports.new = function (opts) {
 	var categoryName = '{' + opts.name.toLowerCase() + '}'
 
 	if (exports.creationLines.hasOwnProperty(categoryName)) {
-		util.printErrWithLine('Duplicate entity category', categoryName)
+		util.printErrWithLine('Duplicate entity category:', categoryName)
 		throw 'duplicate entity category'
 	}
 
@@ -48,7 +48,7 @@ exports.new = function (opts) {
 		for (var j = i + 1; j < newEntitiesLen; ++j) {
 			var otherEntity = newEntities[j]
 			if (entityKey === otherEntity) {
-				util.printErrWithLine('Duplicate entity', categoryName, '->', i + ': ' + entity + ',', j + ': ' + otherEntity)
+				util.printErrWithLine('Duplicate entity:', categoryName, '->', i + ': ' + entity + ',', j + ': ' + otherEntity)
 				throw 'duplicate entity'
 			}
 		}

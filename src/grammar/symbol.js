@@ -23,7 +23,7 @@ function Symbol() {
 	this.name = '[' + exports.hyphenate.apply(null, arguments).toLowerCase() + ']'
 
 	if (exports.grammar.hasOwnProperty(this.name)) {
-		util.printErrWithLine('Duplicate Symbol', this.name)
+		util.printErrWithLine('Duplicate Symbol:', this.name)
 		throw 'duplicate Symbol'
 	}
 
@@ -45,7 +45,7 @@ Symbol.prototype.addRule = function (opts) {
 	}
 
 	if (this.ruleExists(newRule)) {
-		util.printErrWithLine('Duplicate rule', this.name, '->', newRule.RHS)
+		util.printErrWithLine('Duplicate rule:', this.name, '->', newRule.RHS)
 		throw 'duplicate rule'
 	}
 
@@ -106,7 +106,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	// If semantic, must be complete and constitute a RHS
 	// Exceptions: terminal symbol is an entity category or <int>
 	else if (opts.semantic && !semantic.isRHS(opts.semantic)) {
-		util.printErr('Terminal rules can only hold complete (RHS) semantics', this.name, '->', newRule.RHS)
+		util.printErr('Terminal rules can only hold complete (RHS) semantics:', this.name, '->', newRule.RHS)
 		util.dir(opts.semantic)
 		console.log(util.getLine())
 		throw 'ill-formed terminal rule'
@@ -115,17 +115,17 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	// <empty>, <int>, and entities cannot have predefined display text
 	if (newRule.text) {
 		if (opts.RHS === g.emptySymbol || opts.RHS === g.intSymbol) {
-			util.printErrWithLine(opts.RHS + ' cannot have predefined display text', this.name, '->', newRule.RHS)
+			util.printErrWithLine(opts.RHS + ' cannot have predefined display text:', this.name, '->', newRule.RHS)
 			throw 'ill-formed terminal rule'
 		} else if (entityCategory.creationLines.hasOwnProperty(opts.RHS)) {
-			util.printErrWithLine('Entities cannot have predefined display text', this.name, '->', newRule.RHS)
+			util.printErrWithLine('Entities cannot have predefined display text:', this.name, '->', newRule.RHS)
 			throw 'ill-formed terminal rule'
 		}
 	}
 
 	// intMin and intMax can only be used with <int>
 	if (opts.RHS !== g.intSymbol && (opts.intMin !== undefined || opts.intMax !== undefined)) {
-		util.printErrWithLine('\'intMin\' and \'intMax\' can only be used with ' + g.intSymbol, this.name, '->', newRule.RHS)
+		util.printErrWithLine('\'intMin\' and \'intMax\' can only be used with ' + g.intSymbol + ':', this.name, '->', newRule.RHS)
 		throw 'ill-formed terminal rule'
 	}
 
@@ -165,7 +165,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 			}
 
 			else {
-				util.printErrWithLine('\'RHS\' not an array of type Symbol or Array', opts.RHS)
+				util.printErrWithLine('\'RHS\' not an array of type Symbol or Array:', opts.RHS)
 				throw 'ill-formed nonterminal rule'
 			}
 		}),
@@ -181,13 +181,13 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 	}
 
 	if (opts.RHS.length > 2) {
-		util.printErrWithLine('Nonterminal rules can only have 1 or 2 RHS symbols', this.name, '->', newRule.RHS)
+		util.printErrWithLine('Nonterminal rules can only have 1 or 2 RHS symbols:', this.name, '->', newRule.RHS)
 		throw 'ill-formed nonterminal rule'
 	}
 
 	if (opts.transpositionCost !== undefined) {
 		if (opts.RHS.length !== 2) {
-			util.printErrWithLine('Nonterminal rules with transposition costs must have 2 RHS symbols', this.name, '->', newRule.RHS)
+			util.printErrWithLine('Nonterminal rules with transposition costs must have 2 RHS symbols:', this.name, '->', newRule.RHS)
 			throw 'ill-formed nonterminal rule'
 		}
 
@@ -213,7 +213,7 @@ exports.newBinaryRule = function (opts) {
 
 	// RHS must contain two RHS symbols
 	if (RHS.length !== 2) {
-		util.printErrWithLine('Binary rules must have 2 RHS symbols', RHS)
+		util.printErrWithLine('Binary rules must have 2 RHS symbols:', RHS)
 		throw 'ill-formed binary rule'
 	}
 
@@ -226,7 +226,7 @@ exports.newBinaryRule = function (opts) {
 		}
 
 		else if (sym.constructor !== Symbol) {
-			util.printErrWithLine('RHS not an array of type Symbol or Array', RHS)
+			util.printErrWithLine('RHS not an array of type Symbol or Array:', RHS)
 			throw 'ill-formed binary rule'
 		}
 	})
@@ -264,7 +264,7 @@ exports.hyphenate = function () {
 	var chunks = Array.prototype.slice.call(arguments)
 
 	if (chunks.indexOf(undefined) !== -1) {
-		util.printErrWithLine('undefined String in name', chunks)
+		util.printErrWithLine('undefined String in name:', chunks)
 		throw 'ill-formed name'
 	}
 

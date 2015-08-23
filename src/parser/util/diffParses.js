@@ -27,7 +27,7 @@ function compCounters(parserOld, parserNew, counterName) {
 	if (parserOld[counterName] === parserNew[counterName]) {
 		// console.log(counterName + ':', parserNew[counterName])
 	} else {
-		util.printErr(counterName + ' (want ' + parserOld[counterName] + ')', parserNew[counterName])
+		util.printErr(counterName + ' (want ' + parserOld[counterName] + '):', parserNew[counterName])
 	}
 }
 
@@ -37,7 +37,7 @@ function diffArrays(arrayA, arrayB, msg) {
 	})
 
 	if (diff.length) {
-		util.printErr(msg + ' (of ' + arrayA.length + ')', diff.length)
+		util.printErr(msg + ' (of ' + arrayA.length + '):', diff.length)
 	} else {
 		// console.log(msg + ':', diff.length)
 	}

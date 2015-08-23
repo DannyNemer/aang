@@ -58,7 +58,7 @@ exports.illFormedOpts = function (schema, opts) {
 	for (var prop in opts) {
 		// Unrecognized property
 		if (!schema.hasOwnProperty(prop)) {
-			exports.printErrWithLine('Unrecognized property', prop)
+			exports.printErrWithLine('Unrecognized property:', prop)
 			return true
 		}
 
@@ -68,7 +68,7 @@ exports.illFormedOpts = function (schema, opts) {
 
 		// Accidentally passed an `undefined` object; ex: `undefined`, `[]`, `[ 1, undefined ]`
 		if (optsVal === undefined || (Array.isArray(optsVal) && (optsVal.length === 0 || optsVal.indexOf(undefined) !== -1))) {
-			exports.printErrWithLine('undefined ' + prop, optsVal)
+			exports.printErrWithLine('undefined ' + prop + ':', optsVal)
 			return true
 		}
 
@@ -76,7 +76,7 @@ exports.illFormedOpts = function (schema, opts) {
 		if (Array.isArray(schemaPropType)) {
 			// Unrecognized value for parameter with predefined values
 			if (schemaPropType.indexOf(optsVal) === -1) {
-				exports.printErr('Unrecognized value for ' + prop, optsVal)
+				exports.printErr('Unrecognized value for ' + prop + ':', optsVal)
 				console.log('     Accepted values for ' + prop + ':', schemaPropType)
 				console.log(exports.getLine())
 				return true
@@ -84,13 +84,13 @@ exports.illFormedOpts = function (schema, opts) {
 		} else {
 			// Passed value of incorrect type; ex: `num: String`, `str: Array`
 			if (optsVal.constructor !== schemaPropType) {
-				exports.printErrWithLine('\'' + prop + '\' not of type ' + schemaPropType.name, optsVal)
+				exports.printErrWithLine('\'' + prop + '\' not of type ' + schemaPropType.name + ':', optsVal)
 				return true
 			}
 
 			// Passed Array contains elements not of `arrayType` (if `arrayType` is defined)
 			if (Array.isArray(optsVal) && schemaVal.arrayType && !optsVal.every(function (el) { return el.constructor === schemaVal.arrayType })) {
-				exports.printErrWithLine('\'' + prop + '\' not an array of type ' + schemaVal.arrayType.name, optsVal)
+				exports.printErrWithLine('\'' + prop + '\' not an array of type ' + schemaVal.arrayType.name + ':', optsVal)
 				return true
 			}
 		}
@@ -308,58 +308,45 @@ function prettyPrint(args, opts) {
 }
 
 /**
- * Prints like `console.log()`, but color first argument red, prepend message with "Err:".
+ * Prints like `console.log()` prepended with red-colored "Err: ".
  *
- * @param {String} [msg] The error message to color red and append to "Err:".
- * @param {...Mixed} [valN] The values to print following error message.
+ * @param {...Mixed} valN The values to print following "Err: ".
  */
-exports.printErr = function (msg) {
-	logPrependColorMsg('red', 'Err', msg, Array.prototype.slice.call(arguments, 1))
+exports.printErr = function () {
+	logPrependColorLabel('Err', 'red', arguments)
 }
 
 /**
- * Prints like `console.log()`, but color first argument yellow, prepend with "Warning:".
+ * Prints like `console.log()` prepended with yellow-colored "Warning: ".
  *
- * @param {String} [msg] The warning message to color yellow and append to "Warning:".
- * @param {...Mixed} [valN] The values to print following warning message.
+ * @param {...Mixed} valN The values to print following "Warning: ".
  */
-exports.printWarning = function (msg) {
-	logPrependColorMsg('yellow', 'Warning', msg, Array.prototype.slice.call(arguments, 1))
+exports.printWarning = function () {
+	logPrependColorLabel('Warning', 'yellow', arguments)
 }
 
 /**
- * Prints like `console.log()`, but color first argument and prepend with a label (e.g., "Err:").
+ * Prints like `console.log()`, but colors first argument and prepends with a label (e.g., "Err: ").
  *
  * @private
+ * @param {String} label The label to prepend to `args` (e.g., "Err").
  * @param {String} color The color to stylize `label`.
- * @param {String} label The label to prepend the values to print (e.g., "Err").
- * @param {String} [msg] The message to color and append to `label`.
- * @param {Array} [args] The values to print following `msg`.
+ * @param {Array} args The values to print following `label`.
  */
-function logPrependColorMsg(color, label, msg, args) {
+function logPrependColorLabel(label, color, args) {
 	// Append ':' to `label`
 	if (label[label.length - 1] !== ':') {
 		label += ':'
 	}
 
-	if (msg) {
-		// Append ':' to `msg`
-		if (msg[msg.length - 1] !== ':') {
-			msg += ':'
-		}
-
-		label += ' ' + msg
-	}
-
-	// Color label + message, print and append with remaining arguments
-	console.log.apply(null, [ colors[color](label) ].concat(args))
+	// Color `label` and append with `args`
+	console.log.apply(null, [ colors[color](label) ].concat(Array.prototype.slice.call(args)))
 }
 
 /**
- * Prints error message like `printErr()` and line from which the parent function was called (using `getLine()`).
+ * Prints error message like `dannyUtil.printErr()` followed by the file path and line number from which the parent function was called .
  *
- * @param {String} [msg] The error message to color red and append to "Err:".
- * @param {...Mixed} [valN] The values to print following error message.
+ * @param {...Mixed} valN The values to print following "Err: ".
  */
 exports.printErrWithLine = function () {
 	exports.printErr.apply(null, arguments)
