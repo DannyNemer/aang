@@ -77,7 +77,7 @@ exports.illFormedOpts = function (schema, opts) {
 			// Unrecognized value for parameter with predefined values
 			if (schemaPropType.indexOf(optsVal) === -1) {
 				exports.printErr('Unrecognized value for ' + prop + ':', optsVal)
-				console.log('     Accepted values for ' + prop + ':', schemaPropType)
+				console.log('       Accepted values for ' + prop + ':', schemaPropType)
 				console.log('  ' + exports.getLine())
 				return true
 			}
@@ -308,12 +308,12 @@ function prettyPrint(args, opts) {
 }
 
 /**
- * Prints like `console.log()` prepended with red-colored "Err: ".
+ * Prints like `console.log()` prepended with red-colored "Error: ".
  *
- * @param {...Mixed} valN The values to print following "Err: ".
+ * @param {...Mixed} valN The values to print following "Error: ".
  */
 exports.printErr = function () {
-	logPrependColorLabel('Err', 'red', arguments)
+	logPrependColorLabel('Error', 'red', arguments)
 }
 
 /**
@@ -326,10 +326,10 @@ exports.printWarning = function () {
 }
 
 /**
- * Prints like `console.log()`, but colors first argument and prepends with a label (e.g., "Err: ").
+ * Prints like `console.log()`, but colors first argument and prepends with a label (e.g., "Error: ").
  *
  * @private
- * @param {String} label The label to prepend to `args` (e.g., "Err").
+ * @param {String} label The label to prepend to `args` (e.g., "Error").
  * @param {String} color The color to stylize `label`.
  * @param {Array} args The values to print following `label`.
  */
@@ -346,7 +346,7 @@ function logPrependColorLabel(label, color, args) {
 /**
  * Prints error message like `dannyUtil.printErr()` followed by the file path and line number from which the parent function was called .
  *
- * @param {...Mixed} valN The values to print following "Err: ".
+ * @param {...Mixed} valN The values to print following "Error: ".
  */
 exports.printErrWithLine = function () {
 	exports.printErr.apply(null, arguments)
