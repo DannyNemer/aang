@@ -301,6 +301,19 @@ exports.toString = function (semanticArray) {
 	return str
 }
 
+/**
+ * Stylizes a semantic string output by `semantic.toString()` with syntax highlighting for printing.
+ *
+ * @param {String} semanticString The semantic string, output by `semantic.toString()`.
+ * @return {String} The stylized semantic string.
+ */
+exports.colorString = function (semanticString) {
+	var colors = require('colors')
+	return semanticString.replace(/([\w-]+(?=\())|([\w-]+(?=[,\)]))/g, function (match, p1, p2) {
+		return p1 ? colors.green(p1) : colors.red(p2)
+	})
+}
+
 // Converts a semantic tree to a simple Object representation for printing
 exports.toSimpleObject = function (semanticArray) {
 	var array = []
