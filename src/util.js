@@ -78,7 +78,7 @@ exports.illFormedOpts = function (schema, opts) {
 			if (schemaPropType.indexOf(optsVal) === -1) {
 				exports.printErr('Unrecognized value for ' + prop + ':', optsVal)
 				console.log('     Accepted values for ' + prop + ':', schemaPropType)
-				console.log(exports.getLine())
+				console.log('  ' + exports.getLine())
 				return true
 			}
 		} else {
@@ -350,7 +350,7 @@ function logPrependColorLabel(label, color, args) {
  */
 exports.printErrWithLine = function () {
 	exports.printErr.apply(null, arguments)
-	console.log(exports.getLine())
+	console.log('  ' + exports.getLine())
 }
 
 /**

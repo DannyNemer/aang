@@ -108,7 +108,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	else if (opts.semantic && !semantic.isRHS(opts.semantic)) {
 		util.printErr('Terminal rules can only hold complete (RHS) semantics:', this.name, '->', newRule.RHS)
 		util.dir(opts.semantic)
-		console.log(util.getLine())
+		console.log('  ' + util.getLine())
 		throw 'ill-formed terminal rule'
 	}
 

@@ -21,7 +21,7 @@ module.exports = function (grammar) {
 		}
 
 		util.printWarning('Unused symbol:', symbolName)
-		console.log(symbolCreationLines[symbolName])
+		console.log('  ' + symbolCreationLines[symbolName])
 	})
 
 	// Check for entity categories not used in any rules
@@ -34,7 +34,7 @@ module.exports = function (grammar) {
 		}
 
 		util.printWarning('Unused entity category:', categorySymbolName)
-		console.log(entityCategoryCreationLines[categorySymbolName])
+		console.log('  ' + entityCategoryCreationLines[categorySymbolName])
 	})
 
 	// Check for semantic functions and arguments not used in any rules
@@ -60,6 +60,6 @@ module.exports = function (grammar) {
 		}
 
 		util.printWarning('Unused semantic:', semanticName)
-		console.log(semantic.creationLines[semanticName])
+		console.log('  ' + semantic.creationLines[semanticName])
 	})
 }

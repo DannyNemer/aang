@@ -244,7 +244,7 @@ Symbol.prototype.addWord = function (opts) {
 	if (opts.accepted.indexOf(g.emptySymbol) !== -1) {
 		util.PrintErr('Words cannot have <empty> strings:', opts.name)
 		console.log('Only stop-words or opt-terms can have <empty> strings')
-		console.log(util.getLine())
+		console.log('  ' + util.getLine())
 		throw 'ill-formed word'
 	}
 
