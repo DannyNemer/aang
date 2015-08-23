@@ -143,7 +143,7 @@ exports.redirectOutputToFile = function (path, callback) {
 	// Restore `process.stdout`
 	process.stdout.write = oldWrite
 
-	console.log('Output saved to:', path)
+	console.log('Output saved to:', fs.realpathSync(path))
 
 	return returnVal
 }
@@ -155,12 +155,15 @@ exports.redirectOutputToFile = function (path, callback) {
  * @param {Object} obj The object to save to file.
  */
 exports.writeJSONFile = function (path, obj) {
-	fs.writeFileSync(exports.expandHomeDir(path), JSON.stringify(obj, function (key, val) {
+	// Expand '~' if present
+	path = exports.expandHomeDir(path)
+
+	fs.writeFileSync(path, JSON.stringify(obj, function (key, val) {
 		// Convert RegExp to strings for `JSON.stringify()`
 		return val instanceof RegExp ? val.source : val
 	}, '\t'))
 
-	console.log('File saved:', path)
+	console.log('File saved:', fs.realpathSync(path))
 }
 
 /**
