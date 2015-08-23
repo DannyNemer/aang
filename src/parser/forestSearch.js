@@ -473,14 +473,23 @@ function treeIsUnique(trees, item) {
 }
 
 // When `buildDebugTrees` is `true`, link each `item` to the previous `item` and its new `ruleProps`. After parse completion, construct tree representations from the linked lists of the `K` best paths.
-// Path is a reverse linked list of the items used to construct this path, ending at the start node.
-function pathToTree(item) {
+function pathToTree(item, opts) {
+	var pathToTreeOptsSchema = {
+		// Displays the start and end indexes of each node's token range
+		showTokenRanges: { type: Boolean, optional: true },
+		// Displays the cost of the path at each node (i.e., the cost of the path so far + the heuristic estimate of the cost remaining)
+		showPathCosts: { type: Boolean, optional: true },
+	}
+
+	if (util.illFormedOpts(pathToTreeOptsSchema, opts)) {
+		throw new Error('pathToTree: ill-formed opts')
+	}
+
 	// Stack of previous nodes lower in the parse tree (which become child nodes)
-	var prevNodes = []
+	var nodesStack = []
 
 	while (true) {
 		var node = item.node
-		var parNode
 
 		// Terminal rule
 		if (!node) {
@@ -490,64 +499,75 @@ function pathToTree(item) {
 				// Find last node (`nextNodes` also holds insertion text)
 				var prevNextNodes = item.prev.prev.nextNodes
 				while (prevNextNodes.node.constructor !== Object) {
-					prevNextNodes = prevNextNodes.next
+					prevNextNodes = prevNextNodes.prev
 				}
 
 				node = prevNextNodes.node
 			}
 
-			parNode = {
-				symbol: undefined,
+			nodesStack.push({
 				props: item.ruleProps,
-				children: children = [ {
-					symbol: node.subs[0].node.sym.name,
-				} ],
-			}
+				children: [ createNode(node.subs[0].node, opts) ],
+			})
 		}
 
 		// Binary nonterminal rule
 		else if (item.nextNodes && item.nextNodes !== item.prev.nextNodes && item.ruleProps.insertionIdx === undefined) {
-			var newNodeA = prevNodes.pop()
-			newNodeA.symbol = node.sym.name
+			var newNodeA = createNode(node, opts, nodesStack.pop(), item.cost)
+			var newNodeB = createNode(item.nextNodes.node, opts, nodesStack.pop())
 
-			var newNodeB = prevNodes.pop()
-			newNodeB.symbol = item.nextNodes.node.sym.name
-
-			parNode = {
-				symbol: undefined,
+			nodesStack.push({
 				props: item.ruleProps,
-				children: [ newNodeA, newNodeB ],
-			}
+				children: [ newNodeA, newNodeB ]
+			})
 		}
 
 		// Unary nonterminal rule
 		else {
-			var newNode = prevNodes.pop()
-			newNode.symbol = node.sym.name
+			var newNode = createNode(node, opts, nodesStack.pop(), item.cost)
 
 			// Start node
 			if (!item.prev) return newNode
 
-			// Order properties for insertions to be printed in order
-			if (item.ruleProps.insertionIdx === 1) {
-				parNode = {
-					symbol: undefined,
-					children: [ newNode ],
-					props: item.ruleProps,
-				}
-			} else {
-				parNode = {
-					symbol: undefined,
-					props: item.ruleProps,
-					children: [ newNode ],
-				}
-			}
+			nodesStack.push({
+				props: item.ruleProps,
+				children: [ newNode ],
+			})
 		}
-
-		prevNodes.push(parNode)
 
 		item = item.prev
 	}
+}
+
+function createNode(node, opts, childNode, pathCost) {
+	var newNode = {
+		symbol: node.sym.name,
+	}
+
+	if (opts) {
+		if (opts.showTokenRanges) {
+			newNode.start = node.start
+			newNode.end = node.start + node.size
+		}
+
+		if (opts.showPathCosts && pathCost !== undefined) {
+			newNode.pathCost = pathCost
+		}
+	}
+
+	// No childNode for terminal symbols
+	if (childNode) {
+		// Order properties for insertions to be printed in order
+		if (childNode.props.insertionIdx === 1) {
+			newNode.children = childNode.children
+			newNode.props = childNode.props
+		} else {
+			newNode.props = childNode.props
+			newNode.children = childNode.children
+		}
+	}
+
+	return newNode
 }
 
 
@@ -581,6 +601,6 @@ exports.print = function (trees, printCost, printTrees) {
 		}
 
 		// Print trees (if constructed during parse forest search)
-		if (printTrees) util.dir(pathToTree(tree))
+		if (printTrees) util.dir(pathToTree(tree, { showTokenRanges: true, showPathCosts: true }))
 	}
 }
