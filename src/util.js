@@ -17,9 +17,7 @@ var colors = require('colors/safe')
 
 
 /**
- * Checks if an `opts` object adheres to a `schema`.
- * Simulates static function arguments (i.e., type checking and parameter count).
- * Prints descriptive, helpful errors when `opts` is ill-formed.
+ * Checks if an options object adheres to a schema. Simulates static function arguments (i.e., type checking and parameter count). Prints descriptive, helpful errors when `opts` is ill-formed.
  *
  * @param {Object} schema Definition of required or optional properties and their expected values in `opts`.
  * @param {Object} opts The options object to check if conforms to `schema`.
@@ -186,9 +184,7 @@ exports.expandHomeDir = function (path) {
 }
 
 /**
- * Executes the passed function within a `try` block.
- * Removes parentheses from error stack for iTerm open-file-path shortcut.
- * Colors error type name red (e.g., `ReferenceError`).
+ * Executes the passed function within a `try` block. If an error is thrown, removes parentheses surrounding file paths in its stack trace for the iTerm open-file-path shortcut, and colors the error type name (e.g., "TypeError") red.
  *
  * @param {Function} callback The function to execute within a `try` block.
  * @return {Mixed} The value returned by `callback`, if any.
@@ -197,6 +193,7 @@ exports.tryCatchWrapper = function (callback) {
 	try {
 		return callback()
 	} catch (e) {
+		// Print leading blank line
 		console.log()
 
 		if (e.stack) {
@@ -210,7 +207,7 @@ exports.tryCatchWrapper = function (callback) {
 					// Color error type name red
 					console.log(stackFrame.replace(e.name, colors.red(e.name)))
 				} else {
-					// Remove parentheses of file paths for iTerm open-file-path shortcut
+					// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut
 					console.log(stackFrame.replace(/[()]/g, ''))
 				}
 			})
@@ -221,8 +218,7 @@ exports.tryCatchWrapper = function (callback) {
 }
 
 /**
- * Deletes modules from cache, forcing them to be reloaded at next `require()` call. Without removing a module from cache, subsequent `require()` calls to the same module will not enable changes to its file(s).
- * This is useful for enabling changes on a server without restarting the server.
+ * Deletes modules from cache, forcing them to be reloaded at next `require()` call. Without removing a module from cache, subsequent `require()` calls to the same module will not enable changes to its file(s). This is useful for enabling changes on a server without restarting the server.
  *
  * @param {...String} pathN The paths of modules to remove from cache.
  * @example
@@ -261,7 +257,7 @@ exports.getLine = function (getCallingLine) {
 		// Ignore if `getLine()` called from this file
 		if (line.indexOf(__filename) !== -1) continue
 
-		// Remove parentheses surrounding paths in trace for iTerm open-file-path shortcut
+		// Remove parentheses surrounding file paths in the stack trace for the iTerm open-file-path shortcut
 		if (getCallingLine || (callingFileName && line.indexOf(callingFileName) === -1)) {
 			return line.replace(/[()]/g, '').slice(line.lastIndexOf(' ') + 1)
 		}
@@ -320,7 +316,7 @@ function prettyPrint(args, opts) {
  * @param {...Mixed} valN The values to print following "Error: ".
  */
 exports.printErr = function () {
-	logPrependColorLabel('Error', 'red', arguments)
+	printWithColoredLabel('Error', 'red', arguments)
 }
 
 /**
@@ -329,7 +325,7 @@ exports.printErr = function () {
  * @param {...Mixed} valN The values to print following "Warning: ".
  */
 exports.printWarning = function () {
-	logPrependColorLabel('Warning', 'yellow', arguments)
+	printWithColoredLabel('Warning', 'yellow', arguments)
 }
 
 /**
@@ -340,7 +336,7 @@ exports.printWarning = function () {
  * @param {String} color The color to stylize `label`.
  * @param {Array} args The values to print following `label`.
  */
-function logPrependColorLabel(label, color, args) {
+function printWithColoredLabel(label, color, args) {
 	// Append ':' to `label`
 	if (label[label.length - 1] !== ':') {
 		label += ':'
@@ -361,10 +357,9 @@ exports.printErrWithLine = function () {
 }
 
 /**
- * Prints stack trace to the current position.
- * Removes parentheses from stack for iTerm open-file-path shortcut.
+ * Prints the stack trace to the current position. Removes parentheses surrounding file paths for the iTerm open-file-path shortcut.
  *
- * @param {String} [msg] The optional message to print above stack.
+ * @param {String} [msg] The optional message to print above the stack trace.
  */
 exports.logTrace = function (msg) {
 	console.log('Trace' + (msg ? ': ' + msg : ''))
@@ -372,7 +367,7 @@ exports.logTrace = function (msg) {
 	// Get stack without lines for `Error` and this file
 	var stack = Error().stack.split('\n').slice(3).join('\n')
 
-	// Remove parentheses of file paths for iTerm open-file-path shortcut
+	// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut
 	console.log(stack.replace(/[()]/gm, ''))
 }
 
@@ -460,8 +455,7 @@ exports.count = function (label) {
 }
 
 /**
- * Prints the number of calls of `dannyUtil.count(label)`.
- * Resets the count of calls to `label` when called.
+ * Prints (and clears the value of) the number of calls of `dannyUtil.count(label)`.
  *
  * @param {String} label The id to refer to calls to `dannyUtil.count()`.
  */
@@ -475,9 +469,7 @@ exports.countEnd = function (label) {
 }
 
 /**
- * Prints the values of all counters used on `dannyUtil.count()`.
- * Will not print counters that are never reached (and never have their keys initialized).
- * Reset all counts.
+ * Prints (and clears) the values of all counters used on `dannyUtil.count()`. Will not print counters that are never reached (and never have their keys initialized).
  */
 exports.countEndAll = function () {
 	_counts.forEach(function(count, label) {
