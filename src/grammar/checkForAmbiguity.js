@@ -272,7 +272,7 @@ module.exports = function (grammar, opts) {
 								// 1) `opts.findAll` is `false`. Then, this is the first (and last) instance of ambiguity found to have been created by this pair of root rules.
 								// 2) `opts.findAll` is `true` and this instance of ambiguity has not been seen. Confirmed by checking if this pair, after being processed by `diffTrees()`, already exists in previously seen pairs in `ambigPairs`. The same instance of ambiguity can be found in multiple pairs of trees when the pairs are distinguished by rules that come after the rules creating ambiguity.
 								if (!opts.findAll || !pairExists(ambigPairs, treeA, treeB)) {
-									util.printWarning('Ambiguity:')
+									util.logWarning('Ambiguity:')
 									util.dir(treeA, treeB)
 
 									if (opts.findAll) {

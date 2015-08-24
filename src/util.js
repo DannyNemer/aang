@@ -333,7 +333,7 @@ exports.logError = function () {
  *
  * @param {...Mixed} valN The values to print following "Warning: ".
  */
-exports.printWarning = function () {
+exports.logWarning = function () {
 	printWithColoredLabel('Warning', 'yellow', arguments)
 }
 

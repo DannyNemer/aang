@@ -409,7 +409,7 @@ function conjugateText(item, text) {
 	}
 
 	util.logTrace()
-	util.printWarning('Failed to conjugate:', text, gramPropsList)
+	util.logWarning('Failed to conjugate:', text, gramPropsList)
 }
 
 // Remove the element `gramPropsToRemove` from the `gramProps` list `item.gramProps`
