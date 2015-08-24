@@ -61,11 +61,11 @@ user.head.addRule({ RHS: [ openersOf, issue.catPl ], semantic: issuesOpenersSema
 
 
 // MENTION:
-var issuesRequestsMentionedSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'mentioned'), cost: 0.5, minParams: 1, maxParams: 1 })
+var issuesMentionedSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'mentioned'), cost: 0.5, minParams: 1, maxParams: 1 })
 // (issues that) mention me
-issue.subjFilter.addRule({ RHS: [ github.mention, user.objUsersPlus ], semantic: issuesRequestsMentionedSemantic })
+issue.subjFilter.addRule({ RHS: [ github.mention, user.objUsersPlus ], semantic: issuesMentionedSemantic })
 // (issues) I-am/{user}-is/[users]-are mentioned in
-issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralMentionedIn ], semantic: issuesRequestsMentionedSemantic })
+issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralMentionedIn ], semantic: issuesMentionedSemantic })
 // (people mentioned in) [issues]/[pull-requests] (and/or) [issues]/[pull-requests]
 github.mentioners.addRule({ RHS: [ issue.catPl ] })
 
