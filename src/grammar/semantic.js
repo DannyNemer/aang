@@ -87,14 +87,14 @@ function newSemanticArg(opts) {
 }
 
 /**
- * Calculates the sum cost of all semantic functions in a semantic tree.
+ * Calculates the sum of the costs of all semantic functions in a semantic tree.
  *
  * @param {Array} semanticArray The semantic tree to sum.
- * @return {Number} The sum cost of the semantic tree.
+ * @return {Number} The sum of the costs in the semantic tree.
  */
-exports.costOfSemantic = function (semanticArray) {
+exports.sumCosts = function (semanticArray) {
 	return semanticArray.reduce(function (accum, cur) {
-		return accum + cur.semantic.cost + (cur.children ? exports.costOfSemantic(cur.children) : 0)
+		return accum + cur.semantic.cost + (cur.children ? exports.sumCosts(cur.children) : 0)
 	}, 0)
 }
 

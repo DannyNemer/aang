@@ -39,7 +39,7 @@ Symbol.prototype.addRule = function (opts) {
 
 	if (opts.semantic) {
 		newRule.semantic = opts.semantic
-		newRule.cost = this.calcCost(semantic.costOfSemantic(opts.semantic))
+		newRule.cost = this.calcCost(semantic.sumCosts(opts.semantic))
 	} else {
 		newRule.cost = this.calcCost()
 	}
