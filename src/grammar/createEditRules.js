@@ -235,7 +235,7 @@ function createRulesFromInsertions(grammar, insertions) {
 							// Discard rule if lacks and cannot produce a RHS semantic needed by this rule or an ancestor
 							var parsingStack = g.ruleMissingNeededRHSSemantic(newRule, lhsSym)
 							if (parsingStack) {
-								// util.printErr('Rule will not produce needed RHS semantic:')
+								// util.logError('Rule will not produce needed RHS semantic:')
 								// util.dir(parsingStack)
 								return
 							}
@@ -356,9 +356,9 @@ function ruleExists(rules, newRule, LHS) {
 		if (util.arraysEqual(existingRule.RHS, newRule.RHS)) {
 			if (util.arraysEqual(existingRule.text, newRule.text)) {
 				if (existingRule.insertedSyms) {
-					util.printErr('Two identical rules produced by insertion(s):')
+					util.logError('Two identical rules produced by insertion(s):')
 				} else {
-					util.printErr('New rule produced with edits identical to original rule:')
+					util.logError('New rule produced with edits identical to original rule:')
 				}
 
 				util.dir(LHS, existingRule, newRule)
@@ -434,7 +434,7 @@ function checkForSemanticErrors(grammar) {
 			if (rule.insertionIdx === undefined) {
 				var parsingStack
 				if (parsingStack = g.ruleMissingNeededRHSSemantic(rule, nontermSym)) {
-					util.printErr('Rule will not produce needed RHS semantic:')
+					util.logError('Rule will not produce needed RHS semantic:')
 					util.dir(parsingStack)
 					throw 'semantic error'
 				}

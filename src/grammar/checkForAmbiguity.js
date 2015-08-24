@@ -296,7 +296,7 @@ module.exports = function (grammar, opts) {
 
 		// If `opts.useTestRules` is `true`, use ambiguous test rules to check the accuracy of this algorithm, print an error message if a symbol's ambiguity is not found.
 		if (!foundAmbiguity && opts.useTestRules && nontermSym.indexOf('ambig') === 1) {
-			util.printErr('Ambiguity not found in test rule:', nontermSym)
+			util.logError('Ambiguity not found in test rule:', nontermSym)
 		}
 	}
 }

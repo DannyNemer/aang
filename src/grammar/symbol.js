@@ -106,7 +106,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	// If semantic, must be complete and constitute a RHS
 	// Exceptions: terminal symbol is an entity category or <int>
 	else if (opts.semantic && !semantic.isRHS(opts.semantic)) {
-		util.printErr('Terminal rules can only hold complete (RHS) semantics:', this.name, '->', newRule.RHS)
+		util.logError('Terminal rules can only hold complete (RHS) semantics:', this.name, '->', newRule.RHS)
 		util.dir(opts.semantic)
 		console.log('  ' + util.getLine())
 		throw 'ill-formed terminal rule'

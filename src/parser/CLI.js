@@ -162,7 +162,7 @@ function runCommand(input) {
 		testQueries.conjugation.forEach(function (query) {
 			var trees = parse(query, 1)
 			if (!trees || trees[0].text !== query) {
-				util.printErr('Expected:', query)
+				util.logError('Expected:', query)
 				console.log('       Actual:', trees[0].text)
 				failed = true
 			}

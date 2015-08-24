@@ -74,7 +74,7 @@ exports.illFormedOpts = function (schema, opts) {
 		if (Array.isArray(schemaPropType)) {
 			// Unrecognized value for parameter with predefined values
 			if (schemaPropType.indexOf(optsVal) === -1) {
-				exports.printErr('Unrecognized value for ' + prop + ':', optsVal)
+				exports.logError('Unrecognized value for ' + prop + ':', optsVal)
 				console.log('       Accepted values for ' + prop + ':', schemaPropType)
 				console.log('  ' + exports.getLine())
 				return true
@@ -276,7 +276,7 @@ exports.getLine = function (getCallingLine) {
 	}
 
 	// Could not find line in stack for file from which function calling `getLine()` was called
-	// exports.printErr('Sought-after line not found in stack trace (trace limited to 10 most recent)')
+	// exports.logError('Sought-after line not found in stack trace (trace limited to 10 most recent)')
 	// exports.logTrace()
 }
 
@@ -324,7 +324,7 @@ function prettyPrint(args, opts) {
  *
  * @param {...Mixed} valN The values to print following "Error: ".
  */
-exports.printErr = function () {
+exports.logError = function () {
 	printWithColoredLabel('Error', 'red', arguments)
 }
 
@@ -356,12 +356,12 @@ function printWithColoredLabel(label, color, args) {
 }
 
 /**
- * Prints error message like `dannyUtil.printErr()` followed by the file path and line number from which the parent function was called .
+ * Prints error message like `dannyUtil.logError()` followed by the file path and line number from which the parent function was called .
  *
  * @param {...Mixed} valN The values to print following "Error: ".
  */
 exports.printErrWithLine = function () {
-	exports.printErr.apply(null, arguments)
+	exports.logError.apply(null, arguments)
 	console.log('  ' + exports.getLine())
 }
 
