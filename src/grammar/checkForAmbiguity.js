@@ -11,14 +11,18 @@ var util = require('../util')
   * This module was a massive undertaking. All cases of possible ambiguity are documented in detail in 'ambiguityExamples.js'. Many algorithms were created and ensured to catch all possible ambiguous cases. Several algorithms and unique data structures were developed and heuristics developed to make the construction of all possible paths and the comparison of paths as fast as possible. Many trials and errors. It was over 100 hours of work.
   *
   * @param {Object} grammar The grammar to inspect.
-  * @param {Object} opts Options object.
+  * @param {Object} opts The options object.
+  * @param {Number} opts.symsLimit The maximum number of symbols permitted in the construction of a path when searching for ambiguity, limiting processing time.
+  * @param {Boolean} [opts.findAll] Specify finding every distinct pair of ambiguous trees instead of one instance per each pair of rules.
+  * @param {Boolean} [opts.useTestRules] Specify replacing `grammar` with ambiguous test rules.
+  * @param {Boolean} [opts.noOutput] Specify not printing program output.
   */
 
 var optsSchema = {
-	// Maximum number of symbols permitted in the construction of a path when searching for ambiguity.This bound is necessary, as the grammar permits paths of infinite length and combination. `14` is a reasonable number and will require 3 seconds to process.
+	// The maximum number of symbols permitted in the construction of a path when searching for ambiguity. This bound is necessary, as the grammar permits paths of infinite length and combination. `14` is a reasonable number and will require 3 seconds to process.
 	symsLimit: Number,
-	// If `false` (the default), prints only one instance of ambiguity produced by a pair of rules.
-	// If `true`, prints every distinct pair of ambiguous trees found.
+	// If `false` (the default), finds only one instance of ambiguity produced by each pair of rules.
+	// If `true`, finds every distinct pair of ambiguous trees.
 	// Often, the former (and default) is sufficient for determining the necessary changes to make to the grammar; though, the latter can be helpful as the change needed might be in a subsequent rule produced by the rule at the root of an instance of ambiguity. For certain cases when `findAll` is `true`, such as recursive rules (i.e., a rule whose RHS contains the LHS), an excessive number of ambiguity instances will be printed.
 	findAll: { type: Boolean, optional: true },
 	// Replace `grammar` with ambiguous test rules, defined and explained in 'ambiguityExamples.js', to check the accuracy of this algorithm.

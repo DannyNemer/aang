@@ -112,7 +112,7 @@ ambigDiffNumTerms.addRule({ RHS: [ x, y ] })
 
 /**
  * The same instance of ambiguity represented at different depths by multiple pairs of paths.
- * When `printAll` is `true`, avoid printing different instances of the same ambiguous relationship by removing a pair's identical rightmost symbols (using `diffTrees()`) and comparing to previous pairs.
+ * When `findAll` is `true`, avoid printing different instances of the same ambiguous relationship by removing a pair's identical rightmost symbols (using `diffTrees()`) and comparing to previous pairs.
  *
  * S -> X           (other ambig)  S -> X -> x           (trim)  S -> X           (identical so
  * S -> X-par -> X       =>        S -> X-par -> X -> x    =>    S -> X-par -> X   not printed)
@@ -135,8 +135,8 @@ ambigBuiltFromEarlierAmbig.addRule({ RHS: [ xParPar ] })
 
 /**
  * Multiple instances of ambiguity within the same pair of start rules from the root nonterminal symbol.
- * By default, when the `printAll` option is set to `false`, the ambiguity check will only print one instance of ambiguity for each pair of rules from the root nonterminal symbol.
- * This exemplifies when one would want `printAll` set to `true`.
+ * By default, when the `findAll` option is set to `false`, the ambiguity check will only print one instance of ambiguity for each pair of rules from the root nonterminal symbol.
+ * This exemplifies when one would want `findAll` set to `true`.
  *
  * S -> X-or-Y -> X   S -> X-or-Y -> Y
  * S -> X             S -> Y
@@ -197,8 +197,8 @@ ambigRecursiveMultRule.addRule({ RHS: [ x, xx ] })
 /**
  * Multiple instances of ambiguity within the same pair of start rules from the root nonterminal symbol.
  * The presence of multiple instances, as opposed to one, is caused by an ambiguous symbol in one of the rules' RHS.
- * By default, when the `printAll` option is set to `false`, the ambiguity check will only print one instance of ambiguity for each pair of rules from the root nonterminal symbol.
- * This is also an example of a single instance of a path being ambiguous with multiple paths from the same start rule. Hence, when `printAll` is `true`, cannot `break` after finding ambiguity with a pair of paths.
+ * By default, when the `findAll` option is set to `false`, the ambiguity check will only print one instance of ambiguity for each pair of rules from the root nonterminal symbol.
+ * This is also an example of a single instance of a path being ambiguous with multiple paths from the same start rule. Hence, when `findAll` is `true`, cannot `break` after finding ambiguity with a pair of paths.
  *
  * S -> X-or-X-dup -> X -> x   S -> X-or-X-dup -> X-dup -> x
  * S -> X -> x                 S -> X -> x
