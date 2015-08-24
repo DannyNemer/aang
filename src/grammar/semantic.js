@@ -135,21 +135,27 @@ exports.mergeRHS = function (A, B) {
 	return A.concat(B)
 }
 
-// Returns `true` if the two semantics are identical (excluding children) and duplicates are forbidden
-exports.forbiddenDups = function (A, B) {
-		var semanticA = A[i].semantic
-	var BLen = B.length
+/**
+ * Determines if a new LHS semantic function (yet to be reduced) exists in the previous RHS semantics (already reduced) and multiple instances of that semantic function (irrespective of children) are forbidden. Hence, it allows its parse tree to be rejected without having to complete the new LHS semantic and later rejecting the tree for this reason in `semantic.mergeRHS()`
+ *
+ * @param {Array} rhs The most recent set of reduced semantics in a tree that have yet to be reduced into their parent semantic.
+ * @param {Array} newLHS The new semantic, yet to be reduced, which will eventually be concatendated with `rhs` and share the same parent semantic.
+ * @return {Boolean} `true` if `rhs` contains an instance of `newLHS`'s semantic function of which multiple instances are forbidden, else `false`.
+ */
+exports.forbiddenDups = function (rhs, newLHS) {
+	// `newLHS` can only ever have one semantic (which has yet to be reduced)
+	var lhsSemantic = newLHS[0].semantic
 
-	for (var i = 0, ALen = A.length; i < ALen; ++i) {
-		var semanticAPreventsDups = semanticA.preventDups
-
-			// Prevent multiple instances of this function within a function's args (e.g., users-gender())
-			if (semanticAPreventsDups && semanticA === B[j].semantic) {
-		for (var j = 0; j < BLen; ++j) {
+	if (lhsSemantic.preventDups) {
+		for (var s = 0, rhsLen = rhs.length; s < rhsLen; ++s) {
+			// Prevent multiple instances of this function within a function's args (e.g., 'users-gender()'')
+			if (rhs[s].semantic === lhsSemantic) {
 				return true
 			}
 		}
 	}
+
+	return false
 }
 
 // Returns `true` if passed semantics and their children are identical
