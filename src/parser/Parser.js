@@ -18,9 +18,9 @@ function Parser(stateTable) {
  * Checks if an n-gram from the input query is an entity. This is a simple, temporary entity resolution implementation that will be replaced by language models for each category and Elasticsearch for look up.
  *
  * @param {Array} wordTab The match terminal symbols.
- * @param  {[type]} endPos The end index in the input query of `nGram`.
- * @param  {[type]} newSemanticArgs The semantic arguments created for this parse; used to avoid duplicates.
- * @param  {[type]} nGram A token from the input query.
+ * @param {Number} endPos The end index in the input query of `nGram`.
+ * @param {Object} newSemanticArgs The semantic arguments created for this parse; used to avoid duplicates.
+ * @param {String} nGram A token from the input query.
  */
 Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, nGram) {
 	var entityInstances = entities[nGram]
@@ -68,7 +68,7 @@ Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, nGra
 }
 
 /**
- * Tokenize the input query and look for terminal symbol matches using n-gram analysis.
+ * Tokenizes the input query and look for terminal symbol matches using n-gram analysis.
  *
  * @param {String} query The input query.
  * @return {Array} The array of matches for each index of `query`.
@@ -178,7 +178,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 }
 
 /**
- * Parse and construct a parse forest for an input query using the state table generated for the grammar.
+ * Parses and constructs a parse forest for an input query using the state table generated for the grammar.
  *
  * @param {String} query The input query to parse.
  * @return {Object} The start node of the parse forest if the parse succeeds, else `null`.
@@ -244,7 +244,7 @@ Parser.prototype.parse = function (query) {
 
 	// ACCEPT
 	// Find the start node; otherwise the parse failed
-	// Tests show 1.9x more likely to find the start node by iterating backward
+	// Tests show 1.9x more likely to find the start node faster by iterating backward
 	for (var v = this.vertTab.length - 1; v > -1; --v) {
 		var vertex = this.vertTab[v]
 		if (vertex.state.isFinal) {
@@ -257,7 +257,7 @@ Parser.prototype.parse = function (query) {
 }
 
 /**
- * Add a new subnode.
+ * Adds a new subnode.
  *
  * @param {[type]} sym The new symbol.
  * @param {[type]} [sub] The subnode (i.e., RHS) which is produced by `sym`. Does not exist if `sym` is a terminal symbol.
@@ -266,7 +266,7 @@ Parser.prototype.addSub = function (sym, sub) {
 	var size = sub ? sub.size : sym.size // no sub -> terminal symbol
 	var node
 
-	// Tests show 1.25x more likely to find the node by iterating backward
+	// Tests show 1.25x more likely to find the node faster by iterating backward
 	for (var n = this.nodeTab.length - 1; n > -1; --n) {
 		node = this.nodeTab[n]
 		if (node.sym === sym && node.size === size) break
@@ -321,7 +321,7 @@ Parser.prototype.addSub = function (sym, sub) {
 function subIsNew(existingSubs, newSub) {
 	var newSubNext = newSub.next
 
-	// Tests show 1.15x more likely to find the subnode by iterating backward
+	// Tests show 1.15x more likely to find the subnode faster by iterating backward
 	for (var s = existingSubs.length - 1; s > -1; --s) {
 		var oldSub = existingSubs[s]
 
@@ -343,13 +343,13 @@ function subIsNew(existingSubs, newSub) {
 }
 
 /**
- * Create a vertex for a new state if no vertex exists; otherwise return the existing vertex.
+ * Creates a vertex for a new state if no vertex exists; otherwise return the existing vertex.
  *
  * @param {Object} state The new state.
  * @return {Object} A new vertex if no vertex for `state` exists, else the existing vertex for `state`.
  */
 Parser.prototype.addVertex = function (state) {
-	// Tests show 3x more likely to find the vertex by iterating backward
+	// Tests show 3x more likely to find the vertex faster by iterating backward
 	for (var v = this.vertTab.length - 1; v > -1; --v) {
 		var vertex = this.vertTab[v]
 		if (vertex.state === state) return vertex
@@ -370,7 +370,7 @@ Parser.prototype.addVertex = function (state) {
 }
 
 /**
- * Get the next state.
+ * Gets the next state from the state table.
  *
  * @param {Object} state The previous state.
  * @param {Object} sym The symbol to check.
@@ -379,7 +379,7 @@ Parser.prototype.addVertex = function (state) {
 Parser.prototype.nextState = function (state, sym) {
 	var stateShifts = state.shifts
 
-	// Tests show 1.25x more likely to find the state by iterating forward. Should be checked if StateTable sorting or grammar changes.
+	// Tests show 1.25x more likely to find the state faster by iterating forward. Should be checked if StateTable sorting or grammar changes.
 	for (var s = 0, stateShiftsLen = stateShifts.length; s < stateShiftsLen; ++s) {
 		var shift = stateShifts[s]
 		if (shift.sym === sym) {
@@ -389,7 +389,7 @@ Parser.prototype.nextState = function (state, sym) {
 }
 
 /**
- * Add a new node.
+ * Adds a new node.
  *
  * @param {Object} node The new node.
  * @param {Objkect} oldVertex The vertex which points to the new node (i.e., the previous state).
@@ -402,7 +402,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 	var vertexZNodes = vertex.zNodes
 	var zNode // holds a node and vertices that point to that node
 
-	// Tests show 1.5x more likely to find the zNode by iterating backward
+	// Tests show 1.5x more likely to find the zNode faster by iterating backward
 	for (var v = vertexZNodes.length - 1; v > -1; --v) {
 		zNode = vertexZNodes[v]
 		if (zNode.node === node) break
@@ -425,10 +425,10 @@ Parser.prototype.addNode = function (node, oldVertex) {
 }
 
 /**
- * Reduce a node using reductions.
+ * Reduces a node using reductions.
  *
- * @param  {[type]} redZNode The zNode from which to build subnodes using the reductions.
- * @param  {[type]} red The reduction to execute on `redZNode`.
+ * @param {Object} redZNode The zNode from which to build subnodes using the reductions.
+ * @param {Object} red The reduction to execute on `redZNode`.
  */
 Parser.prototype.reduce = function (redZNode, red) {
 	var vertices = redZNode.vertices
