@@ -152,7 +152,7 @@ function createItem(sub, prevItem, ruleProps) {
 		if (ruleProps.insertedSemantic) {
 			// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
 			var prevSemantic = prevItem.semantics
-			if (prevSemantic && prevSemantic.isRHS && semantic.forbiddenDups(prevSemantic.semantic, newSemantic)) {
+			if (prevSemantic && prevSemantic.isRHS && semantic.isForbiddenMultiple(prevSemantic.semantic, newSemantic)) {
 				return -1
 			}
 
@@ -189,7 +189,7 @@ function createItem(sub, prevItem, ruleProps) {
 				}
 			} else {
 				// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
-				if (prevSemantic && prevSemantic.isRHS && semantic.forbiddenDups(prevSemantic.semantic, newSemantic)) {
+				if (prevSemantic && prevSemantic.isRHS && semantic.isForbiddenMultiple(prevSemantic.semantic, newSemantic)) {
 					return -1
 				}
 
@@ -250,7 +250,7 @@ function createItem(sub, prevItem, ruleProps) {
 				} else {
 					// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
 					var prevSemantic = prevItem.semantics
-					if (prevSemantic && prevSemantic.isRHS && semantic.forbiddenDups(prevSemantic.semantic, newSemantic)) {
+					if (prevSemantic && prevSemantic.isRHS && semantic.isForbiddenMultiple(prevSemantic.semantic, newSemantic)) {
 						return -1
 					}
 

@@ -142,7 +142,7 @@ exports.mergeRHS = function (A, B) {
  * @param {Array} newLHS The new semantic, yet to be reduced, which will eventually be concatendated with `rhs` and share the same parent semantic.
  * @return {Boolean} `true` if `rhs` contains an instance of `newLHS`'s semantic function of which multiple instances are forbidden, else `false`.
  */
-exports.forbiddenDups = function (rhs, newLHS) {
+exports.isForbiddenMultiple = function (rhs, newLHS) {
 	// `newLHS` can only ever have one semantic (which has yet to be reduced)
 	var lhsSemantic = newLHS[0].semantic
 
