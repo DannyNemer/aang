@@ -10,7 +10,7 @@ exports.new = function (opts) {
 	opts.name = opts.name.toLowerCase()
 
 	if (exports.semantics.hasOwnProperty(opts.name)) {
-		util.printErrWithLine('Duplicate Semantic:', opts.name)
+		util.logErrorAndLine('Duplicate Semantic:', opts.name)
 		throw 'duplicate Semantic'
 	}
 
@@ -37,7 +37,7 @@ function newSemanticFunc(opts) {
 	}
 
 	if (opts.minParams > opts.maxParams) {
-		util.printErrWithLine('Semantic minParams > maxParams:', opts)
+		util.logErrorAndLine('Semantic minParams > maxParams:', opts)
 		throw 'ill-formed Semantic function'
 	}
 

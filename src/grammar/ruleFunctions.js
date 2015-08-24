@@ -71,17 +71,17 @@ Symbol.prototype.addVerb = function (opts) {
 	// Must have an inflected form for every person-number combination in nominative case:
 	// - first-person, third-person-singular, plural
 	if (!opts.oneOrPl && !opts.oneOrThreeSg && !opts.one) {
-		util.printErrWithLine('Missing inflected verb form for first-person')
+		util.logErrorAndLine('Missing inflected verb form for first-person')
 		throw 'ill-formed verb'
 	}
 
 	if (!opts.oneOrPl && !opts.pl) {
-		util.printErrWithLine('Missing inflected verb form for plural')
+		util.logErrorAndLine('Missing inflected verb form for plural')
 		throw 'ill-formed verb'
 	}
 
 	if (!opts.oneOrThreeSg && !opts.threeSg) {
-		util.printErrWithLine('Missing inflected verb form for third-person-singular')
+		util.logErrorAndLine('Missing inflected verb form for third-person-singular')
 		throw 'ill-formed verb'
 	}
 
@@ -250,7 +250,7 @@ Symbol.prototype.addWord = function (opts) {
 
 	// Opt-words cannot have insertion costs
 	if (opts.optional && opts.insertionCost !== undefined) {
-		util.printErrWithLine('Optional words cannot have insertion costs:', opts.name)
+		util.logErrorAndLine('Optional words cannot have insertion costs:', opts.name)
 		throw 'ill-formed opt-word'
 	}
 
@@ -301,7 +301,7 @@ Symbol.prototype.addInt = function (opts) {
 
 	// If defined, maximum value must be greater than minimum value
 	if (opts.min >= opts.max) {
-		util.printErrWithLine('<int> max value must be greater than min value:', 'min: ' + opts.min + ', max: ' + opts.max)
+		util.logErrorAndLine('<int> max value must be greater than min value:', 'min: ' + opts.min + ', max: ' + opts.max)
 		throw 'ill-formed <int> symbol'
 	}
 

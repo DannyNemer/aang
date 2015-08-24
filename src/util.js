@@ -47,7 +47,7 @@ exports.illFormedOpts = function (schema, opts) {
 		var val = schema[prop]
 
 		if (!val.optional && !opts.hasOwnProperty(prop)) {
-			exports.printErrWithLine('Missing \'' + prop + '\' property')
+			exports.logErrorAndLine('Missing \'' + prop + '\' property')
 			return true
 		}
 	}
@@ -56,7 +56,7 @@ exports.illFormedOpts = function (schema, opts) {
 	for (var prop in opts) {
 		// Unrecognized property
 		if (!schema.hasOwnProperty(prop)) {
-			exports.printErrWithLine('Unrecognized property:', prop)
+			exports.logErrorAndLine('Unrecognized property:', prop)
 			return true
 		}
 
@@ -66,7 +66,7 @@ exports.illFormedOpts = function (schema, opts) {
 
 		// Accidentally passed an `undefined` object; ex: `undefined`, `[]`, `[ 1, undefined ]`
 		if (optsVal === undefined || (Array.isArray(optsVal) && (optsVal.length === 0 || optsVal.indexOf(undefined) !== -1))) {
-			exports.printErrWithLine('undefined ' + prop + ':', optsVal)
+			exports.logErrorAndLine('undefined ' + prop + ':', optsVal)
 			return true
 		}
 
@@ -82,13 +82,13 @@ exports.illFormedOpts = function (schema, opts) {
 		} else {
 			// Passed value of incorrect type; ex: `num: String`, `str: Array`
 			if (optsVal.constructor !== schemaPropType) {
-				exports.printErrWithLine('\'' + prop + '\' not of type ' + schemaPropType.name + ':', optsVal)
+				exports.logErrorAndLine('\'' + prop + '\' not of type ' + schemaPropType.name + ':', optsVal)
 				return true
 			}
 
 			// Passed Array contains elements not of `arrayType` (if `arrayType` is defined)
 			if (Array.isArray(optsVal) && schemaVal.arrayType && !optsVal.every(function (el) { return el.constructor === schemaVal.arrayType })) {
-				exports.printErrWithLine('\'' + prop + '\' not an array of type ' + schemaVal.arrayType.name + ':', optsVal)
+				exports.logErrorAndLine('\'' + prop + '\' not an array of type ' + schemaVal.arrayType.name + ':', optsVal)
 				return true
 			}
 		}
@@ -360,7 +360,7 @@ function printWithColoredLabel(label, color, args) {
  *
  * @param {...Mixed} valN The values to print following "Error: ".
  */
-exports.printErrWithLine = function () {
+exports.logErrorAndLine = function () {
 	exports.logError.apply(null, arguments)
 	console.log('  ' + exports.getLine())
 }
