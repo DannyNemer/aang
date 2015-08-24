@@ -26,7 +26,7 @@ var semanticFuncOptsSchema = {
 	// When a DB object can only have one value for a specific property (e.g., repos only created by 1 person)
 	// prevent multiple instances of the corresponding semantic function within another semantic's arguments
 	// Otherwise, an intersection of objects with different values for this property will return an empty set
-	preventDups: { type: Boolean, optional: true },
+	forbidMultiple: { type: Boolean, optional: true },
 }
 
 // Create a new semantic function from passed opts
@@ -45,7 +45,7 @@ function newSemanticFunc(opts) {
 		cost: opts.cost,
 		minParams: opts.minParams,
 		maxParams: opts.maxParams,
-		preventDups: opts.preventDups,
+		forbidsMultiple: opts.forbidMultiple,
 	}
 
 	// Save calling line for error reporting
@@ -102,7 +102,7 @@ exports.mergeRHS = function (A, B) {
 
 	for (var i = 0, ALen = A.length; i < ALen; ++i) {
 		var semanticA = semanticNodeA.semantic
-		var semanticAPreventsDups = semanticA.preventDups
+		var semanticAForbidsMultiple = semanticA.forbidsMultiple
 		var semanticAIsNegation = semanticA.name === 'not'
 
 			var semanticNodeB = B[j]
@@ -110,7 +110,7 @@ exports.mergeRHS = function (A, B) {
 			var semanticB = semanticNodeB.semantic
 
 			// Prevent multiple instances of this function within a function's args (e.g., users-gender())
-			if (semanticAPreventsDups && semanticA === semanticB) {
+			if (semanticAForbidsMultiple && semanticA === semanticB) {
 				return -1
 			}
 
@@ -146,7 +146,7 @@ exports.isForbiddenMultiple = function (rhs, newLHS) {
 	// `newLHS` can only ever have one semantic (which has yet to be reduced)
 	var lhsSemantic = newLHS[0].semantic
 
-	if (lhsSemantic.preventDups) {
+	if (lhsSemantic.forbidsMultiple) {
 		for (var s = 0, rhsLen = rhs.length; s < rhsLen; ++s) {
 			// Prevent multiple instances of this function within a function's args (e.g., 'users-gender()'')
 			if (rhs[s].semantic === lhsSemantic) {
@@ -209,7 +209,7 @@ exports.reduce = function (LHS, RHS) {
 		return -1
 	} else if (rhsLen > lhsSemantic.maxParams) {
 		if (lhsSemantic.maxParams > 1) throw 'semantic.reduce: rhsLen > LHS.maxParams && LHS.maxParams > 1'
-		if (lhsSemantic.preventDups) throw 'semantic.reduce: rhsLen > LHS.maxParams && LHS.preventDups'
+		if (lhsSemantic.forbidsMultiple) throw 'semantic.reduce: rhsLen > lhs.maxParams && lhs.forbidsMultiple'
 
 		// Copy LHS semantic for each RHS
 		// repos liked by me and my followers -> copy "repos-liked()" for each child

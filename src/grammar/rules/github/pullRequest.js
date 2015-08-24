@@ -18,7 +18,7 @@ pullRequest.term.addWord({
 pullRequest.headMayPoss.addRule({ RHS: [ github.termOpt, pullRequest.term ] })
 
 
-var pullRequestsCreatedSemantic = g.newSemantic({ name: g.hyphenate(pullRequest.namePl, 'created'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+var pullRequestsCreatedSemantic = g.newSemantic({ name: g.hyphenate(pullRequest.namePl, 'created'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true })
 var pullRequestCreatorsSemantic = g.newSemantic({ name: g.hyphenate(pullRequest.nameSg, 'creators'), cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my pull requests
@@ -68,7 +68,7 @@ github.assigners.addRule({ RHS: [ pullRequest.catPl ] })
 // open/closed (pull requests); (pull requests that are) open/closed
 pullRequest.adjective.addRule({
 	RHS: [ github.state ],
-	semantic: g.newSemantic({ name: g.hyphenate(pullRequest.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+	semantic: g.newSemantic({ name: g.hyphenate(pullRequest.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true })
 })
 
 

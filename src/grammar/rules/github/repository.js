@@ -19,8 +19,8 @@ repository.term.addWord({
 // |GitHub repos (I starred)
 repository.headMayPoss.addRule({ RHS: [ github.termOpt, repository.term ] })
 
-// preventDups because repos only have one author, so an intersection of repos from different authors is empty
-var repositoriesCreatedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'created'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+// `forbidMultiple` because repos only have one author, so an intersection of repos from different authors is empty
+var repositoriesCreatedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'created'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true })
 var repositoryCreatorsSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'creators'), cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my repos; my {language} repos
@@ -121,7 +121,7 @@ var language = g.newSymbol('language')
 language.addRule({
 	terminal: true,
 	RHS: languageEntity,
-	semantic: g.newSemantic({ name: g.hyphenate(repository.namePl, 'language'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+	semantic: g.newSemantic({ name: g.hyphenate(repository.namePl, 'language'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true })
 })
 // (my) {language} (repos); (repos that are) {language} (repos)
 repository.preModifier.addRule({ RHS: [ language ] })

@@ -96,7 +96,7 @@ user.possessive.addRule({
 
 
 // GENDER:
-var usersGenderSemantic = g.newSemantic({ name: g.hyphenate(user.namePl, 'gender'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+var usersGenderSemantic = g.newSemantic({ name: g.hyphenate(user.namePl, 'gender'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true })
 var usersGenderFemaleSemantic = g.reduceSemantic(usersGenderSemantic, g.newSemantic({ isArg: true, name: 'female', cost: 0 }))
 var usersGenderMaleSemantic = g.reduceSemantic(usersGenderSemantic, g.newSemantic({ isArg: true, name: 'male', cost: 0 }))
 

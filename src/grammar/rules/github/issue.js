@@ -21,7 +21,7 @@ issue.term.addWord({
 issue.headMayPoss.addRule({ RHS: [ github.termOpt, issue.term ] })
 
 
-var issuesOpenedSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'opened'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+var issuesOpenedSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'opened'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true })
 var issuesOpenersSemantic = g.newSemantic({ name: g.hyphenate(issue.nameSg, 'openers'), cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my issues; my closed issues
@@ -84,7 +84,7 @@ github.assigners.addRule({ RHS: [ issue.catPl ] })
 // open/closed (issues); (issues that are) open/closed
 issue.adjective.addRule({
 	RHS: [ github.state ],
-	semantic: g.newSemantic({ name: g.hyphenate(issue.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, preventDups: true })
+	semantic: g.newSemantic({ name: g.hyphenate(issue.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true })
 })
 
 
