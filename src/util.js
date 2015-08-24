@@ -508,12 +508,12 @@ exports.arraysEqual = function (a, b) {
 	// One of two is undefined
 	if (!a || !b) return false
 
-	var i = a.length
+	var aLength = a.length
 
 	// Different lengths
-	if (i !== b.length) return false
+	if (aLength !== b.length) return false
 
-	while (i--) {
+	for (var i = 0; i < aLength; ++i) {
 		if (a[i] !== b[i]) return false
 	}
 
