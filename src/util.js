@@ -408,7 +408,7 @@ exports.assertTrue = function (value, msg) {
 var _times = new Map()
 
 /**
- * Starts a high-resolution timer (with precision in nanoseconds) identified by `label`. Use `dannyUtil.timeEnd(label)` to print the timer's current value.
+ * Starts a high-resolution timer (with precision in microseconds) identified by `label`. Use `dannyUtil.timeEnd(label)` to print the timer's current value.
  *
  * @param {String} label The identifier of the timer.
  * @example
@@ -417,12 +417,12 @@ var _times = new Map()
  *
  * // ...stuff...
  *
- * // Prints "my test: 23.264491ms"
+ * // Prints "my test: 13.264ms"
  * dannyUtil.timeEnd('my test')
  *
  * // ...more stuff...
  *
- * // Prints "my test: 36.183837ms"
+ * // Prints "my test: 31.183ms"
  * dannyUtil.timeEnd('my test')
  */
 exports.time = function (label) {
@@ -441,8 +441,9 @@ exports.timeEnd = function (label) {
 		throw new Error('No such label:', label)
 	}
 
-	var duration = process.hrtime(time)
-	console.log('%s: %dms', label, duration[0] * 1e3 + duration[1] / 1e6)
+	var durationTuple = process.hrtime(time)
+	var duration = durationTuple[0] * 1e3 + durationTuple[1] / 1e6
+	console.log('%s: %dms', label, duration.toFixed(3))
 }
 
 /**
