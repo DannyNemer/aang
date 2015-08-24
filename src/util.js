@@ -187,6 +187,7 @@ exports.expandHomeDir = function (path) {
  * Executes the passed function within a `try` block. If an error is thrown, removes parentheses surrounding file paths in its stack trace for the iTerm open-file-path shortcut, and colors the error type name (e.g., `TypeError`) red.
  *
  * @param {Function} callback The function to execute within a `try` block.
+ * @param {Boolean} rethrow Specify rethrowing an error (after printing the stack trace) if caught from `callback`.
  * @return {Mixed} The value returned by `callback`, if any.
  * @example
  * // Catches thrown error and prints a formatted stack trace
@@ -195,7 +196,7 @@ exports.expandHomeDir = function (path) {
  *   throw new Error('test failed')
  * })
  */
-exports.tryCatchWrapper = function (callback) {
+exports.tryCatchWrapper = function (callback, rethrow) {
 	try {
 		return callback()
 	} catch (e) {
@@ -220,6 +221,8 @@ exports.tryCatchWrapper = function (callback) {
 		} else {
 			console.log(e)
 		}
+
+		if (rethrow) throw e
 	}
 }
 
