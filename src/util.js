@@ -184,10 +184,16 @@ exports.expandHomeDir = function (path) {
 }
 
 /**
- * Executes the passed function within a `try` block. If an error is thrown, removes parentheses surrounding file paths in its stack trace for the iTerm open-file-path shortcut, and colors the error type name (e.g., "TypeError") red.
+ * Executes the passed function within a `try` block. If an error is thrown, removes parentheses surrounding file paths in its stack trace for the iTerm open-file-path shortcut, and colors the error type name (e.g., `TypeError`) red.
  *
  * @param {Function} callback The function to execute within a `try` block.
  * @return {Mixed} The value returned by `callback`, if any.
+ * @example
+ * // Catches thrown error and prints a formatted stack trace
+ * dannyUtil.tryCatchWrapper(function () {
+ *   // ...stuff...
+ *   throw new Error('test failed')
+ * })
  */
 exports.tryCatchWrapper = function (callback) {
 	try {
@@ -240,7 +246,7 @@ exports.deleteModuleCache = function () {
 /**
  * Gets the file path and line number of the first item in the stack of the parent module from where this function was called. This is useful for logging where an object is instantiated.
  *
- * @param {Boolean} getCallingLine If `true`, return line of where this function was called, else the line of the parent module.
+ * @param {Boolean} getCallingLine Specify getting the line where `getLine()` is called instead of the line of the parent module.
  * @return {String} The file path and line number of calling line.
  */
 exports.getLine = function (getCallingLine) {
@@ -448,6 +454,13 @@ var _counts = new Map()
  * Counts the number of times a section of code is reached, identified by `label`. Use `dannyUtil.countEnd(label)` to print value. This is useful for profiling complex programs.
  *
  * @param {String} label The id to refer to a section of code.
+ * @example
+ * for (var i = 0; i < 100; ++i) {
+ *   if (i % 2 === 0) dannyUtil.count('even')
+ * }
+ *
+ * // Prints "even: 50"; resets count for 'even' to 0
+ * dannyUtil.countEnd('even')
  */
 exports.count = function (label) {
 	var val = _counts.get(label) || 0
@@ -470,6 +483,17 @@ exports.countEnd = function (label) {
 
 /**
  * Prints (and clears) the values of all counters used on `dannyUtil.count()`. Will not print counters that are never reached (and never have their keys initialized).
+ * @example
+ * for (var i = 0; i < 100; ++i) {
+ *   if (i % 2 === 0) dannyUtil.count('even')
+ *   if (i % 2 === 1) dannyUtil.count('odd')
+ *   if (i > 100) dannyUtil.count('never reached')
+ * }
+ *
+ * // Prints: "even: 50
+ * //          odd: 50"
+ * // Resets all counts to 0
+ * dannyUtil.countEndAll()
  */
 exports.countEndAll = function () {
 	_counts.forEach(function(count, label) {
