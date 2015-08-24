@@ -4,21 +4,29 @@ var semantic = require('../grammar/semantic')
 var calcHeuristicCosts = require('./calcHeuristicCosts')
 
 
-// Use A* path search to find K-best trees in parse forest returned by parser, beginning at start node
+/**
+ * Uses A* path search to find the K-best trees in a parse forest returned by `Parser`.
+ *
+ * @param {Object} startNode The root node of the parse forest returned by `Parser`.
+ * @param {Number} K The maximum number of parse trees to find.
+ * @param {Boolean} buildDebugTrees Specify constructing parse trees for printing at expense of speed.
+ * @param {Boolean} printStats Specify printing performance statistics.
+ * @return {Array} The K-best parse trees.
+ */
 exports.search = function (startNode, K, buildDebugTrees, printStats) {
 	// Calculate the (admissible) heuristic estimates of the minimum costs of a subtree that can be constructed from each node
 	calcHeuristicCosts(startNode)
 
-	// Min-heap of all partially constructed trees
-	var heap = new BinaryHeap
 	// Array of all completed parse trees
 	var trees = []
+	// Min-heap of all partially constructed trees
+	var heap = new BinaryHeap
 
-	var newItem = {
+	heap.push({
 		// When item popped, will look at node's subs for next steps
 		node: startNode,
 		// If no `node`, because reached end of branch, go to next branch - either node or text array needing conjugation
-		// Reverse linked list, pointing to previously incompleted binary rules
+		// Reverse linked list, pointing to previously incomplete binary rules
 		nextNodes: undefined,
 		// Number of elements in `nextNodes`, excluding text to append
 		// Used as marker of when can merge with LHS semantic -> have completed full branch
@@ -35,9 +43,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 		costSoFar: 0,
 		// Cost of path + heuristic estimate of the minimum cost to complete the parse tree
 		cost: 0,
-	}
-
-	heap.push(newItem)
+	})
 
 	while (heap.content.length > 0) {
 		var item = heap.pop()
@@ -148,9 +154,9 @@ function createItem(sub, prevItem, ruleProps) {
 
 	// Insertion
 	if (ruleProps.insertionIdx !== undefined) {
-		// If 'insertedSemantic' exists, then newSemantic also exists
+		// If 'insertedSemantic' exists, then `newSemantic` also exists and is LHS
 		if (ruleProps.insertedSemantic) {
-			// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
+			// Discard new LHS semantic if `prevSemantic` is RHS, is identical to `newSemantic`, and multiple instances of the semantic are forbidden
 			var prevSemantic = prevItem.semantics
 			if (prevSemantic && prevSemantic.isRHS && semantic.isForbiddenMultiple(prevSemantic.semantic, newSemantic)) {
 				return -1
@@ -188,7 +194,7 @@ function createItem(sub, prevItem, ruleProps) {
 					}
 				}
 			} else {
-				// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
+				// Discard new LHS semantic if `prevSemantic` is RHS, is identical to `newSemantic`, and multiple instances of the semantic are forbidden
 				if (prevSemantic && prevSemantic.isRHS && semantic.isForbiddenMultiple(prevSemantic.semantic, newSemantic)) {
 					return -1
 				}
@@ -248,7 +254,7 @@ function createItem(sub, prevItem, ruleProps) {
 						prev: prevItem.semantics,
 					}
 				} else {
-					// Discard if prevSemantic is RHS, is identical to newSemantic, and dups of the semantic are prevented
+					// Discard new LHS semantic if `prevSemantic` is RHS, is identical to `newSemantic`, and multiple instances of the semantic are forbidden
 					var prevSemantic = prevItem.semantics
 					if (prevSemantic && prevSemantic.isRHS && semantic.isForbiddenMultiple(prevSemantic.semantic, newSemantic)) {
 						return -1
