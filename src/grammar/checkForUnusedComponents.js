@@ -14,7 +14,7 @@ module.exports = function (grammar) {
 		for (var otherSymbol in grammar) {
 			if (otherSymbol !== symbolName) {
 				var rules = grammar[otherSymbol]
-				for (var r = rules.length; r-- > 0;) {
+				for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 					if (rules[r].RHS.indexOf(symbolName) !== -1) return
 				}
 			}
@@ -28,7 +28,7 @@ module.exports = function (grammar) {
 	Object.keys(entityCategoryCreationLines).forEach(function (categorySymbolName) {
 		for (var otherSymbol in grammar) {
 			var rules = grammar[otherSymbol]
-			for (var r = rules.length; r-- > 0;) {
+			for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 				if (rules[r].RHS.indexOf(categorySymbolName) !== -1) return
 			}
 		}
@@ -43,7 +43,7 @@ module.exports = function (grammar) {
 
 		for (var sym in grammar) {
 			var rules = grammar[sym]
-			for (var r = rules.length; r-- > 0;) {
+			for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 				var rule = rules[r]
 				if (rule.semantic) {
 					// Initialize stack with rule.semantic, an array (possible of multiple semantic nodes)

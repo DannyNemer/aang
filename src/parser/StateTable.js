@@ -201,7 +201,7 @@ function addRule(items, rule) {
 }
 
 function getItems(XTab, ruleSet, RHSSym) {
-	for (var x = XTab.length; x-- > 0;) {
+	for (var x = 0, XTabLen = XTab.length; x < XTabLen; ++x) {
 		var xItems = XTab[x]
 		if (xItems.sym === RHSSym) {
 			return xItems

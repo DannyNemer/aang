@@ -200,7 +200,7 @@ function runCommand(input) {
 	// Print CLI history
 	else if (firstArg === '.history') {
 		var historyLen = rl.history.length
-		for (var i = historyLen; i-- > 1;) {
+		for (var i = historyLen - 1; i > 0; --i) {
 			var idx = historyLen - i
 			console.log((historyLen > 10 && idx < 10 ? ' ' : '') + idx + '  ' + rl.history[i])
 		}

@@ -174,7 +174,7 @@ function addInsertion(insertions, nontermSym, newInsertion) {
 // If new insertion is cheaper than an existing insertion with identical text, remove existing insertion and return false
 // Otherwise returns `false`
 function insertionExists(symInsertions, newInsertion) {
-	for (var s = symInsertions.length; s-- > 0;) {
+	for (var s = 0, symInsertionsLen = symInsertions.length; s < symInsertionsLen; ++s) {
 		var existingInsertion = symInsertions[s]
 
 		// New insertion and existing insertion have identical display text
@@ -350,7 +350,7 @@ function conjugateText(insertionText, ruleProps) {
 // Throw err if new rule generated from insertion(s), empty-string(s), or a transposition is a duplicate of an existing rule
 // If new rule has identical semantics and RHS but is cheaper than previous new rule, remove previous rule
 function ruleExists(rules, newRule, LHS) {
-	for (var r = rules.length; r-- > 0;) {
+	for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 		var existingRule = rules[r]
 
 		if (util.arraysEqual(existingRule.RHS, newRule.RHS)) {
@@ -408,7 +408,7 @@ function removeNullNonterminalSymbols(grammar) {
 							rules.splice(r, 1)
 							r--
 						}
-					} else for (var RHS = rule.RHS, s = RHS.length; s-- > 0;) {
+					} else for (var s = 0, RHS = rule.RHS, RHSLen = RHS.length; s < RHSLen; ++s) {
 						// Nonterminal RHS contains previously deleted symbol which had no rules
 						if (!grammar.hasOwnProperty(RHS[s])) {
 							rules.splice(r, 1)
@@ -427,8 +427,10 @@ function removeNullNonterminalSymbols(grammar) {
 function checkForSemanticErrors(grammar) {
 	for (var nontermSym in grammar) {
 		var rules = grammar[nontermSym]
-		for (var r = 0; r < rules.length; ++r) {
+
+		for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 			var rule = rules[r]
+
 			if (rule.insertionIdx === undefined) {
 				var parsingStack
 				if (parsingStack = g.ruleMissingNeededRHSSemantic(rule, nontermSym)) {

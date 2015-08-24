@@ -441,7 +441,7 @@ function invertTree(tree) {
 		var childNodes = nodeObj.node.children
 		if (childNodes) {
 			// Iterate backward to traverse left branch first.
-			for (var c = childNodes.length; c-- > 0;) {
+			for (var c = childNodes.length - 1; c > -1; --c) {
 				stack.push({ node: childNodes[c], par: nodeObj })
 			}
 		} else {

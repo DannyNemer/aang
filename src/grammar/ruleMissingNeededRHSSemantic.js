@@ -7,8 +7,8 @@ module.exports = function ruleMissingNeededRHSSemantic(grammar, rule, lhsSym, sy
 	if (!ruleHasRHSSemantic(rule)) {
 		if (!rule.terminal && !symsSeen) {
 			// Root function call - check if RHS produces a RHS semantic
-			for (var s = rule.RHS.length; s-- > 0;) {
-				if (symProducesRHSSemantic(grammar, rule.RHS[s])) return false
+			for (var s = 0, RHS = rule.RHS, RHSLen = RHS.length; s < RHSLen; ++s) {
+				if (symProducesRHSSemantic(grammar, RHS[s])) return false
 			}
 		}
 
@@ -28,7 +28,7 @@ module.exports = function ruleMissingNeededRHSSemantic(grammar, rule, lhsSym, sy
 			// Find rules where `lhsSym` is used in the RHS
 			for (var nontermSym in grammar) {
 				var rules = grammar[nontermSym]
-				for (var r = rules.length; r-- > 0;) {
+				for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 					var parentRule = rules[r]
 					var parRHS = parentRule.RHS
 					var rhsIdx = parRHS.indexOf(lhsSym)

@@ -181,10 +181,10 @@ exports.semanticArraysEqual = function (a, b) {
 	// One of two is undefined (different semantics)
 	if (!a || !b) return false
 
-	var i = a.length
-	if (i !== b.length) return false
+	var aLen = a.length
+	if (aLen !== b.length) return false
 
-	while (i-- > 0) {
+	for (var i = 0; i < aLen; ++i) {
 		if (semanticsEqual(a[i], b[i])) return true
 	}
 
