@@ -5,7 +5,7 @@ exports.semantics = {}
 // A mapping of semantic names to creation lines; used for error reporting
 exports.creationLines = {}
 
-// Create a new semantic func or arg
+// Create a new semantic function or argument
 exports.new = function (opts) {
 	opts.name = opts.name.toLowerCase()
 
@@ -19,13 +19,14 @@ exports.new = function (opts) {
 
 // Schema for semantic functions
 var semanticFuncOptsSchema = {
+	// Unique name for this semantic function
 	name: String,
 	cost: Number,
+	// Minimum number of arguments this semantic function can accept
 	minParams: Number,
+	// Maximum number of arguments this semantic function can accept
 	maxParams: Number,
-	// When a DB object can only have one value for a specific property (e.g., repos only created by 1 person)
-	// prevent multiple instances of the corresponding semantic function within another semantic's arguments
-	// Otherwise, an intersection of objects with different values for this property will return an empty set
+	// When a database object can only have one value for a specific property (e.g., repos only created by 1 person) forbid multiple instances of the corresponding semantic function within another semantic's arguments (irrespective of children). Otherwise, an intersection of objects with different values for this property will return an empty set.
 	forbidMultiple: { type: Boolean, optional: true },
 }
 
@@ -85,7 +86,12 @@ function newSemanticArg(opts) {
 	} ]
 }
 
-
+/**
+ * Calculates the sum cost of all semantic functions in a semantic tree.
+ *
+ * @param {Array} semanticArray The semantic tree to sum.
+ * @return {Number} The sum cost of the semantic tree.
+ */
 exports.costOfSemantic = function (semanticArray) {
 	return semanticArray.reduce(function (accum, cur) {
 		return accum + cur.semantic.cost + (cur.children ? exports.costOfSemantic(cur.children) : 0)
@@ -95,31 +101,31 @@ exports.costOfSemantic = function (semanticArray) {
 
 // Combines two semantics into a new array
 // Returns -1 if union of semantics in a RHS contains duplicates
-exports.mergeRHS = function (A, B) {
+exports.mergeRHS = function (a, b) {
 	// Check for duplicates
-		var semanticNodeA = A[i]
-	var B = B.length
+	var bLen = b.length
 
-	for (var i = 0, ALen = A.length; i < ALen; ++i) {
+	for (var i = 0, aLen = a.length; i < aLen; ++i) {
+		var semanticNodeA = a[i]
 		var semanticA = semanticNodeA.semantic
 		var semanticAForbidsMultiple = semanticA.forbidsMultiple
 		var semanticAIsNegation = semanticA.name === 'not'
 
-			var semanticNodeB = B[j]
-		for (var j = 0; j < B; ++j) {
+		for (var j = 0; j < bLen; ++j) {
+			var semanticNodeB = b[j]
 			var semanticB = semanticNodeB.semantic
 
-			// Prevent multiple instances of this function within a function's args (e.g., users-gender())
+			// Prevent multiple instances of this function within a function's args (e.g., 'users-gender()'')
 			if (semanticAForbidsMultiple && semanticA === semanticB) {
 				return -1
 			}
 
-			// Prevent contradiction with not() function
+			// Prevent contradiction with 'not()' function
 			if (semanticAIsNegation && semanticsEqual(semanticNodeA.children[0], semanticNodeB)) {
 				return -1
 			}
 
-			// Prevent contradiction with not() function
+			// Prevent contradiction with 'not()' function
 			if (semanticB.name === 'not' && semanticsEqual(semanticNodeA, semanticNodeB.children[0])) {
 				return -1
 			}
@@ -131,15 +137,15 @@ exports.mergeRHS = function (A, B) {
 	}
 
 	// Do not need to sort because will be sorted when added to a LHS
-	// concat() is faster here than slice() + push.apply()
-	return A.concat(B)
+	// `concat()` is faster here than `slice()` + `push.apply()`
+	return a.concat(b)
 }
 
 /**
  * Determines if a new LHS semantic function (yet to be reduced) exists in the previous RHS semantics (already reduced) and multiple instances of that semantic function (irrespective of children) are forbidden. Hence, it allows its parse tree to be rejected without having to complete the new LHS semantic and later rejecting the tree for this reason in `semantic.mergeRHS()`
  *
  * @param {Array} rhs The most recent set of reduced semantics in a tree that have yet to be reduced into their parent semantic.
- * @param {Array} newLHS The new semantic, yet to be reduced, which will eventually be concatendated with `rhs` and share the same parent semantic.
+ * @param {Array} newLHS The new semantic, yet to be reduced, which will eventually be concatenated with `rhs` and share the same parent semantic.
  * @return {Boolean} `true` if `rhs` contains an instance of `newLHS`'s semantic function of which multiple instances are forbidden, else `false`.
  */
 exports.isForbiddenMultiple = function (rhs, newLHS) {
@@ -158,8 +164,13 @@ exports.isForbiddenMultiple = function (rhs, newLHS) {
 	return false
 }
 
-// Returns `true` if passed semantics and their children are identical
-// Each semantic is a LHS
+/**
+ * Performs a deep comparison between two semantics to determine if they are equivalent.
+ *
+ * @param {Object} a The semantic to compare.
+ * @param {Object} b The other semantic to compare.
+ * @return {Boolean} `true` if the semantics are equivalent, else `false`.
+ */
 function semanticsEqual(a, b) {
 	if (a === b) return true
 
@@ -169,11 +180,17 @@ function semanticsEqual(a, b) {
 		return exports.semanticArraysEqual(a.children, b.children)
 	}
 
-	return true // args with same name
+	// `a` and `b` are semantic arguments of the same name
+	return true
 }
 
-// Returns `true` if passed arrays of semantics are identical
-// Each array is a RHS
+/**
+ * Performs a deep comparison between two arrays of semantics to determine if they are equivalent. Each array is a RHS semantic.
+ *
+ * @param {Object} a The semantic array to compare.
+ * @param {Object} b The other semantic array to compare.
+ * @return {Boolean} `true` if the semantic arrays are equivalent, else `false`.
+ */
 exports.semanticArraysEqual = function (a, b) {
 	// Same entity arrays
 	if (a === b) return true
@@ -192,33 +209,33 @@ exports.semanticArraysEqual = function (a, b) {
 }
 
 
-// Applies a completed semantic tree (`RHS`) to a more recent semantic (`LHS`), joining them together as semantic with `LHS` as the root function
-// - LHS and RHS both always defined
-// - not slicing RHS here because did before
-// - the LHS should always be empty
-// - We are assuming the LHS is always one function, not more than 1 where we intended to insert in the innermost
-exports.reduce = function (LHS, RHS) {
-	var lhsSemantic = LHS[0].semantic
-	var rhsLen = RHS.length
+// Applies a completed semantic tree (`rhs`) to a more recent semantic (`lhs`), joining them together as semantic with `lhs` as the root function
+// - lhs and rhs both always defined
+// - not slicing rhs here because did before
+// - the lhs should always be empty
+// - We are assuming the lhs is always one function, not more than 1 where we intended to insert in the innermost
+exports.reduce = function (lhs, rhs) {
+	var lhsSemantic = lhs[0].semantic
+	var rhsLen = rhs.length
 
 	// If intersect with one semantic arg
-	if (rhsLen === 1 && lhsSemantic.name === 'intersect') return RHS
+	if (rhsLen === 1 && lhsSemantic.name === 'intersect') return rhs
 
 	if (rhsLen < lhsSemantic.minParams) {
-		throw 'semantic.reduce: RHS.length < minParams'
+		throw 'semantic.reduce: rhs.length < minParams'
 		return -1
 	} else if (rhsLen > lhsSemantic.maxParams) {
-		if (lhsSemantic.maxParams > 1) throw 'semantic.reduce: rhsLen > LHS.maxParams && LHS.maxParams > 1'
+		if (lhsSemantic.maxParams > 1) throw 'semantic.reduce: rhsLen > lhs.maxParams && lhs.maxParams > 1'
 		if (lhsSemantic.forbidsMultiple) throw 'semantic.reduce: rhsLen > lhs.maxParams && lhs.forbidsMultiple'
 
-		// Copy LHS semantic for each RHS
-		// repos liked by me and my followers -> copy "repos-liked()" for each child
+		// Copy lhs semantic for each rhs
+		// "repos liked by me and my followers" -> copy "repos-liked()" for each child
 		var newLHS = []
 
 		for (var s = 0; s < rhsLen; ++s) {
 			newLHS[s] = {
 				semantic: lhsSemantic,
-				children: [ RHS[s] ],
+				children: [ rhs[s] ],
 			}
 		}
 
@@ -226,7 +243,7 @@ exports.reduce = function (LHS, RHS) {
 	} else {
 		return [ {
 			semantic: lhsSemantic,
-			children: RHS.sort(compareSemantics),
+			children: rhs.sort(compareSemantics),
 		} ]
 	}
 
@@ -234,10 +251,13 @@ exports.reduce = function (LHS, RHS) {
 }
 
 
-// Sort semantics: Arguments before functions, functions and arguments separately sorted alphabetically, identical functions sorted by their arguments
-// If returns less than 0, sort a to a lower index than b
-// If returns greater than 0, sort b to a lower index than a
-// If returns 0, leave a and b unchanged with respect to each other
+/**
+ * Recursively compares semantic trees for sorting. Sorts arguments before functions, sorts functions and arguments separately alphabetically, and recursively sorts identical functions by their arguments. This function is used as the compare function for `Array.sort()`.
+ *
+ * @param {Object} a The semantic tree to compare.
+ * @param {Object} b The other semantic tree to compare.
+ * @return {Number} -1 to sort `a` before `b`, 1 to sort `a` after `b`, or 0 to leave `a` and `b` unchanged with respect to each other.
+ */
 function compareSemantics(a, b) {
 	var aIsObject = a.children !== undefined
 	var bIsObject = b.children !== undefined
@@ -278,8 +298,12 @@ function compareSemantics(a, b) {
 	return a === b ? 0 : (a.semantic.name < b.semantic.name ? -1 : 1)
 }
 
-// Returns `true` if semantic is legal and thereby constitutes a RHS (called in grammar generation)
-// Otherwise, semantic expected to accept other semantics as arguments
+/**
+ * Determines if a semantic tree has been completely reduced. I.e., it does not expect to accept semantic arguments; rather is can be passed to another semantic function (as a RHS semantic). This is the state after every function in the tree has been output by `semantic.reduce()`. This function is used in grammar generation to mark a rule's semantic as RHS or not (properties which are using in parsing).
+ *
+ * @param {Array} semanticArray The semantic tree to inspect.
+ * @return {Boolean} `true` if the `semanticArray` is completely reduced, else `false.
+ */
 exports.isRHS = function (semanticArray) {
 	return semanticArray.every(function (semanticNode) {
 		var semanticChildren = semanticNode.children
@@ -291,7 +315,12 @@ exports.isRHS = function (semanticArray) {
 	})
 }
 
-// Convert semantic tree to a string represenation (used in Parser)
+/**
+ * Converts a semantic tree to a string representation. This is used to quickly compare if completed parse trees are semantically identical. (Semantic trees have their arguments sorted during construction.)
+ *
+ * @param {Array} semanticArray The semantic tree to convert.
+ * @return {String} The string representation of `semanticArray`.
+ */
 exports.toString = function (semanticArray) {
 	var str = ''
 
@@ -322,7 +351,12 @@ exports.colorString = function (semanticString) {
 	})
 }
 
-// Converts a semantic tree to a simple Object representation for printing
+/**
+ * Converts a semantic tree to a simple Object representation for printing.
+ *
+ * @param {Array} semanticArray The semantic tree to convert.
+ * @return {Object} The simplified Object representation of `semanticArray`.
+ */
 exports.toSimpleObject = function (semanticArray) {
 	var array = []
 
