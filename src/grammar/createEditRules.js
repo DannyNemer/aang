@@ -36,7 +36,7 @@ module.exports = function (grammar) {
 function findTermRuleInsertions(grammar, insertions) {
 	Object.keys(grammar).forEach(function (nontermSym) {
 		grammar[nontermSym].forEach(function (rule) {
-			if (rule.terminal) {
+			if (rule.isTerminal) {
 				var termSym = rule.RHS[0]
 				if (termSym === g.emptySymbol) { // Empty-string
 					addInsertion(insertions, nontermSym, {
@@ -74,7 +74,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 				if (rule.RHS.length === 2 && /\+/.test(nontermSym)) return // TEMP
 				if (rule.transpositionCost !== undefined) return
 
-				if (!rule.terminal && RHSCanBeInserted(insertions, rule.RHS)) {
+				if (!rule.isTerminal && RHSCanBeInserted(insertions, rule.RHS)) {
 					rule.RHS.map(function (sym) {
 						// Create an array of every insertion for each RHS symbol
 						return insertions[sym].map(function (insertion) {
@@ -401,7 +401,7 @@ function removeNullNonterminalSymbols(grammar) {
 			} else {
 				for (var r = 0; r < rules.length; ++r) {
 					var rule = rules[r]
-					if (rule.terminal) {
+					if (rule.isTerminal) {
 						// Remove rules that produce the <empty> symbol
 						// Will only find any on first loop through grammar
 						if (rule.RHS[0] === g.emptySymbol) {

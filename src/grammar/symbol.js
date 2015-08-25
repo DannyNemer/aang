@@ -77,7 +77,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 
 	var newRule = {
 		RHS: [ opts.RHS.toLowerCase() ],
-		terminal: true,
+		isTerminal: true,
 		intMin: opts.intMin,
 		intMax: opts.intMax,
 	}

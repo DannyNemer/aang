@@ -5,7 +5,7 @@ var util = require('../util')
 module.exports = function ruleMissingNeededRHSSemantic(grammar, rule, lhsSym, symsSeen) {
 	// Rule has no RHS semantic
 	if (!ruleHasRHSSemantic(rule)) {
-		if (!rule.terminal && !symsSeen) {
+		if (!rule.isTerminal && !symsSeen) {
 			// Root function call - check if RHS produces a RHS semantic
 			for (var s = 0, RHS = rule.RHS, RHSLen = RHS.length; s < RHSLen; ++s) {
 				if (symProducesRHSSemantic(grammar, RHS[s])) return false
@@ -64,7 +64,7 @@ function symProducesRHSSemantic(grammar, lhsSym, symsSeen) {
 			return true // Rule has a RHS semantic
 		}
 
-		if (!rule.terminal) {
+		if (!rule.isTerminal) {
 			// Check if RHS produces any rules with a RHS semantic
 			return rule.RHS.some(function (sym) {
 				if (symsSeen.indexOf(sym) === -1) {
@@ -77,5 +77,5 @@ function symProducesRHSSemantic(grammar, lhsSym, symsSeen) {
 
 // Returns `true` if rule contains a RHS semantic, has an inserted (RHS) semantic, or RHS is <int> or an entity category which becomes a semantic argument
 function ruleHasRHSSemantic(rule) {
-	return rule.semanticIsRHS || (rule.terminal && rule.semantic) || rule.insertedSemantic || rule.RHSIsPlaceholder
+	return rule.semanticIsRHS || (rule.isTerminal && rule.semantic) || rule.insertedSemantic || rule.RHSIsPlaceholder
 }

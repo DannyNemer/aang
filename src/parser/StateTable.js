@@ -9,7 +9,7 @@ function StateTable(inputGrammar, startSymbolStr) {
 		var symBuf = [ LHS ]
 
 		inputGrammar[nontermSym].forEach(function (rule) {
-			if (rule.terminal) {
+			if (rule.isTerminal) {
 				insertRule(this.lookUp(rule.RHS[0], true, rule.RHSIsPlaceholder), symBuf, rule)
 			} else {
 				var newRuleRHS = rule.RHS.map(function (rightSymName) {

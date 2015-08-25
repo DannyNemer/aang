@@ -93,7 +93,7 @@ module.exports = function (grammar, opts) {
 					prev: rootNode,
 				}
 
-				if (rule.terminal) {
+				if (rule.isTerminal) {
 					// Prefix space because all will begin with space
 					newPath.terminals += ' ' + RHS[0]
 				} else {
@@ -172,7 +172,7 @@ module.exports = function (grammar, opts) {
 					prev: lastPath,
 				}
 
-				if (rule.terminal) {
+				if (rule.isTerminal) {
 					// Append terminal symbol.
 					newPath.terminals += ' ' + RHS[0]
 
