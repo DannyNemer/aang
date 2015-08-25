@@ -366,7 +366,7 @@ function ruleExists(rules, newRule, LHS) {
 			}
 
 			// New rule and previously created rule have identical RHS and semantics
-			if (semantic.semanticArraysEqual(existingRule.semantic, newRule.semantic) && semantic.semanticArraysEqual(existingRule.insertedSemantic, newRule.insertedSemantic)) {
+			if (semantic.arraysEqual(existingRule.semantic, newRule.semantic) && semantic.arraysEqual(existingRule.insertedSemantic, newRule.insertedSemantic)) {
 				if (existingRule.cost < newRule.cost) {
 					return true
 				} else {

@@ -177,7 +177,7 @@ function semanticsEqual(a, b) {
 	if (a.semantic !== b.semantic) return false
 
 	if (a.children && b.children) {
-		return exports.semanticArraysEqual(a.children, b.children)
+		return exports.arraysEqual(a.children, b.children)
 	}
 
 	// `a` and `b` are semantic arguments of the same name
@@ -191,7 +191,7 @@ function semanticsEqual(a, b) {
  * @param {Object} b The other semantic array to compare.
  * @return {Boolean} `true` if the semantic arrays are equivalent, else `false`.
  */
-exports.semanticArraysEqual = function (a, b) {
+exports.arraysEqual = function (a, b) {
 	// Same entity arrays
 	if (a === b) return true
 
