@@ -282,7 +282,7 @@ function createRulesFromTranspositions(grammar) {
 					cost: rule.cost + rule.transpositionCost,
 					semantic: rule.semantic,
 					semanticIsRHS: rule.semanticIsRHS,
-					transposition: true,
+					isTransposition: true,
 				}
 
 				if (!ruleExists(symRules, newRule)) {

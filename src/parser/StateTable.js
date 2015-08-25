@@ -138,8 +138,8 @@ function createRuleProps(origRule) {
 		ruleProps.intMax = origRule.intMax
 	}
 
-	if (origRule.transposition) {
-		ruleProps.transposition = true
+	if (origRule.isTransposition) {
+		ruleProps.isTransposition = true
 	}
 
 	if (origRule.semanticIsRHS) {

@@ -287,7 +287,7 @@ Parser.prototype.addSub = function (sym, sub) {
 		// Nonterminal
 		if (sub) {
 			// Only used for debugging
-			if (sub.ruleProps.transposition) {
+			if (sub.ruleProps.isTransposition) {
 				node.start = sub.next.node.start
 			} else {
 				node.start = sub.node.start
@@ -440,7 +440,7 @@ Parser.prototype.reduce = function (redZNode, red) {
 	}
 
 	if (red.binary) {
-		var isTransposition = red.ruleProps.transposition
+		var isTransposition = red.ruleProps.isTransposition
 
 		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {
 			var vertexZNodes = vertices[v].zNodes

@@ -75,7 +75,7 @@ module.exports = function (grammar, opts) {
 			var rule = rules[r]
 
 			// Do not inspect edit rules because any ambiguity it creates is shows in the original rules from which they are derived. Insertions do enable ambiguous trees, though it is unavoidable and dependent on input.
-			if (rule.insertionIdx === undefined && !rule.transposition) {
+			if (rule.insertionIdx === undefined && !rule.isTransposition) {
 				var RHS = rule.RHS
 				var RHSLen = RHS.length
 
@@ -154,7 +154,7 @@ module.exports = function (grammar, opts) {
 			var rule = rules[r]
 
 			// Do not inspect edit rules because any ambiguity it creates is shows in the original rules from which they are derived. Insertions do enable ambiguous trees, though it is unavoidable and dependent on input.
-			if (rule.insertionIdx === undefined && !rule.transposition) {
+			if (rule.insertionIdx === undefined && !rule.isTransposition) {
 				var RHS = rule.RHS
 				var RHSLen = RHS.length
 
