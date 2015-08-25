@@ -439,7 +439,7 @@ Parser.prototype.reduce = function (redZNode, red) {
 		ruleProps: undefined,
 	}
 
-	if (red.binary) {
+	if (red.isBinary) {
 		var isTransposition = red.ruleProps.isTransposition
 
 		for (var v = 0, verticesLen = vertices.length; v < verticesLen; ++v) {

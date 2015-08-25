@@ -255,12 +255,17 @@ StateTable.prototype.generate = function (startSym) {
 
 		ruleSet.forEach(function (rule) {
 			if (!rule.RHS[rule.RHSIdx] && rule.LHS) {
-				newState.reds.push({
+				var red = {
 					LHS: rule.LHS,
-					// RHS: rule.RHS, // Only useful for printing
-					binary: rule.RHS.length === 2,
+					RHS: rule.RHS, // Only used for printing
 					ruleProps: rule.ruleProps,
-				})
+				}
+
+				if (rule.RHS.length === 2) {
+					red.isBinary = true
+				}
+
+				newState.reds.push(red)
 			}
 		})
 

@@ -59,7 +59,7 @@ function shiftForward(path, stateIdx) {
 	for (var r = 0, redsLen = reds.length; r < redsLen; ++r) {
 		var red = reds[r]
 
-		if (red.binary) {
+		if (red.isBinary) {
 			var newPath = {
 				syms: pathSyms.slice(0, -2),
 				prevStateIdxes: path.prevStateIdxes.slice(0, -2),
