@@ -443,7 +443,7 @@ exports.timeEnd = function (label) {
 
 	var durationTuple = process.hrtime(time)
 	var duration = durationTuple[0] * 1e3 + durationTuple[1] / 1e6
-	console.log('%s: %dms', label, duration.toFixed(3))
+	console.log('%s: %sms', label, duration.toFixed(3))
 }
 
 /**
