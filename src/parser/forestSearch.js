@@ -54,17 +54,17 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 		if (!node) {
 			var nextNodes = item.nextNodes
 			while (nextNodes) {
-				node = nextNodes.node
+				var text = nextNodes.text
 
-				// Stop when `node` is a node
-				if (node.constructor === Object) break
+				// Stop when at a node
+				if (!text) break
 
-				if (node.constructor === Array) {
+				if (text.constructor === Array) {
 					// Conjugate text of inserted branches which are the second of 2 RHS symbols
 					// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
-					item.text += conjugateTextArray(item, node)
+					item.text += conjugateTextArray(item, text)
 				} else {
-					item.text += ' ' + node
+					item.text += ' ' + text
 				}
 
 				nextNodes = nextNodes.prev
@@ -84,6 +84,9 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 				item.nextNodes = nextNodes.prev
 				item.nextNodesLen--
 			}
+
+			// Get the second symbol of the most recent incomplete binary rule
+			node = nextNodes.node
 		}
 
 		// Loop through all possible children of this node
@@ -226,8 +229,8 @@ function createItem(sub, prevItem, ruleProps) {
 			// Conjugate text after completing first branch in this binary reduction
 			// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
 			newItem.nextNodes = {
-				node: text,
 				prev: newItem.nextNodes,
+				text: text,
 				minCost: prevItem.nextNodes ? prevItem.nextNodes.minCost : 0,
 			}
 		} else {
