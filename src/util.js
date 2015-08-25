@@ -362,7 +362,7 @@ function printWithColoredLabel(label, color, args) {
  */
 exports.logErrorAndLine = function () {
 	exports.logError.apply(null, arguments)
-	console.log('  ' + exports.getLine())
+	console.log('  ' + exports.getLine(true))
 }
 
 /**
