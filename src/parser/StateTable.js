@@ -10,7 +10,7 @@ function StateTable(inputGrammar, startSymbolStr) {
 
 		inputGrammar[nontermSym].forEach(function (rule) {
 			if (rule.isTerminal) {
-				insertRule(this.lookUp(rule.RHS[0], true, rule.RHSIsPlaceholder), symBuf, rule)
+				insertRule(this.lookUp(rule.RHS[0], true, rule.isPlaceholder), symBuf, rule)
 			} else {
 				var newRuleRHS = rule.RHS.map(function (rightSymName) {
 					return this.lookUp(rightSymName)
@@ -26,7 +26,7 @@ function StateTable(inputGrammar, startSymbolStr) {
 
 // Could seperate term/nonterm symbol tabs for faster term symbol lookup
 // Unclear about use of Index property - might need to wait until grammar is larger to properly test
-StateTable.prototype.lookUp = function (name, isLiteral, symIsPlaceholder) {
+StateTable.prototype.lookUp = function (name, isLiteral, isPlaceholder) {
 	var sym = this.symbolTab[name]
 	if (sym && sym.isLiteral === isLiteral)
 		return sym
@@ -41,7 +41,7 @@ StateTable.prototype.lookUp = function (name, isLiteral, symIsPlaceholder) {
 		sym.isLiteral = true
 		sym.size = name.split(' ').length
 		// Prevent terminal symbol match with placeholder symbols: <int>, entities category names (e.g., {user})
-		if (symIsPlaceholder) sym.isPlaceholder = true
+		if (isPlaceholder) sym.isPlaceholder = true
 	}
 
 	return sym

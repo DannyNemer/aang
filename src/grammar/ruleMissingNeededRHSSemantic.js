@@ -77,5 +77,5 @@ function symProducesRHSSemantic(grammar, lhsSym, symsSeen) {
 
 // Returns `true` if rule contains a RHS semantic, has an inserted (RHS) semantic, or RHS is <int> or an entity category which becomes a semantic argument
 function ruleHasRHSSemantic(rule) {
-	return rule.semanticIsRHS || (rule.isTerminal && rule.semantic) || rule.insertedSemantic || rule.RHSIsPlaceholder
+	return rule.semanticIsRHS || (rule.isTerminal && rule.semantic) || rule.insertedSemantic || rule.isPlaceholder
 }

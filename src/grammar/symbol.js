@@ -100,7 +100,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 
 	// If RHS is <int> or an entity category, prevent those terminal symbols from being accepted as input
 	if (opts.RHS === g.intSymbol || entityCategory.creationLines.hasOwnProperty(opts.RHS)) {
-		newRule.RHSIsPlaceholder = true
+		newRule.isPlaceholder = true
 	}
 
 	// If semantic, must be complete and constitute a RHS
