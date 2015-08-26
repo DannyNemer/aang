@@ -346,13 +346,13 @@ exports.logWarning = function () {
  * @param {Array} args The values to print following `label`.
  */
 function printWithColoredLabel(label, color, args) {
-	// Append ':' to `label`
-	if (label[label.length - 1] !== ':') {
-		label += ':'
+	// Temporarily remove ':' to avoid coloring it
+	if (label[label.length - 1] === ':') {
+		label = label.slice(0, -1)
 	}
 
 	// Color `label` and append with `args`
-	console.log.apply(null, [ colors[color](label) ].concat(Array.prototype.slice.call(args)))
+	console.log.apply(null, [ colors[color](label) + ':' ].concat(Array.prototype.slice.call(args)))
 }
 
 /**
@@ -386,7 +386,7 @@ exports.logTrace = function (msg) {
  * @param {String} [msg] The optional message to prepend line.
  */
 exports.assert = function (msg) {
-	console.log(colors.red((msg || 'Reached') + ':'), exports.getLine(true))
+	console.log(colors.red(msg || 'Reached') + ':', exports.getLine(true))
 }
 
 /**
