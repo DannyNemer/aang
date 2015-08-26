@@ -358,11 +358,17 @@ function printWithColoredLabel(label, color, args) {
 /**
  * Prints error message like `dannyUtil.logError()` followed by the file path and line number from which the parent function was called .
  *
- * @param {...Mixed} valN The values to print following "Error: ".
+ * @param {...Mixed} [valN] The optional values to print following "Error: ".
  */
 exports.logErrorAndLine = function () {
-	exports.logError.apply(null, arguments)
-	console.log('  ' + exports.getLine(true))
+	var stackLine = exports.getLine(true)
+
+	if (arguments[0]) {
+		exports.logError.apply(null, arguments)
+		console.log('  ' + stackLine)
+	} else {
+		exports.logError(stackLine)
+	}
 }
 
 /**
