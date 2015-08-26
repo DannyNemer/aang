@@ -2,6 +2,7 @@ var util = require('../util')
 var semantic = require('../grammar/semantic')
 var inputFile = require('../aang.json')
 var entities = inputFile.entities
+var deletables = inputFile.deletables
 var intSymbol = inputFile.intSymbol
 
 
@@ -78,6 +79,9 @@ Parser.prototype.matchTerminalRules = function (query) {
 	this.tokensLen = tokens.length
 	var wordTab = []
 
+	// Deletable token indexes, each with a cost of 1
+	var deletionTokenIdxes = []
+
 	// Create semantic arguments for input matches to '<int>'
 	// Prevent making duplicate semantic arguments to detect duplicity by Object reference (not semantic name)
 	var newSemanticArgs = {}
@@ -89,6 +93,13 @@ Parser.prototype.matchTerminalRules = function (query) {
 		if (isNaN(nGram)) {
 			// Check every possible n-gram for multi-word terminal symbols
 			var endPos = this.position
+
+			// Mark index as deletable if token is deletable
+			// Could be faster because `deletables` is alphabetically sorted, but elasticsearch will take care of that
+			if (deletables.indexOf(nGram) !== -1) {
+				deletionTokenIdxes[endPos] = true
+			}
+
 			while (true) {
 				this.entityLookup(wordTab, endPos, newSemanticArgs, nGram)
 
@@ -122,6 +133,42 @@ Parser.prototype.matchTerminalRules = function (query) {
 						start: this.position,
 						nodes: wordNodes,
 					})
+
+					// Step backward checking for continuous spans of deltable tokens end at the start of this token
+					for (var deletionLen = 1; deletionTokenIdxes[this.position - deletionLen]; ++deletionLen) {
+						var wordNodes = []
+						var startPos = this.position - deletionLen
+						++wordSize
+
+						// Create a new node for each terminal rule with a deletion cost penalty and the new token span
+						for (var r = 0; r < rulesLen; ++r) {
+							var rule = rules[r]
+							var ruleProps = rule.ruleProps
+
+							var sub = {
+								// Span of tokens
+								size: wordSize,
+								node: wordNode,
+								ruleProps: {
+									// Add cost penalty of 1 per deleted token
+									cost: ruleProps.cost + deletionLen,
+									semantic: ruleProps.semantic,
+									text: ruleProps.text,
+								},
+								minCost: undefined,
+							}
+
+							var newNode = this.addSub(rule.RHS[0], sub)
+							newNode.start = startPos
+							wordNodes.push(newNode)
+						}
+
+						// Add new nodes at same `endPos`
+						words.push({
+							start: startPos,
+							nodes: wordNodes,
+						})
+					}
 				}
 
 				if (++endPos === this.tokensLen) break
