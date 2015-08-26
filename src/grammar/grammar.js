@@ -90,6 +90,7 @@ exports.writeGrammarToFile = function (outputFilePath) {
 		startSymbol: exports.startSymbol.name,
 		intSymbol: exports.intSymbol,
 		grammar: grammar,
+		deletables: require('./deletables'),
 		semantics: semantic.semantics,
 		entities: entityCategory.entities,
 	})

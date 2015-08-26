@@ -1,0 +1,45 @@
+/**
+ * Each term can be deleted when recognized in input, and each term is only 1 token in length. A sequence of multiple tokens can also be deleted.
+ *
+ * For the token(s) that immediately follow the deletable tokens, nodes are created for each terminal rule to the token as normal, as well as a second set of nodes for the same terminal rules with a larger `size` value for the larger token span and a cost penalty of 1 per deleted token.
+ */
+
+module.exports = [
+	'a',
+	'am',
+	'again',
+	'all',
+	'also',
+	'an',
+	'and',
+	'are',
+	'as',
+	'because',
+	'both',
+	'but',
+	'did',
+	'do',
+	'does',
+	'doing',
+	'for',
+	'here',
+	'how',
+	'is',
+	'it',
+	'just',
+	'more',
+	'most',
+	'nor',
+	'not',
+	'once',
+	'only',
+	'or',
+	'some',
+	'the',
+	'there',
+	'these',
+	'those',
+	'too',
+	'until',
+	'while',
+]
