@@ -20,10 +20,9 @@ function Parser(stateTable) {
  *
  * @param {Array} wordTab The match terminal symbols.
  * @param {Number} endPos The end index in the input query of `nGram`.
- * @param {Object} newSemanticArgs The semantic arguments created for this parse; used to avoid duplicates.
  * @param {String} nGram A token from the input query.
  */
-Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, nGram) {
+Parser.prototype.entityLookup = function (wordTab, endPos, nGram) {
 	var entityInstances = entities[nGram]
 	if (entityInstances) {
 		for (var e = 0, entityInstancesLen = entityInstances.length; e < entityInstancesLen; ++e) {
@@ -33,7 +32,7 @@ Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, nGra
 			var wordNode = this.addSub(wordSym)
 
 			var entityId = entity.id
-			var semanticArg = newSemanticArgs[entityId] || (newSemanticArgs[entityId] = [ { semantic: { name: entityId } } ])
+			var semanticArg = this.newSemanticArgs[entityId] || (this.newSemanticArgs[entityId] = [ { semantic: { name: entityId } } ])
 
 			// Loop through all term rules that produce term sym
 			var wordNodes = []
@@ -64,6 +63,44 @@ Parser.prototype.entityLookup = function (wordTab, endPos, newSemanticArgs, nGra
 				start: this.position,
 				nodes: wordNodes,
 			})
+
+			// Step backward checking for continuous spans of deltable tokens end at the start of this token
+			for (var deletionLen = 1; this.deletionTokenIdxes[this.position - deletionLen]; ++deletionLen) {
+				var wordNodes = []
+				var startPos = this.position - deletionLen
+				++wordSize
+
+				// Create a new node for each terminal rule with a deletion cost penalty and the new token span
+				for (var r = 0; r < rulesLen; ++r) {
+					var rule = rules[r]
+					var ruleProps = rule.ruleProps
+
+					var sub = {
+						// Span of tokens
+						size: wordSize,
+						node: wordNode,
+						ruleProps: {
+							// Add cost penalty of 1 per deleted token
+							cost: ruleProps.cost + deletionLen,
+							// FIXME: we are duplicating the work done by `semantic.reduce()` above
+							semantic: ruleProps.semantic ? semantic.reduce(ruleProps.semantic, semanticArg) : semanticArg,
+							text: entity.text,
+						},
+						minCost: undefined,
+					}
+
+					var newNode = this.addSub(rule.RHS[0], sub)
+					newNode.start = startPos
+					wordNodes.push(newNode)
+				}
+
+				// Add new nodes at same `endPos`
+				words.push({
+					start: startPos,
+					nodes: wordNodes,
+				})
+			}
+
 		}
 	}
 }
@@ -80,11 +117,11 @@ Parser.prototype.matchTerminalRules = function (query) {
 	var wordTab = []
 
 	// Deletable token indexes, each with a cost of 1
-	var deletionTokenIdxes = []
+	this.deletionTokenIdxes = []
 
 	// Create semantic arguments for input matches to '<int>'
 	// Prevent making duplicate semantic arguments to detect duplicity by Object reference (not semantic name)
-	var newSemanticArgs = {}
+	this.newSemanticArgs = {}
 
 	for (; this.position < this.tokensLen; ++this.position) {
 		var nGram = tokens[this.position]
@@ -97,11 +134,11 @@ Parser.prototype.matchTerminalRules = function (query) {
 			// Mark index as deletable if token is deletable
 			// Could be faster because `deletables` is alphabetically sorted, but elasticsearch will take care of that
 			if (deletables.indexOf(nGram) !== -1) {
-				deletionTokenIdxes[endPos] = true
+				this.deletionTokenIdxes[endPos] = true
 			}
 
 			while (true) {
-				this.entityLookup(wordTab, endPos, newSemanticArgs, nGram)
+				this.entityLookup(wordTab, endPos, nGram)
 
 				var wordSym = this.stateTable.symbolTab[nGram]
 				// Prevent terminal symbol match with placeholder symbols: <int>, entities category names (e.g., {user})
@@ -109,7 +146,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 					// create node with terminal symbol
 					var wordNode = this.addSub(wordSym)
 
-					// Loop through all term rules that produce term sym
+					// Loop through all term rules that produce terminal symbol
 					var wordNodes = []
 					var wordSize = wordSym.size
 					var rules = wordSym.rules
@@ -123,7 +160,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 							minCost: undefined,
 						}
 
-						// create node with LHS of terminal rule
+						// Create a node with LHS of terminal rule
 						wordNodes.push(this.addSub(rule.RHS[0], sub)) // FIX: rename prop - rule.RHS[0] is LHS for terms
 					}
 
@@ -135,7 +172,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 					})
 
 					// Step backward checking for continuous spans of deltable tokens end at the start of this token
-					for (var deletionLen = 1; deletionTokenIdxes[this.position - deletionLen]; ++deletionLen) {
+					for (var deletionLen = 1; this.deletionTokenIdxes[this.position - deletionLen]; ++deletionLen) {
 						var wordNodes = []
 						var startPos = this.position - deletionLen
 						++wordSize
@@ -183,7 +220,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 			// create node with terminal symbol
 			var wordNode = this.addSub(wordSym)
 
-			var semanticArg = newSemanticArgs[nGram] || (newSemanticArgs[nGram] = [ { semantic: { name: nGram } } ])
+			var semanticArg = this.newSemanticArgs[nGram] || (this.newSemanticArgs[nGram] = [ { semantic: { name: nGram } } ])
 
 			// Loop through all term rules that produce term sym
 			var wordNodes = []
@@ -211,11 +248,49 @@ Parser.prototype.matchTerminalRules = function (query) {
 				}
 			}
 
-			// will only be one term sym match (<int>) and only of length 1
-			wordTab[this.position] = [ {
+			// Only terminal symbol match can be '<int>', but also include nodes for deletions
+			// This will always be the first for this index (others include deletions, which follow)
+			var words = wordTab[this.position] = [ {
 				start: this.position,
 				nodes: wordNodes,
 			} ]
+
+			// Step backward checking for continuous spans of deltable tokens end at the start of this token
+			for (var deletionLen = 1; this.deletionTokenIdxes[this.position - deletionLen]; ++deletionLen) {
+				var wordNodes = []
+				var startPos = this.position - deletionLen
+				++wordSize
+
+				// Create a new node for each terminal rule with a deletion cost penalty and the new token span
+				for (var r = 0; r < rulesLen; ++r) {
+					var rule = rules[r]
+					var ruleProps = rule.ruleProps
+
+					var sub = {
+						// Span of tokens
+						size: wordSize,
+						node: wordNode,
+						ruleProps: {
+							// Add cost penalty of 1 per deleted token
+							cost: ruleProps.cost + deletionLen,
+							semantic: semanticArg,
+							text: nGram,
+						},
+						minCost: undefined,
+					}
+
+					var newNode = this.addSub(rule.RHS[0], sub)
+					newNode.start = startPos
+					wordNodes.push(newNode)
+				}
+
+				// Add new nodes at same `endPos`
+				words.push({
+					start: startPos,
+					nodes: wordNodes,
+				})
+			}
+
 		}
 	}
 
