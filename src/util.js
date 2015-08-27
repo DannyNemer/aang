@@ -390,6 +390,11 @@ exports.logTrace = function (msg) {
  * Prints calling file path and line number to mark reaching a section of code, prepended by `msg`.
  *
  * @param {String} [msg] The optional message to prepend line.
+ * @example
+ * if (rareConditionIsTrue) {
+ *   // Prints: "Condition met: /Users/Danny/test.js:9:12"
+ *   dannyUtil.assert('Condition met')
+ * }
  */
 exports.assert = function (msg) {
 	console.log(colors.red(msg || 'Reached') + ':', exports.getLine(true))
@@ -400,6 +405,9 @@ exports.assert = function (msg) {
  *
  * @param {Boolean} value The value to check if truthy.
  * @param {String} [msg] The optional message to prepend line.
+ * @example
+ * // If `myNumber > 100` is `true`, prints: "Condition met: /Users/Danny/test.js:9:12"
+ * dannyUtil.assertTrue(myNumber > 100, 'Condition met')
  */
 exports.assertTrue = function (value, msg) {
 	if (value) exports.assert(msg)
