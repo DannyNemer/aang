@@ -1,5 +1,5 @@
 /*!
- * danny-util.js v0.0.1
+ * dantil v0.0.1
  * Copyright (C) 2015 Danny Nemer
  * Available under MIT license <http://mths.be/mit>
  */
@@ -10,9 +10,8 @@ var colors = require('colors/safe')
 /**
  * Project-agnostic utility functions for Node.js.
  * @module
- * @typicalname dannyUtil
  * @example
- * var dannyUtil = require('./danny-util/danny-util.js')
+ * var dantil = require('./dantil/dantil.js')
  */
 
 
@@ -32,7 +31,7 @@ var colors = require('colors/safe')
  * }
  *
  * function myFunc(opts) {
- *   if (dannyUtil.illFormedOpts(schema, opts)) {
+ *   if (dantil.illFormedOpts(schema, opts)) {
  *     // Prints descriptive, helpful error messages
  *     // Handle ill-formed `opts` how you choose
  *     throw new Error('ill-formed opts')
@@ -109,7 +108,7 @@ exports.illFormedOpts = function (schema, opts) {
  * console.log('Begin output to file')
  *
  * // Redirects process output from console to file
- * dannyUtil.redirectOutputToFile('~/Desktop/out.txt', function () {
+ * dantil.redirectOutputToFile('~/Desktop/out.txt', function () {
  *   // Writes to '~/Desktop/out.txt'
  *   console.log('Numbers:')
  *   for (var i = 0; i < 100; ++i) {
@@ -175,9 +174,9 @@ exports.writeJSONFile = function (path, obj) {
  * Replaces `'~'` in a path (if present and at the path's start) with the home directory path.
  *
  * @param {String} path The file path.
- * @return {String} `path` with '~' (if present) replaced with the home directory path.
+ * @return {String} `path` with `'~'` (if present) replaced with the home directory path.
  * @example
- * dannyUtil.expandHomeDir('~/Desktop') // -> '/Users/Danny/Desktop'
+ * dantil.expandHomeDir('~/Desktop') // -> '/Users/Danny/Desktop'
  */
 exports.expandHomeDir = function (path) {
 	return path.replace(/^~/, process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME'])
@@ -191,7 +190,7 @@ exports.expandHomeDir = function (path) {
  * @return {Mixed} The value returned by `callback`, if any.
  * @example
  * // Catches thrown error and prints a formatted stack trace
- * dannyUtil.tryCatchWrapper(function () {
+ * dantil.tryCatchWrapper(function () {
  *   // ...stuff...
  *   throw new Error('test failed')
  * })
@@ -235,7 +234,7 @@ exports.tryCatchWrapper = function (callback, rethrow) {
  * var myModule = require('./myModule.js')
  *
  * // Remove module from cache
- * dannyUtil.deleteModuleCache('./myModule.js')
+ * dantil.deleteModuleCache('./myModule.js')
  *
  * // Load module again, enabling changes to './myModule.js'
  * myModule = require('./myModule.js')
@@ -247,7 +246,7 @@ exports.deleteModuleCache = function () {
 }
 
 /**
- * Gets the file path and line number of the first item in the stack of the parent module from where this function was called. This is useful for logging where an object is instantiated.
+ * Gets the file path and line number of the first frame in the stack of the parent module from where this function was called. This is useful for logging where an object is instantiated.
  *
  * @param {Boolean} getCallingLine Specify getting the line where `getLine()` is called instead of the line of the parent module.
  * @return {String} The file path and line number of calling line.
@@ -322,7 +321,7 @@ function prettyPrint(args, opts) {
 /**
  * Prints like `console.log()` prepended with red-colored "Error: ".
  *
- * @param {...Mixed} valN The values to print following "Error: ".
+ * @param {...Mixed} valN The values to concatenate and print following "Error: ".
  */
 exports.logError = function () {
 	printWithColoredLabel('Error', 'red', arguments)
@@ -331,7 +330,7 @@ exports.logError = function () {
 /**
  * Prints like `console.log()` prepended with yellow-colored "Warning: ".
  *
- * @param {...Mixed} valN The values to print following "Warning: ".
+ * @param {...Mixed} valN The values to concatenate and print following "Warning: ".
  */
 exports.logWarning = function () {
 	printWithColoredLabel('Warning', 'yellow', arguments)
@@ -343,7 +342,7 @@ exports.logWarning = function () {
  * @private
  * @param {String} label The label to prepend to `args` (e.g., "Error").
  * @param {String} color The color to stylize `label`.
- * @param {Array} args The values to print following `label`.
+ * @param {Array} args The values to concatenate and print following `label`.
  */
 function printWithColoredLabel(label, color, args) {
 	// Temporarily remove ':' to avoid coloring it
@@ -356,7 +355,7 @@ function printWithColoredLabel(label, color, args) {
 }
 
 /**
- * Prints error message like `dannyUtil.logError()` followed by the file path and line number from which the parent function was called .
+ * Prints error message like `dantil.logError()` followed by the file path and line number from which the parent function was called .
  *
  * @param {...Mixed} [valN] The optional values to print following "Error: ".
  */
@@ -393,7 +392,7 @@ exports.logTrace = function (msg) {
  * @example
  * if (rareConditionIsTrue) {
  *   // Prints: "Condition met: /Users/Danny/test.js:9:12"
- *   dannyUtil.assert('Condition met')
+ *   dantil.assert('Condition met')
  * }
  */
 exports.assert = function (msg) {
@@ -407,7 +406,7 @@ exports.assert = function (msg) {
  * @param {String} [msg] The optional message to prepend line.
  * @example
  * // If `myNumber > 100` is `true`, prints: "Condition met: /Users/Danny/test.js:9:12"
- * dannyUtil.assertTrue(myNumber > 100, 'Condition met')
+ * dantil.assertTrue(myNumber > 100, 'Condition met')
  */
 exports.assertTrue = function (value, msg) {
 	if (value) exports.assert(msg)
@@ -422,29 +421,29 @@ exports.assertTrue = function (value, msg) {
 var _times = new Map()
 
 /**
- * Starts a high-resolution timer (with precision in microseconds) identified by `label`. Use `dannyUtil.timeEnd(label)` to print the timer's current value.
+ * Starts a high-resolution timer (with precision in microseconds) identified by `label`. Use `dantil.timeEnd(label)` to print the timer's current value.
  *
  * @param {String} label The identifier of the timer.
  * @example
  * // Start timer
- * dannyUtil.time('my test')
+ * dantil.time('my test')
  *
  * // ...stuff...
  *
  * // Prints "my test: 13.264ms"
- * dannyUtil.timeEnd('my test')
+ * dantil.timeEnd('my test')
  *
  * // ...more stuff...
  *
  * // Prints "my test: 31.183ms"
- * dannyUtil.timeEnd('my test')
+ * dantil.timeEnd('my test')
  */
 exports.time = function (label) {
 	_times.set(label, process.hrtime())
 }
 
 /**
- * Prints the current high-resolution value of a timer initiated with `dannyUtil.time(label)`.
+ * Prints the current high-resolution value of a timer initiated with `dantil.time(label)`.
  *
  * @param {String} label The identifier of the timer.
  */
@@ -461,7 +460,7 @@ exports.timeEnd = function (label) {
 }
 
 /**
- * Key-value map used by `dannyUtil.count()`.
+ * Key-value map used by `dantil.count()`.
  *
  * @private
  * @type Map
@@ -469,16 +468,16 @@ exports.timeEnd = function (label) {
 var _counts = new Map()
 
 /**
- * Counts the number of times a section of code is reached, identified by `label`. Use `dannyUtil.countEnd(label)` to print value. This is useful for profiling complex programs.
+ * Counts the number of times a section of code is reached, identified by `label`. Use `dantil.countEnd(label)` to print value. This is useful for profiling complex programs.
  *
  * @param {String} label The id to refer to a section of code.
  * @example
  * for (var i = 0; i < 100; ++i) {
- *   if (i % 2 === 0) dannyUtil.count('even')
+ *   if (i % 2 === 0) dantil.count('even')
  * }
  *
  * // Prints "even: 50"; resets count for 'even' to 0
- * dannyUtil.countEnd('even')
+ * dantil.countEnd('even')
  */
 exports.count = function (label) {
 	var val = _counts.get(label) || 0
@@ -486,9 +485,9 @@ exports.count = function (label) {
 }
 
 /**
- * Prints (and clears the value of) the number of calls of `dannyUtil.count(label)`.
+ * Prints (and resets the value of) the number of calls of `dantil.count(label)`.
  *
- * @param {String} label The id to refer to calls to `dannyUtil.count()`.
+ * @param {String} label The id to refer to calls to `dantil.count()`.
  */
 exports.countEnd = function (label) {
 	// Print even if no value to acknowledge never being reached
@@ -500,18 +499,18 @@ exports.countEnd = function (label) {
 }
 
 /**
- * Prints (and clears) the values of all counters used on `dannyUtil.count()`. Will not print counters that are never reached (and never have their keys initialized).
+ * Prints (and resets) the values of all counters used on `dantil.count()`. Will not print counters that are never reached (and never have their keys initialized).
  * @example
  * for (var i = 0; i < 100; ++i) {
- *   if (i % 2 === 0) dannyUtil.count('even')
- *   if (i % 2 === 1) dannyUtil.count('odd')
- *   if (i > 100) dannyUtil.count('never reached')
+ *   if (i % 2 === 0) dantil.count('even')
+ *   if (i % 2 === 1) dantil.count('odd')
+ *   if (i > 100) dantil.count('never reached')
  * }
  *
  * // Prints: "even: 50
  * //          odd: 50"
  * // Resets all counts to 0
- * dannyUtil.countEndAll()
+ * dantil.countEndAll()
  */
 exports.countEndAll = function () {
 	_counts.forEach(function(count, label) {
@@ -529,19 +528,19 @@ exports.countEndAll = function () {
  * @param {Array} b The other array to compare.
  * @return {Boolean} `true` if the arrays are equivalent, else `false`.
  * @example
- * dannyUtil.arraysEqual([], []) // -> true
+ * dantil.arraysEqual([], []) // -> true
  *
- * dannyUtil.arraysEqual([1, 2, 3, 'danny'], [1, 2, 3, 'danny']) // -> true
+ * dantil.arraysEqual([1, 2, 3, 'danny'], [1, 2, 3, 'danny']) // -> true
  *
- * dannyUtil.arraysEqual([ false, true ], [ true ]) // -> false
+ * dantil.arraysEqual([ false, true ], [ true ]) // -> false
  *
  * // A shallow comparison will not compare object properties
  * var objA = { prop: 'val' }
  * var objB = { prop: 'val' }
- * dannyUtil.arraysEqual([ 1, 2, objA ], [ 1, 2, objB ]) // -> false
+ * dantil.arraysEqual([ 1, 2, objA ], [ 1, 2, objB ]) // -> false
  *
  * // Rather, objects are only equal if they are the same instance
- * dannyUtil.arraysEqual([ objA, objB ], [ objA, objB ]) // -> true
+ * dantil.arraysEqual([ objA, objB ], [ objA, objB ]) // -> true
  */
 exports.arraysEqual = function (a, b) {
 	// Identical arrays (or, both undefined)
@@ -569,7 +568,7 @@ exports.arraysEqual = function (a, b) {
  * @return {Number} The number trimmed.
  * @example
  * var number = 0.1 * 0.2 // -> 0.020000000000000004
- * number = dannyUtil.cleanFloat(number) // -> 0.02
+ * number = dantil.cleanFloat(number) // -> 0.02
  */
 exports.cleanNumber = function (number) {
 	// JavaScript's floating point number precision 13 digits after the decimal point
@@ -582,7 +581,7 @@ exports.cleanNumber = function (number) {
  * @param {String} dashedString The dash-separated string to convert.
  * @return {String} The input string in camelCase.
  * @example
- * dannyUtil.camelCase('my-long-variable-name') // -> 'myLongVariableName'
+ * dantil.camelCase('my-long-variable-name') // -> 'myLongVariableName'
  */
 exports.dashedToCamelCase = function (dashedString) {
 	return dashedString.replace(/-(\w)/g, function (match, group1) {
