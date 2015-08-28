@@ -3,50 +3,51 @@ var util = require('../util')
 
 
 var symbol = require('./symbol')
+// Creates a new `Symbol`
 exports.newSymbol = symbol.new
+// Creates a new `Symbol` with a single binary nonterminal rule
 exports.newBinaryRule = symbol.newBinaryRule
+// Hyphenates variadic string arguments
 exports.hyphenate = symbol.hyphenate
+// The grammar
 var grammar = symbol.grammar
 
+// The start symbol of `grammar`
 exports.startSymbol = exports.newSymbol('start')
 
-// Empty-string
-// Rules with <empty> optionalize their LHS symbols and subsequent unary reductions
-// Original rules with <empty> are omitted from output grammar
+// The terminal symbol for empty strings. Rules with '<empty>' optionalize their LHS symbols and subsequent unary reductions. Original unary rules with '<empty>' are omitted from `grammar` when output.
 exports.emptySymbol = '<empty>'
 
-// Integers in input
-// Terminal rules with <int> are assigned minimum and maximum values
+// The terminal symbol for integers. Terminal rules with <int> are assigned minimum and maximum values.
 exports.intSymbol = '<int>'
 
-// Extend Symbol with rule functions
+// Extend `Symbol` with functions for predefined sets of rules (e.g., verbs, stop words)
 require('./ruleFunctions')
 
-// Extend module with semantic functions
 var semantic = require('./semantic')
+// Creates a new semantic function or argument
 exports.newSemantic = semantic.new
+// Applies a completed semantic rule to a more recent semantic tree, joining them together as one semantic tree with a new root function
 exports.reduceSemantic = semantic.reduce
 
-// Extend module with entity-category functions
 var entityCategory = require('./entityCategory')
+// Creates a new entity category containing the passed entities
 exports.newEntityCategory = entityCategory.new
 
-// Check for unused nonterminal symbols, entity categories, or semantic functions and arguments not used in any rules
-exports.checkForUnusedComponents = require('./checkForUnusedComponents').bind(null, grammar)
-
-// Derive rules from insertion and transposition costs, and empty-strings
+// Creates grammar rules derived from insertion and transposition costs, and empty strings in `grammar`
 exports.createEditRules = require('./createEditRules').bind(null, grammar)
 
-// Checks if `rule` lacks and cannot produce a RHS semantic needed by this rule or an ancestor
-// Used by `createEditRules()`
+// Determines if a rule lacks and cannot produce a RHS semantic needed by itself or an ancestor rule in `grammar`
 exports.ruleMissingNeededRHSSemantic = require('./ruleMissingNeededRHSSemantic').bind(null, grammar)
 
-// Check for instances of ambiguity in the grammar
+// Finds and prints instances of nonterminal symbols, entity categories, or semantic functions and arguments not used in any rules of `grammar`
+exports.checkForUnusedComponents = require('./checkForUnusedComponents').bind(null, grammar)
+
+// Finds and prints instances of ambiguity in `grammar`
 exports.checkForAmbiguity = require('./checkForAmbiguity').bind(null, grammar)
 
 /**
- * Sort nonterminal symbols alphabetically.
- * Sort symbols' rules by increasing cost.
+ * Sorts `grammar`'s nonterminal symbols alphabetically and the symbols' rules by increasing cost.
  */
 exports.sortGrammar = function () {
 	Object.keys(grammar).sort().forEach(function (symbolName) {
@@ -61,8 +62,11 @@ exports.sortGrammar = function () {
 	})
 }
 
-// Print the total count of rules in the grammar
-// Print change if `prevOutputFilePath` exists
+/**
+ * Prints the number of rules in `grammar` to the console. If `prevOutputFilePath` is provided, prints the difference in the number of rules, if any, since the last build of `grammar`.
+ *
+ * @param {String} [prevOutputFilePath] The optional path of the previously generated grammar to compare with this grammar.
+ */
 exports.printRuleCount = function (prevOutputFilePath) {
 	var newRuleCount = exports.getRuleCount(grammar)
 
@@ -77,14 +81,23 @@ exports.printRuleCount = function (prevOutputFilePath) {
 	console.log('Rules:', newRuleCount)
 }
 
-// Return number of rules in grammar
+/**
+ * Gets the number of rules in a grammar.
+ *
+ * @param {Object} grammar The grammar to count.
+ * @return {Number} The number of rules in `grammar`.
+ */
 exports.getRuleCount = function (grammar) {
 	return Object.keys(grammar).reduce(function (prev, cur) {
 		return prev + grammar[cur].length
 	}, 0)
 }
 
-// Write grammar and semantics to files
+/**
+ * Writes the grammar, semantics, entities, and deletables to a JSON file. This file is used in the instantiation of a `StateTable` (grammar, semantics) and a `Parser` (entities, deletables).
+ *
+ * @param {String} outputFilePath The path to write the file.
+ */
 exports.writeGrammarToFile = function (outputFilePath) {
 	util.writeJSONFile(outputFilePath, {
 		startSymbol: exports.startSymbol.name,
