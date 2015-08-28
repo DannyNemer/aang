@@ -385,7 +385,7 @@ function ruleExists(rules, newRule, LHS) {
 // Recursively remove nonterminal symbols with no rules, rules whose RHS containing those symbols or the <empty> symbol, and any rule-less nonterminal symbols that result
 // Called after finding insertions from rules with '<empty>' in findTermRuleInsertions()
 function removeNullNonterminalSymbols(grammar) {
-	var curRuleCount = g.ruleCount(grammar)
+	var curRuleCount = g.getRuleCount(grammar)
 	var prevRuleCount
 
 	// Loop until no new rule-less symbols are found
@@ -419,7 +419,7 @@ function removeNullNonterminalSymbols(grammar) {
 				}
 			}
 		}
-	} while (prevRuleCount !== (curRuleCount = g.ruleCount(grammar)))
+	} while (prevRuleCount !== (curRuleCount = g.getRuleCount(grammar)))
 }
 
 
