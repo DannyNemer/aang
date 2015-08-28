@@ -5,6 +5,7 @@
  */
 
 var fs = require('fs')
+var util = require('util')
 var colors = require('colors/safe')
 
 /**
@@ -280,7 +281,7 @@ exports.getLine = function (getCallingLine) {
 }
 
 /**
- * Prints objects in color (on separate lines), recursing 2 times while formatting the object (which is identical to `console.log()`).
+ * Prints objects in color, recursing 2 times while formatting the object (which is identical to `console.log()`). Prints instances of Object (including Array) on separate lines, and concatenates other values (e.g., String, Number) with spaces.
  *
  * @param {...Mixed} [valN] The values to print.
  */
@@ -289,7 +290,7 @@ exports.log = function () {
 }
 
 /**
- * Prints objects in color (on separate lines), recursing indefinitely while formatting the object. This is useful for inspecting large, complicated objects.
+ * Prints objects in color, recursing indefinitely while formatting the object. This is useful for inspecting large, complicated objects. Prints instances of Object (including Array) on separate lines, and concatenates other values (e.g., String, Number) with spaces.
  *
  * @param {...Mixed} [valN] The values to print.
  */
@@ -301,20 +302,32 @@ exports.dir = function () {
 }
 
 /**
- * Prints objects according to the formattings options of `opts` (as defined for `console.dir()`) on seperate lines.
+ * Prints objects according to the formatting options of `opts` (as defined for `util.inspect()`). Prints instances of Object (including Array) on separate lines, and concatenates other values (e.g., String, Number) with spaces.
  *
  * @private
  * @param {Object} args The `arguments` object (passed to the callee) with the values to print.
- * @param {Object} opts The options object (as defined for `console.dir()`).
+ * @param {Object} opts The options object (as defined for `util.inspect()`).
  */
 function prettyPrint(args, opts) {
-	Array.prototype.slice.call(args).forEach(function (arg) {
+	var formattedArgs = []
+
+	Array.prototype.slice.call(args).forEach(function (arg, i, args) {
+		var prevArg = args[i - 1]
+
 		// Print strings passed as arguments (i.e., not Object properties) without styling
-		if (typeof arg === 'string') {
-			console.log(arg)
+		var formattedArg = typeof arg === 'string' ? arg : util.inspect(arg, opts)
+
+		if (i === 0 || prevArg instanceof Object || arg instanceof Object) {
+			// Print instances of Object (including Array) on separate lines
+			formattedArgs.push(formattedArg)
 		} else {
-			console.dir(arg, opts)
+			// Concatenate other values (e.g., String, Number) with spaces
+			formattedArgs[formattedArgs.length - 1] += ' ' + formattedArg
 		}
+	})
+
+	formattedArgs.forEach(function (formattedArg) {
+		console.log(formattedArg)
 	})
 }
 
