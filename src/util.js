@@ -287,7 +287,12 @@ exports.getLine = function (getCallingLine) {
  * @param {...Mixed} [valN] The values to print.
  */
 exports.log = function () {
-	prettyPrint(arguments, { colors: true })
+	if (arguments.length) {
+		prettyPrint(arguments, { colors: true })
+	} else {
+		// Print a blank line when called with no arguments
+		console.log()
+	}
 }
 
 /**
