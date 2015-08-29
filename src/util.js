@@ -213,6 +213,7 @@ exports.tryCatchWrapper = function (callback, rethrow) {
 				} else if (stackFrame.indexOf(message) !== -1) {
 					// Color error type name red
 					exports.log(stackFrame.replace(e.name, colors.red(e.name)))
+					message = null
 				} else {
 					// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut
 					exports.log(stackFrame.replace(/[()]/g, ''))
