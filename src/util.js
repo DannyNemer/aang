@@ -75,8 +75,8 @@ exports.illFormedOpts = function (schema, opts) {
 			// Unrecognized value for parameter with predefined values
 			if (schemaPropType.indexOf(optsVal) === -1) {
 				exports.logError('Unrecognized value for ' + prop + ':', optsVal)
-				console.log('       Accepted values for ' + prop + ':', schemaPropType)
-				console.log('  ' + exports.getLine())
+				exports.log('       Accepted values for ' + prop + ':', schemaPropType)
+				exports.log('  ' + exports.getLine())
 				return true
 			}
 		} else {
@@ -142,7 +142,7 @@ exports.redirectOutputToFile = function (path, callback) {
 		// Restore `process.stdout`
 		process.stdout.write = oldWrite
 
-		console.log('Output saved to:', fs.realpathSync(path))
+		exports.log('Output saved to:', fs.realpathSync(path))
 
 		return returnVal
 	} catch (e) {
@@ -168,7 +168,7 @@ exports.writeJSONFile = function (path, obj) {
 		return val instanceof RegExp ? val.source : val
 	}, '\t'))
 
-	console.log('File saved:', fs.realpathSync(path))
+	exports.log('File saved:', fs.realpathSync(path))
 }
 
 /**
@@ -209,17 +209,17 @@ exports.tryCatchWrapper = function (callback, rethrow) {
 
 			e.stack.split('\n').forEach(function (stackFrame) {
 				if (e.message.indexOf(stackFrame) !== -1) {
-					console.log(stackFrame)
+					exports.log(stackFrame)
 				} else if (stackFrame.indexOf(message) !== -1) {
 					// Color error type name red
-					console.log(stackFrame.replace(e.name, colors.red(e.name)))
+					exports.log(stackFrame.replace(e.name, colors.red(e.name)))
 				} else {
 					// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut
-					console.log(stackFrame.replace(/[()]/g, ''))
+					exports.log(stackFrame.replace(/[()]/g, ''))
 				}
 			})
 		} else {
-			console.log(e)
+			exports.log(e)
 		}
 
 		if (rethrow) throw e
@@ -382,7 +382,7 @@ function printWithColoredLabel(label, color, args) {
 	}
 
 	// Color `label` and append with `args`
-	console.log.apply(null, [ colors[color](label) + ':' ].concat(Array.prototype.slice.call(args)))
+	exports.log.apply(null, [ colors[color](label) + ':' ].concat(Array.prototype.slice.call(args)))
 }
 
 /**
@@ -395,7 +395,7 @@ exports.logErrorAndLine = function () {
 
 	if (arguments[0]) {
 		exports.logError.apply(null, arguments)
-		console.log('  ' + stackLine)
+		exports.log('  ' + stackLine)
 	} else {
 		exports.logError(stackLine)
 	}
@@ -407,13 +407,13 @@ exports.logErrorAndLine = function () {
  * @param {String} [msg] The optional message to print above the stack trace.
  */
 exports.logTrace = function (msg) {
-	console.log('Trace' + (msg ? ': ' + msg : ''))
+	exports.log('Trace' + (msg ? ': ' + msg : ''))
 
 	// Get stack without lines for `Error` and this file
 	var stack = Error().stack.split('\n').slice(3).join('\n')
 
 	// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut
-	console.log(stack.replace(/[()]/gm, ''))
+	exports.log(stack.replace(/[()]/gm, ''))
 }
 
 /**
@@ -427,7 +427,7 @@ exports.logTrace = function (msg) {
  * }
  */
 exports.assert = function (msg) {
-	console.log(colors.red(msg || 'Reached') + ':', exports.getLine(true))
+	exports.log(colors.red(msg || 'Reached') + ':', exports.getLine(true))
 }
 
 /**
@@ -487,7 +487,7 @@ exports.timeEnd = function (label) {
 
 	var durationTuple = process.hrtime(time)
 	var duration = durationTuple[0] * 1e3 + durationTuple[1] / 1e6
-	console.log('%s: %sms', label, duration.toFixed(3))
+	exports.log(label + ':', duration.toFixed(3) + 'ms')
 }
 
 /**
@@ -523,7 +523,7 @@ exports.count = function (label) {
 exports.countEnd = function (label) {
 	// Print even if no value to acknowledge never being reached
 	var count = _counts.get(label) || 0
-	console.log(label + ':', count)
+	exports.log(label + ':', count)
 
 	// Reset count
 	_counts.delete(label)
@@ -545,7 +545,7 @@ exports.countEnd = function (label) {
  */
 exports.countEndAll = function () {
 	_counts.forEach(function(count, label) {
-		console.log(label + ':', count)
+		exports.log(label + ':', count)
 	})
 
 	// Reset all counts
