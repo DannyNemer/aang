@@ -283,8 +283,11 @@ StateTable.prototype.generate = function (startSym) {
 }
 
 StateTable.prototype.print = function () {
+	var util = require('../util')
+	var colors = require('colors')
+
 	this.shifts.forEach(function (state, S) {
-		console.log(S + ':')
+		util.log(colors.yellow(S) + ':')
 
 		if (state.isFinal) console.log('\taccept')
 
@@ -299,11 +302,11 @@ StateTable.prototype.print = function () {
 
 			toPrint += ']'
 
-			console.log(toPrint, red.ruleProps)
+			util.log(toPrint, red.ruleProps)
 		})
 
 		state.shifts.forEach(function (shift) {
-			console.log('\t' + shift.sym.name + ' => ' +  shift.stateIdx)
+			util.log('\t' + shift.sym.name, '=>', shift.stateIdx)
 		})
 	})
 }
