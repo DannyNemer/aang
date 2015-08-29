@@ -282,7 +282,11 @@ exports.getLine = function (getCallingLine) {
 }
 
 /**
- * Prints objects in color, recursing 2 times while formatting the object (which is identical to `console.log()`). Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
+ * Prints objects in color, recursing 2 times while formatting the object (which is identical to `console.log()`).
+ *
+ * Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
+ *
+ * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace.
  *
  * @param {...Mixed} [valN] The values to print.
  */
@@ -296,7 +300,7 @@ exports.log = function () {
 }
 
 /**
- * Prints objects in color, recursing indefinitely while formatting the object. This is useful for inspecting large, complicated objects. Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
+ * A version of `dantil.log()` that recurses indefinitely while formatting the object. This is useful for inspecting large, complicated objects.
  *
  * @param {...Mixed} [valN] The values to print.
  */
@@ -308,7 +312,11 @@ exports.dir = function () {
 }
 
 /**
- * Prints objects according to the formatting options of `opts` (as defined for `util.inspect()`). Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
+ * Prints objects according to the formatting options of `opts` (as defined for `util.inspect()`).
+ *
+ * Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
+ *
+ * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace.
  *
  * @private
  * @param {Object} args The `arguments` object (passed to the callee) with the values to print.
@@ -316,6 +324,7 @@ exports.dir = function () {
  */
 function prettyPrint(args, opts) {
 	var formattedArgs = []
+	var indent = '  '
 
 	Array.prototype.slice.call(args).forEach(function (arg, i, args) {
 		var prevArg = args[i - 1]
@@ -324,15 +333,25 @@ function prettyPrint(args, opts) {
 		var formattedArg = typeof arg === 'string' ? arg : util.inspect(arg, opts)
 
 		// Print objects on separate lines if multi-lined when formatted
-		if (i === 0 || /,\n/.test(formattedArg)) {
+		if (i === 0) {
+			// Extend indent for successive lines with the first argument's leading whitespce, if any.
+			// - JavaScript will not properly indent if '\t' is appended to spaces
+			if (typeof arg === 'string') {
+				indent = arg.substr(0, arg.search(/[^\s]/)) + indent
+			}
+
 			formattedArgs.push(formattedArg)
+		} else if (/,\n/.test(formattedArg)) {
+			// Indent lines after the first line
+			formattedArgs.push(indent + formattedArg.replace(/,\n/g, ',\n' + indent))
 		} else {
 			var prevFormattedArgIdx = formattedArgs.length - 1
 			var prevFormattedArg = formattedArgs[prevFormattedArgIdx]
 
 			// Concatenate other objects and values to print on the same line if shorter than 80 characters when  concatenated
 			if (getStylizedStringLength(prevFormattedArg) + getStylizedStringLength(formattedArg) + 1 > 80) {
-				formattedArgs.push(formattedArg)
+				// Indent lines after the first line
+				formattedArgs.push(indent + formattedArg)
 			} else {
 				formattedArgs[prevFormattedArgIdx] += ' ' + formattedArg
 			}
