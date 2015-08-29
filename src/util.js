@@ -389,13 +389,15 @@ function printWithColoredLabel(label, color, args) {
 /**
  * Prints error message like `dantil.logError()` followed by the file path and line number from which the parent function was called .
  *
+ * @param {Boolean} [getCallingLine] Specify getting the line where `getLine()` is called instead of the line of the parent module.
  * @param {...Mixed} [valN] The optional values to print following "Error: ".
  */
-exports.logErrorAndLine = function () {
-	var stackLine = exports.getLine(true)
+exports.logErrorAndLine = function (getCallingLine) {
+	var args = Array.prototype.slice.call(arguments, getCallingLine === true ? 1 : 0)
+	var stackLine = exports.getLine(getCallingLine === true)
 
-	if (arguments[0]) {
-		exports.logError.apply(null, arguments)
+	if (args.length > 0) {
+		exports.logError.apply(null, args)
 		exports.log('  ' + stackLine)
 	} else {
 		exports.logError(stackLine)
