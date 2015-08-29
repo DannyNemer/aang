@@ -281,7 +281,7 @@ exports.getLine = function (getCallingLine) {
 }
 
 /**
- * Prints objects in color, recursing 2 times while formatting the object (which is identical to `console.log()`). Prints instances of Object (including Array) on separate lines, and concatenates other values (e.g., String, Number) with spaces.
+ * Prints objects in color, recursing 2 times while formatting the object (which is identical to `console.log()`). Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
  *
  * @param {...Mixed} [valN] The values to print.
  */
@@ -290,7 +290,7 @@ exports.log = function () {
 }
 
 /**
- * Prints objects in color, recursing indefinitely while formatting the object. This is useful for inspecting large, complicated objects. Prints instances of Object (including Array) on separate lines, and concatenates other values (e.g., String, Number) with spaces.
+ * Prints objects in color, recursing indefinitely while formatting the object. This is useful for inspecting large, complicated objects. Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
  *
  * @param {...Mixed} [valN] The values to print.
  */
@@ -302,7 +302,7 @@ exports.dir = function () {
 }
 
 /**
- * Prints objects according to the formatting options of `opts` (as defined for `util.inspect()`). Prints instances of Object (including Array) on separate lines, and concatenates other values (e.g., String, Number) with spaces.
+ * Prints objects according to the formatting options of `opts` (as defined for `util.inspect()`). Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
  *
  * @private
  * @param {Object} args The `arguments` object (passed to the callee) with the values to print.
@@ -317,18 +317,36 @@ function prettyPrint(args, opts) {
 		// Print strings passed as arguments (i.e., not Object properties) without styling
 		var formattedArg = typeof arg === 'string' ? arg : util.inspect(arg, opts)
 
-		if (i === 0 || prevArg instanceof Object || arg instanceof Object) {
-			// Print instances of Object (including Array) on separate lines
+		// Print objects on separate lines if multi-lined when formatted
+		if (i === 0 || /,\n/.test(formattedArg)) {
 			formattedArgs.push(formattedArg)
 		} else {
-			// Concatenate other values (e.g., String, Number) with spaces
-			formattedArgs[formattedArgs.length - 1] += ' ' + formattedArg
+			var prevFormattedArgIdx = formattedArgs.length - 1
+			var prevFormattedArg = formattedArgs[prevFormattedArgIdx]
+
+			// Concatenate other objects and values to print on the same line if shorter than 80 characters when  concatenated
+			if (getStylizedStringLength(prevFormattedArg) + getStylizedStringLength(formattedArg) + 1 > 80) {
+				formattedArgs.push(formattedArg)
+			} else {
+				formattedArgs[prevFormattedArgIdx] += ' ' + formattedArg
+			}
 		}
 	})
 
 	formattedArgs.forEach(function (formattedArg) {
 		console.log(formattedArg)
 	})
+}
+
+/**
+ * Gets the length of a stylized string when printed without the Unicode characters for color stylization.
+ *
+ * @private
+ * @param {String} string The stylized string.
+ * @return {Number} The length of the stylized string when printed.
+ */
+function getStylizedStringLength(string) {
+	return string.replace(/\u001b\[\d\d?m/g, '').length
 }
 
 /**
