@@ -523,7 +523,7 @@ exports.count = function (label) {
 exports.countEnd = function (label) {
 	// Print even if no value to acknowledge never being reached
 	var count = _counts.get(label) || 0
-	console.log('%s: %d', label === undefined ? 'count' : label, count)
+	console.log(label + ':', count)
 
 	// Reset count
 	_counts.delete(label)
