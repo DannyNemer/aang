@@ -9,7 +9,7 @@ var util = require('util')
 var colors = require('colors/safe')
 
 /**
- * Project-agnostic utility functions for Node.js.
+ * A Node.js utility library.
  * @module
  * @example
  * var dantil = require('./dantil/dantil.js')
@@ -116,7 +116,7 @@ exports.illFormedOpts = function (schema, opts) {
  *     console.log(i)
  *   }
  * })
- * // Restores output to console and prints: "Output saved to: ~/Desktop/out.txt"
+ * // Restores output to console and prints: "Output saved: ~/Desktop/out.txt"
  *
  * // Prints to console (after restoring output)
  * console.log('Output to file complete')
@@ -142,7 +142,7 @@ exports.redirectOutputToFile = function (path, callback) {
 		// Restore `process.stdout`
 		process.stdout.write = oldWrite
 
-		exports.log('Output saved to:', fs.realpathSync(path))
+		exports.log('Output saved:', fs.realpathSync(path))
 
 		return returnVal
 	} catch (e) {
@@ -207,16 +207,16 @@ exports.tryCatchWrapper = function (callback, rethrow) {
 			// Error message without source code (if present)
 			var message = e.message.split('\n').pop()
 
-			e.stack.split('\n').forEach(function (stackFrame) {
-				if (e.message.indexOf(stackFrame) !== -1) {
-					exports.log(stackFrame)
-				} else if (stackFrame.indexOf(message) !== -1) {
+			e.stack.split('\n').forEach(function (stackLine) {
+				if (e.message.indexOf(stackLine) !== -1) {
+					exports.log(stackLine)
+				} else if (stackLine.indexOf(message) !== -1) {
 					// Color error type name red
-					exports.log(stackFrame.replace(e.name, colors.red(e.name)))
+					exports.log(stackLine.replace(e.name, colors.red(e.name)))
 					message = null
 				} else {
 					// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut
-					exports.log(stackFrame.replace(/[()]/g, ''))
+					exports.log(stackLine.replace(/[()]/g, ''))
 				}
 			})
 		} else {
@@ -250,7 +250,7 @@ exports.deleteModuleCache = function () {
 /**
  * Gets the file path and line number of the first frame in the stack of the parent module from where this function was called. This is useful for logging where an object is instantiated.
  *
- * @param {Boolean} getCallingLine Specify getting the line where `getLine()` is called instead of the line of the parent module.
+ * @param {Boolean} [getCallingLine] Specify getting the line where `getLine()` is called instead of the line of the parent module.
  * @return {String} The file path and line number of calling line.
  */
 exports.getLine = function (getCallingLine) {
@@ -353,7 +353,7 @@ function getStylizedStringLength(string) {
 /**
  * Prints like `console.log()` prepended with red-colored "Error: ".
  *
- * @param {...Mixed} valN The values to concatenate and print following "Error: ".
+ * @param {...Mixed} valN The values print following "Error: ".
  */
 exports.logError = function () {
 	printWithColoredLabel('Error', 'red', arguments)
@@ -362,7 +362,7 @@ exports.logError = function () {
 /**
  * Prints like `console.log()` prepended with yellow-colored "Warning: ".
  *
- * @param {...Mixed} valN The values to concatenate and print following "Warning: ".
+ * @param {...Mixed} valN The values print following "Warning: ".
  */
 exports.logWarning = function () {
 	printWithColoredLabel('Warning', 'yellow', arguments)
@@ -374,7 +374,7 @@ exports.logWarning = function () {
  * @private
  * @param {String} label The label to prepend to `args` (e.g., "Error").
  * @param {String} color The color to stylize `label`.
- * @param {Array} args The values to concatenate and print following `label`.
+ * @param {Array} args The values print following `label`.
  */
 function printWithColoredLabel(label, color, args) {
 	// Temporarily remove ':' to avoid coloring it
@@ -490,6 +490,7 @@ exports.timeEnd = function (label) {
 
 	var durationTuple = process.hrtime(time)
 	var duration = durationTuple[0] * 1e3 + durationTuple[1] / 1e6
+
 	exports.log(label + ':', duration.toFixed(3) + 'ms')
 }
 
@@ -521,11 +522,12 @@ exports.count = function (label) {
 /**
  * Prints (and resets the value of) the number of calls of `dantil.count(label)`.
  *
- * @param {String} label The id to refer to calls to `dantil.count()`.
+ * @param {String} label The identifier of the counter.
  */
 exports.countEnd = function (label) {
-	// Print even if no value to acknowledge never being reached
+	// Print even if count is 0 to acknowledge never being reached
 	var count = _counts.get(label) || 0
+
 	exports.log(label + ':', count)
 
 	// Reset count
