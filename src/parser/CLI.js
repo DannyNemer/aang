@@ -178,9 +178,7 @@ function runCommand(input) {
 		console.log('Rebuild grammar and state table:')
 
 		// Rebuild grammar
-		util.tryCatchWrapper(function () {
-			require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
-		})
+		require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
 
 		// Rebuild state table
 		stateTable = buildStateTable()
