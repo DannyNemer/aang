@@ -454,13 +454,10 @@ function spliceGramPropsList(item, gramPropsToRemove) {
  */
 function treeIsUnique(trees, newTree) {
 	var semanticStr = semantic.toString(newTree.semantics.semantic)
-	var textStr = newTree.text.slice(1) // Remove leading space
 
-	// Check for duplicate semantics by comparing semantic string representation
+	// Check for duplicate semantics by comparing semantic string representations
 	// - Return `false` if new semantic is identical to previously constructed (and cheaper) tree
-	// Check for duplicate display text
-	// - If so, save new semantic to previous tree's `disambiguation` and return false to reject tree
-	// Tests show 1.3x more likely to find the zNode faster by iterating backward
+	// Tests show 1.18x more likely to find a matching semantic faster by iterating backward
 	for (var t = trees.length - 1; t > -1; --t) {
 		var tree = trees[t]
 
@@ -468,17 +465,26 @@ function treeIsUnique(trees, newTree) {
 			return false
 		}
 
-		if (tree.disambiguation) {
-			if (tree.disambiguation.indexOf(semanticStr) !== -1) {
-				return false
+		if (tree.disambiguation && tree.disambiguation.indexOf(semanticStr) !== -1) {
+			return false
+		}
+	}
+
+	// Check for duplicate display text
+	// - If so, save new semantic to previous tree's `disambiguation` and return `false` to reject tree
+	// Tests show 1.02x more likely to find a matching text faster by iterating backward
+	// Checking for duplicate text in a separate loop is faster than a single loop because there are ~200x a many semantic duplicates as display text duplicates. This decreases display text comparisons by 75% by avoiding comparisons on trees that eventually fail for duplicate semantics. Tests indicate ~20% of trees constructed are unique.
+	var textStr = newTree.text.slice(1) // Remove leading space
+	for (var t = trees.length - 1; t > -1; --t) {
+		var tree = trees[t]
+
+		if (tree.text === textStr) {
+			if (tree.disambiguation) {
+				tree.disambiguation.push(semanticStr)
+			} else {
+				tree.disambiguation = [ semanticStr ]
 			}
 
-			if (tree.text === textStr) {
-				tree.disambiguation.push(semanticStr)
-				return false
-			}
-		} else if (tree.text === textStr) {
-			tree.disambiguation = [ semanticStr ]
 			return false
 		}
 	}
