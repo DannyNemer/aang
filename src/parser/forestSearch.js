@@ -50,7 +50,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 
 		var node = item.node
 
-		// Previously reached end of a branch
+		// Previously reached a terminal symbol at an end of a branch
 		if (!node) {
 			var nextNodes = item.nextNodes
 			while (nextNodes) {
@@ -218,7 +218,7 @@ function createItem(sub, prevItem, ruleProps) {
 		if (ruleProps.gramProps) {
 			newItem.gramProps = {
 				gramProps: ruleProps.gramProps,
-				prev: newItem.gramProps,
+				prev: prevItem.gramProps,
 			}
 		}
 
@@ -229,8 +229,8 @@ function createItem(sub, prevItem, ruleProps) {
 			// Conjugate text after completing first branch in this binary reduction
 			// Used in nominative case, which relies on person-number in 1st branch (verb precedes subject)
 			newItem.nextNodes = {
-				prev: newItem.nextNodes,
 				text: text,
+				prev: prevItem.nextNodes,
 				minCost: prevItem.nextNodes ? prevItem.nextNodes.minCost : 0,
 			}
 		} else {
@@ -279,7 +279,7 @@ function createItem(sub, prevItem, ruleProps) {
 			if (ruleProps.gramProps) {
 				newItem.gramProps = {
 					gramProps: ruleProps.gramProps,
-					prev: newItem.gramProps,
+					prev: prevItem.gramProps,
 				}
 			}
 
@@ -288,7 +288,7 @@ function createItem(sub, prevItem, ruleProps) {
 			if (subNext) {
 				newItem.nextNodes = {
 					node: subNext.node,
-					prev: newItem.nextNodes,
+					prev: prevItem.nextNodes,
 					minCost: subNext.minCost + (prevItem.nextNodes ? prevItem.nextNodes.minCost : 0),
 				}
 
@@ -377,42 +377,42 @@ function conjugateTextArray(item, textArray) {
 
 // Loop through from end of linked list, find rule most recently added
 // NOTE: Does not allow for same prop to be used in multiple places. Deletion of props occurs after single use.
-function conjugateText(item, text) {
+function conjugateText(item, textObj) {
 	var gramPropsList = item.gramProps
 
 	while (gramPropsList) {
 		var gramProps = gramPropsList.gramProps
 
 		var verbForm = gramProps.verbForm
-		if (verbForm && text[verbForm]) {
+		if (verbForm && textObj[verbForm]) {
 			// Remove gramProps from linked list and rebuild end of list up to it
 			spliceGramPropsList(item, gramPropsList)
-			return text[verbForm]
+			return textObj[verbForm]
 		}
 
 		var personNumber = gramProps.personNumber
-		if (personNumber && text[personNumber]) {
+		if (personNumber && textObj[personNumber]) {
 			// Remove gramProps from linked list and rebuild end of list up to it
 			spliceGramPropsList(item, gramPropsList)
-			return text[personNumber]
+			return textObj[personNumber]
 		}
 
 		var gramCase = gramProps.gramCase
-		if (gramCase && text[gramCase]) {
+		if (gramCase && textObj[gramCase]) {
 			// Rule with gramCase either has personNumber for nominative (so will be needed again), or doesn't have personNumer (for objective) and can be deleted
 			if (!personNumber) {
 				// Remove gramProps from linked list and rebuild end of list up to it
 				spliceGramPropsList(item, gramPropsList)
 			}
 
-			return text[gramCase]
+			return textObj[gramCase]
 		}
 
 		gramPropsList = gramPropsList.prev
 	}
 
+	util.logError('Failed to conjugate:', textObj, gramPropsList)
 	util.logTrace()
-	util.logWarning('Failed to conjugate:', text, gramPropsList)
 }
 
 // Remove the element `gramPropsToRemove` from the `gramProps` list `item.gramProps`
