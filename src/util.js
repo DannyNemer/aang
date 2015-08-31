@@ -12,6 +12,8 @@ var colors = require('colors/safe')
 /**
  * Checks if options object `opts` adheres to `schema`. Simulates static function arguments (i.e., type checking and parameter count). Prints descriptive, helpful errors when `opts` is ill-formed.
  *
+ * @static
+ * @memberOf dantil
  * @param {Object} schema The definition of required and optional properties for `opts`.
  * @param {Object} opts The options object to check for conformity to `schema`.
  * @returns {boolean} Returns `true` if `opts` is ill-formed, else `false`.
@@ -96,6 +98,8 @@ exports.illFormedOpts = function (schema, opts) {
 /**
  * Synchronously writes the output of `func` to a file at `path` instead of the console. Overwrites the file if it already exists. Restores output to the console if an error is thrown.
  *
+ * @static
+ * @memberOf dantil
  * @param {string} path The path where to write output.
  * @param {Function} func The function producing output.
  * @returns {*} Returns the value returned by `func`, if any.
@@ -151,6 +155,8 @@ exports.redirectOutputToFile = function (path, func) {
 /**
  * Writes `obj` to a JSON file at `path`.
  *
+ * @static
+ * @memberOf dantil
  * @param {string} path The file path to write to.
  * @param {Object} obj The object to save to `path`.
  */
@@ -169,6 +175,8 @@ exports.writeJSONFile = function (path, obj) {
 /**
  * Replaces `'~'` in `path` (if present and at the path's start) with the home directory path.
  *
+ * @static
+ * @memberOf dantil
  * @param {string} path The file path.
  * @returns {string} Returns `path` with `'~'` (if present) replaced with the home directory path.
  * @example
@@ -183,6 +191,8 @@ exports.expandHomeDir = function (path) {
 /**
  * Executes `func` within a `try` block. If an error is thrown, removes parentheses surrounding file paths in its stack trace for the iTerm open-file-path shortcut, and colors the error type name (e.g., `TypeError`) red.
  *
+ * @static
+ * @memberOf dantil
  * @param {Function} func The function to execute within a `try` block.
  * @param {boolean} rethrow Specify rethrowing an error (after printing the stack trace) if caught from `func`.
  * @returns {*} Returns the value returned by `func`, if any.
@@ -228,6 +238,8 @@ exports.tryCatchWrapper = function (func, rethrow) {
 /**
  * Deletes the modules identified by the provided paths from cache, forcing them to be reloaded at next `require()` call. Without removing a module from cache, subsequent `require()` calls to the same module will not enable changes to its file(s). This is useful for enabling changes on a server without restarting the server.
  *
+ * @static
+ * @memberOf dantil
  * @param {...string} paths The paths of modules to remove from cache.
  * @example
  *
@@ -249,6 +261,8 @@ exports.deleteModuleCache = function () {
 /**
  * Gets the file path and line number of the first frame in the stack of the parent module from where this function was called. This is useful for logging where an object is instantiated.
  *
+ * @static
+ * @memberOf dantil
  * @param {boolean} [getCallingLine] Specify getting the line where called instead of the line of the parent module.
  * @returns {string} Returns the file path and line number of calling line.
  */
@@ -287,6 +301,8 @@ exports.getLine = function (getCallingLine) {
  *
  * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace.
  *
+ * @static
+ * @memberOf dantil
  * @param {...*} values The values to print.
  */
 exports.log = function () {
@@ -301,6 +317,8 @@ exports.log = function () {
 /**
  * A version of `dantil.log()` that recurses indefinitely while formatting the object. This is useful for inspecting large, complicated objects.
  *
+ * @static
+ * @memberOf dantil
  * @param {...*} values The values to print.
  */
 exports.dir = function () {
@@ -376,6 +394,8 @@ function getStylizedStringLength(string) {
 /**
  * Prints the provided values like `console.log()` prepended with red-colored "Error: ".
  *
+ * @static
+ * @memberOf dantil
  * @param {...*} values The values to print following "Error: ".
  */
 exports.logError = function () {
@@ -385,6 +405,8 @@ exports.logError = function () {
 /**
  * Prints the provided values like `console.log()` prepended with yellow-colored "Warning: ".
  *
+ * @static
+ * @memberOf dantil
  * @param {...*} values The values to print following "Warning: ".
  */
 exports.logWarning = function () {
@@ -412,6 +434,8 @@ function printWithColoredLabel(label, color, args) {
 /**
  * Prints an error message like `dantil.logError()` followed by the file path and line number from which the parent function was called.
  *
+ * @static
+ * @memberOf dantil
  * @param {boolean} [getCallingLine] Specify getting the line where called instead of the line of the parent module.
  * @param {...*} [values] The optional values to print following "Error: ".
  */
@@ -430,6 +454,8 @@ exports.logErrorAndLine = function (getCallingLine) {
 /**
  * Prints the stack trace to the current position. Removes parentheses surrounding file paths for the iTerm open-file-path shortcut.
  *
+ * @static
+ * @memberOf dantil
  * @param {string} [msg] The optional message to print above the stack trace.
  */
 exports.logTrace = function (msg) {
@@ -445,6 +471,8 @@ exports.logTrace = function (msg) {
 /**
  * Prints the calling file path and line number, prepended by `msg`, to mark reaching a section of code.
  *
+ * @static
+ * @memberOf dantil
  * @param {string} [msg] The optional message to prepend to the path and line number.
  * @example
  *
@@ -460,6 +488,8 @@ exports.assert = function (msg) {
 /**
  * Prints the calling file path and line number, prepended by `msg`, if `value` is truthy.
  *
+ * @static
+ * @memberOf dantil
  * @param {boolean} value The value to check if truthy.
  * @param {string} [msg] The optional message to prepend to the path and line number.
  * @example
@@ -482,6 +512,8 @@ var _times = new Map()
 /**
  * Starts a high-resolution timer (with precision in microseconds) identified by `label`. Use `dantil.timeEnd(label)` to print the timer's current value.
  *
+ * @static
+ * @memberOf dantil
  * @param {string} label The identifier of the timer.
  * @example
  *
@@ -505,6 +537,8 @@ exports.time = function (label) {
 /**
  * Prints the current high-resolution value of a timer initiated with `dantil.time(label)`.
  *
+ * @static
+ * @memberOf dantil
  * @param {string} label The identifier of the timer.
  */
 exports.timeEnd = function (label) {
@@ -531,6 +565,8 @@ var _counts = new Map()
 /**
  * Counts the number of times a section of code is reached, identified by `label`. Use `dantil.countEnd(label)` to print the counter's value. This is useful for profiling complex programs.
  *
+ * @static
+ * @memberOf dantil
  * @param {string} label The counter identifier.
  * @example
  *
@@ -549,6 +585,8 @@ exports.count = function (label) {
 /**
  * Prints (and resets the value of) the number of calls of `dantil.count(label)`.
  *
+ * @static
+ * @memberOf dantil
  * @param {string} label The counter identifier.
  */
 exports.countEnd = function (label) {
@@ -564,6 +602,8 @@ exports.countEnd = function (label) {
 /**
  * Prints (and resets) the values of all counters used on `dantil.count()`. Does not print counters that are never reached (and never have their keys initialized).
  *
+ * @static
+ * @memberOf dantil
  * @example
  *
  * for (var i = 0; i < 100; ++i) {
@@ -587,6 +627,8 @@ exports.countEndAll = function () {
 /**
  * Performs a shallow comparison between two arrays to determine if they are equivalent.
  *
+ * @static
+ * @memberOf dantil
  * @param {Array} a The array to compare.
  * @param {Array} b The other array to compare.
  * @returns {boolean} Returns `true` if the arrays are equivalent, else `false`.
@@ -633,6 +675,8 @@ exports.arraysEqual = function (a, b) {
 /**
  * Removes any extraneous digits from `number`, which result from operations limited by JavaScript's floating point number precision, such as `0.1 * 0.2` (which does not equal `0.02`). This limitation results from being unable to map `0.1` to a finite binary floating point number.
  *
+ * @static
+ * @memberOf dantil
  * @param {number} number The number to rid of any extraneous digits.
  * @returns {number} Returns the cleaned number.
  * @example
@@ -651,6 +695,8 @@ exports.cleanNumber = function (number) {
 /**
  * Converts dash-separated `string` to camel case.
  *
+ * @static
+ * @memberOf dantil
  * @param {string} dashedString The dash-separated string to convert.
  * @returns {string} Returns the camel cased string.
  * @example
