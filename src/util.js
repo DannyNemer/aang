@@ -98,7 +98,7 @@ exports.illFormedOpts = function (schema, opts) {
  *
  * @param {String} path The path where to write output.
  * @param {Function} func The function producing output.
- * @returns {Mixed} Returns the value returned by `func`, if any.
+ * @returns {*} Returns the value returned by `func`, if any.
  * @example
  *
  * // Prints to console
@@ -185,7 +185,7 @@ exports.expandHomeDir = function (path) {
  *
  * @param {Function} func The function to execute within a `try` block.
  * @param {Boolean} rethrow Specify rethrowing an error (after printing the stack trace) if caught from `func`.
- * @returns {Mixed} Returns the value returned by `func`, if any.
+ * @returns {*} Returns the value returned by `func`, if any.
  * @example
  *
  * dantil.tryCatchWrapper(function () {
@@ -287,7 +287,7 @@ exports.getLine = function (getCallingLine) {
  *
  * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace.
  *
- * @param {...Mixed} values The values to print.
+ * @param {...*} values The values to print.
  */
 exports.log = function () {
 	if (arguments.length) {
@@ -301,7 +301,7 @@ exports.log = function () {
 /**
  * A version of `dantil.log()` that recurses indefinitely while formatting the object. This is useful for inspecting large, complicated objects.
  *
- * @param {...Mixed} values The values to print.
+ * @param {...*} values The values to print.
  */
 exports.dir = function () {
 	prettyPrint(arguments, { depth: null, colors: true })
@@ -376,7 +376,7 @@ function getStylizedStringLength(string) {
 /**
  * Prints the provided values like `console.log()` prepended with red-colored "Error: ".
  *
- * @param {...Mixed} values The values to print following "Error: ".
+ * @param {...*} values The values to print following "Error: ".
  */
 exports.logError = function () {
 	printWithColoredLabel('Error', 'red', arguments)
@@ -385,7 +385,7 @@ exports.logError = function () {
 /**
  * Prints the provided values like `console.log()` prepended with yellow-colored "Warning: ".
  *
- * @param {...Mixed} values The values to print following "Warning: ".
+ * @param {...*} values The values to print following "Warning: ".
  */
 exports.logWarning = function () {
 	printWithColoredLabel('Warning', 'yellow', arguments)
@@ -413,7 +413,7 @@ function printWithColoredLabel(label, color, args) {
  * Prints an error message like `dantil.logError()` followed by the file path and line number from which the parent function was called.
  *
  * @param {Boolean} [getCallingLine] Specify getting the line where called instead of the line of the parent module.
- * @param {...Mixed} [values] The optional values to print following "Error: ".
+ * @param {...*} [values] The optional values to print following "Error: ".
  */
 exports.logErrorAndLine = function (getCallingLine) {
 	var args = Array.prototype.slice.call(arguments, getCallingLine === true ? 1 : 0)
