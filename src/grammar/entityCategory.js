@@ -13,7 +13,7 @@ var entityCount = 0
  * Create a new entity category containing the passed entities.
  *
  * @param {Object} opts The options object containing the entities.
- * @returns {string} The terminal symbol for the category.
+ * @returns {string} Returns the terminal symbol for the category.
  */
 
 // Schema for an entity category

@@ -11,7 +11,7 @@ var calcHeuristicCosts = require('./calcHeuristicCosts')
  * @param {number} K The maximum number of parse trees to find.
  * @param {boolean} buildDebugTrees Specify constructing parse trees for printing at expense of speed.
  * @param {boolean} printStats Specify printing performance statistics.
- * @returns {Array} The K-best parse trees.
+ * @returns {Array} Returns the K-best parse trees.
  */
 exports.search = function (startNode, K, buildDebugTrees, printStats) {
 	// Calculate the (admissible) heuristic estimates of the minimum costs of a subtree that can be constructed from each node
@@ -450,7 +450,7 @@ function spliceGramPropsList(item, gramPropsToRemove) {
  *
  * @param {Array} trees The previously completed unique parse trees to compare against.
  * @param {Object} newTree The new parse tree.
- * @returns {boolean} `true` if `newTree` is unique.
+ * @returns {boolean} Returns `true` if `newTree` is unique.
  */
 function treeIsUnique(trees, newTree) {
 	var semanticStr = semantic.toString(newTree.semantics.semantic)

@@ -90,7 +90,7 @@ function newSemanticArg(opts) {
  * Calculates the sum of the costs of all semantic functions in a semantic tree.
  *
  * @param {Array} semanticArray The semantic tree to sum.
- * @returns {number} The sum of the costs in the semantic tree.
+ * @returns {number} Returns the sum of the costs in the semantic tree.
  */
 exports.sumCosts = function (semanticArray) {
 	return semanticArray.reduce(function (accum, cur) {
@@ -146,7 +146,7 @@ exports.mergeRHS = function (a, b) {
  *
  * @param {Array} rhs The most recent set of reduced semantics in a tree that have yet to be reduced into their parent semantic.
  * @param {Array} newLHS The new semantic, yet to be reduced, which will eventually be concatenated with `rhs` and share the same parent semantic.
- * @returns {boolean} `true` if `rhs` contains an instance of `newLHS`'s semantic function of which multiple instances are forbidden, else `false`.
+ * @returns {boolean} Returns `true` if `rhs` contains an instance of `newLHS`'s semantic function of which multiple instances are forbidden, else `false`.
  */
 exports.isForbiddenMultiple = function (rhs, newLHS) {
 	// `newLHS` can only ever have one semantic (which has yet to be reduced)
@@ -169,7 +169,7 @@ exports.isForbiddenMultiple = function (rhs, newLHS) {
  *
  * @param {Object} a The semantic to compare.
  * @param {Object} b The other semantic to compare.
- * @returns {boolean} `true` if the semantics are equivalent, else `false`.
+ * @returns {boolean} Returns `true` if the semantics are equivalent, else `false`.
  */
 function semanticsEqual(a, b) {
 	if (a === b) return true
@@ -189,7 +189,7 @@ function semanticsEqual(a, b) {
  *
  * @param {Object} a The semantic array to compare.
  * @param {Object} b The other semantic array to compare.
- * @returns {boolean} `true` if the semantic arrays are equivalent, else `false`.
+ * @returns {boolean} Returns `true` if the semantic arrays are equivalent, else `false`.
  */
 exports.arraysEqual = function (a, b) {
 	// Same entity arrays
@@ -256,7 +256,7 @@ exports.reduce = function (lhs, rhs) {
  *
  * @param {Object} a The semantic tree to compare.
  * @param {Object} b The other semantic tree to compare.
- * @returns {number} -1 to sort `a` before `b`, 1 to sort `a` after `b`, or 0 to leave `a` and `b` unchanged with respect to each other.
+ * @returns {number} Returns -1 to sort `a` before `b`, 1 to sort `a` after `b`, or 0 to leave `a` and `b` unchanged with respect to each other.
  */
 function compareSemantics(a, b) {
 	var aIsObject = a.children !== undefined
@@ -302,7 +302,7 @@ function compareSemantics(a, b) {
  * Determines if a semantic tree has been completely reduced. I.e., it does not expect to accept semantic arguments; rather is can be passed to another semantic function (as a RHS semantic). This is the state after every function in the tree has been output by `semantic.reduce()`. This function is used in grammar generation to mark a rule's semantic as RHS or not (properties which are using in parsing).
  *
  * @param {Array} semanticArray The semantic tree to inspect.
- * @returns {boolean} `true` if the `semanticArray` is completely reduced, else `false.
+ * @returns {boolean} Returns `true` if the `semanticArray` is completely reduced, else `false.
  */
 exports.isRHS = function (semanticArray) {
 	return semanticArray.every(function (semanticNode) {
@@ -319,7 +319,7 @@ exports.isRHS = function (semanticArray) {
  * Converts a semantic tree to a string representation. This is used to quickly compare if completed parse trees are semantically identical. (Semantic trees have their arguments sorted during construction.)
  *
  * @param {Array} semanticArray The semantic tree to convert.
- * @returns {string} The string representation of `semanticArray`.
+ * @returns {string} Returns the string representation of `semanticArray`.
  */
 exports.toString = function (semanticArray) {
 	var str = ''
@@ -342,7 +342,7 @@ exports.toString = function (semanticArray) {
  * Stylizes a semantic string output by `semantic.toString()` with syntax highlighting for printing.
  *
  * @param {string} semanticString The semantic string, output by `semantic.toString()`.
- * @returns {string} The stylized semantic string.
+ * @returns {string} Returns the stylized semantic string.
  */
 exports.colorString = function (semanticString) {
 	var colors = require('colors')
@@ -355,7 +355,7 @@ exports.colorString = function (semanticString) {
  * Converts a semantic tree to a simple Object representation for printing.
  *
  * @param {Array} semanticArray The semantic tree to convert.
- * @returns {Object} The simplified Object representation of `semanticArray`.
+ * @returns {Object} Returns the simplified Object representation of `semanticArray`.
  */
 exports.toSimpleObject = function (semanticArray) {
 	var array = []

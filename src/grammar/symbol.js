@@ -240,7 +240,7 @@ exports.newBinaryRule = function (opts) {
  * Checks if the RHS symbols of a new rule already exist for this symbol
  *
  * @param {Object} newRule The new rule to check.
- * @returns {boolean} `true` if `newRule`'s RHS symbols already exist for this symbol, else `false`.
+ * @returns {boolean} Returns `true` if `newRule`'s RHS symbols already exist for this symbol, else `false`.
  */
 Symbol.prototype.ruleExists = function (newRule) {
 	return this.rules.some(function (existingRule) {
