@@ -44,7 +44,7 @@ exports.illFormedOpts = function (schema, opts) {
 		var val = schema[prop]
 
 		if (!val.optional && !opts.hasOwnProperty(prop)) {
-			exports.logErrorAndLine('Missing \'' + prop + '\' property')
+			exports.logErrorAndPath('Missing \'' + prop + '\' property')
 			return true
 		}
 	}
@@ -53,7 +53,7 @@ exports.illFormedOpts = function (schema, opts) {
 	for (var prop in opts) {
 		// Unrecognized property
 		if (!schema.hasOwnProperty(prop)) {
-			exports.logErrorAndLine('Unrecognized property:', prop)
+			exports.logErrorAndPath('Unrecognized property:', prop)
 			return true
 		}
 
@@ -63,7 +63,7 @@ exports.illFormedOpts = function (schema, opts) {
 
 		// Accidentally passed an `undefined` object; ex: `undefined`, `[]`, `[ 1, undefined ]`
 		if (optsVal === undefined || (Array.isArray(optsVal) && (optsVal.length === 0 || optsVal.indexOf(undefined) !== -1))) {
-			exports.logErrorAndLine('undefined ' + prop + ':', optsVal)
+			exports.logErrorAndPath('undefined ' + prop + ':', optsVal)
 			return true
 		}
 
@@ -79,13 +79,13 @@ exports.illFormedOpts = function (schema, opts) {
 		} else {
 			// Passed value of incorrect type; ex: `num: String`, `str: Array`
 			if (optsVal.constructor !== schemaPropType) {
-				exports.logErrorAndLine('\'' + prop + '\' not of type ' + schemaPropType.name + ':', optsVal)
+				exports.logErrorAndPath('\'' + prop + '\' not of type ' + schemaPropType.name + ':', optsVal)
 				return true
 			}
 
 			// Passed Array contains elements not of `arrayType` (if `arrayType` is defined)
 			if (Array.isArray(optsVal) && schemaVal.arrayType && !optsVal.every(function (el) { return el.constructor === schemaVal.arrayType })) {
-				exports.logErrorAndLine('\'' + prop + '\' not an array of type ' + schemaVal.arrayType.name + ':', optsVal)
+				exports.logErrorAndPath('\'' + prop + '\' not an array of type ' + schemaVal.arrayType.name + ':', optsVal)
 				return true
 			}
 		}
@@ -436,10 +436,10 @@ function printWithColoredLabel(label, color, args) {
  *
  * @static
  * @memberOf dantil
- * @param {boolean} [getCallingLine] Specify getting the line where called instead of the line of the parent module.
+ * @param {boolean} [getCallingLine] Specify getting the line where this is called instead of the line of the parent module.
  * @param {...*} [values] The optional values to print following "Error: ".
  */
-exports.logErrorAndLine = function (getCallingLine) {
+exports.logErrorAndPath = function (getCallingLine) {
 	var args = Array.prototype.slice.call(arguments, getCallingLine === true ? 1 : 0)
 	var stackLine = exports.getPathAndLineNumber(getCallingLine === true)
 
