@@ -1,7 +1,8 @@
-/*!
- * dantil v0.0.1
- * Copyright (C) 2015 Danny Nemer
- * Available under MIT license <http://mths.be/mit>
+/**
+ * @license
+ * dantil - A Node.js utility library. - 0.0.1
+ * Copyright 2015 Danny Nemer
+ * Available under MIT license <http://opensource.org/licenses/MIT>
  */
 
 var fs = require('fs')
@@ -9,20 +10,13 @@ var util = require('util')
 var colors = require('colors/safe')
 
 /**
- * A Node.js utility library.
- * @module
- * @example
- * var dantil = require('./dantil/dantil.js')
- */
-
-
-/**
- * Checks if an options object adheres to a schema. Simulates static function arguments (i.e., type checking and parameter count). Prints descriptive, helpful errors when `opts` is ill-formed.
+ * Checks if options object `opts` adheres to `schema`. Simulates static function arguments (i.e., type checking and parameter count). Prints descriptive, helpful errors when `opts` is ill-formed.
  *
- * @param {Object} schema Definition of required or optional properties and their expected values in `opts`.
- * @param {Object} opts The options object to check if conforms to `schema`.
- * @returns {Boolean} `true` if `opts` is ill-formed, else `false`.
+ * @param {Object} schema The definition of required and optional properties for `opts`.
+ * @param {Object} opts The options object to check for conformity to `schema`.
+ * @returns {Boolean} Returns `true` if `opts` is ill-formed, else `false`.
  * @example
+ *
  * var schema = {
  *   num: Number,                                  // Must be of type `Number`
  *   list: { type: Array },                        // Must be of type `Array` (identical to previous parameter)
@@ -33,7 +27,8 @@ var colors = require('colors/safe')
  *
  * function myFunc(opts) {
  *   if (dantil.illFormedOpts(schema, opts)) {
- *     // Prints descriptive, helpful error messages
+ *     // => Prints descriptive, helpful error messages
+ *
  *     // Handle ill-formed `opts` how you choose
  *     throw new Error('ill-formed opts')
  *   }
@@ -99,29 +94,29 @@ exports.illFormedOpts = function (schema, opts) {
 }
 
 /**
- * Synchronously writes the output of a function to a file instead of the console. Overwrites the file if it already exists. Restores output to console if an error is thrown.
+ * Synchronously writes the output of `func` to a file at `path` instead of the console. Overwrites the file if it already exists. Restores output to the console if an error is thrown.
  *
  * @param {String} path The path where to write output.
- * @param {Function} callback The function producing output.
- * @returns {Mixed} The value returned by `callback`, if any.
+ * @param {Function} func The function producing output.
+ * @returns {Mixed} Returns the value returned by `func`, if any.
  * @example
+ *
  * // Prints to console
  * console.log('Begin output to file')
  *
- * // Redirects process output from console to file
+ * // Redirects process output from console to '~/Desktop/out.txt'
  * dantil.redirectOutputToFile('~/Desktop/out.txt', function () {
- *   // Writes to '~/Desktop/out.txt'
  *   console.log('Numbers:')
  *   for (var i = 0; i < 100; ++i) {
  *     console.log(i)
  *   }
  * })
- * // Restores output to console and prints: "Output saved: ~/Desktop/out.txt"
+ * // => Restores output to console and prints "Output saved: ~/Desktop/out.txt"
  *
  * // Prints to console (after restoring output)
  * console.log('Output to file complete')
  */
-exports.redirectOutputToFile = function (path, callback) {
+exports.redirectOutputToFile = function (path, func) {
 	// Expand '~' if present
 	path = exports.expandHomeDir(path)
 
@@ -137,7 +132,7 @@ exports.redirectOutputToFile = function (path, callback) {
 
 	try {
 		// Write output to `path`
-		var returnVal = callback()
+		var returnVal = func()
 
 		// Restore `process.stdout`
 		process.stdout.write = oldWrite
@@ -154,10 +149,10 @@ exports.redirectOutputToFile = function (path, callback) {
 }
 
 /**
- * Writes an object to a JSON file.
+ * Writes `obj` to a JSON file at `path`.
  *
- * @param {String} path The path to write file.
- * @param {Object} obj The object to save to file.
+ * @param {String} path The file path to write to.
+ * @param {Object} obj The object to save to `path`.
  */
 exports.writeJSONFile = function (path, obj) {
 	// Expand '~' if present
@@ -172,33 +167,36 @@ exports.writeJSONFile = function (path, obj) {
 }
 
 /**
- * Replaces `'~'` in a path (if present and at the path's start) with the home directory path.
+ * Replaces `'~'` in `path` (if present and at the path's start) with the home directory path.
  *
  * @param {String} path The file path.
- * @returns {String} `path` with `'~'` (if present) replaced with the home directory path.
+ * @returns {String} Returns `path` with `'~'` (if present) replaced with the home directory path.
  * @example
- * dantil.expandHomeDir('~/Desktop') // -> '/Users/Danny/Desktop'
+ *
+ * dantil.expandHomeDir('~/Desktop')
+ * // => '/Users/Danny/Desktop'
  */
 exports.expandHomeDir = function (path) {
 	return path.replace(/^~/, process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME'])
 }
 
 /**
- * Executes the passed function within a `try` block. If an error is thrown, removes parentheses surrounding file paths in its stack trace for the iTerm open-file-path shortcut, and colors the error type name (e.g., `TypeError`) red.
+ * Executes `func` within a `try` block. If an error is thrown, removes parentheses surrounding file paths in its stack trace for the iTerm open-file-path shortcut, and colors the error type name (e.g., `TypeError`) red.
  *
- * @param {Function} callback The function to execute within a `try` block.
- * @param {Boolean} rethrow Specify rethrowing an error (after printing the stack trace) if caught from `callback`.
- * @returns {Mixed} The value returned by `callback`, if any.
+ * @param {Function} func The function to execute within a `try` block.
+ * @param {Boolean} rethrow Specify rethrowing an error (after printing the stack trace) if caught from `func`.
+ * @returns {Mixed} Returns the value returned by `func`, if any.
  * @example
- * // Catches thrown error and prints a formatted stack trace
+ *
  * dantil.tryCatchWrapper(function () {
  *   // ...stuff...
  *   throw new Error('test failed')
  * })
+ * // => Catches thrown error and prints a formatted stack trace
  */
-exports.tryCatchWrapper = function (callback, rethrow) {
+exports.tryCatchWrapper = function (func, rethrow) {
 	try {
-		return callback()
+		return func()
 	} catch (e) {
 		// Print leading blank line
 		console.log()
@@ -228,10 +226,11 @@ exports.tryCatchWrapper = function (callback, rethrow) {
 }
 
 /**
- * Deletes modules from cache, forcing them to be reloaded at next `require()` call. Without removing a module from cache, subsequent `require()` calls to the same module will not enable changes to its file(s). This is useful for enabling changes on a server without restarting the server.
+ * Deletes the modules identified by the provided paths from cache, forcing them to be reloaded at next `require()` call. Without removing a module from cache, subsequent `require()` calls to the same module will not enable changes to its file(s). This is useful for enabling changes on a server without restarting the server.
  *
- * @param {...String} pathN The paths of modules to remove from cache.
+ * @param {...String} paths The paths of modules to remove from cache.
  * @example
+ *
  * // Load module
  * var myModule = require('./myModule.js')
  *
@@ -250,8 +249,8 @@ exports.deleteModuleCache = function () {
 /**
  * Gets the file path and line number of the first frame in the stack of the parent module from where this function was called. This is useful for logging where an object is instantiated.
  *
- * @param {Boolean} [getCallingLine] Specify getting the line where `getLine()` is called instead of the line of the parent module.
- * @returns {String} The file path and line number of calling line.
+ * @param {Boolean} [getCallingLine] Specify getting the line where called instead of the line of the parent module.
+ * @returns {String} Returns the file path and line number of calling line.
  */
 exports.getLine = function (getCallingLine) {
 	// Get stack without lines for `Error` and this file
@@ -282,13 +281,13 @@ exports.getLine = function (getCallingLine) {
 }
 
 /**
- * Prints objects in color, recursing 2 times while formatting the object (which is identical to `console.log()`).
+ * Prints the provided objects and values in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
  *
  * Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
  *
  * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace.
  *
- * @param {...Mixed} [valN] The values to print.
+ * @param {...Mixed} values The values to print.
  */
 exports.log = function () {
 	if (arguments.length) {
@@ -302,7 +301,7 @@ exports.log = function () {
 /**
  * A version of `dantil.log()` that recurses indefinitely while formatting the object. This is useful for inspecting large, complicated objects.
  *
- * @param {...Mixed} [valN] The values to print.
+ * @param {...Mixed} values The values to print.
  */
 exports.dir = function () {
 	prettyPrint(arguments, { depth: null, colors: true })
@@ -312,7 +311,7 @@ exports.dir = function () {
 }
 
 /**
- * Prints objects according to the formatting options of `opts` (as defined for `util.inspect()`).
+ * Prints the provided objects and values in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
  *
  * Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
  *
@@ -364,41 +363,41 @@ function prettyPrint(args, opts) {
 }
 
 /**
- * Gets the length of a stylized string when printed without the Unicode characters for color stylization.
+ * Gets the length of stylized `string` with the Unicode characters for color stylization escaped.
  *
  * @private
- * @param {String} string The stylized string.
- * @returns {Number} The length of the stylized string when printed.
+ * @param {String} string The stylized string to measure.
+ * @returns {Number} Returns the escaped length of `string`.
  */
 function getStylizedStringLength(string) {
 	return string.replace(/\u001b\[\d\d?m/g, '').length
 }
 
 /**
- * Prints like `console.log()` prepended with red-colored "Error: ".
+ * Prints the provided values like `console.log()` prepended with red-colored "Error: ".
  *
- * @param {...Mixed} valN The values print following "Error: ".
+ * @param {...Mixed} values The values to print following "Error: ".
  */
 exports.logError = function () {
 	printWithColoredLabel('Error', 'red', arguments)
 }
 
 /**
- * Prints like `console.log()` prepended with yellow-colored "Warning: ".
+ * Prints the provided values like `console.log()` prepended with yellow-colored "Warning: ".
  *
- * @param {...Mixed} valN The values print following "Warning: ".
+ * @param {...Mixed} values The values to print following "Warning: ".
  */
 exports.logWarning = function () {
 	printWithColoredLabel('Warning', 'yellow', arguments)
 }
 
 /**
- * Prints like `console.log()`, but colors first argument and prepends with a label (e.g., "Error: ").
+ * Prints like `console.log()`, but colors first argument `color` and prepends with `label` (e.g., "Error: ").
  *
  * @private
  * @param {String} label The label to prepend to `args` (e.g., "Error").
  * @param {String} color The color to stylize `label`.
- * @param {Array} args The values print following `label`.
+ * @param {Array} args The values to print following `label`.
  */
 function printWithColoredLabel(label, color, args) {
 	// Temporarily remove ':' to avoid coloring it
@@ -411,10 +410,10 @@ function printWithColoredLabel(label, color, args) {
 }
 
 /**
- * Prints error message like `dantil.logError()` followed by the file path and line number from which the parent function was called .
+ * Prints an error message like `dantil.logError()` followed by the file path and line number from which the parent function was called.
  *
- * @param {Boolean} [getCallingLine] Specify getting the line where `getLine()` is called instead of the line of the parent module.
- * @param {...Mixed} [valN] The optional values to print following "Error: ".
+ * @param {Boolean} [getCallingLine] Specify getting the line where called instead of the line of the parent module.
+ * @param {...Mixed} [values] The optional values to print following "Error: ".
  */
 exports.logErrorAndLine = function (getCallingLine) {
 	var args = Array.prototype.slice.call(arguments, getCallingLine === true ? 1 : 0)
@@ -444,13 +443,14 @@ exports.logTrace = function (msg) {
 }
 
 /**
- * Prints calling file path and line number to mark reaching a section of code, prepended by `msg`.
+ * Prints the calling file path and line number, prepended by `msg`, to mark reaching a section of code.
  *
- * @param {String} [msg] The optional message to prepend line.
+ * @param {String} [msg] The optional message to prepend to the path and line number.
  * @example
+ *
  * if (rareConditionIsTrue) {
- *   // Prints: "Condition met: /Users/Danny/test.js:9:12"
  *   dantil.assert('Condition met')
+ *   // => Prints "Condition met: /Users/Danny/test.js:9:12"
  * }
  */
 exports.assert = function (msg) {
@@ -458,20 +458,21 @@ exports.assert = function (msg) {
 }
 
 /**
- * Prints calling file path and line number if `value` is truthy, prepended by `msg`.
+ * Prints the calling file path and line number, prepended by `msg`, if `value` is truthy.
  *
  * @param {Boolean} value The value to check if truthy.
- * @param {String} [msg] The optional message to prepend line.
+ * @param {String} [msg] The optional message to prepend to the path and line number.
  * @example
- * // If `myNumber > 100` is `true`, prints: "Condition met: /Users/Danny/test.js:9:12"
+ *
  * dantil.assertTrue(myNumber > 100, 'Condition met')
+ * // => Prints "Condition met: /Users/Danny/test.js:9:12" if `myNumber > 100`
  */
 exports.assertTrue = function (value, msg) {
 	if (value) exports.assert(msg)
 }
 
  /**
-	* Key-value map used by `time()`.
+	* Used as a key-value map for `dantil.time()`.
 	*
 	* @private
 	* @type Map
@@ -483,18 +484,19 @@ var _times = new Map()
  *
  * @param {String} label The identifier of the timer.
  * @example
+ *
  * // Start timer
  * dantil.time('my test')
  *
  * // ...stuff...
  *
- * // Prints "my test: 13.264ms"
  * dantil.timeEnd('my test')
+ * // => Prints "my test: 13.264ms"
  *
  * // ...more stuff...
  *
- * // Prints "my test: 31.183ms"
  * dantil.timeEnd('my test')
+ * // => Prints "my test: 31.183ms"
  */
 exports.time = function (label) {
 	_times.set(label, process.hrtime())
@@ -519,7 +521,7 @@ exports.timeEnd = function (label) {
 }
 
 /**
- * Key-value map used by `dantil.count()`.
+ * Used as a key-value map for `dantil.count()`.
  *
  * @private
  * @type Map
@@ -527,16 +529,17 @@ exports.timeEnd = function (label) {
 var _counts = new Map()
 
 /**
- * Counts the number of times a section of code is reached, identified by `label`. Use `dantil.countEnd(label)` to print value. This is useful for profiling complex programs.
+ * Counts the number of times a section of code is reached, identified by `label`. Use `dantil.countEnd(label)` to print the counter's value. This is useful for profiling complex programs.
  *
- * @param {String} label The id to refer to a section of code.
+ * @param {String} label The counter identifier.
  * @example
+ *
  * for (var i = 0; i < 100; ++i) {
  *   if (i % 2 === 0) dantil.count('even')
  * }
  *
- * // Prints "even: 50"; resets count for 'even' to 0
  * dantil.countEnd('even')
+ * // => Prints "even: 50" and resets the count for 'even' to 0
  */
 exports.count = function (label) {
 	var val = _counts.get(label) || 0
@@ -546,7 +549,7 @@ exports.count = function (label) {
 /**
  * Prints (and resets the value of) the number of calls of `dantil.count(label)`.
  *
- * @param {String} label The identifier of the counter.
+ * @param {String} label The counter identifier.
  */
 exports.countEnd = function (label) {
 	// Print even if count is 0 to acknowledge never being reached
@@ -559,18 +562,18 @@ exports.countEnd = function (label) {
 }
 
 /**
- * Prints (and resets) the values of all counters used on `dantil.count()`. Will not print counters that are never reached (and never have their keys initialized).
+ * Prints (and resets) the values of all counters used on `dantil.count()`. Does not print counters that are never reached (and never have their keys initialized).
+ *
  * @example
+ *
  * for (var i = 0; i < 100; ++i) {
  *   if (i % 2 === 0) dantil.count('even')
  *   if (i % 2 === 1) dantil.count('odd')
  *   if (i > 100) dantil.count('never reached')
  * }
  *
- * // Prints: "even: 50
- * //          odd: 50"
- * // Resets all counts to 0
  * dantil.countEndAll()
+ * // => Prints "even: 50, odd: 50" and resets all counts to 0
  */
 exports.countEndAll = function () {
 	_counts.forEach(function(count, label) {
@@ -586,21 +589,27 @@ exports.countEndAll = function () {
  *
  * @param {Array} a The array to compare.
  * @param {Array} b The other array to compare.
- * @returns {Boolean} `true` if the arrays are equivalent, else `false`.
+ * @returns {Boolean} Returns `true` if the arrays are equivalent, else `false`.
  * @example
- * dantil.arraysEqual([], []) // -> true
  *
- * dantil.arraysEqual([1, 2, 3, 'danny'], [1, 2, 3, 'danny']) // -> true
+ * dantil.arraysEqual([], [])
+ * // => true
  *
- * dantil.arraysEqual([ false, true ], [ true ]) // -> false
+ * dantil.arraysEqual([1, 2, 3, 'danny'], [1, 2, 3, 'danny'])
+ * // => true
+ *
+ * dantil.arraysEqual([ false, true ], [ true ])
+ * // => false
  *
  * // A shallow comparison will not compare object properties
  * var objA = { prop: 'val' }
  * var objB = { prop: 'val' }
- * dantil.arraysEqual([ 1, 2, objA ], [ 1, 2, objB ]) // -> false
+ * dantil.arraysEqual([ 1, 2, objA ], [ 1, 2, objB ])
+ * // => false
  *
  * // Rather, objects are only equal if they are the same instance
- * dantil.arraysEqual([ objA, objB ], [ objA, objB ]) // -> true
+ * dantil.arraysEqual([ objA, objB ], [ objA, objB ])
+ * // => true
  */
 exports.arraysEqual = function (a, b) {
 	// Identical arrays (or, both undefined)
@@ -622,13 +631,17 @@ exports.arraysEqual = function (a, b) {
 }
 
 /**
- * Removes extraneous digits from numbers resulting from operations limited by JavaScript's floating point number precision, such as `0.1 * 0.2` (which does not equal `0.02`). This limitation results from being unable to map `0.1` to a finite binary floating point number.
+ * Removes any extraneous digits from `number`, which result from operations limited by JavaScript's floating point number precision, such as `0.1 * 0.2` (which does not equal `0.02`). This limitation results from being unable to map `0.1` to a finite binary floating point number.
  *
- * @param {Number} number The number to trim.
- * @returns {Number} The number trimmed.
+ * @param {Number} number The number to rid of any extraneous digits.
+ * @returns {Number} Returns the cleaned number.
  * @example
- * var number = 0.1 * 0.2 // -> 0.020000000000000004
- * number = dantil.cleanFloat(number) // -> 0.02
+ *
+ * var number = 0.1 * 0.2
+ * // => 0.020000000000000004
+ *
+ * number = dantil.cleanFloat(number)
+ * // => 0.02
  */
 exports.cleanNumber = function (number) {
 	// JavaScript's floating point number precision 13 digits after the decimal point
@@ -636,12 +649,14 @@ exports.cleanNumber = function (number) {
 }
 
 /**
- * Converts a dash-separated string to camelCase.
+ * Converts dash-separated `string` to camel case.
  *
  * @param {String} dashedString The dash-separated string to convert.
- * @returns {String} The input string in camelCase.
+ * @returns {String} Returns the camel cased string.
  * @example
- * dantil.camelCase('my-long-variable-name') // -> 'myLongVariableName'
+ *
+ * dantil.camelCase('my-long-variable-name')
+ * // => 'myLongVariableName'
  */
 exports.dashedToCamelCase = function (dashedString) {
 	return dashedString.replace(/-(\w)/g, function (match, group1) {
