@@ -14,6 +14,7 @@ var colors = require('colors/safe')
  *
  * @static
  * @memberOf dantil
+ * @category Utility
  * @param {Object} schema The definition of required and optional properties for `opts`.
  * @param {Object} opts The options object to check for conformity to `schema`.
  * @returns {boolean} Returns `true` if `opts` is ill-formed, else `false`.
@@ -96,10 +97,120 @@ exports.illFormedOpts = function (schema, opts) {
 }
 
 /**
+ * Executes `func` within a `try` block. If an error is thrown, removes parentheses surrounding file paths in its stack trace for the iTerm open-file-path shortcut, and colors the error type name (e.g., `TypeError`) red.
+ *
+ * @static
+ * @memberOf dantil
+ * @category Utility
+ * @param {Function} func The function to execute within a `try` block.
+ * @param {boolean} rethrow Specify rethrowing an error (after printing the stack trace) if caught from `func`.
+ * @returns {*} Returns the value returned by `func`, if any.
+ * @example
+ *
+ * dantil.tryCatchWrapper(function () {
+ *   // ...stuff...
+ *   throw new Error('test failed')
+ * })
+ * // => Catches thrown error and prints a formatted stack trace
+ */
+exports.tryCatchWrapper = function (func, rethrow) {
+	try {
+		return func()
+	} catch (e) {
+		// Print leading blank line
+		console.log()
+
+		if (e.stack) {
+			// Error message without source code (if present)
+			var message = e.message.split('\n').pop()
+
+			e.stack.split('\n').forEach(function (stackLine) {
+				if (e.message.indexOf(stackLine) !== -1) {
+					exports.log(stackLine)
+				} else if (stackLine.indexOf(message) !== -1) {
+					// Color error type name red
+					exports.log(stackLine.replace(e.name, colors.red(e.name)))
+					message = null
+				} else {
+					// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut
+					exports.log(stackLine.replace(/[()]/g, ''))
+				}
+			})
+		} else {
+			exports.log(e)
+		}
+
+		if (rethrow) throw e
+	}
+}
+
+/**
+ * Deletes the modules identified by the provided paths from cache, forcing them to be reloaded at next `require()` call. Without removing a module from cache, subsequent `require()` calls to the same module will not enable changes to its file(s). This is useful for enabling changes on a server without restarting the server.
+ *
+ * @static
+ * @memberOf dantil
+ * @category Utility
+ * @param {...string} paths The paths of modules to remove from cache.
+ * @example
+ *
+ * // Load module
+ * var myModule = require('./myModule.js')
+ *
+ * // Remove module from cache
+ * dantil.deleteModuleCache('./myModule.js')
+ *
+ * // Load module again, enabling changes to './myModule.js'
+ * myModule = require('./myModule.js')
+ */
+exports.deleteModuleCache = function () {
+	Array.prototype.slice.call(arguments).forEach(function (path) {
+		delete require.cache[fs.realpathSync(path)]
+	})
+}
+
+/**
+ * Gets the file path and line number of the first frame in the stack of the parent module from where this function was called. This is useful for logging where an object is instantiated.
+ *
+ * @static
+ * @memberOf dantil
+ * @category Utility
+ * @param {boolean} [getCallingLine] Specify getting the line where this is called instead of the line of the parent module.
+ * @returns {string} Returns the file path and line number of calling line.
+ */
+exports.getPathAndLineNumber = function (getCallingLine) {
+	// Get stack without lines for `Error` and this file
+	var stack = Error().stack.split('\n').slice(3)
+	var callingFileName
+
+	for (var i = 0, stackLength = stack.length; i < stackLength; ++i) {
+		var line = stack[i]
+
+		// `line` must contain a file path
+		if (!/\//.test(line)) continue
+
+		// Ignore if `dantil.getPathAndLineNumber()` called from this file
+		if (line.indexOf(__filename) !== -1) continue
+
+		// Remove parentheses surrounding file paths in the stack trace for the iTerm open-file-path shortcut
+		if (getCallingLine || (callingFileName && line.indexOf(callingFileName) === -1)) {
+			return line.replace(/[()]/g, '').slice(line.lastIndexOf(' ') + 1)
+		}
+
+		// Name of file from which `dantil.getPathAndLineNumber()` was called
+		callingFileName = line.slice(line.indexOf('/') + 1, line.indexOf(':'))
+	}
+
+	// Could not find line in stack for file from which function calling this was called
+	// exports.logError('Sought-after line not found in stack trace (trace limited to 10 most recent)')
+	// exports.logTrace()
+}
+
+/**
  * Synchronously writes the output of `func` to a file at `path` instead of the console. Overwrites the file if it already exists. Restores output to the console if an error is thrown.
  *
  * @static
  * @memberOf dantil
+ * @category File System
  * @param {string} path The path where to write output.
  * @param {Function} func The function producing output.
  * @returns {*} Returns the value returned by `func`, if any.
@@ -157,6 +268,7 @@ exports.redirectOutputToFile = function (path, func) {
  *
  * @static
  * @memberOf dantil
+ * @category File System
  * @param {string} path The file path to write to.
  * @param {Object} obj The object to save to `path`.
  */
@@ -177,6 +289,7 @@ exports.writeJSONFile = function (path, obj) {
  *
  * @static
  * @memberOf dantil
+ * @category File System
  * @param {string} path The file path.
  * @returns {string} Returns `path` with `'~'` (if present) replaced with the home directory path.
  * @example
@@ -189,112 +302,6 @@ exports.expandHomeDir = function (path) {
 }
 
 /**
- * Executes `func` within a `try` block. If an error is thrown, removes parentheses surrounding file paths in its stack trace for the iTerm open-file-path shortcut, and colors the error type name (e.g., `TypeError`) red.
- *
- * @static
- * @memberOf dantil
- * @param {Function} func The function to execute within a `try` block.
- * @param {boolean} rethrow Specify rethrowing an error (after printing the stack trace) if caught from `func`.
- * @returns {*} Returns the value returned by `func`, if any.
- * @example
- *
- * dantil.tryCatchWrapper(function () {
- *   // ...stuff...
- *   throw new Error('test failed')
- * })
- * // => Catches thrown error and prints a formatted stack trace
- */
-exports.tryCatchWrapper = function (func, rethrow) {
-	try {
-		return func()
-	} catch (e) {
-		// Print leading blank line
-		console.log()
-
-		if (e.stack) {
-			// Error message without source code (if present)
-			var message = e.message.split('\n').pop()
-
-			e.stack.split('\n').forEach(function (stackLine) {
-				if (e.message.indexOf(stackLine) !== -1) {
-					exports.log(stackLine)
-				} else if (stackLine.indexOf(message) !== -1) {
-					// Color error type name red
-					exports.log(stackLine.replace(e.name, colors.red(e.name)))
-					message = null
-				} else {
-					// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut
-					exports.log(stackLine.replace(/[()]/g, ''))
-				}
-			})
-		} else {
-			exports.log(e)
-		}
-
-		if (rethrow) throw e
-	}
-}
-
-/**
- * Deletes the modules identified by the provided paths from cache, forcing them to be reloaded at next `require()` call. Without removing a module from cache, subsequent `require()` calls to the same module will not enable changes to its file(s). This is useful for enabling changes on a server without restarting the server.
- *
- * @static
- * @memberOf dantil
- * @param {...string} paths The paths of modules to remove from cache.
- * @example
- *
- * // Load module
- * var myModule = require('./myModule.js')
- *
- * // Remove module from cache
- * dantil.deleteModuleCache('./myModule.js')
- *
- * // Load module again, enabling changes to './myModule.js'
- * myModule = require('./myModule.js')
- */
-exports.deleteModuleCache = function () {
-	Array.prototype.slice.call(arguments).forEach(function (path) {
-		delete require.cache[fs.realpathSync(path)]
-	})
-}
-
-/**
- * Gets the file path and line number of the first frame in the stack of the parent module from where this function was called. This is useful for logging where an object is instantiated.
- *
- * @static
- * @memberOf dantil
- * @param {boolean} [getCallingLine] Specify getting the line where this is called instead of the line of the parent module.
- * @returns {string} Returns the file path and line number of calling line.
- */
-exports.getPathAndLineNumber = function (getCallingLine) {
-	// Get stack without lines for `Error` and this file
-	var stack = Error().stack.split('\n').slice(3)
-	var callingFileName
-
-	for (var i = 0, stackLength = stack.length; i < stackLength; ++i) {
-		var line = stack[i]
-
-		// `line` must contain a file path
-		if (!/\//.test(line)) continue
-
-		// Ignore if `dantil.getPathAndLineNumber()` called from this file
-		if (line.indexOf(__filename) !== -1) continue
-
-		// Remove parentheses surrounding file paths in the stack trace for the iTerm open-file-path shortcut
-		if (getCallingLine || (callingFileName && line.indexOf(callingFileName) === -1)) {
-			return line.replace(/[()]/g, '').slice(line.lastIndexOf(' ') + 1)
-		}
-
-		// Name of file from which `dantil.getPathAndLineNumber()` was called
-		callingFileName = line.slice(line.indexOf('/') + 1, line.indexOf(':'))
-	}
-
-	// Could not find line in stack for file from which function calling this was called
-	// exports.logError('Sought-after line not found in stack trace (trace limited to 10 most recent)')
-	// exports.logTrace()
-}
-
-/**
  * Prints the provided objects and values in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
  *
  * Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
@@ -303,6 +310,7 @@ exports.getPathAndLineNumber = function (getCallingLine) {
  *
  * @static
  * @memberOf dantil
+ * @category Console
  * @param {...*} values The values to print.
  */
 exports.log = function () {
@@ -319,6 +327,7 @@ exports.log = function () {
  *
  * @static
  * @memberOf dantil
+ * @category Console
  * @param {...*} values The values to print.
  */
 exports.dir = function () {
@@ -396,6 +405,7 @@ function getStylizedStringLength(string) {
  *
  * @static
  * @memberOf dantil
+ * @category Console
  * @param {...*} values The values to print following "Error: ".
  */
 exports.logError = function () {
@@ -407,6 +417,7 @@ exports.logError = function () {
  *
  * @static
  * @memberOf dantil
+ * @category Console
  * @param {...*} values The values to print following "Warning: ".
  */
 exports.logWarning = function () {
@@ -436,6 +447,7 @@ function printWithColoredLabel(label, color, args) {
  *
  * @static
  * @memberOf dantil
+ * @category Console
  * @param {boolean} [getCallingLine] Specify getting the line where this is called instead of the line of the parent module.
  * @param {...*} [values] The optional values to print following "Error: ".
  */
@@ -456,6 +468,7 @@ exports.logErrorAndPath = function (getCallingLine) {
  *
  * @static
  * @memberOf dantil
+ * @category Console
  * @param {string} [msg] The optional message to print above the stack trace.
  */
 exports.logTrace = function (msg) {
@@ -473,6 +486,7 @@ exports.logTrace = function (msg) {
  *
  * @static
  * @memberOf dantil
+ * @category Profile
  * @param {string} [msg] The optional message to prepend to the path and line number.
  * @example
  *
@@ -490,6 +504,7 @@ exports.assert = function (msg) {
  *
  * @static
  * @memberOf dantil
+ * @category Profile
  * @param {boolean} value The value to check if truthy.
  * @param {string} [msg] The optional message to prepend to the path and line number.
  * @example
@@ -514,6 +529,7 @@ var _times = new Map()
  *
  * @static
  * @memberOf dantil
+ * @category Profile
  * @param {string} label The identifier of the timer.
  * @example
  *
@@ -539,6 +555,7 @@ exports.time = function (label) {
  *
  * @static
  * @memberOf dantil
+ * @category Profile
  * @param {string} label The identifier of the timer.
  */
 exports.timeEnd = function (label) {
@@ -567,6 +584,7 @@ var _counts = new Map()
  *
  * @static
  * @memberOf dantil
+ * @category Profile
  * @param {string} label The counter identifier.
  * @example
  *
@@ -587,6 +605,7 @@ exports.count = function (label) {
  *
  * @static
  * @memberOf dantil
+ * @category Profile
  * @param {string} label The counter identifier.
  */
 exports.countEnd = function (label) {
@@ -604,6 +623,7 @@ exports.countEnd = function (label) {
  *
  * @static
  * @memberOf dantil
+ * @category Profile
  * @example
  *
  * for (var i = 0; i < 100; ++i) {
@@ -629,6 +649,7 @@ exports.countEndAll = function () {
  *
  * @static
  * @memberOf dantil
+ * @category Array
  * @param {Array} a The array to compare.
  * @param {Array} b The other array to compare.
  * @returns {boolean} Returns `true` if the arrays are equivalent, else `false`.
@@ -677,6 +698,7 @@ exports.arraysEqual = function (a, b) {
  *
  * @static
  * @memberOf dantil
+ * @category Number
  * @param {number} number The number to rid of any extraneous digits.
  * @returns {number} Returns the cleaned number.
  * @example
@@ -697,6 +719,7 @@ exports.cleanNumber = function (number) {
  *
  * @static
  * @memberOf dantil
+ * @category String
  * @param {string} dashedString The dash-separated string to convert.
  * @returns {string} Returns the camel cased string.
  * @example
