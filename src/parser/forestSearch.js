@@ -8,9 +8,9 @@ var calcHeuristicCosts = require('./calcHeuristicCosts')
  * Uses A* path search to find the K-best trees in a parse forest returned by `Parser`.
  *
  * @param {Object} startNode The root node of the parse forest returned by `Parser`.
- * @param {Number} K The maximum number of parse trees to find.
- * @param {Boolean} buildDebugTrees Specify constructing parse trees for printing at expense of speed.
- * @param {Boolean} printStats Specify printing performance statistics.
+ * @param {number} K The maximum number of parse trees to find.
+ * @param {boolean} buildDebugTrees Specify constructing parse trees for printing at expense of speed.
+ * @param {boolean} printStats Specify printing performance statistics.
  * @returns {Array} The K-best parse trees.
  */
 exports.search = function (startNode, K, buildDebugTrees, printStats) {
@@ -450,7 +450,7 @@ function spliceGramPropsList(item, gramPropsToRemove) {
  *
  * @param {Array} trees The previously completed unique parse trees to compare against.
  * @param {Object} newTree The new parse tree.
- * @returns {Boolean} `true` if `newTree` is unique.
+ * @returns {boolean} `true` if `newTree` is unique.
  */
 function treeIsUnique(trees, newTree) {
 	var semanticStr = semantic.toString(newTree.semantics.semantic)

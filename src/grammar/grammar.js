@@ -65,7 +65,7 @@ exports.sortGrammar = function () {
 /**
  * Prints the number of rules in `grammar` to the console. If `prevOutputFilePath` is provided, prints the difference in the number of rules, if any, since the last build of `grammar`.
  *
- * @param {String} [prevOutputFilePath] The optional path of the previously generated grammar to compare with this grammar.
+ * @param {string} [prevOutputFilePath] The optional path of the previously generated grammar to compare with this grammar.
  */
 exports.printRuleCount = function (prevOutputFilePath) {
 	var newRuleCount = exports.getRuleCount(grammar)
@@ -85,7 +85,7 @@ exports.printRuleCount = function (prevOutputFilePath) {
  * Gets the number of rules in a grammar.
  *
  * @param {Object} grammar The grammar to count.
- * @returns {Number} The number of rules in `grammar`.
+ * @returns {number} The number of rules in `grammar`.
  */
 exports.getRuleCount = function (grammar) {
 	return Object.keys(grammar).reduce(function (prev, cur) {
@@ -96,7 +96,7 @@ exports.getRuleCount = function (grammar) {
 /**
  * Writes the grammar, semantics, entities, and deletables to a JSON file. This file is used in the instantiation of a `StateTable` (grammar, semantics) and a `Parser` (entities, deletables).
  *
- * @param {String} outputFilePath The path to write the file.
+ * @param {string} outputFilePath The path to write the file.
  */
 exports.writeGrammarToFile = function (outputFilePath) {
 	util.writeJSONFile(outputFilePath, {

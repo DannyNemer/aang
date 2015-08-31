@@ -12,10 +12,10 @@ var util = require('../util')
   *
   * @param {Object} grammar The grammar to inspect.
   * @param {Object} opts The options object.
-  * @param {Number} opts.symsLimit The maximum number of symbols permitted in the construction of a path when searching for ambiguity, limiting processing time.
-  * @param {Boolean} [opts.findAll] Specify finding every distinct pair of ambiguous trees instead of one instance per each pair of rules.
-  * @param {Boolean} [opts.useTestRules] Specify replacing `grammar` with ambiguous test rules.
-  * @param {Boolean} [opts.noOutput] Specify not printing program output.
+  * @param {number} opts.symsLimit The maximum number of symbols permitted in the construction of a path when searching for ambiguity, limiting processing time.
+  * @param {boolean} [opts.findAll] Specify finding every distinct pair of ambiguous trees instead of one instance per each pair of rules.
+  * @param {boolean} [opts.useTestRules] Specify replacing `grammar` with ambiguous test rules.
+  * @param {boolean} [opts.noOutput] Specify not printing program output.
   */
 
 var optsSchema = {
@@ -61,7 +61,7 @@ module.exports = function (grammar, opts) {
 	 *
 	 * Initializes the paths from the nonterminal symbol, but calls `buildPaths()` to recursively expand the paths.
 	 *
-	 * @param {String} nontermSym The nonterminal symbol from which to search for ambiguity.
+	 * @param {string} nontermSym The nonterminal symbol from which to search for ambiguity.
 	 */
 	function searchPaths(nontermSym) {
 		// The store of all paths from `nontermSym`. Each index contains a set of arrays of paths, one set for each rule from `nontermSym`. Each set is a map of terminal strings to the arrays of paths.
@@ -311,7 +311,7 @@ module.exports = function (grammar, opts) {
  * @param {Array} ambigPairs The array of distinct pairs of ambiguous trees found so far.
  * @param {Object} treeA The first of the new pair of ambiguous trees.
  * @param {Object} treeB The second of the new pair of ambiguous trees.
- * @returns {Boolean} `true` if the pairs exists in `ambigPairs`, else `false`.
+ * @returns {boolean} `true` if the pairs exists in `ambigPairs`, else `false`.
  */
 function pairExists(ambigPairs, treeA, treeB) {
 	for (var a = 0, ambigPairsLen = ambigPairs.length; a < ambigPairsLen; ++a) {
@@ -381,7 +381,7 @@ function pathToTree(path) {
  *
  * @param {Object} a The list to compare.
  * @param {Object} b The other list to compare.
- * @returns {Boolean} `true` if the lists are equivalent, else `false`.
+ * @returns {boolean} `true` if the lists are equivalent, else `false`.
  */
 function listsEqual(a, b) {
 	if (!a && !b) return true
@@ -461,7 +461,7 @@ function invertTree(tree) {
  *
  * @param {Object} a The node to compare.
  * @param {Object} b The other node to compare.
- * @returns {Boolean} `true` if the nodes are equivalent, else `false`.
+ * @returns {boolean} `true` if the nodes are equivalent, else `false`.
  */
 function nodesEqual(a, b) {
 	if (a.symbol !== b.symbol) return false

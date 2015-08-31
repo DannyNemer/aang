@@ -14,7 +14,7 @@ var colors = require('colors/safe')
  *
  * @param {Object} schema The definition of required and optional properties for `opts`.
  * @param {Object} opts The options object to check for conformity to `schema`.
- * @returns {Boolean} Returns `true` if `opts` is ill-formed, else `false`.
+ * @returns {boolean} Returns `true` if `opts` is ill-formed, else `false`.
  * @example
  *
  * var schema = {
@@ -96,7 +96,7 @@ exports.illFormedOpts = function (schema, opts) {
 /**
  * Synchronously writes the output of `func` to a file at `path` instead of the console. Overwrites the file if it already exists. Restores output to the console if an error is thrown.
  *
- * @param {String} path The path where to write output.
+ * @param {string} path The path where to write output.
  * @param {Function} func The function producing output.
  * @returns {*} Returns the value returned by `func`, if any.
  * @example
@@ -151,7 +151,7 @@ exports.redirectOutputToFile = function (path, func) {
 /**
  * Writes `obj` to a JSON file at `path`.
  *
- * @param {String} path The file path to write to.
+ * @param {string} path The file path to write to.
  * @param {Object} obj The object to save to `path`.
  */
 exports.writeJSONFile = function (path, obj) {
@@ -169,8 +169,8 @@ exports.writeJSONFile = function (path, obj) {
 /**
  * Replaces `'~'` in `path` (if present and at the path's start) with the home directory path.
  *
- * @param {String} path The file path.
- * @returns {String} Returns `path` with `'~'` (if present) replaced with the home directory path.
+ * @param {string} path The file path.
+ * @returns {string} Returns `path` with `'~'` (if present) replaced with the home directory path.
  * @example
  *
  * dantil.expandHomeDir('~/Desktop')
@@ -184,7 +184,7 @@ exports.expandHomeDir = function (path) {
  * Executes `func` within a `try` block. If an error is thrown, removes parentheses surrounding file paths in its stack trace for the iTerm open-file-path shortcut, and colors the error type name (e.g., `TypeError`) red.
  *
  * @param {Function} func The function to execute within a `try` block.
- * @param {Boolean} rethrow Specify rethrowing an error (after printing the stack trace) if caught from `func`.
+ * @param {boolean} rethrow Specify rethrowing an error (after printing the stack trace) if caught from `func`.
  * @returns {*} Returns the value returned by `func`, if any.
  * @example
  *
@@ -228,7 +228,7 @@ exports.tryCatchWrapper = function (func, rethrow) {
 /**
  * Deletes the modules identified by the provided paths from cache, forcing them to be reloaded at next `require()` call. Without removing a module from cache, subsequent `require()` calls to the same module will not enable changes to its file(s). This is useful for enabling changes on a server without restarting the server.
  *
- * @param {...String} paths The paths of modules to remove from cache.
+ * @param {...string} paths The paths of modules to remove from cache.
  * @example
  *
  * // Load module
@@ -249,8 +249,8 @@ exports.deleteModuleCache = function () {
 /**
  * Gets the file path and line number of the first frame in the stack of the parent module from where this function was called. This is useful for logging where an object is instantiated.
  *
- * @param {Boolean} [getCallingLine] Specify getting the line where called instead of the line of the parent module.
- * @returns {String} Returns the file path and line number of calling line.
+ * @param {boolean} [getCallingLine] Specify getting the line where called instead of the line of the parent module.
+ * @returns {string} Returns the file path and line number of calling line.
  */
 exports.getLine = function (getCallingLine) {
 	// Get stack without lines for `Error` and this file
@@ -366,8 +366,8 @@ function prettyPrint(args, opts) {
  * Gets the length of stylized `string` with the Unicode characters for color stylization escaped.
  *
  * @private
- * @param {String} string The stylized string to measure.
- * @returns {Number} Returns the escaped length of `string`.
+ * @param {string} string The stylized string to measure.
+ * @returns {number} Returns the escaped length of `string`.
  */
 function getStylizedStringLength(string) {
 	return string.replace(/\u001b\[\d\d?m/g, '').length
@@ -395,8 +395,8 @@ exports.logWarning = function () {
  * Prints like `console.log()`, but colors first argument `color` and prepends with `label` (e.g., "Error: ").
  *
  * @private
- * @param {String} label The label to prepend to `args` (e.g., "Error").
- * @param {String} color The color to stylize `label`.
+ * @param {string} label The label to prepend to `args` (e.g., "Error").
+ * @param {string} color The color to stylize `label`.
  * @param {Array} args The values to print following `label`.
  */
 function printWithColoredLabel(label, color, args) {
@@ -412,7 +412,7 @@ function printWithColoredLabel(label, color, args) {
 /**
  * Prints an error message like `dantil.logError()` followed by the file path and line number from which the parent function was called.
  *
- * @param {Boolean} [getCallingLine] Specify getting the line where called instead of the line of the parent module.
+ * @param {boolean} [getCallingLine] Specify getting the line where called instead of the line of the parent module.
  * @param {...*} [values] The optional values to print following "Error: ".
  */
 exports.logErrorAndLine = function (getCallingLine) {
@@ -430,7 +430,7 @@ exports.logErrorAndLine = function (getCallingLine) {
 /**
  * Prints the stack trace to the current position. Removes parentheses surrounding file paths for the iTerm open-file-path shortcut.
  *
- * @param {String} [msg] The optional message to print above the stack trace.
+ * @param {string} [msg] The optional message to print above the stack trace.
  */
 exports.logTrace = function (msg) {
 	exports.log('Trace' + (msg ? ': ' + msg : ''))
@@ -445,7 +445,7 @@ exports.logTrace = function (msg) {
 /**
  * Prints the calling file path and line number, prepended by `msg`, to mark reaching a section of code.
  *
- * @param {String} [msg] The optional message to prepend to the path and line number.
+ * @param {string} [msg] The optional message to prepend to the path and line number.
  * @example
  *
  * if (rareConditionIsTrue) {
@@ -460,8 +460,8 @@ exports.assert = function (msg) {
 /**
  * Prints the calling file path and line number, prepended by `msg`, if `value` is truthy.
  *
- * @param {Boolean} value The value to check if truthy.
- * @param {String} [msg] The optional message to prepend to the path and line number.
+ * @param {boolean} value The value to check if truthy.
+ * @param {string} [msg] The optional message to prepend to the path and line number.
  * @example
  *
  * dantil.assertTrue(myNumber > 100, 'Condition met')
@@ -482,7 +482,7 @@ var _times = new Map()
 /**
  * Starts a high-resolution timer (with precision in microseconds) identified by `label`. Use `dantil.timeEnd(label)` to print the timer's current value.
  *
- * @param {String} label The identifier of the timer.
+ * @param {string} label The identifier of the timer.
  * @example
  *
  * // Start timer
@@ -505,7 +505,7 @@ exports.time = function (label) {
 /**
  * Prints the current high-resolution value of a timer initiated with `dantil.time(label)`.
  *
- * @param {String} label The identifier of the timer.
+ * @param {string} label The identifier of the timer.
  */
 exports.timeEnd = function (label) {
 	var time = _times.get(label)
@@ -531,7 +531,7 @@ var _counts = new Map()
 /**
  * Counts the number of times a section of code is reached, identified by `label`. Use `dantil.countEnd(label)` to print the counter's value. This is useful for profiling complex programs.
  *
- * @param {String} label The counter identifier.
+ * @param {string} label The counter identifier.
  * @example
  *
  * for (var i = 0; i < 100; ++i) {
@@ -549,7 +549,7 @@ exports.count = function (label) {
 /**
  * Prints (and resets the value of) the number of calls of `dantil.count(label)`.
  *
- * @param {String} label The counter identifier.
+ * @param {string} label The counter identifier.
  */
 exports.countEnd = function (label) {
 	// Print even if count is 0 to acknowledge never being reached
@@ -589,7 +589,7 @@ exports.countEndAll = function () {
  *
  * @param {Array} a The array to compare.
  * @param {Array} b The other array to compare.
- * @returns {Boolean} Returns `true` if the arrays are equivalent, else `false`.
+ * @returns {boolean} Returns `true` if the arrays are equivalent, else `false`.
  * @example
  *
  * dantil.arraysEqual([], [])
@@ -633,8 +633,8 @@ exports.arraysEqual = function (a, b) {
 /**
  * Removes any extraneous digits from `number`, which result from operations limited by JavaScript's floating point number precision, such as `0.1 * 0.2` (which does not equal `0.02`). This limitation results from being unable to map `0.1` to a finite binary floating point number.
  *
- * @param {Number} number The number to rid of any extraneous digits.
- * @returns {Number} Returns the cleaned number.
+ * @param {number} number The number to rid of any extraneous digits.
+ * @returns {number} Returns the cleaned number.
  * @example
  *
  * var number = 0.1 * 0.2
@@ -651,8 +651,8 @@ exports.cleanNumber = function (number) {
 /**
  * Converts dash-separated `string` to camel case.
  *
- * @param {String} dashedString The dash-separated string to convert.
- * @returns {String} Returns the camel cased string.
+ * @param {string} dashedString The dash-separated string to convert.
+ * @returns {string} Returns the camel cased string.
  * @example
  *
  * dantil.camelCase('my-long-variable-name')

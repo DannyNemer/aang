@@ -45,8 +45,8 @@ rl.on('line', function (line) {
 /**
  * Exexcute a parse.
  *
- * @param {String} query The query to search.
- * @param {Number} K The maximum number of suggestions to find.
+ * @param {string} query The query to search.
+ * @param {number} K The maximum number of suggestions to find.
  * @returns {Array} The parse trees output by the search if the parser reaches the start node, else `undefined`.
  */
 function parse(query, K) {
@@ -93,8 +93,8 @@ var printCost = false
 /**
  * Evaluate a line of input from the CLI as either a command to execute, or a search query to parse.
  *
- * @param {String} `input` The input to execute as a command if recognized, else a search query.
- * @returns {Boolean} `true` if `input` is a recognized command, else `false`.
+ * @param {string} `input` The input to execute as a command if recognized, else a search query.
+ * @returns {boolean} `true` if `input` is a recognized command, else `false`.
  */
 function runCommand(input) {
 	// All commands begin with a period

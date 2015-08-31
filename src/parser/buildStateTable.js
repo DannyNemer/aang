@@ -4,8 +4,8 @@ var fs = require('fs')
 /**
  * Initialize the grammar and semantics, and instantiate the StateTable used in parsing.
  *
- * @param {String} inputFilePath The file path of the input file containing the grammar, semantics, and entities.
- * @param {String} stateTablePath The file path of the StateTable module.
+ * @param {string} inputFilePath The file path of the input file containing the grammar, semantics, and entities.
+ * @param {string} stateTablePath The file path of the StateTable module.
  * @returns {Object} The StateTable used in parsing.
  */
 module.exports = function (inputFilePath, stateTablePath) {

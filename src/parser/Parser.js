@@ -19,8 +19,8 @@ function Parser(stateTable) {
  * Checks if an n-gram from the input query is an entity. This is a simple, temporary entity resolution implementation that will be replaced by language models for each category and Elasticsearch for look up.
  *
  * @param {Array} wordTab The match terminal symbols.
- * @param {Number} endPos The end index in the input query of `nGram`.
- * @param {String} nGram A token from the input query.
+ * @param {number} endPos The end index in the input query of `nGram`.
+ * @param {string} nGram A token from the input query.
  */
 Parser.prototype.entityLookup = function (wordTab, endPos, nGram) {
 	var entityInstances = entities[nGram]
@@ -108,7 +108,7 @@ Parser.prototype.entityLookup = function (wordTab, endPos, nGram) {
 /**
  * Tokenizes the input query and look for terminal symbol matches using n-gram analysis.
  *
- * @param {String} query The input query.
+ * @param {string} query The input query.
  * @returns {Array} The array of matches for each index of `query`.
  */
 Parser.prototype.matchTerminalRules = function (query) {
@@ -302,7 +302,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 /**
  * Parses and constructs a parse forest for an input query using the state table generated for the grammar.
  *
- * @param {String} query The input query to parse.
+ * @param {string} query The input query to parse.
  * @returns {Object} The start node of the parse forest if the parse succeeds, else `null`.
  */
 Parser.prototype.parse = function (query) {
@@ -438,7 +438,7 @@ Parser.prototype.addSub = function (sym, sub) {
  *
  * @param {Array} existingSubs The subnodes of the parent node.
  * @param {Object} newSub The new subnode.
- * @returns {Boolean} `true` if `newSub` already exists, else `falase.
+ * @returns {boolean} `true` if `newSub` already exists, else `falase.
  */
 function subIsNew(existingSubs, newSub) {
 	var newSubNext = newSub.next
