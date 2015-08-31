@@ -73,7 +73,7 @@ exports.illFormedOpts = function (schema, opts) {
 			if (schemaPropType.indexOf(optsVal) === -1) {
 				exports.logError('Unrecognized value for ' + prop + ':', optsVal)
 				exports.log('       Accepted values for ' + prop + ':', schemaPropType)
-				exports.log('  ' + exports.getLine())
+				exports.log('  ' + exports.getPathAndLineNumber())
 				return true
 			}
 		} else {
@@ -263,10 +263,10 @@ exports.deleteModuleCache = function () {
  *
  * @static
  * @memberOf dantil
- * @param {boolean} [getCallingLine] Specify getting the line where called instead of the line of the parent module.
+ * @param {boolean} [getCallingLine] Specify getting the line where this is called instead of the line of the parent module.
  * @returns {string} Returns the file path and line number of calling line.
  */
-exports.getLine = function (getCallingLine) {
+exports.getPathAndLineNumber = function (getCallingLine) {
 	// Get stack without lines for `Error` and this file
 	var stack = Error().stack.split('\n').slice(3)
 	var callingFileName
@@ -277,7 +277,7 @@ exports.getLine = function (getCallingLine) {
 		// `line` must contain a file path
 		if (!/\//.test(line)) continue
 
-		// Ignore if `getLine()` called from this file
+		// Ignore if `dantil.getPathAndLineNumber()` called from this file
 		if (line.indexOf(__filename) !== -1) continue
 
 		// Remove parentheses surrounding file paths in the stack trace for the iTerm open-file-path shortcut
@@ -285,11 +285,11 @@ exports.getLine = function (getCallingLine) {
 			return line.replace(/[()]/g, '').slice(line.lastIndexOf(' ') + 1)
 		}
 
-		// Name of file from which `getLine()` was called
+		// Name of file from which `dantil.getPathAndLineNumber()` was called
 		callingFileName = line.slice(line.indexOf('/') + 1, line.indexOf(':'))
 	}
 
-	// Could not find line in stack for file from which function calling `getLine()` was called
+	// Could not find line in stack for file from which function calling this was called
 	// exports.logError('Sought-after line not found in stack trace (trace limited to 10 most recent)')
 	// exports.logTrace()
 }
@@ -441,7 +441,7 @@ function printWithColoredLabel(label, color, args) {
  */
 exports.logErrorAndLine = function (getCallingLine) {
 	var args = Array.prototype.slice.call(arguments, getCallingLine === true ? 1 : 0)
-	var stackLine = exports.getLine(getCallingLine === true)
+	var stackLine = exports.getPathAndLineNumber(getCallingLine === true)
 
 	if (args.length > 0) {
 		exports.logError.apply(null, args)
@@ -482,7 +482,7 @@ exports.logTrace = function (msg) {
  * }
  */
 exports.assert = function (msg) {
-	exports.log(colors.red(msg || 'Reached') + ':', exports.getLine(true))
+	exports.log(colors.red(msg || 'Reached') + ':', exports.getPathAndLineNumber(true))
 }
 
 /**
