@@ -6,7 +6,7 @@ var fs = require('fs')
  *
  * @param {String} inputFilePath The file path of the input file containing the grammar, semantics, and entities.
  * @param {String} stateTablePath The file path of the StateTable module.
- * @return {Object} The StateTable used in parsing.
+ * @returns {Object} The StateTable used in parsing.
  */
 module.exports = function (inputFilePath, stateTablePath) {
 	// Resolve relative paths

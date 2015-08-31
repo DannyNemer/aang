@@ -85,7 +85,7 @@ exports.printRuleCount = function (prevOutputFilePath) {
  * Gets the number of rules in a grammar.
  *
  * @param {Object} grammar The grammar to count.
- * @return {Number} The number of rules in `grammar`.
+ * @returns {Number} The number of rules in `grammar`.
  */
 exports.getRuleCount = function (grammar) {
 	return Object.keys(grammar).reduce(function (prev, cur) {

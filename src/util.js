@@ -21,7 +21,7 @@ var colors = require('colors/safe')
  *
  * @param {Object} schema Definition of required or optional properties and their expected values in `opts`.
  * @param {Object} opts The options object to check if conforms to `schema`.
- * @return {Boolean} `true` if `opts` is ill-formed, else `false`.
+ * @returns {Boolean} `true` if `opts` is ill-formed, else `false`.
  * @example
  * var schema = {
  *   num: Number,                                  // Must be of type `Number`
@@ -103,7 +103,7 @@ exports.illFormedOpts = function (schema, opts) {
  *
  * @param {String} path The path where to write output.
  * @param {Function} callback The function producing output.
- * @return {Mixed} The value returned by `callback`, if any.
+ * @returns {Mixed} The value returned by `callback`, if any.
  * @example
  * // Prints to console
  * console.log('Begin output to file')
@@ -175,7 +175,7 @@ exports.writeJSONFile = function (path, obj) {
  * Replaces `'~'` in a path (if present and at the path's start) with the home directory path.
  *
  * @param {String} path The file path.
- * @return {String} `path` with `'~'` (if present) replaced with the home directory path.
+ * @returns {String} `path` with `'~'` (if present) replaced with the home directory path.
  * @example
  * dantil.expandHomeDir('~/Desktop') // -> '/Users/Danny/Desktop'
  */
@@ -188,7 +188,7 @@ exports.expandHomeDir = function (path) {
  *
  * @param {Function} callback The function to execute within a `try` block.
  * @param {Boolean} rethrow Specify rethrowing an error (after printing the stack trace) if caught from `callback`.
- * @return {Mixed} The value returned by `callback`, if any.
+ * @returns {Mixed} The value returned by `callback`, if any.
  * @example
  * // Catches thrown error and prints a formatted stack trace
  * dantil.tryCatchWrapper(function () {
@@ -251,7 +251,7 @@ exports.deleteModuleCache = function () {
  * Gets the file path and line number of the first frame in the stack of the parent module from where this function was called. This is useful for logging where an object is instantiated.
  *
  * @param {Boolean} [getCallingLine] Specify getting the line where `getLine()` is called instead of the line of the parent module.
- * @return {String} The file path and line number of calling line.
+ * @returns {String} The file path and line number of calling line.
  */
 exports.getLine = function (getCallingLine) {
 	// Get stack without lines for `Error` and this file
@@ -368,7 +368,7 @@ function prettyPrint(args, opts) {
  *
  * @private
  * @param {String} string The stylized string.
- * @return {Number} The length of the stylized string when printed.
+ * @returns {Number} The length of the stylized string when printed.
  */
 function getStylizedStringLength(string) {
 	return string.replace(/\u001b\[\d\d?m/g, '').length
@@ -586,7 +586,7 @@ exports.countEndAll = function () {
  *
  * @param {Array} a The array to compare.
  * @param {Array} b The other array to compare.
- * @return {Boolean} `true` if the arrays are equivalent, else `false`.
+ * @returns {Boolean} `true` if the arrays are equivalent, else `false`.
  * @example
  * dantil.arraysEqual([], []) // -> true
  *
@@ -625,7 +625,7 @@ exports.arraysEqual = function (a, b) {
  * Removes extraneous digits from numbers resulting from operations limited by JavaScript's floating point number precision, such as `0.1 * 0.2` (which does not equal `0.02`). This limitation results from being unable to map `0.1` to a finite binary floating point number.
  *
  * @param {Number} number The number to trim.
- * @return {Number} The number trimmed.
+ * @returns {Number} The number trimmed.
  * @example
  * var number = 0.1 * 0.2 // -> 0.020000000000000004
  * number = dantil.cleanFloat(number) // -> 0.02
@@ -639,7 +639,7 @@ exports.cleanNumber = function (number) {
  * Converts a dash-separated string to camelCase.
  *
  * @param {String} dashedString The dash-separated string to convert.
- * @return {String} The input string in camelCase.
+ * @returns {String} The input string in camelCase.
  * @example
  * dantil.camelCase('my-long-variable-name') // -> 'myLongVariableName'
  */

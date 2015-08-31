@@ -311,7 +311,7 @@ module.exports = function (grammar, opts) {
  * @param {Array} ambigPairs The array of distinct pairs of ambiguous trees found so far.
  * @param {Object} treeA The first of the new pair of ambiguous trees.
  * @param {Object} treeB The second of the new pair of ambiguous trees.
- * @return {Boolean} `true` if the pairs exists in `ambigPairs`, else `false`.
+ * @returns {Boolean} `true` if the pairs exists in `ambigPairs`, else `false`.
  */
 function pairExists(ambigPairs, treeA, treeB) {
 	for (var a = 0, ambigPairsLen = ambigPairs.length; a < ambigPairsLen; ++a) {
@@ -335,7 +335,7 @@ function pairExists(ambigPairs, treeA, treeB) {
  * Converts a reverse linked list (i.e., elements only contain pointers to the previous element) of path nodes, each containing the RHS symbols a rule used in the path's contruction, to a parse tree.
  *
  * @param {Object} path The path to convert.
- * @return {Object} The converted parse tree.
+ * @returns {Object} The converted parse tree.
  */
 function pathToTree(path) {
 	var prevNodes = []
@@ -381,7 +381,7 @@ function pathToTree(path) {
  *
  * @param {Object} a The list to compare.
  * @param {Object} b The other list to compare.
- * @return {Boolean} `true` if the lists are equivalent, else `false`.
+ * @returns {Boolean} `true` if the lists are equivalent, else `false`.
  */
 function listsEqual(a, b) {
 	if (!a && !b) return true
@@ -433,7 +433,7 @@ function diffTrees(a, b) {
  * Inverts a parse tree produced by `rulesToTree()` to an array of rightmost nodes with pointers to their parent nodes, ending at the tree's root node.
  *
  * @param {Object} tree The root node of the parse tree.
- * @return {Array} The inverted tree as an array of rightmost nodes with pointers to parents.
+ * @returns {Array} The inverted tree as an array of rightmost nodes with pointers to parents.
  */
 function invertTree(tree) {
 	var stack = [ { node: tree } ]
@@ -461,7 +461,7 @@ function invertTree(tree) {
  *
  * @param {Object} a The node to compare.
  * @param {Object} b The other node to compare.
- * @return {Boolean} `true` if the nodes are equivalent, else `false`.
+ * @returns {Boolean} `true` if the nodes are equivalent, else `false`.
  */
 function nodesEqual(a, b) {
 	if (a.symbol !== b.symbol) return false

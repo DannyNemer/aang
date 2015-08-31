@@ -109,7 +109,7 @@ Parser.prototype.entityLookup = function (wordTab, endPos, nGram) {
  * Tokenizes the input query and look for terminal symbol matches using n-gram analysis.
  *
  * @param {String} query The input query.
- * @return {Array} The array of matches for each index of `query`.
+ * @returns {Array} The array of matches for each index of `query`.
  */
 Parser.prototype.matchTerminalRules = function (query) {
 	var tokens = query.toLowerCase().split(/\s+/)
@@ -303,7 +303,7 @@ Parser.prototype.matchTerminalRules = function (query) {
  * Parses and constructs a parse forest for an input query using the state table generated for the grammar.
  *
  * @param {String} query The input query to parse.
- * @return {Object} The start node of the parse forest if the parse succeeds, else `null`.
+ * @returns {Object} The start node of the parse forest if the parse succeeds, else `null`.
  */
 Parser.prototype.parse = function (query) {
 	this.nodeTabs = []
@@ -438,7 +438,7 @@ Parser.prototype.addSub = function (sym, sub) {
  *
  * @param {Array} existingSubs The subnodes of the parent node.
  * @param {Object} newSub The new subnode.
- * @return {Boolean} `true` if `newSub` already exists, else `falase.
+ * @returns {Boolean} `true` if `newSub` already exists, else `falase.
  */
 function subIsNew(existingSubs, newSub) {
 	var newSubNext = newSub.next
@@ -468,7 +468,7 @@ function subIsNew(existingSubs, newSub) {
  * Creates a vertex for a new state if no vertex exists; otherwise return the existing vertex.
  *
  * @param {Object} state The new state.
- * @return {Object} A new vertex if no vertex for `state` exists, else the existing vertex for `state`.
+ * @returns {Object} A new vertex if no vertex for `state` exists, else the existing vertex for `state`.
  */
 Parser.prototype.addVertex = function (state) {
 	// Tests show 3x more likely to find the vertex faster by iterating backward
@@ -496,7 +496,7 @@ Parser.prototype.addVertex = function (state) {
  *
  * @param {Object} state The previous state.
  * @param {Object} sym The symbol to check.
- * @return {Object} The next state.
+ * @returns {Object} The next state.
  */
 Parser.prototype.nextState = function (state, sym) {
 	var stateShifts = state.shifts
