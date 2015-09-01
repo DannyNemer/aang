@@ -178,9 +178,16 @@ exports.deleteModuleCache = function () {
  * @returns {string} Returns the file path and line number of calling line.
  */
 exports.getPathAndLineNumber = function (getCallingLine) {
+	// Collect all stack frames.
+	var prevStackTraceLimit = Error.stackTraceLimit
+	Error.stackTraceLimit = Infinity
+
 	// Get stack without lines for `Error` and this file
 	var stack = Error().stack.split('\n').slice(3)
 	var callingFileName
+
+	// Reset stack trace limit after collecting the stack trace when creating the error.
+	Error.stackTraceLimit = prevStackTraceLimit
 
 	for (var i = 0, stackLength = stack.length; i < stackLength; ++i) {
 		var line = stack[i]
@@ -199,10 +206,6 @@ exports.getPathAndLineNumber = function (getCallingLine) {
 		// Name of file from which `dantil.getPathAndLineNumber()` was called
 		callingFileName = line.slice(line.indexOf('/') + 1, line.indexOf(':'))
 	}
-
-	// Could not find line in stack for file from which function calling this was called
-	// exports.logError('Sought-after line not found in stack trace (trace limited to 10 most recent)')
-	// exports.logTrace()
 }
 
 /**
