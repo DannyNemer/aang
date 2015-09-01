@@ -6,17 +6,19 @@
 
 module.exports = [
 	'a',
-	'am',
 	'again',
 	'all',
 	'also',
+	'am',
 	'an',
 	'and',
+	'any',
 	'are',
 	'as',
 	'because',
 	'both',
 	'but',
+	'cannot',
 	'did',
 	'do',
 	'does',
@@ -42,4 +44,5 @@ module.exports = [
 	'too',
 	'until',
 	'while',
+	'why',
 ]
