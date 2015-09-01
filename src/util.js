@@ -103,7 +103,7 @@ exports.illFormedOpts = function (schema, opts) {
  * @memberOf dantil
  * @category Utility
  * @param {Function} func The function to execute within a `try` block.
- * @param {boolean} rethrow Specify rethrowing an error (after printing the stack trace) if caught from `func`.
+ * @param {boolean} rethrow Specify rethrowing a caught error from `func` after printing the stack trace.
  * @returns {*} Returns the value returned by `func`, if any.
  * @example
  *
@@ -118,7 +118,7 @@ exports.tryCatchWrapper = function (func, rethrow) {
 		return func()
 	} catch (e) {
 		// Print leading blank line
-		console.log()
+		exports.log()
 
 		if (e.stack) {
 			// Error message without source code (if present)
@@ -174,10 +174,10 @@ exports.deleteModuleCache = function () {
  * @static
  * @memberOf dantil
  * @category Utility
- * @param {boolean} [getCallingLine] Specify getting the line where this is called instead of the line of the parent module.
+ * @param {boolean} [getThisLine] Specify getting the line where this function is called instead of the line of the parent module.
  * @returns {string} Returns the file path and line number of calling line.
  */
-exports.getPathAndLineNumber = function (getCallingLine) {
+exports.getPathAndLineNumber = function (getThisLine) {
 	// Collect all stack frames.
 	var prevStackTraceLimit = Error.stackTraceLimit
 	Error.stackTraceLimit = Infinity
@@ -199,7 +199,7 @@ exports.getPathAndLineNumber = function (getCallingLine) {
 		if (line.indexOf(__filename) !== -1) continue
 
 		// Remove parentheses surrounding file paths in the stack trace for the iTerm open-file-path shortcut
-		if (getCallingLine || (callingFileName && line.indexOf(callingFileName) === -1)) {
+		if (getThisLine || (callingFileName && line.indexOf(callingFileName) === -1)) {
 			return line.replace(/[()]/g, '').slice(line.lastIndexOf(' ') + 1)
 		}
 
@@ -294,7 +294,7 @@ exports.writeJSONFile = function (path, obj) {
  * @memberOf dantil
  * @category File System
  * @param {string} path The file path.
- * @returns {string} Returns `path` with `'~'` (if present) replaced with the home directory path.
+ * @returns {string} Returns `path` with `'~'`, if present, replaced with the home directory path.
  * @example
  *
  * dantil.expandHomeDir('~/Desktop')
@@ -451,12 +451,12 @@ function printWithColoredLabel(label, color, args) {
  * @static
  * @memberOf dantil
  * @category Console
- * @param {boolean} [getCallingLine] Specify getting the line where this is called instead of the line of the parent module.
+ * @param {boolean} [getThisLine] Specify getting the line where this function is called instead of the line of the parent module.
  * @param {...*} [values] The optional values to print following "Error: ".
  */
-exports.logErrorAndPath = function (getCallingLine) {
-	var args = Array.prototype.slice.call(arguments, getCallingLine === true ? 1 : 0)
-	var stackLine = exports.getPathAndLineNumber(getCallingLine === true)
+exports.logErrorAndPath = function (getThisLine) {
+	var args = Array.prototype.slice.call(arguments, getThisLine === true ? 1 : 0)
+	var stackLine = exports.getPathAndLineNumber(getThisLine === true)
 
 	if (args.length > 0) {
 		exports.logError.apply(null, args)
