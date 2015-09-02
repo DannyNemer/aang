@@ -228,6 +228,54 @@ exports.getModuleCallerPathAndLineNumber = function () {
 }
 
 /**
+ * Gets the file path and line number of where this function was called, returned in the format "path:line-number".
+ *
+ * @static
+ * @memberOf dantil
+ * @category Utility
+ * @returns {string} Returns the file path and line number in the format "path:line-number".
+ */
+exports.getPathAndLineNumber = function () {
+	var origStackTraceLimit = Error.stackTraceLimit
+	var origPrepareStackTrace = Error.prepareStackTrace
+
+	// Collect all stack frames.
+	Error.stackTraceLimit = Infinity
+
+	// Get a structured stack trace as an `Array` of `CallSite` objects, each of which represents a stack frame.
+	Error.prepareStackTrace = function (error, structuredStackTrace) {
+		return structuredStackTrace
+	}
+
+	var err = new Error()
+
+	// Exclude the call to this function when collecting the stack trace.
+	Error.captureStackTrace(err, exports.getPathAndLineNumber)
+	var stack = err.stack
+
+	for (var f = 0, stackLen = stack.length; f < stackLen; ++f) {
+		var frame = stack[f]
+		var filePath = frame.getFileName()
+
+		// Avoid frames for native Node functions, such as `require()`.
+		if (!/\//.test(filePath)) continue
+
+		// Avoid frames from within this file (i.e., 'dantil.js').
+		if (filePath === __filename) continue
+
+		// Stop when finding the frame of where this function was called.
+		break
+	}
+
+	// Restore stack trace configuration.
+	Error.stackTraceLimit = origStackTraceLimit
+	Error.prepareStackTrace = origPrepareStackTrace
+
+	// Return the path and line number in the format "path:lineNumber".
+	return filePath + ':' + frame.getLineNumber()
+}
+
+/**
  * Synchronously writes the output of `func` to a file at `path` instead of the console. Overwrites the file if it already exists. Restores output to the console if an error is thrown.
  *
  * @static
@@ -518,7 +566,7 @@ exports.logTrace = function (msg) {
  * }
  */
 exports.assert = function (msg) {
-	exports.log(colors.red(msg || 'Reached') + ':', exports.getModuleCallerPathAndLineNumber(true))
+	exports.log(colors.red(msg || 'Reached') + ':', exports.getPathAndLineNumber(true))
 }
 
 /**
