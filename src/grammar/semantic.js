@@ -50,7 +50,7 @@ function newSemanticFunc(opts) {
 	}
 
 	// Save calling line for error reporting
-	exports.creationLines[opts.name] = util.getPathAndLineNumber()
+	exports.creationLines[opts.name] = util.getModuleCallerPathAndLineNumber()
 
 	return [ {
 		semantic: semantic,
@@ -79,7 +79,7 @@ function newSemanticArg(opts) {
 	}
 
 	// Save calling line for error reporting
-	exports.creationLines[opts.name] = util.getPathAndLineNumber()
+	exports.creationLines[opts.name] = util.getModuleCallerPathAndLineNumber()
 
 	return [ {
 		semantic: semantic,

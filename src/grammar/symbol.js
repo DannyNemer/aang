@@ -30,7 +30,7 @@ function Symbol() {
 	this.rules = exports.grammar[this.name] = []
 
 	// Save calling line for error reporting
-	exports.creationLines[this.name] = util.getPathAndLineNumber()
+	exports.creationLines[this.name] = util.getModuleCallerPathAndLineNumber()
 }
 
 // Add a new rule to the grammar
@@ -108,7 +108,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	else if (opts.semantic && !semantic.isRHS(opts.semantic)) {
 		util.logError('Terminal rules can only hold complete (RHS) semantics:', this.name, '->', newRule.RHS)
 		util.dir(opts.semantic)
-		console.log('  ' + util.getPathAndLineNumber())
+		console.log('  ' + util.getModuleCallerPathAndLineNumber())
 		throw 'ill-formed terminal rule'
 	}
 

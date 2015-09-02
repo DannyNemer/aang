@@ -74,7 +74,7 @@ exports.illFormedOpts = function (schema, opts) {
 			if (schemaPropType.indexOf(optsVal) === -1) {
 				exports.logError('Unrecognized value for ' + prop + ':', optsVal)
 				exports.log('       Accepted values for ' + prop + ':', schemaPropType)
-				exports.log('  ' + exports.getPathAndLineNumber())
+				exports.log('  ' + exports.getModuleCallerPathAndLineNumber())
 				return true
 			}
 		} else {
@@ -177,7 +177,7 @@ exports.deleteModuleCache = function () {
  * @param {boolean} [getThisLine] Specify getting the line where this function is called instead of the line of the parent module.
  * @returns {string} Returns the file path and line number of calling line.
  */
-exports.getPathAndLineNumber = function (getThisLine) {
+exports.getModuleCallerPathAndLineNumber = function (getThisLine) {
 	// Collect all stack frames.
 	var prevStackTraceLimit = Error.stackTraceLimit
 	Error.stackTraceLimit = Infinity
@@ -195,7 +195,7 @@ exports.getPathAndLineNumber = function (getThisLine) {
 		// `line` must contain a file path
 		if (!/\//.test(line)) continue
 
-		// Ignore if `dantil.getPathAndLineNumber()` called from this file
+		// Ignore if `dantil.getModuleCallerPathAndLineNumber()` called from this file
 		if (line.indexOf(__filename) !== -1) continue
 
 		// Remove parentheses surrounding file paths in the stack trace for the iTerm open-file-path shortcut
@@ -203,7 +203,7 @@ exports.getPathAndLineNumber = function (getThisLine) {
 			return line.replace(/[()]/g, '').slice(line.lastIndexOf(' ') + 1)
 		}
 
-		// Name of file from which `dantil.getPathAndLineNumber()` was called
+		// Name of file from which `dantil.getModuleCallerPathAndLineNumber()` was called
 		callingFileName = line.slice(line.indexOf('/') + 1, line.indexOf(':'))
 	}
 }
@@ -456,7 +456,7 @@ function printWithColoredLabel(label, color, args) {
  */
 exports.logErrorAndPath = function (getThisLine) {
 	var args = Array.prototype.slice.call(arguments, getThisLine === true ? 1 : 0)
-	var stackLine = exports.getPathAndLineNumber(getThisLine === true)
+	var stackLine = exports.getModuleCallerPathAndLineNumber(getThisLine === true)
 
 	if (args.length > 0) {
 		exports.logError.apply(null, args)
@@ -499,7 +499,7 @@ exports.logTrace = function (msg) {
  * }
  */
 exports.assert = function (msg) {
-	exports.log(colors.red(msg || 'Reached') + ':', exports.getPathAndLineNumber(true))
+	exports.log(colors.red(msg || 'Reached') + ':', exports.getModuleCallerPathAndLineNumber(true))
 }
 
 /**

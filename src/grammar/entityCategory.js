@@ -37,7 +37,7 @@ exports.new = function (opts) {
 	}
 
 	// Save calling line for error reporting
-	exports.creationLines[categoryName] = util.getPathAndLineNumber()
+	exports.creationLines[categoryName] = util.getModuleCallerPathAndLineNumber()
 
 	var newEntities = opts.entities
 	newEntitiesLen = newEntities.length
