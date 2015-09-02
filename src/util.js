@@ -169,6 +169,21 @@ exports.deleteModuleCache = function () {
 }
 
 /**
+ * Gets the file path and line number of where this function was called, returned in the format "path:line-number".
+ *
+ * @static
+ * @memberOf dantil
+ * @category Utility
+ * @returns {string} Returns the file path and line number in the format "path:line-number".
+ */
+exports.getPathAndLineNumber = function () {
+	return getFormattedStackFrame(function (stack) {
+		// Get the frame of where this function was called.
+		return stack[0]
+	})
+}
+
+/**
  * Gets the file path and line number of the function call that invoked the currently executing module. Returns the path and line number in the format "path:line-number".
  *
  * This is not necessarily the caller of the currently executing function, which can be another function within the same module. Nor is it necessarily this module's parent which instantiated the module. Rather, it is the most recent function call in the stack below the currently executing module.
@@ -181,98 +196,67 @@ exports.deleteModuleCache = function () {
  * @returns {string} Returns the file path and line number in the format "path:line-number".
  */
 exports.getModuleCallerPathAndLineNumber = function () {
-	var origStackTraceLimit = Error.stackTraceLimit
-	var origPrepareStackTrace = Error.prepareStackTrace
+	return getFormattedStackFrame(function (stack) {
+		var thisModuleName
 
-	// Collect all stack frames.
-	Error.stackTraceLimit = Infinity
+		for (var f = 0, stackLen = stack.length; f < stackLen; ++f) {
+			var frame = stack[f]
 
-	// Get a structured stack trace as an `Array` of `CallSite` objects, each of which represents a stack frame.
-	Error.prepareStackTrace = function (error, structuredStackTrace) {
-		return structuredStackTrace
-	}
+			// Get the module name of where this function was called.
+			if (!thisModuleName) {
+				thisModuleName = frame.getFileName()
+				continue
+			}
 
-	var err = new Error()
-
-	// Exclude the call to this function when collecting the stack trace.
-	Error.captureStackTrace(err, exports.getModuleCallerPathAndLineNumber)
-	var stack = err.stack
-
-	var thisModuleName
-	for (var f = 1, stackLen = stack.length; f < stackLen; ++f) {
-		var frame = stack[f]
-		var filePath = frame.getFileName()
-
-		// Avoid frames for native Node functions, such as `require()`.
-		if (!/\//.test(filePath)) continue
-
-		// Avoid frames from within this file (i.e., 'dantil.js').
-		if (filePath === __filename) continue
-
-		// Get the module name of where this function was called.
-		if (!thisModuleName) {
-			thisModuleName = filePath
-			continue
+			// Stop when finding the frame of the most recent module after where this function was called.
+			if (thisModuleName !== frame.getFileName()) {
+				return frame
+			}
 		}
 
-		// Stop when finding the frame of the most recent module after where this function was called.
-		if (thisModuleName !== filePath) break
-	}
-
-	// Restore stack trace configuration.
-	Error.stackTraceLimit = origStackTraceLimit
-	Error.prepareStackTrace = origPrepareStackTrace
-
-	// Return `undefined` if there is no other module in the stack below where this function was called, else return the path and line number in the format "path:line-number".
-	return f === stackLen ? undefined : filePath + ':' + frame.getLineNumber()
+		// Return `undefined` if there is no other module in the stack below where this function was called.
+		return undefined
+	})
 }
 
 /**
- * Gets the file path and line number of where this function was called, returned in the format "path:line-number".
+ * Passes a structured stack trace as an `Array` of `CallSite` objects, without frames for native Node functions and this file, to the provided `getFrameFunc(stack)`, which returns a single frame from the `Array`. Returns the file path and line number of the returned frame in the format "path:line-number".
  *
- * @static
- * @memberOf dantil
- * @category Utility
- * @returns {string} Returns the file path and line number in the format "path:line-number".
+ * @private
+ * @param {Function} getFrameFunc The function passed the structured stack trace and returns a single stack frame.
+ * @returns {String} Returns the file path and line number of the frame returned by `getFrameFunc` in the format "path:line-number".
  */
-exports.getPathAndLineNumber = function () {
+function getFormattedStackFrame(getFrameFunc) {
 	var origStackTraceLimit = Error.stackTraceLimit
 	var origPrepareStackTrace = Error.prepareStackTrace
 
 	// Collect all stack frames.
 	Error.stackTraceLimit = Infinity
 
-	// Get a structured stack trace as an `Array` of `CallSite` objects, each of which represents a stack frame.
+	// Get a structured stack trace as an `Array` of `CallSite` objects, each of which represents a stack frame, with frames for native Node functions and this file removed.
 	Error.prepareStackTrace = function (error, structuredStackTrace) {
-		return structuredStackTrace
+		return structuredStackTrace.filter(function (frame) {
+			var filePath = frame.getFileName()
+
+			// Avoid frames for native Node functions, such as `require()`.
+			if (!/\//.test(filePath)) return false
+
+			// Avoid frames from within this file (i.e., 'dantil.js').
+			if (filePath === __filename) return false
+
+			return true
+		})
 	}
 
-	var err = new Error()
+	// Get the stack frame.
+	var frame = getFrameFunc(Error().stack)
 
-	// Exclude the call to this function when collecting the stack trace.
-	Error.captureStackTrace(err, exports.getPathAndLineNumber)
-	var stack = err.stack
-
-	for (var f = 0, stackLen = stack.length; f < stackLen; ++f) {
-		var frame = stack[f]
-		var filePath = frame.getFileName()
-
-		// Avoid frames for native Node functions, such as `require()`.
-		if (!/\//.test(filePath)) continue
-
-		// Avoid frames from within this file (i.e., 'dantil.js').
-		if (filePath === __filename) continue
-
-		// Stop when finding the frame of where this function was called.
-		break
-	}
-
-	// Restore stack trace configuration.
+	// Restore stack trace configuration after collecting stack trace.
 	Error.stackTraceLimit = origStackTraceLimit
 	Error.prepareStackTrace = origPrepareStackTrace
 
-	// Return the path and line number in the format "path:lineNumber".
-	return filePath + ':' + frame.getLineNumber()
+	// Return the path and line number of the frame in the format "path:line-number" if a frame was found, else return `false`.
+	return frame && frame.getFileName() + ':' + frame.getLineNumber()
 }
 
 /**
