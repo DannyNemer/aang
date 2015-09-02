@@ -169,43 +169,62 @@ exports.deleteModuleCache = function () {
 }
 
 /**
- * Gets the file path and line number of the first frame in the stack of the parent module from where this function was called. This is useful for logging where an object is instantiated.
+ * Gets the file path and line number of the function call that invoked the currently executing module. Returns the path and line number in the format "path:line-number".
+ *
+ * This is not necessarily the caller of the currently executing function, which can be another function within the same module. Nor is it necessarily this module's parent which instantiated the module. Rather, it is the most recent function call in the stack below the currently executing module.
+ *
+ * Returns `undefined` if there is no other module in the stack below where this function was called.
  *
  * @static
  * @memberOf dantil
  * @category Utility
- * @param {boolean} [getThisLine] Specify getting the line where this function is called instead of the line of the parent module.
- * @returns {string} Returns the file path and line number of calling line.
+ * @returns {string} Returns the file path and line number in the format "path:line-number".
  */
-exports.getModuleCallerPathAndLineNumber = function (getThisLine) {
+exports.getModuleCallerPathAndLineNumber = function () {
+	var origStackTraceLimit = Error.stackTraceLimit
+	var origPrepareStackTrace = Error.prepareStackTrace
+
 	// Collect all stack frames.
-	var prevStackTraceLimit = Error.stackTraceLimit
 	Error.stackTraceLimit = Infinity
 
-	// Get stack without lines for `Error` and this file
-	var stack = Error().stack.split('\n').slice(3)
-	var callingFileName
+	// Get a structured stack trace as an `Array` of `CallSite` objects, each of which represents a stack frame.
+	Error.prepareStackTrace = function (error, structuredStackTrace) {
+		return structuredStackTrace
+	}
 
-	// Reset stack trace limit after collecting the stack trace when creating the error.
-	Error.stackTraceLimit = prevStackTraceLimit
+	var err = new Error()
 
-	for (var i = 0, stackLength = stack.length; i < stackLength; ++i) {
-		var line = stack[i]
+	// Exclude the call to this function when collecting the stack trace.
+	Error.captureStackTrace(err, exports.getModuleCallerPathAndLineNumber)
+	var stack = err.stack
 
-		// `line` must contain a file path
-		if (!/\//.test(line)) continue
+	var thisModuleName
+	for (var f = 1, stackLen = stack.length; f < stackLen; ++f) {
+		var frame = stack[f]
+		var filePath = frame.getFileName()
 
-		// Ignore if `dantil.getModuleCallerPathAndLineNumber()` called from this file
-		if (line.indexOf(__filename) !== -1) continue
+		// Avoid frames for native Node functions, such as `require()`.
+		if (!/\//.test(filePath)) continue
 
-		// Remove parentheses surrounding file paths in the stack trace for the iTerm open-file-path shortcut
-		if (getThisLine || (callingFileName && line.indexOf(callingFileName) === -1)) {
-			return line.replace(/[()]/g, '').slice(line.lastIndexOf(' ') + 1)
+		// Avoid frames from within this file (i.e., 'dantil.js').
+		if (filePath === __filename) continue
+
+		// Get the module name of where this function was called.
+		if (!thisModuleName) {
+			thisModuleName = filePath
+			continue
 		}
 
-		// Name of file from which `dantil.getModuleCallerPathAndLineNumber()` was called
-		callingFileName = line.slice(line.indexOf('/') + 1, line.indexOf(':'))
+		// Stop when finding the frame of the most recent module after where this function was called.
+		if (thisModuleName !== filePath) break
 	}
+
+	// Restore stack trace configuration.
+	Error.stackTraceLimit = origStackTraceLimit
+	Error.prepareStackTrace = origPrepareStackTrace
+
+	// Return `undefined` if there is no other module in the stack below where this function was called, else return the path and line number in the format "path:line-number".
+	return f === stackLen ? undefined : filePath + ':' + frame.getLineNumber()
 }
 
 /**
