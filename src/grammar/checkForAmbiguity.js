@@ -12,7 +12,7 @@ var util = require('../util')
   *
   * @param {Object} grammar The grammar to inspect.
   * @param {Object} opts The options object.
-  * @param {number} opts.symsLimit The maximum number of symbols permitted in the construction of a path when searching for ambiguity, limiting processing time.
+  * @param {number} opts.treeSymsLimit The maximum number of symbols permitted in the construction of a path when searching for ambiguity, limiting processing time.
   * @param {boolean} [opts.findAll] Specify finding every distinct pair of ambiguous trees instead of one instance per each pair of rules.
   * @param {boolean} [opts.useTestRules] Specify replacing `grammar` with ambiguous test rules.
   * @param {boolean} [opts.noOutput] Specify not printing program output.
@@ -20,7 +20,7 @@ var util = require('../util')
 
 var optsSchema = {
 	// The maximum number of symbols permitted in the construction of a path when searching for ambiguity. This bound is necessary, as the grammar permits paths of infinite length and combination. `14` is a reasonable number and will require 3 seconds to process.
-	symsLimit: Number,
+	treeSymsLimit: Number,
 	// If `false` (the default), finds only one instance of ambiguity produced by each pair of rules.
 	// If `true`, finds every distinct pair of ambiguous trees.
 	// Often, the former (and default) is sufficient for determining the necessary changes to make to the grammar; though, the latter can be helpful as the change needed might be in a subsequent rule produced by the rule at the root of an instance of ambiguity. For certain cases when `findAll` is `true`, such as recursive rules (i.e., a rule whose RHS contains the LHS), an excessive number of ambiguity instances will be printed.
@@ -86,7 +86,7 @@ module.exports = function (grammar, opts) {
 					nextSyms: undefined,
 					// String of terminal symbols in this path.
 					terminals: '',
-					// Number of symbols used by this path, to ensure below `opts.symsLimit` bound.
+					// Number of symbols used by this path, to ensure below `opts.treeSymsLimit` bound.
 					symsCount: 1 + RHSLen,
 					// Linked list to convert path's rules (i.e., the sets of RHS symbols) to a parse tree.
 					RHS: RHS,
@@ -165,7 +165,7 @@ module.exports = function (grammar, opts) {
 					nextSyms: lastNextSyms,
 					// String of terminal symbols in this path.
 					terminals: lastPath.terminals,
-					// Number of symbols used by this path, to ensure below `opts.symsLimit` bound.
+					// Number of symbols used by this path, to ensure below `opts.treeSymsLimit` bound.
 					symsCount: lastPath.symsCount + RHSLen,
 					// Linked list to convert path's rules (i.e., the sets of RHS symbols) to a parse tree.
 					RHS: RHS,
@@ -200,8 +200,8 @@ module.exports = function (grammar, opts) {
 					pathSets[newPath.terminals] = [ newPath ]
 				}
 
-				// If the path has not reached all terminal symbols (i.e., has a `nextSym`), and is below `symsLimit` (otherwise will build infinite paths), then continue to expand path.
-				if (newPath.nextSym && newPath.symsCount < opts.symsLimit) {
+				// If the path has not reached all terminal symbols (i.e., has a `nextSym`), and is below `treeSymsLimit` (otherwise will build infinite paths), then continue to expand path.
+				if (newPath.nextSym && newPath.symsCount < opts.treeSymsLimit) {
 					buildPaths(pathSets, newPath)
 				}
 			}
