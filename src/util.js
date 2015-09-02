@@ -175,6 +175,12 @@ exports.deleteModuleCache = function () {
  * @memberOf dantil
  * @category Utility
  * @returns {string} Returns the file path and line number in the format "path:line-number".
+ * @example
+ *
+ * // The contents of 'foo.js':
+ *
+ * dantil.getPathAndLineNumber()
+ * // => '/Users/Danny/foo.js:1'
  */
 exports.getPathAndLineNumber = function () {
 	return getFormattedStackFrame(function (stack) {
@@ -194,6 +200,59 @@ exports.getPathAndLineNumber = function () {
  * @memberOf dantil
  * @category Utility
  * @returns {string} Returns the file path and line number in the format "path:line-number".
+ * @example
+ *
+ * // The contents of 'main.js':
+ *
+ * var child = require('./child.js')
+ * child.func()
+ *
+ * var grandchild = require('./grandchild.js')
+ * grandchild.foo()
+ *
+ * // Try to get the frame of the nonexistant function call that invoked this module.
+ * dantil.getModuleCallerPathAndLineNumber()
+ * // => undefined
+ * ```
+ *
+ * ```javascript
+ * // The contents of 'child.js':
+ *
+ * var grandchild = require('./grandchild.js')
+ *
+ * exports.func = function () {
+ *   // Get the frame of the invocation of the current execution of this module.
+ *   dantil.getModuleCallerPathAndLineNumber()
+ *   // => '/Users/Danny/main.js:2'
+ *
+ *   // Call another function within the same module, though the retrieved frame will be
+ *   // the same.
+ *   subFunc()
+ *
+ *   // Call a function in another module.
+ *   grandchild.bar()
+ * }
+ *
+ * function subFunc() {
+ *   // Get the frame of the invocation of the current execution of this module (which
+ *   // is not the frame that invoked this function).
+ *   dantil.getModuleCallerPathAndLineNumber()
+ *   // => '/Users/Danny/main.js:2'
+ * }
+ * ```
+ *
+ * ```javascript
+ * // The contents of 'grandchild.js':
+ *
+ * exports.foo = function () {
+ *   dantil.getModuleCallerPathAndLineNumber()
+ *   // => '/Users/Danny/main.js:5'
+ * }
+ *
+ * exports.bar = function () {
+ *   dantil.getModuleCallerPathAndLineNumber()
+ *   // => '/Users/Danny/child.js:13'
+ * }
  */
 exports.getModuleCallerPathAndLineNumber = function () {
 	return getFormattedStackFrame(function (stack) {
