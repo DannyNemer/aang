@@ -1,6 +1,6 @@
 /**
  * @license
- * dantil - A Node.js utility library. - 0.0.1
+ * dantil 0.0.1 - A Node.js utility library.
  * Copyright 2015 Danny Nemer
  * Available under MIT license <http://opensource.org/licenses/MIT>
  */
@@ -40,7 +40,7 @@ var colors = require('colors/safe')
  * }
  */
 exports.illFormedOpts = function (schema, opts) {
-	// Check if missing an opts parameter required by schema
+	// Check if missing an opts parameter required by schema.
 	for (var prop in schema) {
 		var val = schema[prop]
 
@@ -50,9 +50,9 @@ exports.illFormedOpts = function (schema, opts) {
 		}
 	}
 
-	// Check if passed parameters conform to schema
+	// Check if passed parameters conform to schema.
 	for (var prop in opts) {
-		// Unrecognized property
+		// Unrecognized property.
 		if (!schema.hasOwnProperty(prop)) {
 			exports.logErrorAndPath('Unrecognized property:', prop)
 			return true
@@ -62,15 +62,15 @@ exports.illFormedOpts = function (schema, opts) {
 		var schemaVal = schema[prop]
 		var schemaPropType = schemaVal.type || schemaVal
 
-		// Accidentally passed an `undefined` object; ex: `undefined`, `[]`, `[ 1, undefined ]`
+		// Accidentally passed an `undefined` object; e.g., `undefined`, `[]`, `[ 1, undefined ]`.
 		if (optsVal === undefined || (Array.isArray(optsVal) && (optsVal.length === 0 || optsVal.indexOf(undefined) !== -1))) {
 			exports.logErrorAndPath('undefined ' + prop + ':', optsVal)
 			return true
 		}
 
-		// Schema contains an `Array` of predefined accepted values
+		// Schema contains an `Array` of predefined accepted values.
 		if (Array.isArray(schemaPropType)) {
-			// Unrecognized value for parameter with predefined values
+			// Unrecognized value for parameter with predefined values.
 			if (schemaPropType.indexOf(optsVal) === -1) {
 				exports.logError('Unrecognized value for ' + prop + ':', optsVal)
 				exports.log('       Accepted values for ' + prop + ':', schemaPropType)
@@ -78,13 +78,13 @@ exports.illFormedOpts = function (schema, opts) {
 				return true
 			}
 		} else {
-			// Passed value of incorrect type; ex: `num: String`, `str: Array`
+			// Passed value of incorrect type; e.g., `num: String`, `str: Array`.
 			if (optsVal.constructor !== schemaPropType) {
 				exports.logErrorAndPath('\'' + prop + '\' not of type ' + schemaPropType.name + ':', optsVal)
 				return true
 			}
 
-			// Passed Array contains elements not of `arrayType` (if `arrayType` is defined)
+			// Passed Array contains elements not of `arrayType` (if `arrayType` is defined).
 			if (Array.isArray(optsVal) && schemaVal.arrayType && !optsVal.every(function (el) { return el.constructor === schemaVal.arrayType })) {
 				exports.logErrorAndPath('\'' + prop + '\' not an array of type ' + schemaVal.arrayType.name + ':', optsVal)
 				return true
@@ -117,22 +117,22 @@ exports.tryCatchWrapper = function (func, rethrow) {
 	try {
 		return func()
 	} catch (e) {
-		// Print leading blank line
+		// Print leading blank line.
 		exports.log()
 
 		if (e.stack) {
-			// Error message without source code (if present)
+			// Error message without source code (if present).
 			var message = e.message.split('\n').pop()
 
 			e.stack.split('\n').forEach(function (stackLine) {
 				if (e.message.indexOf(stackLine) !== -1) {
 					exports.log(stackLine)
 				} else if (stackLine.indexOf(message) !== -1) {
-					// Color error type name red
+					// Color error type name red.
 					exports.log(stackLine.replace(e.name, colors.red(e.name)))
 					message = null
 				} else {
-					// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut
+					// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut.
 					exports.log(stackLine.replace(/[()]/g, ''))
 				}
 			})
@@ -169,7 +169,7 @@ exports.deleteModuleCache = function () {
 }
 
 /**
- * Gets the file path and line number of where this function was called, returned in the format "path:line-number".
+ * Gets the file path and line number of where this function was called in the format "path:line-number".
  *
  * @static
  * @memberOf dantil
@@ -184,7 +184,7 @@ exports.deleteModuleCache = function () {
  */
 exports.getPathAndLineNumber = function () {
 	return getFormattedStackFrame(function (stack) {
-		// Get the frame of where this function was called.
+		// Get the frame for where this function was called.
 		return stack[0]
 	})
 }
@@ -192,7 +192,7 @@ exports.getPathAndLineNumber = function () {
 /**
  * Gets the file path and line number of the function call that invoked the currently executing module. Returns the path and line number in the format "path:line-number".
  *
- * This is not necessarily the caller of the currently executing function, which can be another function within the same module. Nor is it necessarily this module's parent which instantiated the module. Rather, it is the most recent function call in the stack below the currently executing module.
+ * This is not necessarily the caller of the currently executing function, which can be another function within the same module. Nor is it necessarily this module's parent which instantiated the module. Rather, it is the most recent function call in the stack outside the currently executing module.
  *
  * Returns `undefined` if there is no other module in the stack below where this function was called.
  *
@@ -329,10 +329,10 @@ function getFormattedStackFrame(getFrameFunc) {
  * @returns {*} Returns the value returned by `func`, if any.
  * @example
  *
- * // Prints to console
+ * // Print to console
  * console.log('Begin output to file')
  *
- * // Redirects process output from console to '~/Desktop/out.txt'
+ * // Redirect process output from console to '~/Desktop/out.txt'
  * dantil.redirectOutputToFile('~/Desktop/out.txt', function () {
  *   console.log('Numbers:')
  *   for (var i = 0; i < 100; ++i) {
@@ -341,17 +341,17 @@ function getFormattedStackFrame(getFrameFunc) {
  * })
  * // => Restores output to console and prints "Output saved: ~/Desktop/out.txt"
  *
- * // Prints to console (after restoring output)
+ * // Print to console (after restoring output)
  * console.log('Output to file complete')
  */
 exports.redirectOutputToFile = function (path, func) {
-	// Expand '~' if present
+	// Expand '~' if present.
 	path = exports.expandHomeDir(path)
 
-	// Create file if does not exist, overwrite existing file if exists, or throw an error if `path` is a directory
+	// Create file if does not exist, overwrite existing file if exists, or throw an error if `path` is a directory.
 	fs.writeFileSync(path)
 
-	// Redirect `process.stdout` to `path`
+	// Redirect `process.stdout` to `path`.
 	var writable = fs.createWriteStream(path)
 	var oldWrite = process.stdout.write
 	process.stdout.write = function () {
@@ -359,17 +359,17 @@ exports.redirectOutputToFile = function (path, func) {
 	}
 
 	try {
-		// Write output to `path`
+		// Write output to `path`.
 		var returnVal = func()
 
-		// Restore `process.stdout`
+		// Restore `process.stdout`.
 		process.stdout.write = oldWrite
 
 		exports.log('Output saved:', fs.realpathSync(path))
 
 		return returnVal
 	} catch (e) {
-		// Restore `process.stdout`
+		// Restore `process.stdout`.
 		process.stdout.write = oldWrite
 
 		throw e
@@ -386,11 +386,11 @@ exports.redirectOutputToFile = function (path, func) {
  * @param {Object} obj The object to save to `path`.
  */
 exports.writeJSONFile = function (path, obj) {
-	// Expand '~' if present
+	// Expand '~' if present.
 	path = exports.expandHomeDir(path)
 
 	fs.writeFileSync(path, JSON.stringify(obj, function (key, val) {
-		// Convert RegExp to strings for `JSON.stringify()`
+		// Convert RegExp to strings for `JSON.stringify()`.
 		return val instanceof RegExp ? val.source : val
 	}, '\t'))
 
@@ -468,28 +468,28 @@ function prettyPrint(args, opts) {
 	Array.prototype.slice.call(args).forEach(function (arg, i, args) {
 		var prevArg = args[i - 1]
 
-		// Print strings passed as arguments (i.e., not Object properties) without styling
+		// Print strings passed as arguments (i.e., not Object properties) without styling.
 		var formattedArg = typeof arg === 'string' ? arg : util.inspect(arg, opts)
 
 		// Print objects on separate lines if multi-lined when formatted
 		if (i === 0) {
-			// Extend indent for successive lines with the first argument's leading whitespce, if any.
-			// - JavaScript will not properly indent if '\t' is appended to spaces
+			// Extend indent for successive lines with the first argument's leading whitespace, if any.
+			// - JavaScript will not properly indent if '\t' is appended to spaces.
 			if (typeof arg === 'string') {
 				indent = arg.substr(0, arg.search(/[^\s]/)) + indent
 			}
 
 			formattedArgs.push(formattedArg)
 		} else if (/,\n/.test(formattedArg)) {
-			// Indent lines after the first line
+			// Indent lines after the first line.
 			formattedArgs.push(indent + formattedArg.replace(/,\n/g, ',\n' + indent))
 		} else {
 			var prevFormattedArgIdx = formattedArgs.length - 1
 			var prevFormattedArg = formattedArgs[prevFormattedArgIdx]
 
-			// Concatenate other objects and values to print on the same line if shorter than 80 characters when  concatenated
+			// Concatenate other objects and values to print on the same line if shorter than 80 characters when  concatenated.
 			if (getStylizedStringLength(prevFormattedArg) + getStylizedStringLength(formattedArg) + 1 > 80) {
-				// Indent lines after the first line
+				// Indent lines after the first line.
 				formattedArgs.push(indent + formattedArg)
 			} else {
 				formattedArgs[prevFormattedArgIdx] += ' ' + formattedArg
@@ -546,12 +546,12 @@ exports.logWarning = function () {
  * @param {Array} args The values to print following `label`.
  */
 function printWithColoredLabel(label, color, args) {
-	// Temporarily remove ':' to avoid coloring it
+	// Temporarily remove ':' to avoid coloring it.
 	if (label[label.length - 1] === ':') {
 		label = label.slice(0, -1)
 	}
 
-	// Color `label` and append with `args`
+	// Color `label` and append with `args`.
 	exports.log.apply(null, [ colors[color](label) + ':' ].concat(Array.prototype.slice.call(args)))
 }
 
@@ -587,10 +587,10 @@ exports.logErrorAndPath = function (getThisLine) {
 exports.logTrace = function (msg) {
 	exports.log('Trace' + (msg ? ': ' + msg : ''))
 
-	// Get stack without lines for `Error` and this file
+	// Get stack without lines for `Error` and this file.
 	var stack = Error().stack.split('\n').slice(3).join('\n')
 
-	// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut
+	// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut.
 	exports.log(stack.replace(/[()]/gm, ''))
 }
 
@@ -603,9 +603,11 @@ exports.logTrace = function (msg) {
  * @param {string} [msg] The optional message to prepend to the path and line number.
  * @example
  *
+ * // The contents of 'foo.js':
+ *
  * if (rareConditionIsTrue) {
  *   dantil.assert('Condition met')
- *   // => Prints "Condition met: /Users/Danny/test.js:9:12"
+ *   // => Prints "Condition met: /Users/Danny/foo.js:2"
  * }
  */
 exports.assert = function (msg) {
@@ -622,8 +624,10 @@ exports.assert = function (msg) {
  * @param {string} [msg] The optional message to prepend to the path and line number.
  * @example
  *
+ * // The contents of 'foo.js':
+ *
  * dantil.assertTrue(myNumber > 100, 'Condition met')
- * // => Prints "Condition met: /Users/Danny/test.js:9:12" if `myNumber > 100`
+ * // => Prints "Condition met: /Users/Danny/foo.js:1" if `myNumber > 100`
  */
 exports.assertTrue = function (value, msg) {
 	if (value) exports.assert(msg)
@@ -722,12 +726,12 @@ exports.count = function (label) {
  * @param {string} label The counter identifier.
  */
 exports.countEnd = function (label) {
-	// Print even if count is 0 to acknowledge never being reached
+	// Print even if count is 0 to acknowledge never being reached.
 	var count = _counts.get(label) || 0
 
 	exports.log(label + ':', count)
 
-	// Reset count
+	// Reset count.
 	_counts.delete(label)
 }
 
@@ -753,7 +757,7 @@ exports.countEndAll = function () {
 		exports.log(label + ':', count)
 	})
 
-	// Reset all counts
+	// Reset all counts.
 	_counts.clear()
 }
 
@@ -788,15 +792,15 @@ exports.countEndAll = function () {
  * // => true
  */
 exports.arraysEqual = function (a, b) {
-	// Identical arrays (or, both undefined)
+	// Arrays are identical (or, both are `undefined`).
 	if (a === b) return true
 
-	// One of two is undefined
+	// One of two is `undefined`.
 	if (!a || !b) return false
 
 	var aLength = a.length
 
-	// Different lengths
+	// Lengths are different.
 	if (aLength !== b.length) return false
 
 	for (var i = 0; i < aLength; ++i) {
@@ -823,7 +827,7 @@ exports.arraysEqual = function (a, b) {
  * // => 0.02
  */
 exports.cleanNumber = function (number) {
-	// JavaScript's floating point number precision 13 digits after the decimal point
+	// JavaScript's floating point number precision 13 digits after the decimal point.
 	return Number(number.toFixed(13))
 }
 
