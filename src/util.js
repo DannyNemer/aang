@@ -7,7 +7,6 @@
 
 var fs = require('fs')
 var util = require('util')
-var colors = require('colors/safe')
 
 /**
  * Checks if options object `opts` adheres to `schema`. Simulates static function arguments (i.e., type checking and parameter count). Prints descriptive, helpful errors when `opts` is ill-formed.
@@ -129,7 +128,7 @@ exports.tryCatchWrapper = function (func, rethrow) {
 					exports.log(stackLine)
 				} else if (stackLine.indexOf(message) !== -1) {
 					// Color error type name red.
-					exports.log(stackLine.replace(e.name, colors.red(e.name)))
+					exports.log(stackLine.replace(e.name, exports.colors.red(e.name)))
 					message = null
 				} else {
 					// Remove parentheses surrounding file paths for the iTerm open-file-path shortcut.
@@ -317,6 +316,20 @@ function getFormattedStackFrame(getFrameFunc) {
 	// Return the path and line number of the frame in the format "path:line-number" if a frame was found, else return `false`.
 	return frame && frame.getFileName() + ':' + frame.getLineNumber()
 }
+
+/**
+ * Stylizes strings for printing to the console using the [colors](https://github.com/Marak/colors.js) module.
+ *
+ * @static
+ * @memberOf dantil
+ * @category Utility
+ * @type Object
+ * @example
+ *
+ * console.log(dantil.colors.red('Error'))
+ * // => Logs red-colored "Error"
+ */
+exports.colors = require('colors/safe')
 
 /**
  * Synchronously writes the output of `func` to a file at `path` instead of the console. Overwrites the file if it already exists. Restores output to the console if an error is thrown.
@@ -552,7 +565,7 @@ function printWithColoredLabel(label, color, args) {
 	}
 
 	// Color `label` and append with `args`.
-	exports.log.apply(null, [ colors[color](label) + ':' ].concat(Array.prototype.slice.call(args)))
+	exports.log.apply(null, [ exports.colors[color](label) + ':' ].concat(Array.prototype.slice.call(args)))
 }
 
 /**
@@ -619,7 +632,7 @@ exports.logTrace = function (msg) {
  * }
  */
 exports.assert = function (msg) {
-	exports.log(colors.red(msg || 'Reached') + ':', exports.getPathAndLineNumber(true))
+	exports.log(exports.colors.red(msg || 'Reached') + ':', exports.getPathAndLineNumber(true))
 }
 
 /**

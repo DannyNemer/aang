@@ -1,3 +1,6 @@
+var util = require('../util')
+
+
 module.exports = StateTable
 
 function StateTable(inputGrammar, startSymbolStr) {
@@ -283,11 +286,8 @@ StateTable.prototype.generate = function (startSym) {
 }
 
 StateTable.prototype.print = function () {
-	var util = require('../util')
-	var colors = require('colors')
-
 	this.shifts.forEach(function (state, S) {
-		util.log(colors.yellow(S) + ':')
+		util.log(util.colors.yellow(S) + ':')
 
 		if (state.isFinal) console.log('\taccept')
 

@@ -345,9 +345,8 @@ exports.toString = function (semanticArray) {
  * @returns {string} Returns the stylized semantic string.
  */
 exports.colorString = function (semanticString) {
-	var colors = require('colors')
 	return semanticString.replace(/([\w-]+(?=\())|([\w-]+(?=[,\)]))/g, function (match, p1, p2) {
-		return p1 ? colors.green(p1) : colors.red(p2)
+		return p1 ? util.colors.green(p1) : util.colors.red(p2)
 	})
 }
 
