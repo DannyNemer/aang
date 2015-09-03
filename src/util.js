@@ -556,6 +556,10 @@ function getStylizedStringLength(string) {
  * @memberOf dantil
  * @category Console
  * @param {...*} values The values to print following "Error: ".
+ * @example
+ *
+ * dantil.logError('Property undefined:', obj)
+ * // => Pretty-prints "Error: Value undefined: { property: undefined }"
  */
 exports.logError = function () {
 	printWithColoredLabel('Error', 'red', arguments)
@@ -568,6 +572,10 @@ exports.logError = function () {
  * @memberOf dantil
  * @category Console
  * @param {...*} values The values to print following "Warning: ".
+ * @example
+ *
+ * dantil.logWarning('Values unused:', obj)
+ * // => Pretty-prints "Warning: Value unused: { property: undefined }"
  */
 exports.logWarning = function () {
 	printWithColoredLabel('Warning', 'yellow', arguments)
@@ -580,6 +588,10 @@ exports.logWarning = function () {
  * @memberOf dantil
  * @category Console
  * @param {...*} values The values to print following "Success: ".
+ * @example
+ *
+ * dantil.logSuccess(tests.length, 'tests passed')
+ * // => Pretty-prints "Success: 47 tests passed"
  */
 exports.logSuccess = function () {
 	printWithColoredLabel('Success', 'green', arguments)
@@ -611,6 +623,13 @@ function printWithColoredLabel(label, color, args) {
  * @category Console
  * @param {boolean} [logThisLine] Specify logging the line where this function is called instead of the line which invoked the currently executing module.
  * @param {...*} [values] The optional values to print following "Error: ".
+ * @example
+ *
+ * // The contents of 'foo.js':
+ *
+ * dantil.logErrorAndPath('Property undefined:', obj)
+ * // => Pretty-prints "Error: Value undefined: { property: undefined }
+ * //                     /Users/Danny/foo.js:2"
  */
 exports.logErrorAndPath = function (logThisLine) {
 	var args
