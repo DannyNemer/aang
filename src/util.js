@@ -432,7 +432,7 @@ exports.expandHomeDir = function (path) {
  *
  * Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
  *
- * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace.
+ * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @static
  * @memberOf dantil
@@ -468,7 +468,7 @@ exports.dir = function () {
  *
  * Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
  *
- * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace.
+ * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @private
  * @param {Object} args The `arguments` object (passed to the callee) with the values to print.
@@ -488,9 +488,15 @@ function prettyPrint(args, opts) {
 		// Print objects on separate lines if multi-lined when formatted
 		if (i === 0) {
 			// Extend indent for successive lines with the first argument's leading whitespace, if any.
-			// - JavaScript will not properly indent if '\t' is appended to spaces.
 			if (typeof arg === 'string') {
-				indent = arg.substr(0, arg.search(/[^\s]/)) + indent
+				// Get the substring of leading whitespace characters from the start of the string, up to the first non-whitespace character (if any).
+				arg = arg.substring(0, arg.search(/[^\s]/))
+
+				// Get the substring after the last line break before the first first non-whitespace character (if any).
+				arg = arg.substring(arg.lastIndexOf('\n') + 1)
+
+				// JavaScript will not properly indent if '\t' is appended to spaces (i.e., reverse order as here).
+				indent = arg + indent
 			}
 
 			formattedArgs.push(formattedArg)
