@@ -551,6 +551,18 @@ exports.logWarning = function () {
 }
 
 /**
+ * Prints the provided values like `console.log()` prepended with green-colored "Success: ".
+ *
+ * @static
+ * @memberOf dantil
+ * @category Console
+ * @param {...*} values The values to print following "Success: ".
+ */
+exports.logSuccess = function () {
+	printWithColoredLabel('Success', 'green', arguments)
+}
+
+/**
  * Prints like `console.log()`, but colors first argument `color` and prepends with `label` (e.g., "Error: ").
  *
  * @private
