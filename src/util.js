@@ -327,7 +327,7 @@ function getFormattedStackFrame(getFrameFunc) {
  * @example
  *
  * console.log(dantil.colors.red('Error'))
- * // => Logs red-colored "Error"
+ * // => Prints red-colored "Error"
  */
 exports.colors = require('chalk')
 
@@ -428,16 +428,16 @@ exports.expandHomeDir = function (path) {
 }
 
 /**
- * Prints the provided objects and values in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
+ * Pretty-prints the provided values and objects in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
  *
- * Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
+ * Prints objects on separate lines if multi-lined when formatted, else concatenates values and objects to print on the same line if less than 80 characters when concatenated.
  *
  * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @static
  * @memberOf dantil
  * @category Console
- * @param {...*} values The values to print.
+ * @param {...*} values The values and objects to print.
  */
 exports.log = function () {
 	if (arguments.length) {
@@ -454,7 +454,7 @@ exports.log = function () {
  * @static
  * @memberOf dantil
  * @category Console
- * @param {...*} values The values to print.
+ * @param {...*} values The values and objects to print.
  */
 exports.dir = function () {
 	prettyPrint(arguments, { depth: null, colors: true })
@@ -464,14 +464,14 @@ exports.dir = function () {
 }
 
 /**
- * Prints the provided objects and values in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
+ * Pretty-prints the provided values and objects in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
  *
- * Prints objects on separate lines if multi-lined when formatted, else concatenates objects and values to print on the same line if shorter than 80 characters when concatenated.
+ * Prints objects on separate lines if multi-lined when formatted, else concatenates values and objects to print on the same line if less than 80 characters when concatenated.
  *
  * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @private
- * @param {Object} args The `arguments` object (passed to the callee) with the values to print.
+ * @param {Object} args The `arguments` object (passed to the callee) with the values and objects to print.
  * @param {Object} options The options object defined for `util.inspect()`.
  */
 function prettyPrint(args, options) {
@@ -489,10 +489,10 @@ function prettyPrint(args, options) {
 		if (i === 0) {
 			// Extend indent for successive lines with the first argument's leading whitespace, if any.
 			if (typeof arg === 'string') {
-				// Get the substring of leading whitespace characters from the start of the string, up to the first non-whitespace character (if any).
+				// Get the substring of leading whitespace characters from the start of the string, up to the first non-whitespace character, if any.
 				arg = arg.substring(0, arg.search(/[^\s]/))
 
-				// Get the substring after the last line break before the first first non-whitespace character (if any).
+				// Get the substring after the last line break before the first first non-whitespace character, if any.
 				arg = arg.substring(arg.lastIndexOf('\n') + 1)
 
 				// JavaScript will not properly indent if '\t' is appended to spaces (i.e., reverse order as here).
@@ -507,7 +507,7 @@ function prettyPrint(args, options) {
 			var prevFormattedArgIdx = formattedArgs.length - 1
 			var prevFormattedArg = formattedArgs[prevFormattedArgIdx]
 
-			// Concatenate other objects and values to print on the same line if shorter than 80 characters when  concatenated.
+			// Concatenate other values and objects to print on the same line if less than 80 characters when  concatenated.
 			if (getStylizedStringLength(prevFormattedArg) + getStylizedStringLength(formattedArg) + 1 > 80) {
 				// Indent lines after the first line.
 				formattedArgs.push(indent + formattedArg)
@@ -523,7 +523,7 @@ function prettyPrint(args, options) {
 }
 
 /**
- * Identical to `util.inspect()`, except disables colors if the terminal does not support color.
+ * Identical to `util.inspect()`, but disables colors if the terminal does not support color.
  *
  * @private
  * @param {*} object The object or value to stylize.
@@ -539,18 +539,18 @@ function stylize(object, options) {
 }
 
 /**
- * Gets the length of stylized `string` with the Unicode characters for color stylization escaped.
+ * Gets the length of stylized `string` without the ANSI escape codes (for color and formatting).
  *
  * @private
  * @param {string} string The stylized string to measure.
- * @returns {number} Returns the escaped length of `string`.
+ * @returns {number} Returns the length of `string` without ANSI escape codes.
  */
 function getStylizedStringLength(string) {
 	return exports.colors.stripColor(string).length
 }
 
 /**
- * Prints the provided values like `console.log()` prepended with red-colored "Error: ".
+ * Prints the provided values like `dantil.log()` prepended with red-colored "Error: ".
  *
  * @static
  * @memberOf dantil
@@ -559,14 +559,14 @@ function getStylizedStringLength(string) {
  * @example
  *
  * dantil.logError('Property undefined:', obj)
- * // => Pretty-prints "Error: Value undefined: { property: undefined }"
+ * // => Prints "Error: Value undefined: { property: undefined }"
  */
 exports.logError = function () {
 	printWithColoredLabel('Error', 'red', arguments)
 }
 
 /**
- * Prints the provided values like `console.log()` prepended with yellow-colored "Warning: ".
+ * Prints the provided values like `dantil.log()` prepended with yellow-colored "Warning: ".
  *
  * @static
  * @memberOf dantil
@@ -575,14 +575,14 @@ exports.logError = function () {
  * @example
  *
  * dantil.logWarning('Values unused:', obj)
- * // => Pretty-prints "Warning: Value unused: { property: undefined }"
+ * // => Prints "Warning: Value unused: { property: undefined }"
  */
 exports.logWarning = function () {
 	printWithColoredLabel('Warning', 'yellow', arguments)
 }
 
 /**
- * Prints the provided values like `console.log()` prepended with green-colored "Success: ".
+ * Prints the provided values like `dantil.log()` prepended with green-colored "Success: ".
  *
  * @static
  * @memberOf dantil
@@ -591,14 +591,14 @@ exports.logWarning = function () {
  * @example
  *
  * dantil.logSuccess(tests.length, 'tests passed')
- * // => Pretty-prints "Success: 47 tests passed"
+ * // => Prints "Success: 47 tests passed"
  */
 exports.logSuccess = function () {
 	printWithColoredLabel('Success', 'green', arguments)
 }
 
 /**
- * Prints like `console.log()`, but colors first argument `color` and prepends with `label` (e.g., "Error: ").
+ * Prints `args` like `dantil.log()`, but prepends with `label` colored `color` (e.g., "Error: ").
  *
  * @private
  * @param {string} label The label to prepend to `args` (e.g., "Error").
@@ -622,14 +622,14 @@ function printWithColoredLabel(label, color, args) {
  * @memberOf dantil
  * @category Console
  * @param {boolean} [logThisLine] Specify logging the line where this function is called instead of the line which invoked the currently executing module.
- * @param {...*} [values] The optional values to print following "Error: ".
+ * @param {...*} [values] The optional values and objects to print following "Error: ".
  * @example
  *
  * // The contents of 'foo.js':
  *
  * dantil.logErrorAndPath('Property undefined:', obj)
- * // => Pretty-prints "Error: Value undefined: { property: undefined }
- * //                     /Users/Danny/foo.js:2"
+ * // => Prints "Error: Value undefined: { property: undefined }
+ * //              /Users/Danny/foo.js:1"
  */
 exports.logErrorAndPath = function (logThisLine) {
 	var args
@@ -702,7 +702,7 @@ exports.assert = function (message) {
  * // The contents of 'foo.js':
  *
  * dantil.assertTrue(myNumber > 100, 'Condition met')
- * // => Prints "Condition met: /Users/Danny/foo.js:1" if `myNumber > 100`
+ * // => If `myNumber > 100`, prints "Condition met: /Users/Danny/foo.js:1"
  */
 exports.assertTrue = function (value, message) {
 	if (value) exports.assert(message)
@@ -810,8 +810,9 @@ var _counts = new Map()
  *   if (i % 2 === 0) dantil.count('even')
  * }
  *
+ * // Reset the count for 'even' to 0
  * dantil.countEnd('even')
- * // => Prints "even: 50" and resets the count for 'even' to 0
+ * // => Prints "even: 50"
  */
 exports.count = function (label) {
 	var val = _counts.get(label) || 0
@@ -850,8 +851,10 @@ exports.countEnd = function (label) {
  *   if (i > 100) dantil.count('never reached')
  * }
  *
+ * // Reset all counts to 0
  * dantil.countEndAll()
- * // => Prints "even: 50, odd: 50" and resets all counts to 0
+ * // => Prints "even: 50
+ * //            odd: 50"
  */
 exports.countEndAll = function () {
 	_counts.forEach(function(count, label) {
@@ -924,7 +927,7 @@ exports.arraysEqual = function (a, b) {
  * var number = 0.1 * 0.2
  * // => 0.020000000000000004
  *
- * number = dantil.cleanFloat(number)
+ * number = dantil.cleanNumber(number)
  * // => 0.02
  */
 exports.cleanNumber = function (number) {
