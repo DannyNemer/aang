@@ -472,7 +472,7 @@ exports.dir = function () {
  *
  * @private
  * @param {Object} args The `arguments` object (passed to the callee) with the values to print.
- * @param {Object} opts The options object (as defined for `util.inspect()`).
+ * @param {Object} opts The options object defined for `util.inspect()`.
  */
 function prettyPrint(args, opts) {
 	var formattedArgs = []
@@ -482,7 +482,8 @@ function prettyPrint(args, opts) {
 		var prevArg = args[i - 1]
 
 		// Print strings passed as arguments (i.e., not Object properties) without styling.
-		var formattedArg = typeof arg === 'string' ? arg : util.inspect(arg, opts)
+		// - This also preserves any already-stylized arguments.
+		var formattedArg = typeof arg === 'string' ? arg : stylize(arg, opts)
 
 		// Print objects on separate lines if multi-lined when formatted
 		if (i === 0) {
@@ -513,6 +514,22 @@ function prettyPrint(args, opts) {
 	formattedArgs.forEach(function (formattedArg) {
 		console.log(formattedArg)
 	})
+}
+
+/**
+ * Identical to `util.inspect()`, except disables colors if the terminal does not support color.
+ *
+ * @private
+ * @param {*} object The object or value to stylize.
+ * @param {Object} opts The options object defined for `util.inspect()`.
+ * @returns {string} Returns a stylized string representation of `object`.
+ */
+function stylize(object, opts) {
+	if (!exports.colors.supportsColor) {
+		opts.colors = false
+	}
+
+	return util.inspect(object, opts)
 }
 
 /**
@@ -683,9 +700,9 @@ exports.assertEqual = function (actual, expected, message) {
 		if (message) {
 			exports.log(label, message)
 		} else {
-			// Use `util.inspect` to stylize strings.
+			// Use `util.inspect()` to stylize strings.
 			var inspectOpts = { colors: true }
-			exports.log(label, util.inspect(actual, inspectOpts), '==', util.inspect(expected, inspectOpts))
+			exports.log(label, stylize(actual, inspectOpts), '==', stylize(expected, inspectOpts))
 		}
 
 		exports.log('  ' + exports.getPathAndLineNumber())
