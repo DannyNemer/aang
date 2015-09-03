@@ -717,6 +717,24 @@ exports.assertTrue = function (value, message) {
  * @param {*} actual The value to compare.
  * @param {*} expected The expected value to compare.
  * @param {string} [message] The optional message to print if the test fails.
+ * @example
+ *
+ * // The contents of 'foo.js':
+ *
+ * dantil.assertEqual(false, 0)
+ * // => undefined
+ *
+ * dantil.assertEqual(20, 21)
+ * // => Prints "AssertionError: 20 == 21
+ * //              /Users/Danny/foo.js:5"
+ *
+ * dantil.assertEqual({ prop: 'value' }, { prop: 'value' })
+ * // => Prints "AssertionError: { prop: 'value' } == { prop: 'value' }
+ * //              /Users/Danny/foo.js:8"
+ *
+ * dantil.assertEqual([ 3, 1, 4 ], [ 1, 5, 9 ], 'Array test failed')
+ * // => Prints "AssertionError: Array test failed
+ * //              /Users/Danny/foo.js:12"
  */
 exports.assertEqual = function (actual, expected, message) {
 	if (actual != expected) {
