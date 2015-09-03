@@ -657,10 +657,10 @@ exports.logErrorAndPath = function (logThisLine) {
  * @static
  * @memberOf dantil
  * @category Console
- * @param {string} [msg] The optional message to print above the stack trace.
+ * @param {string} [message] The optional message to print above the stack trace.
  */
-exports.logTrace = function (msg) {
-	exports.log('Trace' + (msg ? ': ' + msg : ''))
+exports.logTrace = function (message) {
+	exports.log('Trace' + (message ? ': ' + message : ''))
 
 	// Get stack without lines for `Error` and this file.
 	var stack = Error().stack.split('\n').slice(3).join('\n')
@@ -670,12 +670,12 @@ exports.logTrace = function (msg) {
 }
 
 /**
- * Prints the calling file path and line number, prepended by `msg`, to mark reaching a section of code.
+ * Prints the calling file path and line number, prepended by `message`, to mark reaching a section of code.
  *
  * @static
  * @memberOf dantil
  * @category Profile
- * @param {string} [msg] The optional message to prepend to the path and line number.
+ * @param {string} [message] The optional message to prepend to the path and line number.
  * @example
  *
  * // The contents of 'foo.js':
@@ -685,18 +685,18 @@ exports.logTrace = function (msg) {
  *   // => Prints "Condition met: /Users/Danny/foo.js:2"
  * }
  */
-exports.assert = function (msg) {
-	exports.log(exports.colors.red(msg || 'Reached') + ':', exports.getPathAndLineNumber(true))
+exports.assert = function (message) {
+	exports.log(exports.colors.red(message || 'Reached') + ':', exports.getPathAndLineNumber(true))
 }
 
 /**
- * Prints the calling file path and line number, prepended by `msg`, if `value` is truthy.
+ * Prints the calling file path and line number, prepended by `message`, if `value` is truthy.
  *
  * @static
  * @memberOf dantil
  * @category Profile
  * @param {boolean} value The value to check if truthy.
- * @param {string} [msg] The optional message to prepend to the path and line number.
+ * @param {string} [message] The optional message to prepend to the path and line number.
  * @example
  *
  * // The contents of 'foo.js':
@@ -704,8 +704,8 @@ exports.assert = function (msg) {
  * dantil.assertTrue(myNumber > 100, 'Condition met')
  * // => Prints "Condition met: /Users/Danny/foo.js:1" if `myNumber > 100`
  */
-exports.assertTrue = function (value, msg) {
-	if (value) exports.assert(msg)
+exports.assertTrue = function (value, message) {
+	if (value) exports.assert(message)
 }
 
 /**
