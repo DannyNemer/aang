@@ -43,17 +43,18 @@ rl.on('line', function (line) {
 })
 
 /**
- * Exexcute a parse.
+ * Executes a parse.
  *
  * @param {string} query The query to search.
  * @param {number} K The maximum number of suggestions to find.
  * @returns {Array} Returns the parse trees output by the search if the parser reaches the start node, else `undefined`.
  */
 function parse(query, K) {
-	if (printQuery) console.log('\nquery:', query)
-	var parser = new (require(parserPath))(stateTable)
+	if (printQuery) util.log('\nquery:', query)
 
 	if (printTime) util.time('parse')
+	var parser = new (require(parserPath))(stateTable)
+
 	var startNode = parser.parse(query)
 	if (printTime) util.timeEnd('parse')
 
@@ -67,14 +68,14 @@ function parse(query, K) {
 
 		if (printForestGraph) parser.printNodeGraph(startNode)
 		if (printOutput) {
-			if (trees.length) forestSearch.print(trees, printCost, printTrees)
-			else console.log('Failed to find legal parse trees')
+			if (trees.length) forestSearch.print(trees, printCosts, printTrees)
+			else util.log('Failed to find legal parse trees.')
 		}
 
 		// Return trees for conjugation test
 		return trees
 	} else {
-		if (printOutput) console.log('Failed to reach start node')
+		if (printOutput) util.log('Failed to reach start node.')
 	}
 }
 
@@ -88,10 +89,10 @@ var printStack = false
 var printForest = false
 var printForestGraph = false
 var printTrees = false
-var printCost = false
+var printCosts = true
 
 /**
- * Evaluate a line of input from the CLI as either a command to execute, or a search query to parse.
+ * Evaluates a line of input from the CLI as either a command to execute, or a search query to parse.
  *
  * @param {string} `input` The input to execute as a command if recognized, else a search query.
  * @returns {boolean} Returns `true` if `input` is a recognized command, else `false`.
@@ -112,13 +113,17 @@ function runCommand(input) {
 
 		// If testRuns > 1, then test is a benchmark and prevent output
 		if (testRuns > 1) {
-			var prevPrintOutput = printOutput
+			var origPrintOutput = printOutput
 			printOutput = false
 		}
 
-		// Benchmark test if !printOutput
-		if (printOutput) printQuery = true
-		else util.time('test')
+		if (printOutput) {
+			var origPrintQuery = printQuery
+			printQuery = true
+		} else {
+			// Benchmark test
+			util.time('test')
+		}
 
 		var i = 0
 		var queries = testQueries.basic
@@ -129,33 +134,36 @@ function runCommand(input) {
 			}
 		}
 
-		if (printOutput) printQuery = false
-		else util.timeEnd('test')
+		if (printOutput) {
+			printQuery = origPrintQuery
+		} else {
+			util.timeEnd('test')
+		}
 
 		util.countEndAll()
 
 		if (testRuns > 1) {
-			printOutput = prevPrintOutput
+			printOutput = origPrintOutput
 		}
 	}
 
 	// Output a run of test queries to file
 	else if (firstArg === '.logTest') {
-		var prevSettingPrintOutput = printOutput
+		var origPrintOutput = printOutput
 		printOutput = true
 
 		util.redirectOutputToFile('~/Desktop/out', function () {
 			runCommand('.test')
 		})
 
-		printOutput = prevSettingPrintOutput
+		printOutput = origPrintOutput
 	}
 
 	// Run conjugation tests
 	else if (firstArg === '.conjugationTest') {
-		var prevSettingPrintTrees = printTrees
+		var origPrintTrees = printTrees
 		printTrees = false
-		var prevSettingPrintOutput = printOutput
+		var origPrintOutput = printOutput
 		printOutput = false
 		var failed = false
 
@@ -163,19 +171,19 @@ function runCommand(input) {
 			var trees = parse(query, 1)
 			if (!trees || trees[0].text !== query) {
 				util.logError('Expected:', query)
-				console.log('       Actual:', trees[0].text)
+				util.log('       Actual:', trees[0].text)
 				failed = true
 			}
 		})
 
-		if (!failed) console.log('All conjugation tests passed')
-		printOutput = prevSettingPrintOutput
-		printTrees = prevSettingPrintTrees
+		if (!failed) util.logSuccess('All conjugation tests passed.')
+		printOutput = origPrintOutput
+		printTrees = origPrintTrees
 	}
 
 	// Rebuild grammar and state table
 	else if (firstArg === '.rebuild') {
-		console.log('Rebuild grammar and state table:')
+		util.log('Rebuild grammar and state table:')
 
 		// Rebuild grammar
 		require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
@@ -187,7 +195,7 @@ function runCommand(input) {
 	// Delete module cache
 	else if (firstArg === '.deleteCache') {
 		deleteModuleCaches()
-		console.log('Deleted cache of modules')
+		util.log('Deleted cache of modules.')
 	}
 
 	// Print state table
@@ -200,7 +208,7 @@ function runCommand(input) {
 		var historyLen = rl.history.length
 		for (var i = historyLen - 1; i > 0; --i) {
 			var idx = historyLen - i
-			console.log((historyLen > 10 && idx < 10 ? ' ' : '') + idx + '  ' + rl.history[i])
+			util.log((historyLen > 10 && idx < 10 ? ' ' : '') + idx + '  ' + rl.history[i])
 		}
 	}
 
@@ -208,79 +216,79 @@ function runCommand(input) {
 	// Set number of parse trees to search for
 	else if (firstArg === '.k') {
 		if (!isNaN(secondArg)) K = Number(secondArg)
-		console.log('K:', K)
+		util.log('K:', K)
 	}
 
 	// Toggle printing parse output
 	else if (firstArg === '.out') {
 		printOutput = !printOutput
-		console.log('Print parse output:', printOutput)
+		util.log('Print parse output:', printOutput)
 	}
 
 	// Toggle constructing and printing parse trees
 	else if (firstArg === '.trees') {
 		printTrees = !printTrees
-		console.log('Construct and print parse trees:', printTrees)
+		util.log('Construct and print parse trees:', printTrees)
 	}
 
 	// Toggle printing parse costs
 	else if (firstArg === '.costs') {
-		printCost = !printCost
-		console.log('Print parse costs:', printCost)
+		printCosts = !printCosts
+		util.log('Print parse costs:', printCosts)
 	}
 
 	// Toggle printing parse time
 	else if (firstArg === '.time') {
 		printTime = !printTime
-		console.log('Print parse time:', printTime)
+		util.log('Print parse time:', printTime)
 	}
 
 	// Toggle printing parse query
 	else if (firstArg === '.query') {
 		printQuery = !printQuery
-		console.log('Print parse query:', printQuery)
+		util.log('Print parse query:', printQuery)
 	}
 
 	// Toggle printing parse stack
 	else if (firstArg === '.stack') {
 		printStack = !printStack
-		console.log('Print parse stack:', printStack)
+		util.log('Print parse stack:', printStack)
 	}
 
 	// Toggle printing parse forest
 	else if (firstArg === '.forest') {
 		printForest = !printForest
-		console.log('Print parse forest:', printForest)
+		util.log('Print parse forest:', printForest)
 	}
 
 	// Toggle printing parse forest graph
 	else if (firstArg === '.graph') {
 		printForestGraph = !printForestGraph
-		console.log('Print parse forest graph:', printForestGraph)
+		util.log('Print parse forest graph:', printForestGraph)
 	}
 
 	// Print help screen
 	else {
-		console.log('Commands:')
-		console.log('.test [<int>]     run test queries [<int> times]')
-		console.log('.logTest          output a run of test queries to file')
-		console.log('.conjugationTest  run conjugation test')
-		console.log('.rebuild          rebuild grammar and state table')
-		console.log('.deleteCache      delete module cache')
-		console.log('.stateTable       print state table')
-		console.log('.history          print CLI history')
-		console.log('.help             print this screen')
+		util.log('Commands:')
+		util.log('.test [<int>]     run test queries [<int> times]')
+		util.log('.logTest          output a run of test queries to file')
+		util.log('.conjugationTest  run conjugation test')
+		util.log('.rebuild          rebuild grammar and state table')
+		util.log('.deleteCache      delete module cache')
+		util.log('.stateTable       print state table')
+		util.log('.history          print CLI history')
+		util.log('.help             print this screen')
 
-		console.log('\nParser settings:')
-		console.log('.k       K:', K)
-		console.log('.out     print parse output:', printOutput)
-		console.log('.trees   print parse trees:', printTrees)
-		console.log('.costs   print parse costs:', printCost)
-		console.log('.time    print parse time:', printTime)
-		console.log('.query   print parse query:', printQuery)
-		console.log('.stack   print parse stack:', printStack)
-		console.log('.forest  print parse forest:', printForest)
-		console.log('.graph   print parse forest graph:', printForestGraph)
+		util.log('\nParser settings:')
+		util.log('.k       K:', K)
+		util.log('.out     print parse output:', printOutput)
+		util.log('.trees   print parse trees:', printTrees)
+		util.log('.costs   print parse costs:', printCosts)
+		util.log('.time    print parse time:', printTime)
+		util.log('.query   print parse query:', printQuery)
+		util.log('.stack   print parse stack:', printStack)
+		util.log('.forest  print parse forest:', printForest)
+		util.log('.graph   print parse forest graph:', printForestGraph)
 	}
 
 	// Input as a command; do not parse as query
@@ -288,7 +296,7 @@ function runCommand(input) {
 }
 
 /**
- *  Delete the cache of modules in use, forcing them to reload and enable any file changes for the next input.
+ *  Deletes the cache of modules in use, forcing them to reload and enable any file changes for the next input.
  */
 function deleteModuleCaches() {
 	util.deleteModuleCache(parserPath, forestSearchPath, stateTablePath, utilPath, './BinaryHeap.js', '../grammar/semantic.js', './calcHeuristicCosts.js')
