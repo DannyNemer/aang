@@ -318,7 +318,7 @@ function getFormattedStackFrame(getFrameFunc) {
 }
 
 /**
- * Stylizes strings for printing to the console using the [colors](https://github.com/Marak/colors.js) module.
+ * Stylizes strings for printing to the console using the [chalk](https://github.com/chalk/chalk) module.
  *
  * @static
  * @memberOf dantil
@@ -329,7 +329,7 @@ function getFormattedStackFrame(getFrameFunc) {
  * console.log(dantil.colors.red('Error'))
  * // => Logs red-colored "Error"
  */
-exports.colors = require('colors/safe')
+exports.colors = require('chalk')
 
 /**
  * Synchronously writes the output of `func` to a file at `path` instead of the console. Overwrites the file if it already exists. Restores output to the console if an error is thrown.
