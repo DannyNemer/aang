@@ -546,7 +546,7 @@ function stylize(object, opts) {
  * @returns {number} Returns the escaped length of `string`.
  */
 function getStylizedStringLength(string) {
-	return string.replace(/\u001b\[\d\d?m/g, '').length
+	return exports.colors.stripColor(string).length
 }
 
 /**
