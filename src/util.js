@@ -690,22 +690,34 @@ exports.assert = function (message) {
 }
 
 /**
- * Prints the calling file path and line number, prepended by `message`, if `value` is truthy.
+ * Tests if `value` is truthy. If so, prints the calling file path and line number, prepended by `message`.
  *
  * @static
  * @memberOf dantil
  * @category Profile
  * @param {boolean} value The value to check if truthy.
  * @param {string} [message] The optional message to prepend to the path and line number.
+ * @returns {boolean} Returns `true` if `value` is truthy, else `false`.
  * @example
  *
  * // The contents of 'foo.js':
  *
- * dantil.assertTrue(myNumber > 100, 'Condition met')
- * // => If `myNumber > 100`, prints "Condition met: /Users/Danny/foo.js:1"
+ * dantil.assertTrue(100 < Infinity, 'Condition met')
+ * // => true
+ * // => Prints "Condition met: /Users/Danny/foo.js:1"
+ *
+ * if (dantil.assertTrue(rareConditionIsTrue)) {
+ *   // => true
+ *   // => Prints "Reached: /Users/Danny/foo.js:5"
+ * }
  */
 exports.assertTrue = function (value, message) {
-	if (value) exports.assert(message)
+	if (value) {
+		exports.assert(message)
+		return true
+	}
+
+	return false
 }
 
 /**
