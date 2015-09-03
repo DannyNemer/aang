@@ -11,7 +11,7 @@ var entityCount = 0
 
 
 /**
- * Create a new entity category containing the passed entities.
+ * Creates a new entity category containing the passed entities.
  *
  * @param {Object} opts The options object containing the entities.
  * @returns {string} Returns the terminal symbol for the category.
@@ -37,12 +37,12 @@ exports.new = function (opts) {
 		throw new Error('Duplicate entity category')
 	}
 
-	// Save calling line for error reporting
+	// Save instantiation path and line number for error reporting
 	exports.creationLines[categoryName] = util.getModuleCallerPathAndLineNumber()
 
 	var newEntities = opts.entities
-	newEntitiesLen = newEntities.length
-	newEntities.forEach(function (entity, i) {
+	for (var i = 0, newEntitiesLen = newEntities.length; i < newEntitiesLen; ++i) {
+		var entity = newEntities[i]
 		var entityKey = entity.toLowerCase()
 
 		// Check for duplicate entities within this category
@@ -63,7 +63,7 @@ exports.new = function (opts) {
 			// Save id as String for semantic arguments ordering
 			id: String(entityCount++),
 		})
-	})
+	}
 
 	// To be used as a terminal symbol
 	return categoryName
