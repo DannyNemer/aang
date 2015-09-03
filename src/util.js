@@ -714,30 +714,40 @@ exports.assertTrue = function (value, message) {
  * @static
  * @memberOf dantil
  * @category Profile
- * @param {*} actual The value to compare.
- * @param {*} expected The expected value to compare.
+ * @param {*} value The value to compare.
+ * @param {*} other The other value to compare.
  * @param {string} [message] The optional message to print if the test fails.
+ * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
  * @example
  *
  * // The contents of 'foo.js':
  *
  * dantil.assertEqual(false, 0)
- * // => undefined
+ * // => true
  *
  * dantil.assertEqual(20, 21)
+ * // => false
  * // => Prints "AssertionError: 20 == 21
  * //              /Users/Danny/foo.js:5"
  *
  * dantil.assertEqual({ prop: 'value' }, { prop: 'value' })
+ * // => false
  * // => Prints "AssertionError: { prop: 'value' } == { prop: 'value' }
- * //              /Users/Danny/foo.js:8"
+ * //              /Users/Danny/foo.js:9"
  *
  * dantil.assertEqual([ 3, 1, 4 ], [ 1, 5, 9 ], 'Array test failed')
+ * // => false
  * // => Prints "AssertionError: Array test failed
- * //              /Users/Danny/foo.js:12"
+ * //              /Users/Danny/foo.js:14"
+ *
+ * if (dantil.assertEqual(myArray.length, 100)) {
+ *   // => true
+ *
+ *   // ...stuff...
+ * }
  */
-exports.assertEqual = function (actual, expected, message) {
-	if (actual != expected) {
+exports.assertEqual = function (value, other, message) {
+	if (value != other) {
 		var label = exports.colors.red('AssertionError') + ':'
 
 		if (message) {
@@ -745,11 +755,15 @@ exports.assertEqual = function (actual, expected, message) {
 		} else {
 			// Use `util.inspect()` to stylize strings.
 			var inspectOpts = { colors: true }
-			exports.log(label, stylize(actual, inspectOpts), '==', stylize(expected, inspectOpts))
+			exports.log(label, stylize(value, inspectOpts), '==', stylize(other, inspectOpts))
 		}
 
 		exports.log('  ' + exports.getPathAndLineNumber())
+
+		return false
 	}
+
+	return true
 }
 
  /**
