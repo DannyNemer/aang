@@ -666,6 +666,32 @@ exports.assertTrue = function (value, msg) {
 	if (value) exports.assert(msg)
 }
 
+/**
+ * Tests shallow, coercive equality with the equal comparison operator (`==`). Prints an error and the file path and line number if the test fails, unlike Node's `assert.equal()` which throws an error.
+ *
+ * @static
+ * @memberOf dantil
+ * @category Profile
+ * @param {*} actual The value to compare.
+ * @param {*} expected The expected value to compare.
+ * @param {string} [message] The optional message to print if the test fails.
+ */
+exports.assertEqual = function (actual, expected, message) {
+	if (actual != expected) {
+		var label = exports.colors.red('AssertionError') + ':'
+
+		if (message) {
+			exports.log(label, message)
+		} else {
+			// Use `util.inspect` to stylize strings.
+			var inspectOpts = { colors: true }
+			exports.log(label, util.inspect(actual, inspectOpts), '==', util.inspect(expected, inspectOpts))
+		}
+
+		exports.log('  ' + exports.getPathAndLineNumber())
+	}
+}
+
  /**
 	* Used as a key-value map for `dantil.time()`.
 	*
