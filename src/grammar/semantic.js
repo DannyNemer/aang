@@ -1,4 +1,5 @@
 var util = require('../util')
+var stringUtil = require('./stringUtil')
 
 
 exports.semantics = {}
@@ -7,7 +8,7 @@ exports.creationLines = {}
 
 // Create a new semantic function or argument
 exports.new = function (opts) {
-	opts.name = opts.name.toLowerCase()
+	opts.name = stringUtil.formatName(opts.name)
 
 	if (exports.semantics.hasOwnProperty(opts.name)) {
 		util.logErrorAndPath('Duplicate Semantic:', opts.name)

@@ -1,5 +1,6 @@
 var util = require('../util')
 var g = require('./grammar')
+var stringUtil = require('./stringUtil')
 
 
 exports.entities = {}
@@ -29,7 +30,7 @@ exports.new = function (opts) {
 		throw 'ill-formed entity category'
 	}
 
-	var categoryName = '{' + opts.name.toLowerCase() + '}'
+	var categoryName = '{' + stringUtil.formatName(opts.name) + '}'
 
 	if (exports.creationLines.hasOwnProperty(categoryName)) {
 		util.logErrorAndPath('Duplicate entity category:', categoryName)

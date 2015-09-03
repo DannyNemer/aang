@@ -7,8 +7,6 @@ var symbol = require('./symbol')
 exports.newSymbol = symbol.new
 // Creates a new `Symbol` with a single binary nonterminal rule
 exports.newBinaryRule = symbol.newBinaryRule
-// Hyphenates variadic string arguments
-exports.hyphenate = symbol.hyphenate
 // The grammar
 var grammar = symbol.grammar
 
@@ -20,6 +18,9 @@ exports.emptySymbol = '<empty>'
 
 // The terminal symbol for integers. Terminal rules with <int> are assigned minimum and maximum values.
 exports.intSymbol = '<int>'
+
+// Concatenates variadic string arguments (including `Symbol.name`) with dashes
+exports.hyphenate = require('./stringUtil').hyphenate
 
 // Extend `Symbol` with functions for predefined sets of rules (e.g., verbs, stop words)
 require('./ruleFunctions')

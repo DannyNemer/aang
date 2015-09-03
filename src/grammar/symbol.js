@@ -1,5 +1,6 @@
 var util = require('../util')
 var g = require('./grammar')
+var stringUtil = require('./stringUtil')
 var semantic = require('./semantic')
 var entityCategory = require('./entityCategory')
 
@@ -20,7 +21,7 @@ exports.new = function () {
 // Constructor for nonterminal symbols
 // Concatenates arguments as Symbol's name
 function Symbol() {
-	this.name = '[' + exports.hyphenate.apply(null, arguments).toLowerCase() + ']'
+	this.name = '[' + stringUtil.formatName(stringUtil.hyphenate.apply(null, arguments)) + ']'
 
 	if (exports.grammar.hasOwnProperty(this.name)) {
 		util.logErrorAndPath('Duplicate Symbol:', this.name)
@@ -256,18 +257,4 @@ Symbol.prototype.calcCost = function (costPenalty) {
 
 	// Cost of rules for each sym are incremented by 1e-7
 	return this.rules.length * 1e-7 + costPenalty
-}
-
-// Concatenate variadic arguments with hyphens
-// Used by Symbol and Semantic
-exports.hyphenate = function () {
-	var chunks = Array.prototype.slice.call(arguments)
-
-	if (chunks.indexOf(undefined) !== -1) {
-		util.logErrorAndPath('undefined String in name:', chunks)
-		throw 'ill-formed name'
-	}
-
-	// Concatenate arguments for name; remove brackets from passed Strings (i.e., Symbol names)
-	return chunks.join('-').replace(/[\[\]]/g, '')
 }
