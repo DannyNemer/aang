@@ -9,14 +9,14 @@ var fs = require('fs')
 var util = require('util')
 
 /**
- * Checks if options object `opts` adheres to `schema`. Simulates static function arguments (i.e., type checking and parameter count). Prints descriptive, helpful errors when `opts` is ill-formed.
+ * Checks if options object `options` adheres to `schema`. Simulates static function arguments (i.e., type checking and parameter count). Prints descriptive, helpful errors when `options` is ill-formed.
  *
  * @static
  * @memberOf dantil
  * @category Utility
- * @param {Object} schema The definition of required and optional properties for `opts`.
- * @param {Object} opts The options object to check for conformity to `schema`.
- * @returns {boolean} Returns `true` if `opts` is ill-formed, else `false`.
+ * @param {Object} schema The definition of required and optional properties for `options`.
+ * @param {Object} options The options object to check for conformity to `schema`.
+ * @returns {boolean} Returns `true` if `options` is ill-formed, else `false`.
  * @example
  *
  * var schema = {
@@ -27,37 +27,37 @@ var util = require('util')
  *   val: [ 'red', 'yellow', 'blue' ]              // Must be one of predefined values
  * }
  *
- * function myFunc(opts) {
- *   if (dantil.illFormedOpts(schema, opts)) {
+ * function myFunc(options) {
+ *   if (dantil.illFormedOpts(schema, options)) {
  *     // => Prints descriptive, helpful error messages
  *
- *     // Handle ill-formed `opts` how you choose
- *     throw new Error('ill-formed opts')
+ *     // Handle ill-formed `options` how you choose
+ *     throw new Error('ill-formed options')
  *   }
  *
  *   // ...stuff...
  * }
  */
-exports.illFormedOpts = function (schema, opts) {
-	// Check if missing an opts parameter required by schema.
+exports.illFormedOpts = function (schema, options) {
+	// Check if missing an options parameter required by schema.
 	for (var prop in schema) {
 		var val = schema[prop]
 
-		if (!val.optional && !opts.hasOwnProperty(prop)) {
+		if (!val.optional && !options.hasOwnProperty(prop)) {
 			exports.logErrorAndPath('Missing \'' + prop + '\' property')
 			return true
 		}
 	}
 
 	// Check if passed parameters conform to schema.
-	for (var prop in opts) {
+	for (var prop in options) {
 		// Unrecognized property.
 		if (!schema.hasOwnProperty(prop)) {
 			exports.logErrorAndPath('Unrecognized property:', prop)
 			return true
 		}
 
-		var optsVal = opts[prop]
+		var optsVal = options[prop]
 		var schemaVal = schema[prop]
 		var schemaPropType = schemaVal.type || schemaVal
 
@@ -472,9 +472,9 @@ exports.dir = function () {
  *
  * @private
  * @param {Object} args The `arguments` object (passed to the callee) with the values to print.
- * @param {Object} opts The options object defined for `util.inspect()`.
+ * @param {Object} options The options object defined for `util.inspect()`.
  */
-function prettyPrint(args, opts) {
+function prettyPrint(args, options) {
 	var formattedArgs = []
 	var indent = '  '
 
@@ -483,7 +483,7 @@ function prettyPrint(args, opts) {
 
 		// Print strings passed as arguments (i.e., not Object properties) without styling.
 		// - This also preserves any already-stylized arguments.
-		var formattedArg = typeof arg === 'string' ? arg : stylize(arg, opts)
+		var formattedArg = typeof arg === 'string' ? arg : stylize(arg, options)
 
 		// Print objects on separate lines if multi-lined when formatted
 		if (i === 0) {
@@ -527,15 +527,15 @@ function prettyPrint(args, opts) {
  *
  * @private
  * @param {*} object The object or value to stylize.
- * @param {Object} opts The options object defined for `util.inspect()`.
+ * @param {Object} options The options object defined for `util.inspect()`.
  * @returns {string} Returns a stylized string representation of `object`.
  */
-function stylize(object, opts) {
+function stylize(object, options) {
 	if (!exports.colors.supportsColor) {
-		opts.colors = false
+		options.colors = false
 	}
 
-	return util.inspect(object, opts)
+	return util.inspect(object, options)
 }
 
 /**
