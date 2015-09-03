@@ -11,8 +11,8 @@ exports.new = function (opts) {
 	opts.name = stringUtil.formatName(opts.name)
 
 	if (exports.semantics.hasOwnProperty(opts.name)) {
-		util.logErrorAndPath('Duplicate Semantic:', opts.name)
-		throw 'duplicate Semantic'
+		util.logErrorAndPath('Duplicate semantic:', opts.name)
+		throw new Error('Duplicate semantic')
 	}
 
 	return opts.isArg ? newSemanticArg(opts) : newSemanticFunc(opts)
@@ -34,12 +34,12 @@ var semanticFuncOptsSchema = {
 // Create a new semantic function from passed opts
 function newSemanticFunc(opts) {
 	if (util.illFormedOpts(semanticFuncOptsSchema, opts)) {
-		throw 'ill-formed Semantic function'
+		throw new Error('Ill-formed semantic function')
 	}
 
 	if (opts.minParams > opts.maxParams) {
 		util.logErrorAndPath('Semantic minParams > maxParams:', opts)
-		throw 'ill-formed Semantic function'
+		throw new Error('Ill-formed semantic function')
 	}
 
 	var semantic = exports.semantics[opts.name] = {
@@ -70,7 +70,7 @@ var semanticArgOptsSchema = {
 // Create a new semantic argument from passed opts
 function newSemanticArg(opts) {
 	if (util.illFormedOpts(semanticArgOptsSchema, opts)) {
-		throw 'ill-formed Semantic argument'
+		throw new Error('Ill-formed semantic argument')
 	}
 
 	var semantic = exports.semantics[opts.name] = {
@@ -223,11 +223,16 @@ exports.reduce = function (lhs, rhs) {
 	if (rhsLen === 1 && lhsSemantic.name === 'intersect') return rhs
 
 	if (rhsLen < lhsSemantic.minParams) {
-		throw 'semantic.reduce: rhs.length < minParams'
+		throw new Error('semantic.reduce: rhs.length < minParams')
 		return -1
 	} else if (rhsLen > lhsSemantic.maxParams) {
-		if (lhsSemantic.maxParams > 1) throw 'semantic.reduce: rhsLen > lhs.maxParams && lhs.maxParams > 1'
-		if (lhsSemantic.forbidsMultiple) throw 'semantic.reduce: rhsLen > lhs.maxParams && lhs.forbidsMultiple'
+		if (lhsSemantic.maxParams > 1) {
+			throw new Error('semantic.reduce: rhsLen > lhs.maxParams && lhs.maxParams > 1')
+		}
+
+		if (lhsSemantic.forbidsMultiple) {
+			throw new Error('semantic.reduce: rhsLen > lhs.maxParams && lhs.forbidsMultiple')
+		}
 
 		// Copy lhs semantic for each rhs
 		// "repos liked by me and my followers" -> copy "repos-liked()" for each child

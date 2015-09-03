@@ -16,7 +16,7 @@ var pronounOptsSchema = {
 // Add all terminal symbols for a pronoun to the grammar; ex: "I", "me"
 Symbol.prototype.addPronoun = function (opts) {
 	if (util.illFormedOpts(pronounOptsSchema, opts)) {
-		throw 'ill-formed pronoun'
+		throw new Error('Ill-formed pronoun')
 	}
 
 	var pronoun = opts.symbol
@@ -65,24 +65,24 @@ var verbOptSchema = {
 // Only used in nominative case; ex: "people [nom-users] follow/follows"
 Symbol.prototype.addVerb = function (opts) {
 	if (util.illFormedOpts(verbOptSchema, opts)) {
-		throw 'ill-formed verb'
+		throw new Error('Ill-formed verb')
 	}
 
 	// Must have an inflected form for every person-number combination in nominative case:
 	// - first-person, third-person-singular, plural
 	if (!opts.oneOrPl && !opts.oneOrThreeSg && !opts.one) {
 		util.logErrorAndPath('Missing inflected verb form for first-person')
-		throw 'ill-formed verb'
+		throw new Error('Ill-formed verb')
 	}
 
 	if (!opts.oneOrPl && !opts.pl) {
 		util.logErrorAndPath('Missing inflected verb form for plural')
-		throw 'ill-formed verb'
+		throw new Error('Ill-formed verb')
 	}
 
 	if (!opts.oneOrThreeSg && !opts.threeSg) {
 		util.logErrorAndPath('Missing inflected verb form for third-person-singular')
-		throw 'ill-formed verb'
+		throw new Error('Ill-formed verb')
 	}
 
 	// Object of inflection forms for conjugation
@@ -212,7 +212,7 @@ var stopWordOptSchema = {
 // Add a stop-word to the grammar - replaces terminal symbols with an empty-string
 Symbol.prototype.addStopWord = function (opts) {
 	if (util.illFormedOpts(stopWordOptSchema, opts)) {
-		throw 'ill-formed stop-word'
+		throw new Error('Ill-formed stop-word')
 	}
 
 	// Accepted terminal symbol is an empty-string
@@ -238,20 +238,20 @@ var wordOptsSchema = {
 // Add a set of terminal symbols to the grammar
 Symbol.prototype.addWord = function (opts) {
 	if (util.illFormedOpts(wordOptsSchema, opts)) {
-		throw 'ill-formed word'
+		throw new Error('Ill-formed word')
 	}
 
 	if (opts.accepted.indexOf(g.emptySymbol) !== -1) {
 		util.logError('Words cannot have <empty> strings:', opts.name)
 		console.log('Only stop-words or opt-terms can have <empty> strings')
 		console.log('  ' + util.getModuleCallerPathAndLineNumber())
-		throw 'ill-formed word'
+		throw new Error('Ill-formed word')
 	}
 
 	// Opt-words cannot have insertion costs
 	if (opts.optional && opts.insertionCost !== undefined) {
 		util.logErrorAndPath('Optional words cannot have insertion costs:', opts.name)
-		throw 'ill-formed opt-word'
+		throw new Error('Ill-formed opt-word')
 	}
 
 	// Optional terminal rule: rule can be omitted from input by accepting empty-string without penalty
@@ -296,13 +296,13 @@ var intOptsSchema = {
 // Create a terminal rule to for integers within an accepted range
 Symbol.prototype.addInt = function (opts) {
 	if (util.illFormedOpts(intOptsSchema, opts)) {
-		throw 'ill-formed <int> symbol'
+		throw new Error('Ill-formed <int> Symbol')
 	}
 
 	// If defined, maximum value must be greater than minimum value
 	if (opts.min >= opts.max) {
 		util.logErrorAndPath('<int> max value must be greater than min value:', 'min: ' + opts.min + ', max: ' + opts.max)
-		throw 'ill-formed <int> symbol'
+		throw new Error('Ill-formed <int> Symbol')
 	}
 
 	this.addRule({

@@ -25,7 +25,7 @@ function Symbol() {
 
 	if (exports.grammar.hasOwnProperty(this.name)) {
 		util.logErrorAndPath('Duplicate Symbol:', this.name)
-		throw 'duplicate Symbol'
+		throw new Error('Duplicate Symbol')
 	}
 
 	this.rules = exports.grammar[this.name] = []
@@ -47,7 +47,7 @@ Symbol.prototype.addRule = function (opts) {
 
 	if (this.ruleExists(newRule)) {
 		util.logErrorAndPath('Duplicate rule:', this.name, '->', newRule.RHS)
-		throw 'duplicate rule'
+		throw new Error('Duplicate rule')
 	}
 
 	this.rules.push(newRule)
@@ -73,7 +73,7 @@ var termRuleOptsSchema = {
 // Create a new terminal rule from passed opts
 Symbol.prototype.newTerminalRule = function (opts) {
 	if (util.illFormedOpts(termRuleOptsSchema, opts)) {
-		throw 'ill-formed terminal rule'
+		throw new Error('Ill-formed terminal rule')
 	}
 
 	var newRule = {
@@ -110,24 +110,24 @@ Symbol.prototype.newTerminalRule = function (opts) {
 		util.logError('Terminal rules can only hold complete (RHS) semantics:', this.name, '->', newRule.RHS)
 		util.dir(opts.semantic)
 		console.log('  ' + util.getModuleCallerPathAndLineNumber())
-		throw 'ill-formed terminal rule'
+		throw new Error('Ill-formed terminal rule')
 	}
 
 	// <empty>, <int>, and entities cannot have predefined display text
 	if (newRule.text) {
 		if (opts.RHS === g.emptySymbol || opts.RHS === g.intSymbol) {
 			util.logErrorAndPath(opts.RHS + ' cannot have predefined display text:', this.name, '->', newRule.RHS)
-			throw 'ill-formed terminal rule'
+			throw new Error('Ill-formed terminal rule')
 		} else if (entityCategory.creationLines.hasOwnProperty(opts.RHS)) {
 			util.logErrorAndPath('Entities cannot have predefined display text:', this.name, '->', newRule.RHS)
-			throw 'ill-formed terminal rule'
+			throw new Error('Ill-formed terminal rule')
 		}
 	}
 
 	// intMin and intMax can only be used with <int>
 	if (opts.RHS !== g.intSymbol && (opts.intMin !== undefined || opts.intMax !== undefined)) {
 		util.logErrorAndPath('\'intMin\' and \'intMax\' can only be used with ' + g.intSymbol + ':', this.name, '->', newRule.RHS)
-		throw 'ill-formed terminal rule'
+		throw new Error('Ill-formed terminal rule')
 	}
 
 	return newRule
@@ -148,7 +148,7 @@ var nontermRuleOptsSchema = {
 // Create a new nonterminal rule from passed opts
 Symbol.prototype.newNonterminalRule = function (opts) {
 	if (util.illFormedOpts(nontermRuleOptsSchema, opts)) {
-		throw 'ill-formed nonterminal rule'
+		throw new Error('Ill-formed nonterminal rule')
 	}
 
 	var newRule = {
@@ -167,7 +167,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 
 			else {
 				util.logErrorAndPath('\'RHS\' not an array of type Symbol or Array:', opts.RHS)
-				throw 'ill-formed nonterminal rule'
+				throw new Error('Ill-formed nonterminal rule')
 			}
 		}),
 		gramCase: opts.gramCase,
@@ -183,13 +183,13 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 
 	if (opts.RHS.length > 2) {
 		util.logErrorAndPath('Nonterminal rules can only have 1 or 2 RHS symbols:', this.name, '->', newRule.RHS)
-		throw 'ill-formed nonterminal rule'
+		throw new Error('Ill-formed nonterminal rule')
 	}
 
 	if (opts.transpositionCost !== undefined) {
 		if (opts.RHS.length !== 2) {
 			util.logErrorAndPath('Nonterminal rules with transposition costs must have 2 RHS symbols:', this.name, '->', newRule.RHS)
-			throw 'ill-formed nonterminal rule'
+			throw new Error('Ill-formed nonterminal rule')
 		}
 
 		newRule.transpositionCost = opts.transpositionCost
@@ -207,7 +207,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 // - However, these sub-rules can only contain a RHS and no other rule properties
 exports.newBinaryRule = function (opts) {
 	if (util.illFormedOpts(nontermRuleOptsSchema, opts)) {
-		throw 'ill-formed binary rule'
+		throw new Error('Ill-formed binary rule')
 	}
 
 	var RHS = opts.RHS
@@ -215,7 +215,7 @@ exports.newBinaryRule = function (opts) {
 	// RHS must contain two RHS symbols
 	if (RHS.length !== 2) {
 		util.logErrorAndPath('Binary rules must have 2 RHS symbols:', RHS)
-		throw 'ill-formed binary rule'
+		throw new Error('Ill-formed binary rule')
 	}
 
 	// RHS can be an array of Symbols and/or nested arrays of RHS for new binary rules
@@ -228,7 +228,7 @@ exports.newBinaryRule = function (opts) {
 
 		else if (sym.constructor !== Symbol) {
 			util.logErrorAndPath('RHS not an array of type Symbol or Array:', RHS)
-			throw 'ill-formed binary rule'
+			throw new Error('Ill-formed binary rule')
 		}
 	})
 

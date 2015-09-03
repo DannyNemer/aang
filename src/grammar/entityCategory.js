@@ -27,14 +27,14 @@ var entityCategoryOptsSchema = {
 
 exports.new = function (opts) {
 	if (util.illFormedOpts(entityCategoryOptsSchema, opts)) {
-		throw 'ill-formed entity category'
+		throw new Error('Ill-formed entity category')
 	}
 
 	var categoryName = '{' + stringUtil.formatName(opts.name) + '}'
 
 	if (exports.creationLines.hasOwnProperty(categoryName)) {
 		util.logErrorAndPath('Duplicate entity category:', categoryName)
-		throw 'duplicate entity category'
+		throw new Error('Duplicate entity category')
 	}
 
 	// Save calling line for error reporting
@@ -50,7 +50,7 @@ exports.new = function (opts) {
 			var otherEntity = newEntities[j]
 			if (entityKey === otherEntity) {
 				util.logErrorAndPath('Duplicate entity:', categoryName, '->', i + ': ' + entity + ',', j + ': ' + otherEntity)
-				throw 'duplicate entity'
+				throw new Error('Duplicate entity')
 			}
 		}
 

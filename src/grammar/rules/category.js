@@ -21,7 +21,7 @@ exports.new = function (opts) {
 // Create base rules for a category
 function Category(opts) {
 	if (util.illFormedOpts(categoryOptsSchema, opts)) {
-		throw 'ill-formed Category'
+		throw new Error('Ill-formed symbol category')
 	}
 
 	this.nameSg = opts.sg
