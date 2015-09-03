@@ -1,5 +1,5 @@
 // Add new rules to grammar based on edit properties in existing rules:
-//   Empty-string - rules that produce empty-strings (i.e., optional)
+//   Empty strings - rules that produce empty strings (i.e., optional)
 //   Insertions - inserting terminal symbols
 //   Transposition - swapped RHS of nonterminal rules
 // Recursively remove nonterminal symbols with no rules, rules whose RHS containing those symbols or the <empty> symbol, and any rule-less nonterminal symbols that result
@@ -12,7 +12,7 @@ var semantic = require('./semantic')
 
 
 module.exports = function (grammar) {
-	// Symbols that produce terminal symbols with insertion costs or empty-strings
+	// Symbols that produce terminal symbols with insertion costs or empty strings
 	var insertions = {}
 
 	findTermRuleInsertions(grammar, insertions)
@@ -32,13 +32,13 @@ module.exports = function (grammar) {
 	createRulesFromTranspositions(grammar)
 }
 
-// Find all terminal rules with insertion costs or <empty>
+// Finds all terminal rules with insertion costs or <empty>
 function findTermRuleInsertions(grammar, insertions) {
 	Object.keys(grammar).forEach(function (nontermSym) {
 		grammar[nontermSym].forEach(function (rule) {
 			if (rule.isTerminal) {
 				var termSym = rule.RHS[0]
-				if (termSym === g.emptySymbol) { // Empty-string
+				if (termSym === g.emptySymbol) { // Empty string
 					addInsertion(insertions, nontermSym, {
 						cost: rule.cost,
 						// Yet to use with text
@@ -60,7 +60,7 @@ function findTermRuleInsertions(grammar, insertions) {
 	})
 }
 
-// Find sequences of syms that produce inserted terminal symbols or empty-strings
+// Finds sequences of syms that produce inserted terminal symbols or empty strings
 function findNontermRulesProducingInsertions(grammar, insertions) {
 	var curInsertionsSerial = JSON.stringify(insertions)
 	var prevInsertionsSerial
@@ -148,7 +148,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 	} while (prevInsertionsSerial !== (curInsertionsSerial = JSON.stringify(insertions)))
 }
 
-// Every sym in `RHS` is a terminal symbol with an insertion cost, an empty-string, or a nonterminal symbol that produces a sequence of the these
+// Every sym in `RHS` is a terminal symbol with an insertion cost, an empty string, or a nonterminal symbol that produces a sequence of the these
 function RHSCanBeInserted(insertions, RHS) {
 	return RHS.every(function (sym) {
 		return insertions.hasOwnProperty(sym)
@@ -192,7 +192,7 @@ function insertionExists(symInsertions, newInsertion) {
 	return false
 }
 
-// Add new rules from inserted terminal symbols and empty-strings
+// Add new rules from inserted terminal symbols and empty strings
 function createRulesFromInsertions(grammar, insertions) {
 	Object.keys(grammar).forEach(function (lhsSym) {
 		// true for all except: [nom-users-or-author-pages+] [obj-users-penalize-1+] [user-filter+]
@@ -217,19 +217,21 @@ function createRulesFromInsertions(grammar, insertions) {
 
 							if (insertion.semantic) {
 								if (rule.semanticIsRHS) {
-									newRule.semanticIsRHS = true
 									newRule.semantic = semantic.mergeRHS(rule.semantic, insertion.semantic)
 									if (newRule.semantic === -1) return
+									newRule.semanticIsRHS = true
 								} else if (rule.semantic) {
+									// `semantic` is a LHS and inserted semantics are always RHS
 									newRule.semantic = rule.semantic
 									newRule.insertedSemantic = insertion.semantic
 								} else {
-									newRule.semanticIsRHS = true
+									// Inserted semantics are always RHS
 									newRule.semantic = insertion.semantic
+									newRule.semanticIsRHS = true
 								}
 							} else {
-								newRule.semanticIsRHS = rule.semanticIsRHS
 								newRule.semantic = rule.semantic
+								newRule.semanticIsRHS = rule.semanticIsRHS
 							}
 
 							// Discard rule if lacks and cannot produce a RHS semantic needed by this rule or an ancestor
@@ -248,7 +250,7 @@ function createRulesFromInsertions(grammar, insertions) {
 							// Otherwise, the property is for when this lhsSym is used in a reduction (not this text)
 							newRule.personNumber = symIdx === 0 ? (rule.personNumber || insertion.personNumber) : rule.personNumber
 
-							// Empty-strings do not produce text
+							// Empty strings do not produce text
 							if (insertion.text[0]) {
 								newRule.insertionIdx = symIdx
 
@@ -347,9 +349,9 @@ function conjugateText(insertionText, ruleProps) {
 	}, [])
 }
 
-// Throw err if new rule generated from insertion(s), empty-string(s), or a transposition is a duplicate of an existing rule
+// Throw err if new rule generated from insertion(s), empty string(s), or a transposition is a duplicate of an existing rule
 // If new rule has identical semantics and RHS but is cheaper than previous new rule, remove previous rule
-function ruleExists(rules, newRule, LHS) {
+function ruleExists(rules, newRule, lhsSym) {
 	for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 		var existingRule = rules[r]
 
@@ -361,7 +363,7 @@ function ruleExists(rules, newRule, LHS) {
 					util.logError('New rule produced with edits identical to original rule:')
 				}
 
-				util.dir(LHS, existingRule, newRule)
+				util.dir(lhsSym, existingRule, newRule)
 				throw 'duplicate rule produced with edits'
 			}
 
@@ -423,7 +425,7 @@ function removeNullNonterminalSymbols(grammar) {
 }
 
 
-// Throw an error if a default (non-edit) rule lacks and cannot produce a needed RHS semantic
+// Throws an error if a default (non-edit) rule lacks and cannot produce a needed RHS semantic
 function checkForSemanticErrors(grammar) {
 	for (var nontermSym in grammar) {
 		var rules = grammar[nontermSym]
