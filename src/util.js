@@ -529,6 +529,29 @@ function format(args, options) {
 }
 
 /**
+ * Formats `object` in color for pretty-printing, recursing `options.number` times while formatting. This is identical to Node's `util.inspect()`, but disables colors if the terminal does not support color.
+ *
+ * @static
+ * @category Console
+ * @param {*} object The object or value to stylize.
+ * @param {Object} [options] The options object.
+ * @param {number} [options.depth=2] The number of times to recurse while formating `object`. Pass `null` to recurse indefinitely.
+ * @returns {string} Returns a stylized string representation of `object`.
+ */
+exports.stylize = function (object, options) {
+	if (!options) {
+		options = {}
+	}
+
+	// Print in color if the terminal supports color.
+	if (options.colors !== false) {
+		options.colors = exports.colors.supportsColor
+	}
+
+	return util.inspect(object, options)
+}
+
+/**
  * Prints the provided values like `dantil.log()` prepended with red-colored "Error: ".
  *
  * @static
@@ -744,8 +767,7 @@ exports.assertEqual = function (value, other, message) {
 		if (message) {
 			exports.log(label, message)
 		} else {
-			var formatOpts = { stylizeStings: true }
-			exports.log(label, format([ value ], formatOpts), '==', format([ other ], formatOpts))
+			exports.log(label, exports.stylize(value), '==', exports.stylize(other))
 		}
 
 		exports.log('  ' + exports.getPathAndLineNumber())
