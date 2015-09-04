@@ -432,7 +432,7 @@ exports.expandHomeDir = function (path) {
  *
  * Prints objects on separate lines if multi-lined when formatted, else concatenates values and objects to print on the same line.
  *
- * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
+ * If the first argument is an object with a multi-line string representation when formatted, aligns all remaining values and objects. Otherwise, and most often, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @static
  * @memberOf dantil
@@ -468,15 +468,17 @@ exports.dir = function () {
  *
  * Prints objects on separate lines if multi-lined when formatted, else concatenates values and objects to print on the same line.
  *
- * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
+ * If the first argument is an object with a multi-line string representation when formatted, aligns all remaining values and objects. Otherwise, and most often, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @private
  * @param {Object} args The `arguments` object (passed to the callee) with the values and objects to print.
  * @param {Object} options The options object defined for `util.inspect()`.
  */
 function prettyPrint(args, options) {
-	var formattedArgs = []
+	// Use `RegExp()` to get correct `reMultiLined.source`.
+	var reMultiLined = RegExp(',\n', 'g')
 	var indent = '  '
+	var formattedArgs = []
 
 	Array.prototype.slice.call(args).forEach(function (arg, i, args) {
 		var prevArg = args[i - 1]
@@ -485,7 +487,6 @@ function prettyPrint(args, options) {
 		// - This also preserves any already-stylized arguments.
 		var formattedArg = typeof arg === 'string' ? arg : stylize(arg, options)
 
-		// Print objects on separate lines if multi-lined when formatted
 		if (i === 0) {
 			// Extend indent for successive lines with the first argument's leading whitespace, if any.
 			if (typeof arg === 'string') {
@@ -497,17 +498,21 @@ function prettyPrint(args, options) {
 
 				// JavaScript will not properly indent if '\t' is appended to spaces (i.e., reverse order as here).
 				indent = arg + indent
+			} else if (reMultiLined.test(formattedArg)) {
+				// Do not indent if the first argument is multi-lined when formatted.
+				indent = ''
 			}
 
 			formattedArgs.push(formattedArg)
-		} else if (/,\n/.test(formattedArg)) {
+		} else if (reMultiLined.test(formattedArg)) {
+			// Print objects on separate lines if multi-lined when formatted.
 			// Indent lines after the first line.
-			formattedArgs.push(indent + formattedArg.replace(/,\n/g, ',\n' + indent))
+			formattedArgs.push(indent + formattedArg.replace(reMultiLined, reMultiLined.source + indent))
 		} else {
 			var prevFormattedArgIdx = formattedArgs.length - 1
 			var prevFormattedArg = formattedArgs[prevFormattedArgIdx]
 
-			if (/,\n/.test(prevFormattedArg)) {
+			if (reMultiLined.test(prevFormattedArg)) {
 				// Indent lines after the first line.
 				formattedArgs.push(indent + formattedArg)
 			} else {
