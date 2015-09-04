@@ -430,9 +430,9 @@ exports.expandHomeDir = function (path) {
 /**
  * Pretty-prints the provided values and objects in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
  *
- * Prints objects on separate lines if multi-lined when formatted, else concatenates values and objects to print on the same line.
+ * Prints instances of `Object` on separate lines. Concatenates and prints all other successive values on the same line.
  *
- * If the first argument is an object with a multi-line string representation when formatted, aligns all remaining values and objects. Otherwise, and most often, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
+ * If the first argument is an instance of `Object`, left-aligns all remaining lines. Otherwise, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @static
  * @memberOf dantil
@@ -464,11 +464,11 @@ exports.dir = function () {
 }
 
 /**
- * Pretty-prints the provided values and objects in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
+ * Pretty-prints the provided values and objects in color, recursing `options.number` times while formatting objects.
  *
- * Prints objects on separate lines if multi-lined when formatted, else concatenates values and objects to print on the same line.
+ * Prints instances of `Object` on separate lines. Concatenates and prints all other successive values on the same line.
  *
- * If the first argument is an object with a multi-line string representation when formatted, aligns all remaining values and objects. Otherwise, and most often, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
+ * If the first argument is an instance of `Object`, left-aligns all remaining lines. Otherwise, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @private
  * @param {Object} args The `arguments` object (passed to the callee) with the values and objects to print.
@@ -481,8 +481,6 @@ function prettyPrint(args, options) {
 	var formattedArgs = []
 
 	Array.prototype.slice.call(args).forEach(function (arg, i, args) {
-		var prevArg = args[i - 1]
-
 		// Print strings passed as arguments (i.e., not Object properties) without styling.
 		// - This also preserves any already-stylized arguments.
 		var formattedArg = typeof arg === 'string' ? arg : stylize(arg, options)
@@ -498,27 +496,21 @@ function prettyPrint(args, options) {
 
 				// JavaScript will not properly indent if '\t' is appended to spaces (i.e., reverse order as here).
 				indent = arg + indent
-			} else if (reMultiLined.test(formattedArg)) {
-				// Do not indent if the first argument is multi-lined when formatted.
+			} else if (arg instanceof Object) {
+				// Do not indent if the first argument is an object.
 				indent = ''
 			}
 
 			formattedArgs.push(formattedArg)
-		} else if (reMultiLined.test(formattedArg)) {
-			// Print objects on separate lines if multi-lined when formatted.
-			// Indent lines after the first line.
+		} else if (arg instanceof Object) {
+			// Print all objects on separate lines.
 			formattedArgs.push(indent + formattedArg.replace(reMultiLined, reMultiLined.source + indent))
+		} else if (args[i - 1] instanceof Object) {
+			// Do not concatenate objects with other arguments.
+			formattedArgs.push(indent + formattedArg)
 		} else {
-			var prevFormattedArgIdx = formattedArgs.length - 1
-			var prevFormattedArg = formattedArgs[prevFormattedArgIdx]
-
-			if (reMultiLined.test(prevFormattedArg)) {
-				// Indent lines after the first line.
-				formattedArgs.push(indent + formattedArg)
-			} else {
-				// Concatenate all values and objects with one-line string representations.
-				formattedArgs[prevFormattedArgIdx] += ' ' + formattedArg
-			}
+			// Concatenate all successive primitive data types.
+			formattedArgs[formattedArgs.length - 1] += ' ' + formattedArg
 		}
 	})
 
