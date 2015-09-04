@@ -317,7 +317,7 @@ Parser.prototype.parse = function (query) {
 
 	this.vertTabs = []
 	this.vertTab = this.vertTabs[this.position] = []
-	this.addVertex(this.stateTable.shifts[0])
+	this.addVertex(this.stateTable.states[0])
 
 	while (true) {
 		// Terminal symbol matches who span ends at this index
@@ -505,7 +505,7 @@ Parser.prototype.nextState = function (state, sym) {
 	for (var s = 0, stateShiftsLen = stateShifts.length; s < stateShiftsLen; ++s) {
 		var shift = stateShifts[s]
 		if (shift.sym === sym) {
-			return this.stateTable.shifts[shift.stateIdx]
+			return this.stateTable.states[shift.stateIdx]
 		}
 	}
 }
@@ -652,13 +652,13 @@ Parser.prototype.printForest = function (startNode) {
 }
 
 Parser.prototype.printStack = function () {
-	var shifts = this.stateTable.shifts
+	var states = this.stateTable.states
 
 	console.log("\nParse Stack:")
 
 	this.vertTabs.forEach(function (vertTab) {
 		vertTab.forEach(function (vertex) {
-			var toPrint = ' v_' + vertex.start + '_' + shifts.indexOf(vertex.state)
+			var toPrint = ' v_' + vertex.start + '_' + states.indexOf(vertex.state)
 
 			if (vertex.zNodes.length > 0) toPrint += ' <=\t'
 			else console.log(toPrint)
@@ -669,7 +669,7 @@ Parser.prototype.printStack = function () {
 				toPrint += ' [' + printNode(zNode.node) + ' ] <='
 
 				zNode.vertices.forEach(function (subVertex) {
-					toPrint += ' v_' + subVertex.start + '_' + shifts.indexOf(subVertex.state)
+					toPrint += ' v_' + subVertex.start + '_' + states.indexOf(subVertex.state)
 				})
 
 				if (Z === vertex.zNodes.length - 1) console.log(toPrint)

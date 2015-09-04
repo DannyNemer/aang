@@ -5,7 +5,7 @@ module.exports = StateTable
 
 function StateTable(inputGrammar, startSymbolStr) {
 	this.symbolTab = {}
-	this.shifts = []
+	this.states = []
 
 	for (var nontermSym in inputGrammar) {
 		var LHS = this.lookUp(nontermSym)
@@ -276,7 +276,7 @@ StateTable.prototype.generate = function (startSym) {
 			return { sym: shift.sym, stateIdx: addState(ruleSets, shift.list) }
 		})
 
-		this.shifts.push(newState)
+		this.states.push(newState)
 	}
 
 	// Remove `index` property from because no longer needed
@@ -286,7 +286,7 @@ StateTable.prototype.generate = function (startSym) {
 }
 
 StateTable.prototype.print = function () {
-	this.shifts.forEach(function (state, S) {
+	this.states.forEach(function (state, S) {
 		util.log(util.colors.yellow(S) + ':')
 
 		if (state.isFinal) console.log('\taccept')
