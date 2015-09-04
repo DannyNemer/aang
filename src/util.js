@@ -441,7 +441,7 @@ exports.expandHomeDir = function (path) {
  */
 exports.log = function () {
 	if (arguments.length) {
-		prettyPrint(arguments, { colors: true })
+		console.log(format(arguments))
 	} else {
 		// Print a blank line when called with no arguments
 		console.log()
@@ -457,33 +457,44 @@ exports.log = function () {
  * @param {...*} values The values and objects to print.
  */
 exports.dir = function () {
-	prettyPrint(arguments, { depth: null, colors: true })
+	console.log(format(arguments, { depth: null }))
 
 	// Print trailing blank line
 	console.log()
 }
 
 /**
- * Pretty-prints the provided values and objects in color, recursing `options.number` times while formatting objects.
+ * Formats the provided values and objects in color for pretty-printing, recursing `options.number` times while formatting objects.
  *
- * Prints instances of `Object` on separate lines. Concatenates and prints all other successive values on the same line.
+ * Formats instances of `Object` on separate lines. Concatenates and formats all other successive values on the same line.
  *
  * If the first argument is an instance of `Object`, left-aligns all remaining lines. Otherwise, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @private
- * @param {Object} args The `arguments` object (passed to the callee) with the values and objects to print.
- * @param {Object} options The options object defined for `util.inspect()`.
+ * @param {Object} args The `arguments` object (passed to the callee) with the values and objects to format.
+ * @param {Object} [options] The options object.
+ * @param {number} [options.depth=2] The number of times to recurse while formating `args`. Pass `null` to recurse indefinitely.
+ * @param {number} [options.stylizeStings=false] Specify stylizing strings in `args`. This does not apply to `Object` properties.
+ * @returns {string} The formatted string.
  */
-function prettyPrint(args, options) {
+function format(args, options) {
+	if (!options) options = {}
+
+	var inspectOptions = {
+		// Number of times to recurse while formatting; defaults to 2.
+		depth: options.depth,
+		// Print in color if the terminal supports color.
+		colors: exports.colors.supportsColor,
+	}
+
 	// Use `RegExp()` to get correct `reMultiLined.source`.
 	var reMultiLined = RegExp(',\n', 'g')
 	var indent = '  '
-	var formattedArgs = []
 
-	Array.prototype.slice.call(args).forEach(function (arg, i, args) {
-		// Print strings passed as arguments (i.e., not Object properties) without styling.
+	return Array.prototype.slice.call(args).reduce(function (formattedArgs, arg, i, args) {
+		// Print strings passed as arguments (i.e., not `Object` properties) without styling.
 		// - This also preserves any already-stylized arguments.
-		var formattedArg = typeof arg === 'string' ? arg : stylize(arg, options)
+		var formattedArg = !options.stylizeStings && typeof arg === 'string' ? arg : util.inspect(arg, inspectOptions)
 
 		if (i === 0) {
 			// Extend indent for successive lines with the first argument's leading whitespace, if any.
@@ -512,27 +523,9 @@ function prettyPrint(args, options) {
 			// Concatenate all successive primitive data types.
 			formattedArgs[formattedArgs.length - 1] += ' ' + formattedArg
 		}
-	})
 
-	formattedArgs.forEach(function (formattedArg) {
-		console.log(formattedArg)
-	})
-}
-
-/**
- * Identical to `util.inspect()`, but disables colors if the terminal does not support color.
- *
- * @private
- * @param {*} object The object or value to stylize.
- * @param {Object} options The options object defined for `util.inspect()`.
- * @returns {string} Returns a stylized string representation of `object`.
- */
-function stylize(object, options) {
-	if (!exports.colors.supportsColor) {
-		options.colors = false
-	}
-
-	return util.inspect(object, options)
+		return formattedArgs
+	}, []).join('\n')
 }
 
 /**
@@ -751,9 +744,8 @@ exports.assertEqual = function (value, other, message) {
 		if (message) {
 			exports.log(label, message)
 		} else {
-			// Use `util.inspect()` to stylize strings.
-			var inspectOpts = { colors: true }
-			exports.log(label, stylize(value, inspectOpts), '==', stylize(other, inspectOpts))
+			var formatOpts = { stylizeStings: true }
+			exports.log(label, format([ value ], formatOpts), '==', format([ other ], formatOpts))
 		}
 
 		exports.log('  ' + exports.getPathAndLineNumber())
