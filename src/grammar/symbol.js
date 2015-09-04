@@ -76,6 +76,16 @@ Symbol.prototype.newTerminalRule = function (opts) {
 		throw new Error('Ill-formed terminal rule')
 	}
 
+	if (/[^\S ]/.test(opts.RHS)) {
+		util.logError('Terminal symbol contains a whitespace character other than a space:', util.stylize(opts.RHS), opts)
+		throw new Error('Ill-formed terminal rule')
+	}
+
+	if (/ {2,}/.test(opts.RHS)) {
+		util.logError('Terminal symbol contains a sequence of multiple spaces:', util.stylize(opts.RHS), opts)
+		throw new Error('Ill-formed terminal rule')
+	}
+
 	var newRule = {
 		RHS: [ opts.RHS.toLowerCase() ],
 		isTerminal: true,
