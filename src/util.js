@@ -430,7 +430,7 @@ exports.expandHomeDir = function (path) {
 /**
  * Pretty-prints the provided values and objects in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
  *
- * Prints objects on separate lines if multi-lined when formatted, else concatenates values and objects to print on the same line if less than 80 characters when concatenated.
+ * Prints objects on separate lines if multi-lined when formatted, else concatenates values and objects to print on the same line.
  *
  * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
@@ -466,7 +466,7 @@ exports.dir = function () {
 /**
  * Pretty-prints the provided values and objects in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
  *
- * Prints objects on separate lines if multi-lined when formatted, else concatenates values and objects to print on the same line if less than 80 characters when concatenated.
+ * Prints objects on separate lines if multi-lined when formatted, else concatenates values and objects to print on the same line.
  *
  * Equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
@@ -507,11 +507,11 @@ function prettyPrint(args, options) {
 			var prevFormattedArgIdx = formattedArgs.length - 1
 			var prevFormattedArg = formattedArgs[prevFormattedArgIdx]
 
-			// Concatenate other values and objects to print on the same line if less than 80 characters when  concatenated.
-			if (getStylizedStringLength(prevFormattedArg) + getStylizedStringLength(formattedArg) + 1 > 80) {
+			if (/,\n/.test(prevFormattedArg)) {
 				// Indent lines after the first line.
 				formattedArgs.push(indent + formattedArg)
 			} else {
+				// Concatenate all values and objects with one-line string representations.
 				formattedArgs[prevFormattedArgIdx] += ' ' + formattedArg
 			}
 		}
@@ -536,17 +536,6 @@ function stylize(object, options) {
 	}
 
 	return util.inspect(object, options)
-}
-
-/**
- * Gets the length of stylized `string` without the ANSI escape codes (for color and formatting).
- *
- * @private
- * @param {string} string The stylized string to measure.
- * @returns {number} Returns the length of `string` without ANSI escape codes.
- */
-function getStylizedStringLength(string) {
-	return exports.colors.stripColor(string).length
 }
 
 /**
