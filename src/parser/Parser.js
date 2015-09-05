@@ -505,7 +505,7 @@ Parser.prototype.nextState = function (state, sym) {
 	for (var s = 0, stateShiftsLen = stateShifts.length; s < stateShiftsLen; ++s) {
 		var shift = stateShifts[s]
 		if (shift.sym === sym) {
-			return this.stateTable.states[shift.stateIdx]
+			return shift.state
 		}
 	}
 }
