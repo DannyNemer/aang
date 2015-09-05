@@ -44,7 +44,7 @@ issue.passive.addRule({ RHS: [ opened, user.byObjUsers ], semantic: issuesOpened
 // (issues) I <stop> opened
 issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, opened ], semantic: issuesOpenedSemantic })
 // (issues) I <stop> have opened
-issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHave, opened ], semantic: issuesOpenedSemantic })
+issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHaveNoInsertion, opened ], semantic: issuesOpenedSemantic })
 // (people who) opened issues ...
 user.subjFilter.addRule({ RHS: [ opened, issue.catPl ], semantic: issuesOpenersSemantic })
 // (people who) have opened issues ... - not [issues+] because 'by'

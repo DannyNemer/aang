@@ -37,11 +37,11 @@ repository.passive.addRule({ RHS: [ github.created, user.byObjUsers ], semantic:
 // (repos) I <stop> created
 repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.created ], semantic: repositoriesCreatedSemantic })
 // (repos) I <stop> have created
-repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHave, github.created ], semantic: repositoriesCreatedSemantic })
-// (people who) created repos ...
+repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHaveNoInsertion, github.created ], semantic: repositoriesCreatedSemantic })
+// (people who) created repos...
 user.subjFilter.addRule({ RHS: [ github.created, repository.catPl ], semantic: repositoryCreatorsSemantic })
-// (people who) have created repos ... - not [repositories+] because 'by'
-user.subjFilter.addRule({ RHS: [ github.haveCreated, repository.catPl ], semantic: repositoryCreatorsSemantic, personNumber: 'pl' })
+// (people who) have created repos... - not [repositories+] because 'by'
+user.subjFilter.addRule({ RHS: [ github.haveNoInsertionCreated, repository.catPl ], semantic: repositoryCreatorsSemantic, personNumber: 'pl' })
 // creators of [repositories]
 user.head.addRule({ RHS: [ github.creatorsOf, repository.catPl ], semantic: repositoryCreatorsSemantic })
 
@@ -63,7 +63,7 @@ repository.passive.addRule({ RHS: [ like, user.byObjUsersPlus ], semantic: repos
 // (repos) I like
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, like ], semantic: repositoriesLikedSemantic })
 // (repos) I have liked
-repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHave, like ], semantic: repositoriesLikedSemantic, verbForm: 'past' })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertion, like ], semantic: repositoriesLikedSemantic, verbForm: 'past' })
 // (people who) like repos ...
 user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
 // (people who) have liked repos ...
@@ -94,7 +94,7 @@ repository.passive.addRule({ RHS: [ contributedTo, user.byObjUsersPlus ], semant
 // (repos) I <stop> contributed to
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, contributedTo ], semantic: repositoriesContributedSemantic })
 // (repos) I have contributed to
-repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHavePreVerbStopWords, contributedTo ], semantic: repositoriesContributedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertionPreVerbStopWords, contributedTo ], semantic: repositoriesContributedSemantic })
 // (people who) contributed to repos ...
 user.subjFilter.addRule({ RHS: [ contributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 // (people who) have contributed to repos ...
