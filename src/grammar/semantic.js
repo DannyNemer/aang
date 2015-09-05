@@ -216,7 +216,15 @@ exports.arraysEqual = function (a, b) {
 // - the lhs should always be empty
 // - We are assuming the lhs is always one function, not more than 1 where we intended to insert in the innermost
 exports.reduce = function (lhs, rhs) {
-	var lhsSemantic = lhs[0].semantic
+	lhs = lhs[0]
+	var lhsSemantic = lhs.semantic
+
+	if (lhs.children.length) {
+		// Insert 'rhs' at innermost semantic function and then rebuild the trees as unwrapping (duplicating if necessary)
+		// EX: not(repos-liked()) -> not(repos-liked(1), repos-liked(2)) -> not(repos-liked(1)), not(repos-liked(2))
+		rhs = exports.reduce(lhs.children, rhs)
+	}
+
 	var rhsLen = rhs.length
 
 	// If intersect with one semantic arg
