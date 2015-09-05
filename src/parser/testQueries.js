@@ -137,15 +137,25 @@ exports.basic = [
 	'repos I or Danny or my followers like',
 	'repos I or Danny and my followers like',
 	'repos I or Danny created',
-
 	'people never currently I follow',
+	'people I have',
+	'repos I have',
+	'repos been liked by me',
+	'people who not been followed by me',
+	'repos I contributed to',
+	'repos I to contributed to',
+	'repos I to created',
+	'repos I to have created',
+	'repos I and Danny have contributed to',
+	'repos I did create',
 
-	'followers my followers share',
-	'followers I and Danny have in common',
-	'followers I share', // intentionally wrong
-	'followers I share with Danny',
-	'followers I and Danny share with Aang',
-	'followers I and Danny share with Aang and my followers',
+	// 'followers my followers share',
+	// 'followers I and Danny have in common',
+	// 'followers I share', // intentionally wrong
+	// 'followers I share with Danny',
+	// 'followers I and Danny share with Aang',
+	// 'followers I and Danny share with Aang and my followers',
+
 	// 'followers Danny has in common with' // doesn't work
 	// 'repos danny by me', // intentionally wrong - requires implementation of deletions
 	// 'repos danny by me danny', // intentionally wrong - requires implementation of deletions
