@@ -279,14 +279,6 @@ StateTable.prototype.generate = function (startSym) {
 		this.states.push(newState)
 	}
 
-	// Map shifts to states
-	this.states.forEach(function (state, s, states) {
-		state.shifts.forEach(function (shift) {
-			shift.state = states[shift.stateIdx]
-			delete shift.stateIdx
-		})
-	})
-
 	// Remove `index` property from because no longer needed
 	for (var symName in this.symbolTab) {
 		delete this.symbolTab[symName].index
@@ -294,7 +286,7 @@ StateTable.prototype.generate = function (startSym) {
 }
 
 StateTable.prototype.print = function () {
-	this.states.forEach(function (state, S, states) {
+	this.states.forEach(function (state, S) {
 		util.log(util.colors.yellow(S) + ':')
 
 		if (state.isFinal) console.log('\taccept')
@@ -314,7 +306,7 @@ StateTable.prototype.print = function () {
 		})
 
 		state.shifts.forEach(function (shift) {
-			util.log('\t' + shift.sym.name, '=>', states.indexOf(shift.state))
+			util.log('\t' + shift.sym.name, '=>', shift.stateIdx)
 		})
 	})
 }
