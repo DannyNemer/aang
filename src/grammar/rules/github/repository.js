@@ -63,9 +63,7 @@ repository.passive.addRule({ RHS: [ like, user.byObjUsersPlus ], semantic: repos
 // (repos) I like
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, like ], semantic: repositoriesLikedSemantic })
 // (repos) I have liked
-var haveLiked = g.newSymbol('have', 'liked')
-haveLiked.addRule({ RHS: [ auxVerbs.have, like ], verbForm: 'past' })
-repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, haveLiked ], semantic: repositoriesLikedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHave, like ], semantic: repositoriesLikedSemantic, verbForm: 'past' })
 // (people who) like repos ...
 user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
 // (people who) have liked repos ...

@@ -4,6 +4,7 @@ var oneSg = require('./oneSg')
 var preps = require('./prepositions')
 var conjunctions = require('./conjunctions')
 var stopWords = require('./stopWords')
+var auxVerbs = require('./auxVerbs.js')
 
 
 // Merges this module with 'user' category
@@ -64,6 +65,10 @@ user.nomUsersPreVerbStopWords = g.newBinaryRule({ RHS: [ nomUsers, stopWords.pre
 // (repos) I <stop> (contributed to)
 user.nomUsersPlusPreVerbStopWords = g.newSymbol('nom', 'users', 'plus', stopWords.preVerb.name)
 user.nomUsersPlusPreVerbStopWords.addRule({ RHS: [ user.nomUsersPlus, stopWords.preVerb ] })
+
+// (repos) I have (liked)
+// The '+' character in the symbol name prevents the insertion of '[have]', preventing many semantically identical trees from being created, such as "repos I like" suggesting "repos I have liked".
+user.nomUsersPlusHave = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.have ] })
 
 
 var objUsers = g.newSymbol('obj', user.namePl)
