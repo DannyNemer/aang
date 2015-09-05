@@ -29,20 +29,21 @@ function StateTable(inputGrammar, startSymbolStr) {
 
 // Could seperate term/nonterm symbol tabs for faster term symbol lookup
 // Unclear about use of Index property - might need to wait until grammar is larger to properly test
-StateTable.prototype.lookUp = function (name, isLiteral, isPlaceholder) {
-	var sym = this.symbolTab[name]
-	if (sym && sym.isLiteral === isLiteral)
+StateTable.prototype.lookUp = function (symName, isLiteral, isPlaceholder) {
+	var sym = this.symbolTab[symName]
+	if (sym && sym.isLiteral === isLiteral) {
 		return sym
+	}
 
-	sym = this.symbolTab[name] = {
-		name: name, // Not needed in production (only debugging)
+	sym = this.symbolTab[symName] = {
+		name: symName, // Not needed in production (only debugging)
 		index: Object.keys(this.symbolTab).length,
 		rules: [],
 	}
 
 	if (isLiteral) {
 		sym.isLiteral = true
-		sym.size = name.split(' ').length
+		sym.size = symName.split(' ').length
 		// Prevent terminal symbol match with placeholder symbols: <int>, entities category names (e.g., {user})
 		if (isPlaceholder) sym.isPlaceholder = true
 	}
@@ -53,18 +54,18 @@ StateTable.prototype.lookUp = function (name, isLiteral, isPlaceholder) {
 function insertRule(sym, symBuf, origRule) {
 	var existingRules = sym.rules
 
-	for (var i = 0; i < existingRules.length; i++) {
-		var existingRule = existingRules[i]
+	for (var r = 0, existingRulesLen = existingRules.length; r < existingRulesLen; ++r) {
+		var existingRule = existingRules[r]
 		var existingRuleRHS = existingRule.RHS
 		var diff
 
-		for (var j = 0; symBuf[j] && existingRuleRHS[j]; j++) {
-			diff = symBuf[j].index - existingRuleRHS[j].index
+		for (var i = 0; symBuf[i] && existingRuleRHS[i]; ++i) {
+			diff = symBuf[i].index - existingRuleRHS[i].index
 			if (diff) break
 		}
 
-		if (diff === 0 && !existingRuleRHS[j]) {
-			if (!symBuf[j]) {
+		if (diff === 0 && !existingRuleRHS[i]) {
+			if (!symBuf[i]) {
 				// When multiple insertions exist for the same symbol with the same non-inserted RHS symbol, the `ruleProps` for those insertions are stored in an array for a single action in the state table, and hence a single node in the parse forest.
 				// assuming grammar rules are sorted by increasing cost
 				// assuming grammar doesn't have duplicates
@@ -79,7 +80,7 @@ function insertRule(sym, symBuf, origRule) {
 		}
 	}
 
-	existingRules.splice(i, 0, {
+	existingRules.splice(r, 0, {
 		RHS: symBuf, // for term syms, this is the LHS (that produces the term syms)
 		ruleProps: createRuleProps(origRule),
 	})
@@ -152,32 +153,36 @@ function createRuleProps(origRule) {
 	return ruleProps
 }
 
-function compItems(A, B) {
-	var diff = A.LHS ? (B.LHS ? A.LHS.index - B.LHS.index : 1) : (B.LHS ? -1 : 0)
+function compItems(a, b) {
+	var diff = a.LHS ? (b.LHS ? a.LHS.index - b.LHS.index : 1) : (b.LHS ? -1 : 0)
 	if (diff) return diff
 
-	diff = A.RHSIdx - B.RHSIdx
+	diff = a.RHSIdx - b.RHSIdx
 	if (diff) return diff
 
-	for (var i = 0; A.RHS[i] && B.RHS[i]; ++i) {
-		diff = A.RHS[i].index - B.RHS[i].index
+	for (var i = 0; a.RHS[i] && b.RHS[i]; ++i) {
+		diff = a.RHS[i].index - b.RHS[i].index
 		if (diff) break
 	}
 
-	return A.RHS[i] ? (B.RHS[i] ? diff : 1) : (B.RHS[i] ? -1 : 0)
+	return a.RHS[i] ? (b.RHS[i] ? diff : 1) : (b.RHS[i] ? -1 : 0)
 }
 
 function addState(ruleSets, newRuleSet) {
-	for (var S = 0; S < ruleSets.length; S++) {
-		var existingRuleSet = ruleSets[S]
-		if (existingRuleSet.length !== newRuleSet.length) continue
+	var newRuleSetLen = newRuleSet.length
 
-		for (var i = 0; i < existingRuleSet.length; ++i) {
+	for (var r = 0, ruleSetsLen = ruleSets.length; r < ruleSetsLen; ++r) {
+		var existingRuleSet = ruleSets[r]
+		var existingRuleSetLen = existingRuleSet.length
+
+		if (existingRuleSetLen !== newRuleSetLen) continue
+
+		for (var i = 0; i < existingRuleSetLen; ++i) {
 			if (compItems(existingRuleSet[i], newRuleSet[i]) !== 0) break
 		}
 
-		if (i >= existingRuleSet.length) {
-			return S
+		if (i >= existingRuleSetLen) {
+			return r
 		}
 	}
 
@@ -188,14 +193,14 @@ function addState(ruleSets, newRuleSet) {
 function addRule(items, rule) {
 	var existingRules = items.list
 
-	for (var i = 0; i < existingRules.length; i++) {
-		var diff = compItems(existingRules[i], rule)
+	for (var r = 0, existingRulesLen = existingRules.length; r < existingRulesLen; ++r) {
+		var diff = compItems(existingRules[r], rule)
 
 		if (diff === 0) return
 		if (diff > 0) break
 	}
 
-	existingRules.splice(i, 0, {
+	existingRules.splice(r, 0, {
 		LHS: rule.LHS,
 		RHS: rule.RHS,
 		RHSIdx: rule.RHSIdx,
@@ -234,12 +239,12 @@ StateTable.prototype.generate = function (startSym) {
 	var startRule = { RHS: [ startSym ], RHSIdx: 0 }
 	addState(ruleSets, [ startRule ])
 
-	for (var S = 0; S < ruleSets.length; S++) {
-		var ruleSet = ruleSets[S].slice()
+	for (var s = 0; s < ruleSets.length; ++s) {
+		var ruleSet = ruleSets[s].slice()
 		var XTab = []
 		var newState = { reds: [] }
 
-		for (var r = 0; r < ruleSet.length; r++) {
+		for (var r = 0; r < ruleSet.length; ++r) {
 			var rule = ruleSet[r]
 
 			if (!rule.RHS[rule.RHSIdx]) {
@@ -273,6 +278,7 @@ StateTable.prototype.generate = function (startSym) {
 		})
 
 		newState.shifts = XTab.map(function (shift) {
+			// Tests show it is >2x faster to get the state directly using its index rather than saving a pointer to the state.
 			return { sym: shift.sym, stateIdx: addState(ruleSets, shift.list) }
 		})
 
