@@ -361,6 +361,10 @@ exports.redirectOutputToFile = function (path, func) {
 	// Expand '~' if present.
 	path = exports.expandHomeDir(path)
 
+	// Disable ANSI escape codes for color and formatting in output.
+	var origSupportsColor = exports.colors.supportsColor
+	exports.colors.supportsColor = false
+
 	// Create file if does not exist, overwrite existing file if exists, or throw an error if `path` is a directory.
 	fs.writeFileSync(path)
 
@@ -378,12 +382,18 @@ exports.redirectOutputToFile = function (path, func) {
 		// Restore `process.stdout`.
 		process.stdout.write = oldWrite
 
+		// Re-enable output stylization.
+		exports.colors.supportsColor = origSupportsColor
+
 		exports.log('Output saved:', fs.realpathSync(path))
 
 		return returnVal
 	} catch (e) {
 		// Restore `process.stdout`.
 		process.stdout.write = oldWrite
+
+		// Re-enable output stylization.
+		exports.colors.supportsColor = origSupportsColor
 
 		throw e
 	}
