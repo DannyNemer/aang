@@ -6,7 +6,7 @@ exports.semantics = {}
 // A mapping of semantic names to creation lines; used for error reporting
 exports.creationLines = {}
 
-// Create a new semantic function or argument
+// Creates a new semantic function or argument
 exports.new = function (opts) {
 	opts.name = stringUtil.formatName(opts.name)
 
@@ -15,7 +15,12 @@ exports.new = function (opts) {
 		throw new Error('Duplicate semantic')
 	}
 
-	return opts.isArg ? newSemanticArg(opts) : newSemanticFunc(opts)
+	var semantic = opts.isArg ? newSemanticArg(opts) : newSemanticFunc(opts)
+
+	// Save instantiation path and line number for error reporting
+	exports.creationLines[opts.name] = util.getModuleCallerPathAndLineNumber()
+
+	return semantic
 }
 
 // Schema for semantic functions
@@ -50,9 +55,6 @@ function newSemanticFunc(opts) {
 		forbidsMultiple: opts.forbidMultiple,
 	}
 
-	// Save calling line for error reporting
-	exports.creationLines[opts.name] = util.getModuleCallerPathAndLineNumber()
-
 	return [ {
 		semantic: semantic,
 		children: [],
@@ -78,9 +80,6 @@ function newSemanticArg(opts) {
 		name: opts.name,
 		cost: opts.cost,
 	}
-
-	// Save calling line for error reporting
-	exports.creationLines[opts.name] = util.getModuleCallerPathAndLineNumber()
 
 	return [ {
 		semantic: semantic,
@@ -210,10 +209,9 @@ exports.arraysEqual = function (a, b) {
 }
 
 
-// Applies a completed semantic tree (`rhs`) to a more recent semantic (`lhs`), joining them together as semantic with `lhs` as the root function
+// Applies a completed semantic rule (`lhs` -> `rhs`) to a more recent semantic tree (`rhs`), joining them together as one semantic tree with `lhs` as the new root function
 // - lhs and rhs both always defined
-// - not slicing rhs here because did before
-// - the lhs should always be empty
+// - the lhs should always be able to insert a semantic
 // - We are assuming the lhs is always one function, not more than 1 where we intended to insert in the innermost
 exports.reduce = function (lhs, rhs) {
 	lhs = lhs[0]
@@ -228,12 +226,16 @@ exports.reduce = function (lhs, rhs) {
 	var rhsLen = rhs.length
 
 	// If intersect with one semantic arg
-	if (rhsLen === 1 && lhsSemantic.name === 'intersect') return rhs
+	if (rhsLen === 1 && lhsSemantic.name === 'intersect') {
+		return rhs
+	}
 
 	if (rhsLen < lhsSemantic.minParams) {
 		throw new Error('semantic.reduce: rhs.length < minParams')
 		return -1
-	} else if (rhsLen > lhsSemantic.maxParams) {
+	}
+
+	if (rhsLen > lhsSemantic.maxParams) {
 		if (lhsSemantic.maxParams > 1) {
 			throw new Error('semantic.reduce: rhsLen > lhs.maxParams && lhs.maxParams > 1')
 		}
@@ -254,14 +256,12 @@ exports.reduce = function (lhs, rhs) {
 		}
 
 		return newLHS
-	} else {
-		return [ {
-			semantic: lhsSemantic,
-			children: rhs.sort(compareSemantics),
-		} ]
 	}
 
-	return newLHS
+	return [ {
+		semantic: lhsSemantic,
+		children: rhs.sort(compareSemantics),
+	} ]
 }
 
 
