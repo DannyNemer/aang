@@ -44,13 +44,11 @@ issue.passive.addRule({ RHS: [ opened, user.byObjUsers ], semantic: issuesOpened
 // (issues) I <stop> opened
 issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, opened ], semantic: issuesOpenedSemantic })
 // (issues) I <stop> have opened
-var haveOpened = g.newSymbol('have', 'opened')
-haveOpened.addRule({ RHS: [ auxVerbs.have, opened ] })
-issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, haveOpened ], semantic: issuesOpenedSemantic })
+issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHave, opened ], semantic: issuesOpenedSemantic })
 // (people who) opened issues ...
 user.subjFilter.addRule({ RHS: [ opened, issue.catPl ], semantic: issuesOpenersSemantic })
 // (people who) have opened issues ... - not [issues+] because 'by'
-user.subjFilter.addRule({ RHS: [ haveOpened, issue.catPl ], semantic: issuesOpenersSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ [ auxVerbs.have, opened ], issue.catPl ], semantic: issuesOpenersSemantic, personNumber: 'pl' })
 
 var openersOf = g.newSymbol('openers', 'of')
 openersOf.addWord({

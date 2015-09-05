@@ -66,9 +66,11 @@ user.nomUsersPreVerbStopWords = g.newBinaryRule({ RHS: [ nomUsers, stopWords.pre
 user.nomUsersPlusPreVerbStopWords = g.newSymbol('nom', 'users', 'plus', stopWords.preVerb.name)
 user.nomUsersPlusPreVerbStopWords.addRule({ RHS: [ user.nomUsersPlus, stopWords.preVerb ] })
 
+// The '+' character in the symbol names prevent the insertion of '[have]', preventing many semantically identical trees from being created, such as "repos I like" suggesting "repos I have liked".
 // (repos) I have (liked)
-// The '+' character in the symbol name prevents the insertion of '[have]', preventing many semantically identical trees from being created, such as "repos I like" suggesting "repos I have liked".
 user.nomUsersPlusHave = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.have ] })
+// (repos) I have (contributed to)
+user.nomUsersPlusHavePreVerbStopWords = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.havePreVerbStopWords ]})
 
 
 var objUsers = g.newSymbol('obj', user.namePl)
