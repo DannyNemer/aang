@@ -71,6 +71,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 
 		Object.keys(grammar).forEach(function (nontermSym) {
 			grammar[nontermSym].forEach(function (rule) {
+				if (rule.preventInsertions) return
 				if (rule.RHS.length === 2 && /\+/.test(nontermSym)) return // TEMP
 				if (rule.transpositionCost !== undefined) return
 
@@ -200,6 +201,7 @@ function createRulesFromInsertions(grammar, insertions) {
 		// if (/lhs]/.test(lhsSym)) return
 
 		grammar[lhsSym].forEach(function (rule, ruleIdx, symRules) {
+			if (rule.preventInsertions) return
 			var RHS = rule.RHS
 			if (RHS.length > 1) {
 				RHS.forEach(function (sym, symIdx) {

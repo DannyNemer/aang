@@ -153,6 +153,8 @@ var nontermRuleOptsSchema = {
 	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
 	verbForm: { type: [ 'past' ], optional: true }, // "like" vs. "liked"
 	personNumber: { type: [ 'one', 'threeSg', 'pl' ], optional: true }, // "like" vs "likes"
+	// Prevent insertion rules from being created from this rule.
+	preventInsertions: { type: Boolean, optional: true },
 }
 
 // Create a new nonterminal rule from passed opts
@@ -183,6 +185,8 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 		gramCase: opts.gramCase,
 		verbForm: opts.verbForm,
 		personNumber: opts.personNumber,
+		// Prevent insertion rules from being created from this rule.
+		preventInsertions: opts.preventInsertions,
 	}
 
 	if (opts.semantic) {
