@@ -23,6 +23,7 @@ exports.created = g.newSymbol('created')
 exports.created.addWord({
 	insertionCost: 0.5,
 	accepted: [ 'created' ],
+	substitutions: [ 'create' ],
 })
 
 // (repos/pull-requests I) have created
