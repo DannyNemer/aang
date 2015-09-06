@@ -16,13 +16,6 @@ exports.possessor.addWord({
 	accepted: [ 'of' ],
 })
 
-// (repos) of (mine)
-// Same as [prep-possessor], without insertion cost
-exports.possessorNoInsert = g.newSymbol(prepStr, 'possessor', 'no', 'insert')
-exports.possessorNoInsert.addWord({
-	accepted: [ 'of' ],
-})
-
 // (repos created) in ([year])
 exports.container = g.newSymbol(prepStr, 'container')
 exports.container.addWord({

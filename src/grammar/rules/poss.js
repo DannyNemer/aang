@@ -45,6 +45,6 @@ possUsers.addRule({ RHS: [ possUser ] })
 var possUsersPlus = conjunctions.addForSymbol(possUsers)
 exports.ofPossUsersPlus = g.newBinaryRule({ RHS: [ preps.possessor, possUsersPlus ] })
 
-// (repos of) mine - must use possessorNoInsert, otherwise the insertion is too slow
+// (repos of) mine - No insertion because too slow
 // For categories that a semantic function for possession that limits to one argument; ex: repositories-created()
-exports.ofPossUsers = g.newBinaryRule({ RHS: [ preps.possessorNoInsert, possUsers ] })
+exports.ofPossUsers = g.newBinaryRule({ RHS: [ preps.possessor, possUsers ], noInsertionIndexes: [ 0 ] })
