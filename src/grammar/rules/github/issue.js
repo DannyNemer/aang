@@ -47,8 +47,9 @@ issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, opened ], semant
 issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHaveNoInsert, opened ], semantic: issuesOpenedSemantic })
 // (people who) opened issues ...
 user.subjFilter.addRule({ RHS: [ opened, issue.catPl ], semantic: issuesOpenersSemantic })
-// (people who) have opened issues ... - not [issues+] because 'by'
-user.subjFilter.addRule({ RHS: [ [ auxVerbs.have, opened ], issue.catPl ], semantic: issuesOpenersSemantic, personNumber: 'pl' })
+// (people who) have opened [issues] - not [issues+] because 'by'
+var haveNoInsertOpened = g.newBinaryRule({ RHS: [ auxVerbs.have, opened ], noInsertionsForIndexes: [ 0 ], personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ haveNoInsertOpened, issue.catPl ], semantic: issuesOpenersSemantic })
 
 var openersOf = g.newSymbol('openers', 'of')
 openersOf.addWord({
