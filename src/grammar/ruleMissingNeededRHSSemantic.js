@@ -1,8 +1,18 @@
 var util = require('../util')
 
-// Checks if rule lacks and cannot produce a RHS semantic needed by this rule or an ancestor
-// If true, returns an parsing stack array: starts at the rule with a LHS semantic, ends with passed rule
-module.exports = function ruleMissingNeededRHSSemantic(grammar, rule, lhsSym, symsSeen) {
+
+module.exports = ruleMissingNeededRHSSemantic
+
+/**
+ * Determines if `rule` lacks and cannot produce a RHS semantic needed by itself or an ancestor rule in `grammar`. If true, returns an parsing stack array: starts at the rule with a LHS semantic, ends with passed rule
+ *
+ * @param {Object} grammar The grammar.
+ * @param {Object} rule The rule to inspect.
+ * @param {string} lhsSym The rule's LHS nonterminal symbol.
+ * @param {Array} [symsSeen] The array of seen symbols.
+ * @returns {undefined|Array} Returns the stack demonstrating the missing neeeded semantic, if found.
+ */
+function ruleMissingNeededRHSSemantic(grammar, rule, lhsSym, symsSeen) {
 	// Rule has no RHS semantic
 	if (!ruleHasRHSSemantic(rule)) {
 		if (!rule.isTerminal && !symsSeen) {
@@ -53,7 +63,14 @@ module.exports = function ruleMissingNeededRHSSemantic(grammar, rule, lhsSym, sy
 	}
 }
 
-// Returns `true` if `lhsSym` has a RHS semantic, or its RHS symbols produce a rule with a RHS semantic
+/**
+ * Checks if `lhsSym` has a RHS semantic, or its RHS symbols produce a rule with a RHS semantic.
+ *
+ * @param {Object} grammar The grammar
+ * @param {string} lhsSym [description]
+ * @param {Array} symsSeen The array of seen symbols.
+ * @returns {boolean} Returns `true` if `lhsSym` has a RHS semantic, or its RHS symbols produce a rule with a RHS semantic, else `false`.
+ */
 function symProducesRHSSemantic(grammar, lhsSym, symsSeen) {
 	var symsSeen = symsSeen || []
 	symsSeen.push(lhsSym)
@@ -75,7 +92,12 @@ function symProducesRHSSemantic(grammar, lhsSym, symsSeen) {
 	})
 }
 
-// Returns `true` if rule contains a RHS semantic, has an inserted (RHS) semantic, or RHS is <int> or an entity category which becomes a semantic argument
+/**
+ * Determines if `rule` contains a RHS semantic, has an inserted (RHS) semantic, or RHS is <int> or an entity category which becomes a semantic argument.
+ *
+ * @param {Object} rule The rule to inspect.
+ * @returns {boolean} Returns `true` if `rule` has a RHS semantic, else `false`.
+ */
 function ruleHasRHSSemantic(rule) {
 	return rule.semanticIsRHS || (rule.isTerminal && rule.semantic) || rule.insertedSemantic || rule.isPlaceholder
 }
