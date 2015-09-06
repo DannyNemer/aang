@@ -32,15 +32,16 @@ user.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, follow ], sem
 user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: followersSemantic, personNumber: 'pl' })
 
 
-// No insertion
-var followersTermNoInsert = g.newSymbol('followers', 'term', 'no', 'insert')
-followersTermNoInsert.addWord({
+var followersTerm = g.newSymbol('followers', 'term')
+followersTerm.addWord({
+	insertionCost: 2.5,
 	accepted: [ 'followers', 'subscribers' ],
 })
 
 // (my) followers; followers (of mine)
+// No insertion
 var userFollowersHead = g.newSymbol(user.nameSg, 'followers', 'head')
-userFollowersHead.addRule({ RHS: [ user.companyOpt, followersTermNoInsert ] })
+userFollowersHead.addRule({ RHS: [ user.companyOpt, followersTerm ], noInsertionIndexes: [ 1 ] })
 
 // my followers; my followers' followers
 var followersPossDeterminer = g.newSymbol('followers', poss.determiner.name)
@@ -53,11 +54,6 @@ user.noRelativePossessive.addRule({ RHS: [ followersPossDeterminer, userFollower
 user.head.addRule({ RHS: [ userFollowersHead, poss.ofPossUsersPlus ], semantic: followersSemantic })
 
 
-var followersTerm = g.newSymbol('followers', 'term')
-followersTerm.addWord({
-	insertionCost: 2.5,
-	accepted: [ 'followers', 'subscribers' ],
-})
 // users with <int> followers
 user.inner.addRule({ RHS: [ preps.possessed, count.createForItems(followersTerm) ], semantic: user.semantic })
 
