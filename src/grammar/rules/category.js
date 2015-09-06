@@ -130,6 +130,7 @@ function Category(opts) {
 	// WHY IS IT NEEDED? noRelativeBase goes to stopWords.left, but not noRelativePossessive and any others that may be added
 
 
+	// Segment that forms the relative clause
 	var filter = g.newSymbol(this.nameSg, 'filter')
 	// (people who) follow me
 	filter.addRule({ RHS: [ this.subjFilter ] })
@@ -193,8 +194,10 @@ function Category(opts) {
 	if (opts.entities) {
 		this.catSg = g.newSymbol(this.nameSg)
 		// (people) {user} (follows); (people who follow) {user}
-		var entity = g.newEntityCategory({ name: this.nameSg, entities: opts.entities })
-		this.catSg.addRule({ terminal: true, RHS: entity })
+		this.catSg.addRule({
+			terminal: true,
+			RHS: g.newEntityCategory({ name: this.nameSg, entities: opts.entities })
+		})
 
 		// (people who like) {repo}; {user}
 		this.catPl.addRule({ RHS: [ this.catSg ] })

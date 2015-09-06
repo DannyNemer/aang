@@ -63,6 +63,7 @@ user.nomUsersPlus.addRule({ RHS: [ nomPlUsers, unionNomPlUsersPlus ], personNumb
 user.nomUsersPreVerbStopWords = g.newBinaryRule({ RHS: [ nomUsers, stopWords.preVerb ] })
 
 // (repos) I <stop> (contributed to)
+// Exclude the "+" character as a hack to get around parsing issue
 user.nomUsersPlusPreVerbStopWords = g.newSymbol('nom', 'users', 'plus', stopWords.preVerb.name)
 user.nomUsersPlusPreVerbStopWords.addRule({ RHS: [ user.nomUsersPlus, stopWords.preVerb ] })
 

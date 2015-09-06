@@ -38,9 +38,9 @@ repository.passive.addRule({ RHS: [ github.created, user.byObjUsers ], semantic:
 repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.created ], semantic: repositoriesCreatedSemantic })
 // (repos) I <stop> have created
 repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHaveNoInsert, github.created ], semantic: repositoriesCreatedSemantic })
-// (people who) created repos...
+// (people who) created [repositories]
 user.subjFilter.addRule({ RHS: [ github.created, repository.catPl ], semantic: repositoryCreatorsSemantic })
-// (people who) have created repos... - not [repositories+] because 'by'
+// (people who) have created [repositories] - not [repositories+] because 'by'
 user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreated, repository.catPl ], semantic: repositoryCreatorsSemantic })
 // creators of [repositories]
 user.head.addRule({ RHS: [ github.creatorsOf, repository.catPl ], semantic: repositoryCreatorsSemantic })
@@ -64,9 +64,9 @@ repository.passive.addRule({ RHS: [ like, user.byObjUsersPlus ], semantic: repos
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, like ], semantic: repositoriesLikedSemantic })
 // (repos) I have liked
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsert, like ], semantic: repositoriesLikedSemantic, verbForm: 'past' })
-// (people who) like repos ...
+// (people who) like [repositories+]
 user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
-// (people who) have liked repos ...
+// (people who) have liked [repositories+]
 // Cannot put the grammar properties on the same rule because conjugation cannot not handle it
 var haveNoInsertLike = g.newBinaryRule({ RHS: [ auxVerbs.have, like ], noInsertionsForIndexes: [ 0 ], verbForm: 'past' })
 user.subjFilter.addRule({ RHS: [ haveNoInsertLike, repository.catPlPlus ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
@@ -95,9 +95,9 @@ repository.passive.addRule({ RHS: [ contributedTo, user.byObjUsersPlus ], semant
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, contributedTo ], semantic: repositoriesContributedSemantic })
 // (repos) I have contributed to
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertPreVerbStopWords, contributedTo ], semantic: repositoriesContributedSemantic })
-// (people who) contributed to repos ...
+// (people who) contributed to [repositories+]
 user.subjFilter.addRule({ RHS: [ contributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
-// (people who) have contributed to repos ...
+// (people who) have contributed to [repositories+]
 var haveNoInsertContributedTo = g.newBinaryRule({ RHS: [ auxVerbs.have, contributedTo ], noInsertionsForIndexes: [ 0 ], personNumber: 'pl' })
 user.subjFilter.addRule({ RHS: [ haveNoInsertContributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 
@@ -170,6 +170,9 @@ repository.inner.addRule({ RHS: [ github.created, date.general ], semantic: repo
 
 // (repos) pushed in [year]
 var pushed = g.newSymbol('pushed')
-pushed.addWord({ accepted: [ 'pushed' ] })
+pushed.addWord({
+	accepted: [ 'pushed' ]
+})
+
 var repositoriesPushedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'pushed'), cost: 0.5, minParams: 1, maxParams: 2 })
 repository.inner.addRule({ RHS: [ pushed, date.general ], semantic: repositoriesPushedSemantic })

@@ -141,6 +141,7 @@ month.addRule({
   RHS: [ g.newSymbol('december').addWord({ accepted: [ 'December', '12' ] }) ],
   semantic: g.newSemantic({ isArg: true, name: 'dec', cost: 0.5 })
 })
+
 // (repos created in) [month] [year]
 var monthYear = g.newSymbol('month', 'year')
 monthYear.addRule({ RHS: [ month, year ], transpositionCost: 0.1 })

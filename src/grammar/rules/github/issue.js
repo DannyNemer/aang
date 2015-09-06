@@ -45,7 +45,7 @@ issue.passive.addRule({ RHS: [ opened, user.byObjUsers ], semantic: issuesOpened
 issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, opened ], semantic: issuesOpenedSemantic })
 // (issues) I <stop> have opened
 issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHaveNoInsert, opened ], semantic: issuesOpenedSemantic })
-// (people who) opened issues ...
+// (people who) opened [issues]
 user.subjFilter.addRule({ RHS: [ opened, issue.catPl ], semantic: issuesOpenersSemantic })
 // (people who) have opened [issues] - not [issues+] because 'by'
 var haveNoInsertOpened = g.newBinaryRule({ RHS: [ auxVerbs.have, opened ], noInsertionsForIndexes: [ 0 ], personNumber: 'pl' })

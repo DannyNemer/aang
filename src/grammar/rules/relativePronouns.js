@@ -1,5 +1,6 @@
 var g = require('../grammar')
 
+
 // (people) who (follow me)
 exports.who = g.newSymbol('who')
 exports.who.addWord({

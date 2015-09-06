@@ -72,6 +72,6 @@ exports.doNegation = g.newBinaryRule({ RHS: [ doTerm, negation ] })
 // (people who) are not (follwed by me)
 exports.beNon1SgNegation = g.newBinaryRule({ RHS: [ exports.beNon1Sg, negation ] })
 
-// (people who) have not been (follwed by me)
+// (people who) have not been (followed by me)
 var haveNegation = g.newBinaryRule({ RHS: [ exports.have, negation ], personNumber: 'pl' })
 exports.haveNegationBePast = g.newBinaryRule({ RHS: [ haveNegation, exports.bePast ] })
