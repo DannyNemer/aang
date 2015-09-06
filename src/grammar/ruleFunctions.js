@@ -50,7 +50,7 @@ Symbol.prototype.addPronoun = function (opts) {
 
 
 // Schema for verbs
-var verbOptSchema = {
+var verbOptsSchema = {
 	insertionCost: { type: Number, optional: true },
 	one: { type: Array, arrayType: String, optional: true },
 	pl: { type: Array, arrayType: String, optional: true },
@@ -64,7 +64,7 @@ var verbOptSchema = {
 // Add all terminal symbols for a verb to the grammar
 // Only used in nominative case; ex: "people [nom-users] follow/follows"
 Symbol.prototype.addVerb = function (opts) {
-	if (util.illFormedOpts(verbOptSchema, opts)) {
+	if (util.illFormedOpts(verbOptsSchema, opts)) {
 		throw new Error('Ill-formed verb')
 	}
 
@@ -205,17 +205,17 @@ Symbol.prototype.addVerb = function (opts) {
 
 
 // Schema for stop-words
-var stopWordOptSchema = {
+var stopWordOptsSchema = {
 	stopWords: { type: Array, arrayType: String },
 }
 
-// Add a stop-word to the grammar - replaces terminal symbols with an empty-string
+// Add a stop-word to the grammar - replaces terminal symbols with an empty string
 Symbol.prototype.addStopWord = function (opts) {
-	if (util.illFormedOpts(stopWordOptSchema, opts)) {
+	if (util.illFormedOpts(stopWordOptsSchema, opts)) {
 		throw new Error('Ill-formed stop-word')
 	}
 
-	// Accepted terminal symbol is an empty-string
+	// Accepted terminal symbol is an empty string
 	this.addRule({ terminal: true, RHS: g.emptySymbol })
 
 	// All stop-word terminal symbols are rejected
@@ -243,7 +243,7 @@ Symbol.prototype.addWord = function (opts) {
 
 	if (opts.accepted.indexOf(g.emptySymbol) !== -1) {
 		util.logError('Words cannot have <empty> strings:', opts.name)
-		console.log('Only stop-words or opt-terms can have <empty> strings')
+		console.log('       Only stop-words or opt-terms can have <empty> strings')
 		console.log('  ' + util.getModuleCallerPathAndLineNumber())
 		throw new Error('Ill-formed word')
 	}
@@ -254,7 +254,7 @@ Symbol.prototype.addWord = function (opts) {
 		throw new Error('Ill-formed opt-word')
 	}
 
-	// Optional terminal rule: rule can be omitted from input by accepting empty-string without penalty
+	// Optional terminal rule: rule can be omitted from input by accepting empty string without penalty
 	// <empty> must always be first for optional terminal rules
 	if (opts.optional) {
 		this.addRule({ terminal: true, RHS: g.emptySymbol })
@@ -288,8 +288,9 @@ Symbol.prototype.addWord = function (opts) {
 
 // Schema for <int>
 var intOptsSchema = {
+	// Minimum value
 	min: Number,
-	// If max undefined, set to Number.MAX_SAFE_INTEGER
+	// Maximum value; if max undefined, set to Number.MAX_SAFE_INTEGER
 	max: { type: Number, optional: true },
 }
 
