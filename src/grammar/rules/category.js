@@ -177,14 +177,14 @@ function Category(opts) {
 
 
 	// (people) who are followed by me; (repos) that are liked by me
-	var relativeclause = g.newSymbol(this.nameSg, 'relativeclause')
-	relativeclause.addRule({ RHS: [ opts.isPerson ? relPronouns.who : relPronouns.that, filterPlus ] })
+	var relativeClause = g.newSymbol(this.nameSg, 'relative', 'clause')
+	relativeClause.addRule({ RHS: [ opts.isPerson ? relPronouns.who : relPronouns.that, filterPlus ] })
 
 	this.plural = g.newSymbol(this.nameSg, 'plural')
 	// people followed by me
 	this.plural.addRule({ RHS: [ noRelative ], semantic: conjunctions.intersectSemantic })
 	// people who are followed by me
-	this.plural.addRule({ RHS: [ noRelative, relativeclause ], semantic: conjunctions.intersectSemantic })
+	this.plural.addRule({ RHS: [ noRelative, relativeClause ], semantic: conjunctions.intersectSemantic })
 
 	this.catPl = g.newSymbol(this.namePl)
 	// (people who created) repos ...
