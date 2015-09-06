@@ -41,7 +41,7 @@ repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHaveNoInsert,
 // (people who) created repos...
 user.subjFilter.addRule({ RHS: [ github.created, repository.catPl ], semantic: repositoryCreatorsSemantic })
 // (people who) have created repos... - not [repositories+] because 'by'
-user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreated, repository.catPl ], semantic: repositoryCreatorsSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreated, repository.catPl ], semantic: repositoryCreatorsSemantic })
 // creators of [repositories]
 user.head.addRule({ RHS: [ github.creatorsOf, repository.catPl ], semantic: repositoryCreatorsSemantic })
 
