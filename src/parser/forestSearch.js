@@ -21,6 +21,8 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 	var trees = []
 	// Min-heap of all partially constructed trees
 	var heap = new BinaryHeap
+	// The number of trees rejected for containing duplicate semantics or display text.
+	var ambiguousTrees = 0
 
 	heap.push({
 		// When item popped, will look at node's subs for next steps
@@ -77,6 +79,8 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 				if (treeIsUnique(trees, item)) {
 					// Add new tree to array; stop parsing if is K-th tree
 					if (trees.push(item) === K) break
+				} else {
+					ambiguousTrees++
 				}
 
 				continue
@@ -127,6 +131,7 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 
 	if (printStats) {
 		console.log('paths created:', heap.pushCount)
+		console.log('ambiguous trees:', ambiguousTrees)
 	}
 
 	return trees
