@@ -85,7 +85,7 @@ exports.illFormedOpts = function (schema, options) {
 
 			// Passed Array contains elements not of `arrayType` (if `arrayType` is defined).
 			if (Array.isArray(optsVal) && schemaVal.arrayType && !optsVal.every(function (el) { return el.constructor === schemaVal.arrayType })) {
-				exports.logErrorAndPath('\'' + prop + '\' not an array of type ' + schemaVal.arrayType.name + ':', optsVal)
+				exports.logErrorAndPath('\'' + prop + '\' not an array of type \'' + schemaVal.arrayType.name + '\':', optsVal)
 				return true
 			}
 		}
@@ -474,7 +474,7 @@ exports.dir = function () {
 }
 
 /**
- * Formats the provided values and objects in color for pretty-printing, recursing `options.number` times while formatting objects.
+ * Formats the provided values and objects in color for pretty-printing, recursing `options.depth` times while formatting objects.
  *
  * Formats instances of `Object` on separate lines. Concatenates and formats all other successive values on the same line.
  *
@@ -539,9 +539,10 @@ function format(args, options) {
 }
 
 /**
- * Formats `object` in color for pretty-printing, recursing `options.number` times while formatting. This is identical to Node's `util.inspect()`, but disables colors if the terminal does not support color.
+ * Formats `object` in color for pretty-printing, recursing `options.depth` times while formatting. This is identical to Node's `util.inspect()`, but disables colors if the terminal does not support color.
  *
  * @static
+ * @memberOf dantil
  * @category Console
  * @param {*} object The object or value to stylize.
  * @param {Object} [options] The options object.
@@ -864,8 +865,8 @@ var _counts = new Map()
  *   if (i % 2 === 0) dantil.count('even')
  * }
  *
- * // Reset the count for 'even' to 0
  * dantil.countEnd('even')
+ * // => Resets the count for 'even' to 0
  * // => Prints "even: 50"
  */
 exports.count = function (label) {
@@ -905,8 +906,8 @@ exports.countEnd = function (label) {
  *   if (i > 100) dantil.count('never reached')
  * }
  *
- * // Reset all counts to 0
  * dantil.countEndAll()
+ * // => Resets all counts to 0
  * // => Prints "even: 50
  * //            odd: 50"
  */
