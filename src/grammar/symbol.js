@@ -30,7 +30,7 @@ function Symbol() {
 
 	this.rules = exports.grammar[this.name] = []
 
-	// Save calling line for error reporting
+	// Save instantiation path and line number for error reporting
 	exports.creationLines[this.name] = util.getModuleCallerPathAndLineNumber()
 }
 
@@ -100,8 +100,8 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	} else if (opts.text) {
 		// String for symbols not needing conjugation
 		newRule.text = opts.text
-	} else if (opts.text !== '' && opts.RHS !== g.emptySymbol && opts.RHS !== g.intSymbol && !entityCategory.creationLines.hasOwnProperty(opts.RHS)) {
-		// Use RHS as text if textForms and text are undefined
+	} else if (opts.text === undefined && opts.RHS !== g.emptySymbol && opts.RHS !== g.intSymbol && !entityCategory.creationLines.hasOwnProperty(opts.RHS)) {
+		// Use RHS as text if `textForms` and `text` are undefined
 		newRule.text = opts.RHS
 	}
 
@@ -221,7 +221,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 }
 
 
-// Create a new Symbol with a binary nonterminal rule
+// Creates a new Symbol with a signle binary nonterminal rule
 // - Symbol's name is a concatenation of the RHS Symbols
 // Accepts the same `opts` as `Symbol.newNonterminalRule()`
 // As the Symbol's name is created from the rule's RHS, this new Symbol is intended only for this rule
