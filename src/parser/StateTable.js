@@ -285,9 +285,21 @@ StateTable.prototype.generate = function (startSym) {
 		this.states.push(newState)
 	}
 
-	// Remove `index` property from because no longer needed
+	// Delete symbol properties only needed for StateTable instantiation.
 	for (var symName in this.symbolTab) {
-		delete this.symbolTab[symName].index
+		var symbol = this.symbolTab[symName]
+
+		// Delete `index` property which is no longer used.
+		delete symbol.index
+
+		if (!symbol.isTerminal) {
+			// `Rules` are only needed for terminal symbols.
+			// `name` is the only remaining property for nonterminal terminal symbols, which is used to print.
+			delete symbol.rules
+
+			// Delete nonterminal symbols from `symbolTab`, which is only needed for terminal symbol lookup.
+			delete this.symbolTab[symName]
+		}
 	}
 }
 
