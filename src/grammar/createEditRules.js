@@ -150,7 +150,7 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 
 // Every sym in `RHS` is a terminal symbol with an insertion cost, an empty string, or a nonterminal symbol that produces a sequence of the these
 function RHSCanBeInserted(insertions, rule) {
-	if (rule.noInsertionsForIndexes !== undefined) {
+	if (rule.noInsertionIndexes !== undefined) {
 		return false
 	}
 
@@ -207,7 +207,7 @@ function createRulesFromInsertions(grammar, insertions) {
 			var RHS = rule.RHS
 			if (RHS.length > 1) {
 				RHS.forEach(function (sym, symIdx) {
-					if (rule.noInsertionsForIndexes && rule.noInsertionsForIndexes.indexOf(symIdx) !== -1) return
+					if (rule.noInsertionIndexes && rule.noInsertionIndexes.indexOf(symIdx) !== -1) return
 					var otherSym = RHS[Number(!symIdx)]
 
 					// if (/\+/.test(nontermSym) && /\+/.test(sym)) return

@@ -68,7 +68,7 @@ repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsert, like ], sem
 user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
 // (people who) have liked [repositories+]
 // Cannot put the grammar properties on the same rule because conjugation cannot not handle it
-var haveNoInsertLike = g.newBinaryRule({ RHS: [ auxVerbs.have, like ], noInsertionsForIndexes: [ 0 ], verbForm: 'past' })
+var haveNoInsertLike = g.newBinaryRule({ RHS: [ auxVerbs.have, like ], noInsertionIndexes: [ 0 ], verbForm: 'past' })
 user.subjFilter.addRule({ RHS: [ haveNoInsertLike, repository.catPlPlus ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
 
 var likersOf = g.newSymbol('likers', 'of')
@@ -98,7 +98,7 @@ repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertPreVerbStopWo
 // (people who) contributed to [repositories+]
 user.subjFilter.addRule({ RHS: [ contributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 // (people who) have contributed to [repositories+]
-var haveNoInsertContributedTo = g.newBinaryRule({ RHS: [ auxVerbs.have, contributedTo ], noInsertionsForIndexes: [ 0 ], personNumber: 'pl' })
+var haveNoInsertContributedTo = g.newBinaryRule({ RHS: [ auxVerbs.have, contributedTo ], noInsertionIndexes: [ 0 ], personNumber: 'pl' })
 user.subjFilter.addRule({ RHS: [ haveNoInsertContributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 
 var contributorsTo = g.newSymbol('contributors', 'to')

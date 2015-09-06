@@ -154,7 +154,7 @@ var nontermRuleOptsSchema = {
 	verbForm: { type: [ 'past' ], optional: true }, // "like" vs. "liked"
 	personNumber: { type: [ 'one', 'threeSg', 'pl' ], optional: true }, // "like" vs "likes"
 	// Prevents insertion rules from being created using this rule and the RHS symbol at this index(es).
-	noInsertionsForIndexes: { type: Array, arrayType: Number, optional: true },
+	noInsertionIndexes: { type: Array, arrayType: Number, optional: true },
 }
 
 // Create a new nonterminal rule from passed opts
@@ -188,13 +188,13 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 	}
 
 	// Prevents insertion rules from being created using this rule and the RHS symbol at this index(es).
-	if (opts.noInsertionsForIndexes) {
-		if (opts.noInsertionsForIndexes.some(function (i) { return opts.RHS[i] === undefined })) {
-			util.logErrorAndPath('\'noInsertionsForIndexes\' contains an index for which there is no RHS symbol:', opts)
+	if (opts.noInsertionIndexes) {
+		if (opts.noInsertionIndexes.some(function (i) { return opts.RHS[i] === undefined })) {
+			util.logErrorAndPath('\'noInsertionIndexes\' contains an index for which there is no RHS symbol:', opts)
 			throw new Error('Ill-formed nonterminal rule')
 		}
 
-		newRule.noInsertionsForIndexes = opts.noInsertionsForIndexes
+		newRule.noInsertionIndexes = opts.noInsertionIndexes
 	}
 
 	if (opts.semantic) {
@@ -259,7 +259,7 @@ exports.newBinaryRule = function (opts) {
 		var name = sym.name
 
 		// Specify in symbol name if insertions are forbidden.
-		if (opts.noInsertionsForIndexes && opts.noInsertionsForIndexes.indexOf(i) !== -1) {
+		if (opts.noInsertionIndexes && opts.noInsertionIndexes.indexOf(i) !== -1) {
 			name = stringUtil.hyphenate(name, 'no', 'insert')
 		}
 
