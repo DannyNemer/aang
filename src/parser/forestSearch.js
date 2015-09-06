@@ -411,8 +411,8 @@ function conjugateText(item, textObj) {
 		gramPropsList = gramPropsList.prev
 	}
 
-	util.logError('Failed to conjugate:', textObj, gramPropsList)
-	util.logTrace()
+	util.logError('Failed to conjugate:', textObj, item)
+	throw new Error('Failed conjugation')
 }
 
 // Remove the element `gramPropsToRemove` from the `gramProps` list `item.gramProps`
