@@ -1,13 +1,15 @@
 var util = require('../util')
-var startSymbol = require('./grammar').startSymbol
-var symbolCreationLines = require('./symbol').creationLines
-var entityCategoryCreationLines = require('./entityCategory').creationLines
-var semantic = require('./semantic')
 
-
-// Check for unused nonterminal symbols, entity categories, or semantic functions and arguments not used in any rules
+/**
+ * Finds and prints instances of nonterminal symbols, entity categories, or semantic functions and arguments not used in any rules of `grammar`.
+ *
+ * @param {Object} grammar The grammar to inspect.
+ */
 module.exports = function (grammar) {
-	// Check for nonterminal symbols not used in any rules
+	// Check for nonterminal symbols not used in any rules.
+	var symbolCreationLines = require('./symbol').creationLines
+	var startSymbol = require('./grammar').startSymbol
+
 	Object.keys(symbolCreationLines).forEach(function (symbolName) {
 		if (symbolName === startSymbol.name) return
 
@@ -21,10 +23,13 @@ module.exports = function (grammar) {
 		}
 
 		util.logWarning('Unused symbol:', symbolName)
-		console.log('  ' + symbolCreationLines[symbolName])
+		util.log('  ' + symbolCreationLines[symbolName])
 	})
 
-	// Check for entity categories not used in any rules
+
+	// Check for entity categories not used in any rules.
+	var entityCategoryCreationLines = require('./entityCategory').creationLines
+
 	Object.keys(entityCategoryCreationLines).forEach(function (categorySymbolName) {
 		for (var otherSymbol in grammar) {
 			var rules = grammar[otherSymbol]
@@ -34,23 +39,33 @@ module.exports = function (grammar) {
 		}
 
 		util.logWarning('Unused entity category:', categorySymbolName)
-		console.log('  ' + entityCategoryCreationLines[categorySymbolName])
+		util.log('  ' + entityCategoryCreationLines[categorySymbolName])
 	})
 
-	// Check for semantic functions and arguments not used in any rules
+
+	// Check for semantic functions and arguments not used in any rules.
+	var semantic = require('./semantic')
+
 	Object.keys(semantic.creationLines).forEach(function (semanticName) {
 		var thisSemantic = semantic.semantics[semanticName]
 
 		for (var sym in grammar) {
 			var rules = grammar[sym]
+
 			for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 				var rule = rules[r]
+
 				if (rule.semantic) {
-					// Initialize stack with rule.semantic, an array (possible of multiple semantic nodes)
+					// Initialize stack with rule.semantic, an array (possible of multiple semantic nodes).
 					var semanticStack = rule.semantic.slice()
+
 					while (semanticStack.length) {
 						var semanticNode = semanticStack.pop()
-						if (semanticNode.semantic === thisSemantic) return
+
+						if (semanticNode.semantic === thisSemantic) {
+							return
+						}
+
 						if (semanticNode.children) {
 							Array.prototype.push.apply(semanticStack, semanticNode.children)
 						}
@@ -60,6 +75,6 @@ module.exports = function (grammar) {
 		}
 
 		util.logWarning('Unused semantic:', semanticName)
-		console.log('  ' + semantic.creationLines[semanticName])
+		util.log('  ' + semantic.creationLines[semanticName])
 	})
 }
