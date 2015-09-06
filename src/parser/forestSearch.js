@@ -596,7 +596,7 @@ function createNode(node, opts, childNode, pathCost) {
 
 
 // Print trees (passed from previous parse)
-exports.print = function (trees, printCost, printTrees) {
+exports.print = function (trees, printCosts, printTrees) {
 	for (var t = 0, treesLen = trees.length; t < treesLen; ++t) {
 		var tree = trees[t]
 
@@ -612,19 +612,19 @@ exports.print = function (trees, printCost, printTrees) {
 		}
 
 		// Print display text (and cost)
-		console.log(tree.text, printCost ? tree.cost : '')
+		console.log(tree.text, printCosts ? tree.cost : '')
 
 		// Print semantic
-		console.log(' ', tree.semanticStr)
+		util.log(' ', tree.semanticStr)
 
 		// Print additional semantics that produced identical display text
 		if (tree.disambiguation) {
 			tree.disambiguation.forEach(function (semanticStr) {
-				console.log(' ', semanticStr)
+				util.log(' ', semanticStr)
 			})
 		}
 
 		// Print trees (if constructed during parse forest search)
-		if (printTrees) util.dir(pathToTree(tree, { showTokenRanges: true, showPathCosts: true }))
+		if (printTrees) util.dir(pathToTree(tree, { showTokenRanges: true, showPathCosts: false }))
 	}
 }
