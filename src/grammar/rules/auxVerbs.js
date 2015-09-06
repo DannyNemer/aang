@@ -6,7 +6,7 @@ exports.beNon1Sg = g.newSymbol('be', 'non', '1', 'sg')
 exports.beNon1Sg.addWord({
 	insertionCost: 1,
 	accepted: [ 'are', 'were' ],
-	substitutions: [ 'is|are|be being', 'being|been' ]
+	substitutions: [ 'is|are|be being', 'being|been' ],
 })
 
 // (issues that are) <stop> (open/closed)
@@ -17,7 +17,7 @@ exports.beNon1SgSentenceAdverbial = g.newBinaryRule({ RHS: [ exports.beNon1Sg, s
 exports.bePast = g.newSymbol('be', 'past')
 exports.bePast.addWord({
 	insertionCost: 1,
-	accepted: [ 'been' ]
+	accepted: [ 'been' ],
 })
 
 // (pull requests I/{user}/[nom-users]) am/is/are (mentioned in)
@@ -28,7 +28,7 @@ exports.beGeneral.addVerb({
 	pl: [ 'are', 'were' ],
 	oneOrPl: [ 'have been' ],
 	threeSg: [ 'is', 'has been' ],
-	oneOrThreeSg: [ 'was' ]
+	oneOrThreeSg: [ 'was' ],
 })
 
 // (people who) have (been followed by me)
@@ -38,7 +38,7 @@ exports.have.addVerb({
 	insertionCost: 0.8,
 	oneOrPl: [ 'have' ],
 	threeSg: [ 'has' ],
-	substitutions: [ 'had' ]
+	substitutions: [ 'had' ],
 })
 
 // (repos I) have <stop> (contributed to)
@@ -55,7 +55,7 @@ exports.notSemantic = g.newSemantic({ name: 'not', cost: 0.5, minParams: 1, maxP
 var negation = g.newSymbol('negation')
 negation.addWord({
 	accepted: [ 'not' ],
-	substitutions: [ 'are|can|could|did|does|do|had|has|have|is|should|was|were|will|would not' ]
+	substitutions: [ 'are|can|could|did|does|do|had|has|have|is|should|was|were|will|would not' ],
 })
 
 // (people who) do not (follow me)
@@ -63,7 +63,7 @@ var doTerm = g.newSymbol('do')
 doTerm.addWord({
 	insertionCost: 0.2,
 	accepted: [ 'do' ],
-	substitutions: [ 'did', 'does' ]
+	substitutions: [ 'did', 'does' ],
 })
 exports.doNegation = g.newBinaryRule({ RHS: [ doTerm, negation ] })
 

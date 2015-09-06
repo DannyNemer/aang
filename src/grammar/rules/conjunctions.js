@@ -9,13 +9,13 @@ exports.unionSemantic = g.newSemantic({ name: 'union', cost: 0.5, minParams: 1, 
 exports.and = g.newSymbol('and')
 exports.and.addWord({
 	insertionCost: 2,
-	accepted: [ 'and' ]
+	accepted: [ 'and' ],
 })
 
 // disjunction
 exports.union = g.newSymbol('union')
 exports.union.addWord({
-	accepted: [ 'or' ]
+	accepted: [ 'or' ],
 })
 
 // Create rules for "and" + "or" to surround `symbol`

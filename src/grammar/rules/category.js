@@ -196,7 +196,7 @@ function Category(opts) {
 		// (people) {user} (follows); (people who follow) {user}
 		this.catSg.addRule({
 			terminal: true,
-			RHS: g.newEntityCategory({ name: this.nameSg, entities: opts.entities })
+			RHS: g.newEntityCategory({ name: this.nameSg, entities: opts.entities }),
 		})
 
 		// (people who like) {repo}; {user}

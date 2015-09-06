@@ -5,12 +5,12 @@ var g = require('../grammar')
 exports.who = g.newSymbol('who')
 exports.who.addWord({
 	insertionCost: 0.1,
-	accepted: [ 'who', 'that' ]
+	accepted: [ 'who', 'that' ],
 })
 
 // (repos) that (are liked by me)
 exports.that = g.newSymbol('that')
 exports.that.addWord({
 	insertionCost: 0.1,
-	accepted: [ 'that', 'which' ]
+	accepted: [ 'that', 'which' ],
 })

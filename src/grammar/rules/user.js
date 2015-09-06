@@ -12,7 +12,7 @@ var user = module.exports = category.new({ sg: 'user', pl: 'users', isPerson: tr
 
 user.term.addWord({
 	insertionCost: 2.5,
-	accepted: [ 'people', 'users' ]
+	accepted: [ 'people', 'users' ],
 })
 
 // |GitHub users (I follow)
@@ -101,7 +101,7 @@ user.byObjUsers.addRule({ RHS: [ preps.agent, objUsers ] })
 user.possessive = g.newSymbol(user.nameSg + ':\'s')
 user.possessive.addRule({
 	terminal: true,
-	RHS: g.newEntityCategory({ name: user.nameSg + ':\'s', entities: [ 'Danny\'s' ] })
+	RHS: g.newEntityCategory({ name: user.nameSg + ':\'s', entities: [ 'Danny\'s' ] }),
 })
 
 
@@ -117,14 +117,14 @@ user.adjective.addRule({ terminal: true, RHS: 'male', semantic: usersGenderMaleS
 
 var womenTerm = g.newSymbol('women', 'term')
 womenTerm.addWord({
-	accepted: [ 'women', 'females' ]
+	accepted: [ 'women', 'females' ],
 })
 // women (who follow me); (people who are) women; women
 user.head.addRule({ RHS: [ womenTerm ], semantic: usersGenderFemaleSemantic })
 
 var menTerm = g.newSymbol('men', 'term')
 menTerm.addWord({
-	accepted: [ 'men', 'males' ]
+	accepted: [ 'men', 'males' ],
 })
 // men (who follow me); (people who are) men; men
 user.head.addRule({ RHS: [ menTerm ], semantic: usersGenderMaleSemantic })

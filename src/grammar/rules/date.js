@@ -11,7 +11,7 @@ var thisDate = g.newSymbol('this', 'date')
 thisDate.addWord({
   insertionCost: 1.5,
   accepted: [ 'this' ],
-  substitutions: [ 'in|within this', 'in|within the last|past' ]
+  substitutions: [ 'in|within this', 'in|within the last|past' ],
 })
 
 // (repos created) last month/year
@@ -19,12 +19,12 @@ var lastDate = g.newSymbol('last', 'date')
 lastDate.addWord({
   insertionCost: 0.5,
   accepted: [ 'last' ],
-  substitutions: [ 'in|within the last|past' ]
+  substitutions: [ 'in|within the last|past' ],
 })
 
 var yearTerm = g.newSymbol('year', 'term')
 yearTerm.addWord({
-  accepted: [ 'year' ]
+  accepted: [ 'year' ],
 })
 
 var yearPhrase = g.newSymbol('year', 'phrase')
@@ -42,7 +42,7 @@ datePhrase.addRule({ RHS: [ yearPhrase ] })
 
 var monthTerm = g.newSymbol('month', 'term')
 monthTerm.addWord({
-  accepted: [ 'month' ]
+  accepted: [ 'month' ],
 })
 // (repos created) this month
 datePhrase.addRule({
@@ -58,7 +58,7 @@ datePhrase.addRule({
 var weekTerm = g.newSymbol('week', 'term')
 weekTerm.addWord({
   insertionCost: 1.5,
-  accepted: [ 'week' ]
+  accepted: [ 'week' ],
 })
 // (repos created) this week
 datePhrase.addRule({
@@ -187,7 +187,7 @@ var dateIntervalEndSemantic = g.newSemantic({ name: g.hyphenate('date', 'interva
 
 var dateIntervalStopWord = g.newSymbol('date', 'interval', 'stop', 'word')
 dateIntervalStopWord.addStopWord({
-  stopWords: [ 'from|in' ]
+  stopWords: [ 'from|in' ],
 })
 
 // (repos created) <from> before (this year)

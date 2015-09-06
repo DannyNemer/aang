@@ -8,12 +8,12 @@ exports.plain.addPronoun({
 	insertionCost: 0.5,
 	nom: 'I',
 	obj: 'me',
-	substitutions: [ 'myself', 'you|he|she|him|her|they|them|it' ]
+	substitutions: [ 'myself', 'you|he|she|him|her|they|them|it' ],
 })
 
 // my (repositories)
 exports.poss = g.newSymbol('1', 'sg', 'poss')
 exports.poss.addWord({
 	insertionCost: 0,
-	accepted: [ 'my' ]
+	accepted: [ 'my' ],
 })

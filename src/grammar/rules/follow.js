@@ -20,8 +20,8 @@ follow.addVerb({
 		'following',
 		'have|has|had been following',
 		'am|is|are|were|was|be following',
-		'subscribed to'
-	]
+		'subscribed to',
+	],
 })
 
 // (people) followed by me
@@ -35,7 +35,7 @@ user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: follower
 // No insertion
 var followersTermNoInsert = g.newSymbol('followers', 'term', 'no', 'insert')
 followersTermNoInsert.addWord({
-	accepted: [ 'followers', 'subscribers' ]
+	accepted: [ 'followers', 'subscribers' ],
 })
 
 // (my) followers; followers (of mine)
@@ -56,7 +56,7 @@ user.head.addRule({ RHS: [ userFollowersHead, poss.ofPossUsersPlus ], semantic: 
 var followersTerm = g.newSymbol('followers', 'term')
 followersTerm.addWord({
 	insertionCost: 2.5,
-	accepted: [ 'followers', 'subscribers' ]
+	accepted: [ 'followers', 'subscribers' ],
 })
 // users with <int> followers
 user.inner.addRule({ RHS: [ preps.possessed, count.createForItems(followersTerm) ], semantic: user.semantic })
@@ -64,7 +64,7 @@ user.inner.addRule({ RHS: [ preps.possessed, count.createForItems(followersTerm)
 
 var followersPossessiveTerm = g.newSymbol('followers', 'possessive', 'term')
 followersPossessiveTerm.addWord({
-	accepted: [ 'followers\'', 'subscribers\'' ]
+	accepted: [ 'followers\'', 'subscribers\'' ],
 })
 
 // (my/{user:'s}) followers' (repos)

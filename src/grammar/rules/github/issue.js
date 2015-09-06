@@ -14,7 +14,7 @@ var issue = category.new({ sg: 'issue', pl: 'issues' })
 
 issue.term.addWord({
 	insertionCost: 3.5,
-	accepted: [ issue.namePl ]
+	accepted: [ issue.namePl ],
 })
 
 // |Github issues (I opened)
@@ -36,7 +36,7 @@ issue.head.addRule({ RHS: [ issue.headMayPoss, poss.ofPossUsers ], semantic: iss
 var opened = g.newSymbol('opened')
 opened.addWord({
 	insertionCost: 1,
-	accepted: [ 'opened', 'created' ]
+	accepted: [ 'opened', 'created' ],
 })
 
 // (issues) opened by me
@@ -83,7 +83,7 @@ github.assigners.addRule({ RHS: [ issue.catPl ] })
 // open/closed (issues); (issues that are) open/closed
 issue.adjective.addRule({
 	RHS: [ github.state ],
-	semantic: g.newSemantic({ name: g.hyphenate(issue.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true })
+	semantic: g.newSemantic({ name: g.hyphenate(issue.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true }),
 })
 
 
@@ -96,7 +96,7 @@ issue.inner.addRule({ RHS: [ preps.possessed, github.commentCount ], semantic: i
 var updated = g.newSymbol('updated')
 updated.addWord({
 	insertionCost: 3,
-	accepted: [ 'updated' ]
+	accepted: [ 'updated' ],
 })
 
 // (issues) updated in [year]

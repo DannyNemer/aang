@@ -18,21 +18,21 @@ exports.createForItems = function (itemsSymbol) {
 		name: g.hyphenate(itemsSymbol.name, 'count'),
 		cost: 0.5,
 		minParams: 1,
-		maxParams: 2
+		maxParams: 2,
 	})
 
 	var itemsCountOverSemantic = g.newSemantic({
 		name: g.hyphenate(itemsSymbol.name, 'count', 'over'),
 		cost: 0.5,
 		minParams: 1,
-		maxParams: 1
+		maxParams: 1,
 	})
 
 	var itemsCountUnderSemantic = g.newSemantic({
 		name: g.hyphenate(itemsSymbol.name, 'count', 'under'),
 		cost: 0.5,
 		minParams: 1,
-		maxParams: 1
+		maxParams: 1,
 	})
 
 
@@ -79,7 +79,7 @@ exports.createForItems = function (itemsSymbol) {
 	// comments-count(n1, n2) - inclusive
 	itemsCount.addRule({
 		RHS: [ [ preps.between, numberItemsOpt ], [ conjunctions.and, numberItems ] ],
-		semantic: itemsCountSemantic
+		semantic: itemsCountSemantic,
 	})
 
 	return itemsCount

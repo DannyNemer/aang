@@ -9,7 +9,7 @@ var count = require('../count')
 
 var github = g.newSymbol('github')
 github.addWord({
-	accepted: [ 'GitHub' ]
+	accepted: [ 'GitHub' ],
 })
 
 // (my) |GitHub (repos)
@@ -22,7 +22,7 @@ user.company.addRule({ RHS: [ github ] })
 exports.created = g.newSymbol('created')
 exports.created.addWord({
 	insertionCost: 0.5,
-	accepted: [ 'created' ]
+	accepted: [ 'created' ],
 })
 
 // (repos/pull-requests I) have created
@@ -32,7 +32,7 @@ exports.haveNoInsertCreated = g.newBinaryRule({ RHS: [ auxVerbs.have, exports.cr
 // creators of ([repositories]/[pull-requests])
 exports.creatorsOf = g.newSymbol('creators', 'of')
 exports.creatorsOf.addWord({
-	accepted: [ 'creators of' ]
+	accepted: [ 'creators of' ],
 })
 
 
@@ -40,13 +40,13 @@ exports.creatorsOf.addWord({
 // (pull-requests/issues that) mention ([obj-users+])
 exports.mention = g.newSymbol('mention')
 exports.mention.addWord({
-	accepted: [ 'mention' ]
+	accepted: [ 'mention' ],
 })
 
 var mentionedIn = g.newSymbol('mentioned', 'in')
 mentionedIn.addWord({
 	insertionCost: 2,
-	accepted: [ 'mentioned in' ]
+	accepted: [ 'mentioned in' ],
 })
 
 // (pull-requests/issues) I-am/{user}-is/[users]-are mentioned in
@@ -67,7 +67,7 @@ user.inner.addRule({
 exports.assignedTo = g.newSymbol('assigned', 'to')
 exports.assignedTo.addWord({
   insertionCost: 2,
-  accepted: [ 'assigned to' ]
+  accepted: [ 'assigned to' ],
 })
 
 // (issues/pull-requests) I-am/{user}-is/[users]-are assigned to
@@ -89,11 +89,11 @@ user.inner.addRule({
 exports.state = g.newSymbol('state')
 exports.state.addRule({
 	terminal: true, RHS: 'open',
-	semantic: g.newSemantic({ isArg: true, name: 'open', cost: 0 })
+	semantic: g.newSemantic({ isArg: true, name: 'open', cost: 0 }),
 })
 exports.state.addRule({
 	terminal: true, RHS: 'closed',
-	semantic: g.newSemantic({ isArg: true, name: 'closed', cost: 0 })
+	semantic: g.newSemantic({ isArg: true, name: 'closed', cost: 0 }),
 })
 
 
@@ -101,7 +101,7 @@ exports.state.addRule({
 var comments = g.newSymbol('comments')
 comments.addWord({
   insertionCost: 3,
-  accepted: [ 'comments' ]
+  accepted: [ 'comments' ],
 })
 // (issues/pull-requests) with <int> comment
 exports.commentCount = count.createForItems(comments)

@@ -13,7 +13,7 @@ var repository = category.new({ sg: 'repository', pl: 'repositories', entities: 
 
 repository.term.addWord({
 	insertionCost: 3.5,
-	accepted: [ repository.namePl, 'repos' ]
+	accepted: [ repository.namePl, 'repos' ],
 })
 
 // |GitHub repos (I starred)
@@ -55,7 +55,7 @@ like.addVerb({
 	insertionCost: 0.8,
 	oneOrPl: [ 'like' ],
 	threeSg: [ 'likes' ],
-	past: [ 'liked' ]
+	past: [ 'liked' ],
 })
 
 // (repos) liked by me
@@ -73,7 +73,7 @@ user.subjFilter.addRule({ RHS: [ haveNoInsertLike, repository.catPlPlus ], seman
 
 var likersOf = g.newSymbol('likers', 'of')
 likersOf.addWord({
-	accepted: [ 'likers of' ] // should I use regexp? be seperate syms
+	accepted: [ 'likers of' ], // should I use regexp? be seperate syms
 })
 // likers of [repositories+]
 user.head.addRule({ RHS: [ likersOf, repository.catPlPlus ], semantic: repositoryLikersSemantic })
@@ -83,7 +83,7 @@ user.head.addRule({ RHS: [ likersOf, repository.catPlPlus ], semantic: repositor
 var contributedTo = g.newSymbol('contributed', 'to')
 contributedTo.addWord({
 	insertionCost: 1.2,
-	accepted: [ 'contributed to' ]
+	accepted: [ 'contributed to' ],
 })
 
 var repositoriesContributedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'contributed'), cost: 0.5, minParams: 1, maxParams: 1 })
@@ -103,7 +103,7 @@ user.subjFilter.addRule({ RHS: [ haveNoInsertContributedTo, repository.catPlPlus
 
 var contributorsTo = g.newSymbol('contributors', 'to')
 contributorsTo.addWord({
-	accepted: [ 'contributors to', 'contributors of' ] // should I use regexp? be seperate syms
+	accepted: [ 'contributors to', 'contributors of' ], // should I use regexp? be seperate syms
 })
 // contributors to [repositories+]
 user.head.addRule({ RHS: [ contributorsTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
@@ -112,14 +112,14 @@ user.head.addRule({ RHS: [ contributorsTo, repository.catPlPlus ], semantic: rep
 // LANGUAGE:
 var languageEntity = g.newEntityCategory({
 	name: 'language',
-	entities: [ 'ActionScript', 'C', 'C#', 'C++', 'Clojure', 'CoffeeScript', 'CSS', 'Go', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lua', 'Matlab', 'Objective-C', 'Perl', 'PHP', 'Python', 'R', 'Ruby', 'Scala', 'Shell', 'Swift', 'TeX', 'VimL' ]
+	entities: [ 'ActionScript', 'C', 'C#', 'C++', 'Clojure', 'CoffeeScript', 'CSS', 'Go', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lua', 'Matlab', 'Objective-C', 'Perl', 'PHP', 'Python', 'R', 'Ruby', 'Scala', 'Shell', 'Swift', 'TeX', 'VimL' ],
 })
 
 var language = g.newSymbol('language')
 language.addRule({
 	terminal: true,
 	RHS: languageEntity,
-	semantic: g.newSemantic({ name: g.hyphenate(repository.namePl, 'language'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true })
+	semantic: g.newSemantic({ name: g.hyphenate(repository.namePl, 'language'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true }),
 })
 // (my) {language} (repos); (repos that are) {language} (repos)
 repository.preModifier.addRule({ RHS: [ language ] })
@@ -128,7 +128,7 @@ var writtenIn = g.newSymbol('written', 'in')
 writtenIn.addWord({
 	insertionCost: 3,
 	accepted: [ 'written in' ],
-	// substitutions: [ 'in' ]
+	// substitutions: [ 'in' ],
 })
 // (repos) written in {language}
 repository.passive.addRule({ RHS: [ writtenIn, language ] })
@@ -139,7 +139,7 @@ var stars = g.newSymbol('stars')
 stars.addWord({
   insertionCost: 3,
   accepted: [ 'stars' ],
-  substitutions: [ 'likes' ]
+  substitutions: [ 'likes' ],
 })
 
 // (repos) with <int> stars
@@ -149,7 +149,7 @@ repository.inner.addRule({ RHS: [ preps.possessed, count.createForItems(stars) ]
 var forks = g.newSymbol('forks')
 forks.addWord({
   insertionCost: 3.25,
-  accepted: [ 'forks' ]
+  accepted: [ 'forks' ],
 })
 
 // (repos) with <int> forks
@@ -158,7 +158,7 @@ repository.inner.addRule({ RHS: [ preps.possessed, count.createForItems(forks) ]
 var size = g.newSymbol('size')
 size.addWord({
 	insertionCost: 3.5,
-	accepted: [ 'KB' ]
+	accepted: [ 'KB' ],
 })
 // (repos that are) <int> KB
 repository.postModifer.addRule({ RHS: [ count.createForItems(size) ], semantic: repository.semantic })
@@ -171,7 +171,7 @@ repository.inner.addRule({ RHS: [ github.created, date.general ], semantic: repo
 // (repos) pushed in [year]
 var pushed = g.newSymbol('pushed')
 pushed.addWord({
-	accepted: [ 'pushed' ]
+	accepted: [ 'pushed' ],
 })
 
 var repositoriesPushedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'pushed'), cost: 0.5, minParams: 1, maxParams: 2 })

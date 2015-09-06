@@ -11,7 +11,7 @@ var pullRequest = category.new({ sg: 'pull-request', pl: 'pull-requests' })
 
 pullRequest.term.addWord({
 	insertionCost: 3.5,
-	accepted: [ 'pull requests' ]
+	accepted: [ 'pull requests' ],
 })
 
 // |Github pull requests (I created)
@@ -68,7 +68,7 @@ github.assigners.addRule({ RHS: [ pullRequest.catPl ] })
 // open/closed (pull requests); (pull requests that are) open/closed
 pullRequest.adjective.addRule({
 	RHS: [ github.state ],
-	semantic: g.newSemantic({ name: g.hyphenate(pullRequest.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true })
+	semantic: g.newSemantic({ name: g.hyphenate(pullRequest.namePl, 'state'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true }),
 })
 
 
