@@ -153,8 +153,8 @@ var nontermRuleOptsSchema = {
 	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
 	verbForm: { type: [ 'past' ], optional: true }, // "like" vs. "liked"
 	personNumber: { type: [ 'one', 'threeSg', 'pl' ], optional: true }, // "like" vs "likes"
-	// Prevent insertion rules from being created from this rule.
-	preventInsertions: { type: Boolean, optional: true },
+	// Prevents insertion rules from being created using this rule and the RHS symbol at this index(es).
+	noInsertionsForIndexes: { type: Array, arrayType: Number, optional: true },
 }
 
 // Create a new nonterminal rule from passed opts
@@ -185,8 +185,16 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 		gramCase: opts.gramCase,
 		verbForm: opts.verbForm,
 		personNumber: opts.personNumber,
-		// Prevent insertion rules from being created from this rule.
-		preventInsertions: opts.preventInsertions,
+	}
+
+	// Prevents insertion rules from being created using this rule and the RHS symbol at this index(es).
+	if (opts.noInsertionsForIndexes) {
+		if (opts.noInsertionsForIndexes.some(function (i) { return opts.RHS[i] === undefined })) {
+			util.logErrorAndPath('\'noInsertionsForIndexes\' contains an index for which there is no RHS symbol:', opts)
+			throw new Error('Ill-formed nonterminal rule')
+		}
+
+		newRule.noInsertionsForIndexes = opts.noInsertionsForIndexes
 	}
 
 	if (opts.semantic) {
@@ -246,8 +254,19 @@ exports.newBinaryRule = function (opts) {
 		}
 	})
 
-	// Create a new Symbol named by the concatenation of the two RHS symbols
-	return exports.new.apply(null, RHS.map(function (sym) { return sym.name })).addRule(opts)
+	// Create a new `Symbol` named by the concatenation of the two RHS symbols.
+	var symbolNameTokens = RHS.map(function (sym, i) {
+		var name = sym.name
+
+		// Specify in symbol name if insertions are forbidden.
+		if (opts.noInsertionsForIndexes && opts.noInsertionsForIndexes.indexOf(i) !== -1) {
+			name = stringUtil.hyphenate(name, 'no', 'insertion')
+		}
+
+		return name
+	})
+
+	return exports.new.apply(null, symbolNameTokens).addRule(opts)
 }
 
 

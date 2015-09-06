@@ -71,11 +71,10 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 
 		Object.keys(grammar).forEach(function (nontermSym) {
 			grammar[nontermSym].forEach(function (rule) {
-				if (rule.preventInsertions) return
 				if (rule.RHS.length === 2 && /\+/.test(nontermSym)) return // TEMP
 				if (rule.transpositionCost !== undefined) return
 
-				if (!rule.isTerminal && RHSCanBeInserted(insertions, rule.RHS)) {
+				if (!rule.isTerminal && RHSCanBeInserted(insertions, rule)) {
 					rule.RHS.map(function (sym) {
 						// Create an array of every insertion for each RHS symbol
 						return insertions[sym].map(function (insertion) {
@@ -150,8 +149,12 @@ function findNontermRulesProducingInsertions(grammar, insertions) {
 }
 
 // Every sym in `RHS` is a terminal symbol with an insertion cost, an empty string, or a nonterminal symbol that produces a sequence of the these
-function RHSCanBeInserted(insertions, RHS) {
-	return RHS.every(function (sym) {
+function RHSCanBeInserted(insertions, rule) {
+	if (rule.noInsertionsForIndexes !== undefined) {
+		return false
+	}
+
+	return rule.RHS.every(function (sym) {
 		return insertions.hasOwnProperty(sym)
 	})
 }
@@ -201,10 +204,10 @@ function createRulesFromInsertions(grammar, insertions) {
 		// if (/lhs]/.test(lhsSym)) return
 
 		grammar[lhsSym].forEach(function (rule, ruleIdx, symRules) {
-			if (rule.preventInsertions) return
 			var RHS = rule.RHS
 			if (RHS.length > 1) {
 				RHS.forEach(function (sym, symIdx) {
+					if (rule.noInsertionsForIndexes && rule.noInsertionsForIndexes.indexOf(symIdx) !== -1) return
 					var otherSym = RHS[+!symIdx]
 
 					// if (/\+/.test(nontermSym) && /\+/.test(sym)) return
