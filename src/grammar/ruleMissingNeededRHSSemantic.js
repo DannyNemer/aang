@@ -36,7 +36,7 @@ module.exports = function ruleMissingNeededRHSSemantic(grammar, rule, lhsSym, sy
 					// `parentRule` contains `lhsSym`
 					if (rhsIdx !== -1) {
 						// Check if a (needed) RHS semantic can be found in the other branch of a binary reduction
-						var otherSym = parRHS[+!rhsIdx]
+						var otherSym = parRHS[Number(!rhsIdx)]
 						if (otherSym && symProducesRHSSemantic(grammar, otherSym)) return false
 
 						var demandingRule = ruleMissingNeededRHSSemantic(grammar, parentRule, nontermSym, symsSeen)

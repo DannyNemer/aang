@@ -208,7 +208,7 @@ function createRulesFromInsertions(grammar, insertions) {
 			if (RHS.length > 1) {
 				RHS.forEach(function (sym, symIdx) {
 					if (rule.noInsertionsForIndexes && rule.noInsertionsForIndexes.indexOf(symIdx) !== -1) return
-					var otherSym = RHS[+!symIdx]
+					var otherSym = RHS[Number(!symIdx)]
 
 					// if (/\+/.test(nontermSym) && /\+/.test(sym)) return
 
