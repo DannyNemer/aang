@@ -100,7 +100,7 @@ function Category(opts) {
 	// (people) I follow
 	rhsExt.addRule({ RHS: [ objFilterPlus ] })
 	// (repos) that I created (that I like); (people) who I follow (who Danny follows)
-	// rhsExt.addRule({ RHS: [ opts.isPerson ? relPronouns.whoNoInsertion : relPronouns.thatNoInsertion, objFilterPlus ] })
+	// rhsExt.addRule({ RHS: [ opts.isPerson ? relPronouns.whoNoInsert : relPronouns.thatNoInsert, objFilterPlus ] })
 
 
 	var rhs = g.newSymbol(this.nameSg, 'rhs')

@@ -260,7 +260,7 @@ exports.newBinaryRule = function (opts) {
 
 		// Specify in symbol name if insertions are forbidden.
 		if (opts.noInsertionsForIndexes && opts.noInsertionsForIndexes.indexOf(i) !== -1) {
-			name = stringUtil.hyphenate(name, 'no', 'insertion')
+			name = stringUtil.hyphenate(name, 'no', 'insert')
 		}
 
 		return name

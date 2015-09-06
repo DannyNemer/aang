@@ -68,11 +68,11 @@ user.nomUsersPlusPreVerbStopWords.addRule({ RHS: [ user.nomUsersPlus, stopWords.
 
 // No insertion for '[have]' to prevent semantically identical trees from being created, such as "repos I like" suggesting "repos I have liked".
 // (repos) I have (liked)
-user.nomUsersPlusHaveNoInsertion = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.have ], noInsertionsForIndexes: [ 1 ] })
+user.nomUsersPlusHaveNoInsert = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.have ], noInsertionsForIndexes: [ 1 ] })
 // (repos) I have (contributed to)
-user.nomUsersPlusHaveNoInsertionPreVerbStopWords = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.haveNoInsertionPreVerbStopWords ] })
+user.nomUsersPlusHaveNoInsertPreVerbStopWords = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.haveNoInsertPreVerbStopWords ] })
 // (repos/issues/pull-requests) I <stop> have (created)
-user.nomUsersPreVerbStopWordsHaveNoInsertion = g.newBinaryRule({ RHS: [ user.nomUsersPreVerbStopWords, auxVerbs.have ], noInsertionsForIndexes: [ 1 ] })
+user.nomUsersPreVerbStopWordsHaveNoInsert = g.newBinaryRule({ RHS: [ user.nomUsersPreVerbStopWords, auxVerbs.have ], noInsertionsForIndexes: [ 1 ] })
 
 
 var objUsers = g.newSymbol('obj', user.namePl)

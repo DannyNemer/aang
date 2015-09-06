@@ -43,7 +43,7 @@ exports.have.addVerb({
 
 // (repos I) have <stop> (contributed to)
 // No insertion to prevent semantically identical trees from being created, such as "repos I like" suggesting "repos I have liked".
-exports.haveNoInsertionPreVerbStopWords = g.newBinaryRule({ RHS: [ exports.have, stopWords.preVerb ], noInsertionsForIndexes: [ 0 ] })
+exports.haveNoInsertPreVerbStopWords = g.newBinaryRule({ RHS: [ exports.have, stopWords.preVerb ], noInsertionsForIndexes: [ 0 ] })
 
 // (people who have) <stop> (been folllowed by me); (people who have) <stop> (been following me)
 var haveSentenceAdverbial = g.newBinaryRule({ RHS: [ exports.have, stopWords.sentenceAdverbial ], personNumber: 'pl' })

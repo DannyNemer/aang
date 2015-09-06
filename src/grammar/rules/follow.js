@@ -33,14 +33,14 @@ user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: follower
 
 
 // No insertion
-var followersTermNoInsertion = g.newSymbol('followers', 'term', 'no', 'insertion')
-followersTermNoInsertion.addWord({
+var followersTermNoInsert = g.newSymbol('followers', 'term', 'no', 'insert')
+followersTermNoInsert.addWord({
 	accepted: [ 'followers', 'subscribers' ]
 })
 
 // (my) followers; followers (of mine)
 var userFollowersHead = g.newSymbol(user.nameSg, 'followers', 'head')
-userFollowersHead.addRule({ RHS: [ user.companyOpt, followersTermNoInsertion ] })
+userFollowersHead.addRule({ RHS: [ user.companyOpt, followersTermNoInsert ] })
 
 // my followers; my followers' followers
 var followersPossDeterminer = g.newSymbol('followers', poss.determiner.name)
