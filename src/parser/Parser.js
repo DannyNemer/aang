@@ -615,7 +615,7 @@ Parser.prototype.reduce = function (redZNode, red) {
 
 
 function printNode(node) {
-	if (node.sym.isLiteral) {
+	if (node.sym.isTerminal) {
 		return ' \"' + node.sym.name + '\"'
 	} else {
 		return ' ' + node.sym.name + '_' + node.start + '_' + (node.start + node.size)
@@ -631,12 +631,12 @@ Parser.prototype.printForest = function (startNode) {
 
 	this.nodeTabs.forEach(function (nodeTab) {
 		nodeTab.forEach(function (node) {
-			if (node.sym.isLiteral) return
+			if (node.sym.isTerminal) return
 
 			var toPrint = printNode(node)
 
 			if (node.subs.length > 0) {
-				if (node.subs[0].node.sym.isLiteral) toPrint += ':'
+				if (node.subs[0].node.sym.isTerminal) toPrint += ':'
 				else toPrint += ' ='
 			}
 
