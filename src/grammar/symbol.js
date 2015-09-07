@@ -62,10 +62,11 @@ var termRuleOptsSchema = {
 	RHS: String,
 	semantic: { type: Array, optional: true },
 	insertionCost: { type: Number, optional: true },
-	// If text and textForms are undefined, and RHS is not <int>, <empty>, or an entity category, use RHS as text
-	// Use text = '' for a terminal rule with no display text (e.g., stop-words)
-	text: { type: String, optional: true },
-	textForms: { type: Object, optional: true },
+	// If `options.text` is an `Object`, then it is a set of inflected forms for conjugation.
+	// If `options.text` is a `string`, then it is the literal display text.
+	// If `options.text` is `undefined`, and RHS is neither <int>, <empty>, nor an entity category, use `options.RHS` as `text`.
+	// Use `options.text = ''` for a terminal rule with no display text (e.g., stop-words).
+	text: { type: [ String, Object ], optional: true },
 	intMin: { type: Number, optional: true },
 	intMax: { type: Number, optional: true },
 }
@@ -94,14 +95,12 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	}
 
 	// Assign text to display in output when terminal rule is seen in input
-	if (opts.textForms) {
-		// Object of inflected forms for conjugation
-		newRule.text = opts.textForms
-	} else if (opts.text) {
-		// String for symbols not needing conjugation
+	if (opts.text) {
+		// Object of inflected forms for conjugation.
+		// String for symbols not needing conjugation.
 		newRule.text = opts.text
 	} else if (opts.text === undefined && opts.RHS !== g.emptySymbol && opts.RHS !== g.intSymbol && !entityCategory.creationLines.hasOwnProperty(opts.RHS)) {
-		// Use RHS as text if `textForms` and `text` are undefined
+		// Use RHS as text if `text` are undefined
 		newRule.text = opts.RHS
 	}
 

@@ -28,7 +28,7 @@ Symbol.prototype.addPronoun = function (opts) {
 	}
 
 	// Nominative case
-	var newRule = { terminal: true, RHS: opts.nom, textForms: textForms }
+	var newRule = { terminal: true, RHS: opts.nom, text: textForms }
 
 	// Insertion cost added to first terminal rule (though, inconsequential)
 	if (opts.insertionCost !== undefined) {
@@ -38,11 +38,11 @@ Symbol.prototype.addPronoun = function (opts) {
 	this.addRule(newRule)
 
 	// Objective case
-	this.addRule({ terminal: true, RHS: opts.obj, textForms: textForms })
+	this.addRule({ terminal: true, RHS: opts.obj, text: textForms })
 
 	// Terminal symbols which are replaced when input
 	opts.substitutions.forEach(function (termSym) {
-		this.addRule({ terminal: true, RHS: termSym, textForms: textForms })
+		this.addRule({ terminal: true, RHS: termSym, text: textForms })
 	}, this)
 
 	return this
@@ -103,7 +103,7 @@ Symbol.prototype.addVerb = function (opts) {
 	// Inflected forms for first-person (e.g., "am")
 	if (opts.one) {
 		opts.one.forEach(function (termSym, i) {
-			var newRule = { terminal: true, RHS: termSym, textForms: {
+			var newRule = { terminal: true, RHS: termSym, text: {
 				one: termSym,
 				pl: defaultTextForms.pl,
 				threeSg: defaultTextForms.threeSg,
@@ -122,7 +122,7 @@ Symbol.prototype.addVerb = function (opts) {
 	// Inflected forms for plural (e.g., "are", "were")
 	if (opts.pl) {
 		opts.pl.forEach(function (termSym, i) {
-			var newRule = { terminal: true, RHS: termSym, textForms: {
+			var newRule = { terminal: true, RHS: termSym, text: {
 				one: defaultTextForms.one,
 				pl: termSym,
 				threeSg: defaultTextForms.threeSg,
@@ -141,7 +141,7 @@ Symbol.prototype.addVerb = function (opts) {
 	// Inflected forms for first-person or plural (e.g., "have", "like")
 	if (opts.oneOrPl) {
 		opts.oneOrPl.forEach(function (termSym, i) {
-			var newRule = { terminal: true, RHS: termSym, textForms: {
+			var newRule = { terminal: true, RHS: termSym, text: {
 				one: termSym,
 				pl: termSym,
 				threeSg: defaultTextForms.threeSg,
@@ -160,7 +160,7 @@ Symbol.prototype.addVerb = function (opts) {
 	// Inflected forms for third-person-singular (e.g., "is", "has", "likes")
 	if (opts.threeSg) {
 		opts.threeSg.forEach(function (termSym) {
-			this.addRule({ terminal: true, RHS: termSym, textForms: {
+			this.addRule({ terminal: true, RHS: termSym, text: {
 				one: defaultTextForms.one,
 				pl: defaultTextForms.pl,
 				threeSg: termSym,
@@ -172,7 +172,7 @@ Symbol.prototype.addVerb = function (opts) {
 	// Inflected forms for third-person-singular or first-person (e.g., "was")
 	if (opts.oneOrThreeSg) {
 		opts.oneOrThreeSg.forEach(function (termSym) {
-			this.addRule({ terminal: true, RHS: termSym, textForms: {
+			this.addRule({ terminal: true, RHS: termSym, text: {
 				one: termSym,
 				pl: defaultTextForms.pl,
 				threeSg: termSym,
@@ -184,7 +184,7 @@ Symbol.prototype.addVerb = function (opts) {
 	// Past tense - optional
 	if (opts.past) {
 		opts.past.forEach(function (termSym) {
-			this.addRule({ terminal: true, RHS: termSym, textForms: {
+			this.addRule({ terminal: true, RHS: termSym, text: {
 				one: defaultTextForms.one,
 				pl: defaultTextForms.pl,
 				threeSg: defaultTextForms.threeSg,
@@ -196,7 +196,7 @@ Symbol.prototype.addVerb = function (opts) {
 	// Terminal symbols which are replaced when input
 	if (opts.substitutions) {
 		opts.substitutions.forEach(function (termSym) {
-			this.addRule({ terminal: true, RHS: termSym, textForms: defaultTextForms })
+			this.addRule({ terminal: true, RHS: termSym, text: defaultTextForms })
 		}, this)
 	}
 
