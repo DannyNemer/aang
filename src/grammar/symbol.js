@@ -150,9 +150,9 @@ var nontermRuleOptsSchema = {
 	RHS: Array,
 	semantic: { type: Array, optional: true },
 	transpositionCost: { type: Number, optional: true },
-	gramCase: { type: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
-	verbForm: { type: [ 'past' ], optional: true }, // "like" vs. "liked"
-	personNumber: { type: [ 'one', 'threeSg', 'pl' ], optional: true }, // "like" vs "likes"
+	gramCase: { values: [ 'nom', 'obj' ], optional: true }, // "me" vs. "I"
+	verbForm: { values: [ 'past' ], optional: true }, // "like" vs. "liked"
+	personNumber: { values: [ 'one', 'threeSg', 'pl' ], optional: true }, // "like" vs "likes"
 	// Prevents insertion rules from being created using this rule and the RHS symbol at this index(es).
 	noInsertionIndexes: { type: Array, arrayType: Number, optional: true },
 }
