@@ -39,11 +39,17 @@ var util = require('util')
  * }
  */
 exports.illFormedOpts = function (schema, options) {
-	// Check if missing an options parameter required by schema.
 	for (var prop in schema) {
-		var val = schema[prop]
+		var schemaVal = schema[prop]
 
-		if (!val.optional && !options.hasOwnProperty(prop)) {
+		// Check `arrayType` is only used with parameters of type `Array`.
+		if (schemaVal.arrayType !== undefined && schemaVal.type !== Array) {
+			exports.logError('Schema cannot use \'arrayType\' for a paramter type other than Array:', schemaVal)
+			throw new Error('Ill-formed options schema')
+		}
+
+		// Check if missing an options parameter required by schema.
+		if (!schemaVal.optional && !options.hasOwnProperty(prop)) {
 			exports.logErrorAndPath('Missing \'' + prop + '\' property')
 			return true
 		}
