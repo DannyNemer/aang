@@ -20,11 +20,23 @@ var util = require('util')
  * @example
  *
  * var schema = {
- *   num: Number,                                  // Must be of type `Number`
- *   list: { type: Array },                        // Must be of type `Array` (identical to previous parameter)
- *   strings: { type: Array, arrayType: String },  // Must be `Array` containing only String
- *   str: { type: String, optional: true },        // Parameter can be omitted
- *   val: [ 'red', 'yellow', 'blue' ]              // Must be one of predefined values
+ *   // Must be of type `Number`.
+ *   num: Number,
+ *
+ *   // Must be of type `Array` (identical to previous parameter).
+ *   list: { type: Array },
+ *
+ *   // Must be `Array` containing only String.
+ *   strings: { type: Array, arrayType: String },
+ *
+ *   // Parameter can be omitted.
+ *   str: { type: String, optional: true },
+ *
+ *   // Must be one of predefined values.
+ *   val: [ 'red', 'yellow', 'blue' ],
+ *
+ *   // Must be one of predefined values (identical to previous parameter).
+ *   val: { type: [ 'red', 'yellow', 'blue' ] }
  * }
  *
  * function myFunc(options) {
@@ -44,7 +56,7 @@ exports.illFormedOpts = function (schema, options) {
 
 		// Check `arrayType` is only used with parameters of type `Array`.
 		if (schemaVal.arrayType !== undefined && schemaVal.type !== Array) {
-			exports.logError('Schema cannot use \'arrayType\' for a paramter type other than Array:', schemaVal)
+			exports.logError('Options schema uses \'arrayType\' for a paramter type other than Array:', schemaVal)
 			throw new Error('Ill-formed options schema')
 		}
 
