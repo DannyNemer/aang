@@ -566,16 +566,16 @@ function format(args, options) {
 
 				// JavaScript will not properly indent if '\t' is appended to spaces (i.e., reverse order as here).
 				indent = arg + indent
-			} else if (typeof arg === 'object') {
+			} else if (exports.isObject(arg)) {
 				// Do not indent if the first argument is an object.
 				indent = ''
 			}
 
 			formattedArgs.push(formattedArg)
-		} else if (typeof arg === 'object') {
+		} else if (exports.isObject(arg)) {
 			// Print all objects on separate lines.
 			formattedArgs.push(indent + formattedArg.replace(reMultiLined, reMultiLined.source + indent))
-		} else if (typeof args[i - 1] === 'object') {
+		} else if (exports.isObject(args[i - 1])) {
 			// Do not concatenate objects with other arguments.
 			formattedArgs.push(indent + formattedArg)
 		} else {
