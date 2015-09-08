@@ -22,7 +22,7 @@ module.exports = function (grammar) {
 			}
 		}
 
-		util.logWarning('Unused symbol:', symbolName)
+		util.logWarning('Unused symbol:', util.stylize(symbolName))
 		util.log('  ' + symbolCreationLines[symbolName])
 	})
 
@@ -38,7 +38,7 @@ module.exports = function (grammar) {
 			}
 		}
 
-		util.logWarning('Unused entity category:', categorySymbolName)
+		util.logWarning('Unused entity category:', util.stylize(categorySymbolName))
 		util.log('  ' + entityCategoryCreationLines[categorySymbolName])
 	})
 
@@ -74,7 +74,7 @@ module.exports = function (grammar) {
 			}
 		}
 
-		util.logWarning('Unused semantic:', semanticName)
+		util.logWarning('Unused semantic:', util.stylize(semanticName))
 		util.log('  ' + semantic.creationLines[semanticName])
 	})
 }
