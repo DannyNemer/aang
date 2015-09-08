@@ -772,6 +772,34 @@ exports.logErrorAndPath = function (logThisLine) {
 }
 
 /**
+ * Prints `object` preceded by the file path and line number of the function call that invoked the currently executing module.
+ *
+ * @static
+ * @memberOf dantil
+ * @category Console
+ * @param {Object} object The object to print.
+ * @param {boolean} printLeadingNewline Specify printing a leading newline.
+ * @param {boolean} logThisLine Specify logging the line where this function is called instead of the line which invoked the currently executing module.
+ * @example
+ *
+ * // The contents of 'foo.js':
+ *
+ * var obj = {
+ *   values: [1, 2, 3],
+ *   name: 'danny'
+ * }
+ *
+ * dantil.logPathAndObject(obj)
+ * // => Prints "/Users/Danny/foo.js:6
+ * //              { values: [ 1, 2, 3 ], name: 'danny' }"
+ */
+exports.logPathAndObject = function (object, printLeadingNewline, logThisLine) {
+	var pathAndLineNumber = printLeadingNewline ? '\n' : ''
+	pathAndLineNumber += logThisLine ? exports.getPathAndLineNumber() : exports.getModuleCallerPathAndLineNumber()
+	exports.log(pathAndLineNumber, object)
+}
+
+/**
  * Prints the stack trace to the current position. Removes parentheses surrounding file paths for the iTerm open-file-path shortcut.
  *
  * @static
