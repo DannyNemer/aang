@@ -695,14 +695,12 @@ function printWithColoredLabel(label, color, args) {
  * //              /Users/Danny/foo.js:1"
  */
 exports.logErrorAndPath = function (logThisLine) {
-	var args
+	var args = Array.prototype.slice.call(arguments, typeof logThisLine === 'boolean' ? 1 : 0)
 	var stackLine
 
 	if (logThisLine === true) {
-		args = Array.prototype.slice.call(arguments, 1)
 		stackLine = exports.getPathAndLineNumber()
 	} else {
-		args = Array.prototype.slice.call(arguments)
 		stackLine = exports.getModuleCallerPathAndLineNumber()
 	}
 
