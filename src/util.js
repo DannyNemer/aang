@@ -55,33 +55,33 @@ var util = require('util')
  */
 exports.illFormedOpts = function (schema, options) {
 	// Check if missing an options parameter required by schema.
-	for (var prop in schema) {
-		var paramSchema = schema[prop]
+	for (var paramName in schema) {
+		var paramSchema = schema[paramName]
 
-		if (!paramSchema.optional && (!options || !options.hasOwnProperty(prop))) {
-			exports.logError('Missing \'' + prop + '\' property:')
+		if (!paramSchema.optional && (!options || !options.hasOwnProperty(paramName))) {
+			exports.logError('Missing \'' + paramName + '\' property:')
 			exports.logPathAndObject(options, true)
 			return true
 		}
 	}
 
 	// Check if passed parameters conform to schema.
-	for (var prop in options) {
+	for (var paramName in options) {
 		// Check for unrecognized properties.
-		if (!schema.hasOwnProperty(prop)) {
-			exports.logError('Unrecognized property: \'' + prop + '\'')
+		if (!schema.hasOwnProperty(paramName)) {
+			exports.logError('Unrecognized property: \'' + paramName + '\'')
 			exports.logPathAndObject(options, true)
 			return true
 		}
 
-		var optsVal = options[prop]
-		var paramSchema = schema[prop]
+		var optsVal = options[paramName]
+		var paramSchema = schema[paramName]
 		var paramSchemaType = paramSchema.type || paramSchema
 		var paramSchemaVals = paramSchema.values
 
 		// Check for an accidentally passed `undefined` object; e.g., `undefined`, `[]`, `[ 1, undefined ]`.
 		if (optsVal === undefined || (Array.isArray(optsVal) && (optsVal.length === 0 || optsVal.indexOf(undefined) !== -1))) {
-			exports.logError('undefined \'' + prop + '\':', optsVal)
+			exports.logError('undefined \'' + paramName + '\':', optsVal)
 			exports.logPathAndObject(options, true)
 			return true
 		}
@@ -89,16 +89,16 @@ exports.illFormedOpts = function (schema, options) {
 		if (paramSchemaVals) {
 			// Check if passed value is not an accepted value.
 			if (paramSchemaVals.indexOf(optsVal) === -1) {
-				exports.logError('Unrecognized value for \'' + prop + '\':', exports.stylize(optsVal))
-				exports.log('       Accepted values for \'' + prop + '\':', paramSchemaVals)
+				exports.logError('Unrecognized value for \'' + paramName + '\':', exports.stylize(optsVal))
+				exports.log('       Accepted values for \'' + paramName + '\':', paramSchemaVals)
 				exports.logPathAndObject(options, true)
 				return true
 			}
 		} else if (Array.isArray(paramSchemaType)) {
 			// Check if passed value is not of an accepted type.
 			if (paramSchemaType.indexOf(optsVal.constructor) === -1) {
-				exports.logError('Incorrect type for \'' + prop + '\':', exports.stylize(optsVal))
-				exports.log('       Accepted types for \'' + prop + '\':', paramSchemaType.map(function (constructor) {
+				exports.logError('Incorrect type for \'' + paramName + '\':', exports.stylize(optsVal))
+				exports.log('       Accepted types for \'' + paramName + '\':', paramSchemaType.map(function (constructor) {
 					return constructor.name
 				}))
 				exports.logPathAndObject(options, true)
@@ -107,14 +107,14 @@ exports.illFormedOpts = function (schema, options) {
 		} else {
 			// Check if passed value is not of correct type.
 			if (optsVal.constructor !== paramSchemaType) {
-				exports.logError('\'' + prop + '\' not of type ' + paramSchemaType.name + ':', exports.stylize(optsVal))
+				exports.logError('\'' + paramName + '\' not of type ' + paramSchemaType.name + ':', exports.stylize(optsVal))
 				exports.logPathAndObject(options, true)
 				return true
 			}
 
 			// Check if passed Array contains elements not of `arrayType` (if `arrayType` is defined).
 			if (Array.isArray(optsVal) && paramSchema.arrayType && optsVal.some(function (el) { return el.constructor !== paramSchema.arrayType })) {
-				exports.logError('\'' + prop + '\' array contains elements other than of type ' + paramSchema.arrayType.name + ':', optsVal)
+				exports.logError('\'' + paramName + '\' array contains elements other than of type ' + paramSchema.arrayType.name + ':', optsVal)
 				exports.logPathAndObject(options, true)
 				return true
 			}
