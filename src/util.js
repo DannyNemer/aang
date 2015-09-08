@@ -553,11 +553,12 @@ function format(args, options) {
 	return Array.prototype.slice.call(args).reduce(function (formattedArgs, arg, i, args) {
 		// Print strings passed as arguments (i.e., not `Object` properties) without styling.
 		// - This also preserves any already-stylized arguments.
-		var formattedArg = !options.stylizeStings && typeof arg === 'string' ? arg : util.inspect(arg, inspectOptions)
+		var argIsString = typeof arg === 'string'
+		var formattedArg = !options.stylizeStings && argIsString ? arg : util.inspect(arg, inspectOptions)
 
 		if (i === 0) {
 			// Extend indent for successive lines with the first argument's leading whitespace, if any.
-			if (typeof arg === 'string') {
+			if (argIsString) {
 				// Get the substring of leading whitespace characters from the start of the string, up to the first non-whitespace character, if any.
 				arg = arg.substring(0, arg.search(/[^\s]/))
 
