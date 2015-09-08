@@ -341,28 +341,3 @@ Symbol.prototype.createNonterminalOpt = function () {
 
 	return symbolOpt
 }
-
-/**
- * Duplicates the symbol's terminal rules without an insertion cost.
- *
- * @returns {Symbol} Returns the new Symbol
- */
-Symbol.prototype.createTerminalNoInsert = function () {
-	var symbolNoInsert = g.newSymbol(this.name, 'no', 'insert')
-
-	this.rules.forEach(function (rule) {
-		if (!rule.isTerminal) return
-
-		var newRule = {}
-
-		for (var prop in rule) {
-			if (prop !== 'insertionCost') {
-				newRule[prop] = rule[prop]
-			}
-		}
-
-		symbolNoInsert.rules.push(newRule)
-	})
-
-	return symbolNoInsert
-}
