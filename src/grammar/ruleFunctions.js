@@ -285,6 +285,14 @@ Symbol.prototype.addWord = function (opts) {
 	return this
 }
 
+/**
+ * Creates a terminal rule for this symbol to accept integers within a range.
+ *
+ * @param {Object} opts The options object.
+ * @param {number} opts.min The minimum value of integers this symbol can accept.
+ * @param {number} [opts.max=Number.MAX_SAFE_INTEGER] The maximum value of integers this symbol can accept.
+ * @returns {Symbol} Returns `this` symbol for chaining.
+ */
 
 // Schema for <int>
 var intOptsSchema = {
@@ -294,13 +302,12 @@ var intOptsSchema = {
 	max: { type: Number, optional: true },
 }
 
-// Create a terminal rule to for integers within an accepted range
 Symbol.prototype.addInt = function (opts) {
 	if (util.illFormedOpts(intOptsSchema, opts)) {
 		throw new Error('Ill-formed <int> Symbol')
 	}
 
-	// If defined, maximum value must be greater than minimum value
+	// If defined, maximum value must be greater than minimum value.
 	if (opts.min >= opts.max) {
 		util.logErrorAndPath('<int> max value must be greater than min value:', 'min: ' + opts.min + ', max: ' + opts.max)
 		throw new Error('Ill-formed <int> Symbol')
@@ -310,23 +317,26 @@ Symbol.prototype.addInt = function (opts) {
 		terminal: true,
 		RHS: g.intSymbol,
 		intMin: opts.min,
-		// If maximum value undefined, set to Number.MAX_SAFE_INTEGER
-		// - Infinity unrecognized in JSON.stringify() and will accept 'Infinity' in input
+		// If maximum value `undefined`, set to `Number.MAX_SAFE_INTEGER`
+		// - `Infinity` unrecognized in `JSON.stringify()` and will accept 'Infinity' in input
 		intMax: opts.max !== undefined ? opts.max : Number.MAX_SAFE_INTEGER,
 	})
 
 	return this
 }
 
-
-// Create an optionalized version of an existing nonterminal symbol
-// Returns a new Symbol
+/**
+ * Creates an optionalized version of an existing nonterminal symbol.
+ *
+ * @returns {Symbol} Returns the new Symbol
+ */
 Symbol.prototype.createNonterminalOpt = function () {
-	// Append 'opt' to original symbol name
+	// Append 'opt' to original symbol name.
 	var symbolOpt = g.newSymbol(this.name, 'opt')
 
 	symbolOpt.addRule({ RHS: [ this ] })
-	// <empty> always last for optional nonterminal symbols
+
+	// '<empty>' is always the last rule for optional nonterminal symbols.
 	symbolOpt.addRule({ terminal: true, RHS: g.emptySymbol })
 
 	return symbolOpt
