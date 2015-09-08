@@ -53,37 +53,88 @@ var util = require('util')
  *   // ...stuff...
  * }
  */
-exports.illFormedOpts = function (schema, options) {
+exports.illFormedOpts = function (schema, options, _paramCheck) {
+	// Check if `schema` itself is ill-formed.
+	if (!_paramCheck) {
+		for (var prop in schema) {
+			var paramSchema = schema[prop]
+
+			if (exports.isObject(paramSchema)) {
+				// { values: [ 'apple', 'banana' ] }
+				if (paramSchema.values) {
+					var illFormed = exports.illFormedOpts({
+						values: Array,
+						optional: { type: Boolean, optional: true }
+					}, paramSchema, true)
+
+					if (illFormed) return true
+				}
+
+				// { type: Array, arrayType: String }
+				else if (paramSchema.arrayType) {
+					var illFormed = exports.illFormedOpts({
+						type: { values: [ Array ] },
+						arrayType: Function,
+						optional: { type: Boolean, optional: true }
+					}, paramSchema, true)
+
+					if (illFormed) return true
+				}
+
+				// { type: [ Numbers ] }
+				else if (Array.isArray(paramSchema.type)) {
+					var illFormed = exports.illFormedOpts({
+						type: { type: Array, arrayType: Function },
+						optional: { type: Boolean, optional: true }
+					}, paramSchema, true)
+
+					if (illFormed) return true
+				}
+
+				// { type: Number }
+				else {
+					var illFormed = exports.illFormedOpts({
+						type: Function,
+						optional: { type: Boolean, optional: true }
+					}, paramSchema, true)
+
+					if (illFormed) return true
+				}
+			}
+
+			// { name: [ Number ] }
+			else if (Array.isArray(paramSchema)) {
+				var test = {}
+				test[prop] = {
+					type: Array,
+					arrayType: Function
+				}
+				var otherTest = {}
+				otherTest[prop] = paramSchema
+				var illFormed = exports.illFormedOpts(test, otherTest, true)
+
+				if (illFormed) return true
+			}
+
+			// { name: Number }
+			else {
+				var test = {}
+				test[prop] = Function
+				var otherTest = {}
+				otherTest[prop] = paramSchema
+				var illFormed = exports.illFormedOpts(test, otherTest, true)
+
+				if (illFormed) return true
+			}
+		}
+	}
+
+	// Check if missing an options parameter required by schema.
 	for (var prop in schema) {
 		var paramSchema = schema[prop]
 
-		// Check `arrayType` is only used with parameters of type `Array`.
-		if (paramSchema.arrayType !== undefined && paramSchema.type !== Array) {
-			exports.logErrorAndPath(true, 'Options schema uses \'arrayType\' for a parameter type other than Array:', paramSchema)
-			throw new Error('Ill-formed options schema')
-		}
-
-		if (paramSchema.values) {
-			var secondSchemaPropName = paramSchema.type ? 'type' : (paramSchema.arrayType ? 'arrayType' : false)
-
-			// Check `values` and either `type` or `arrayType` are not used in the parameter definition.
-			if (secondSchemaPropName) {
-				exports.logErrorAndPath(true, 'Options schema uses both \'values\' and \'' + secondSchemaPropName + '\':', paramSchema)
-				throw new Error('Ill-formed options schema')
-			}
-		} else {
-			var paramSchemaType = paramSchema.type || paramSchema
-
-			// Check arrays of multiple accepted types contains function constructors.
-			if (Array.isArray(paramSchemaType) && paramSchemaType.some(function (type) { return type.constructor !== Function })) {
-				exports.logErrorAndPath(true, 'Options schema does not use function constructors for its array of accepted types:', paramSchema)
-				throw new Error('Ill-formed options schema')
-			}
-		}
-
-		// Check if missing an options parameter required by schema.
-		if (!paramSchema.optional && !options.hasOwnProperty(prop)) {
-			exports.logErrorAndPath('Missing \'' + prop + '\' property')
+		if (!paramSchema.optional && (!options || !options.hasOwnProperty(prop))) {
+			exports.logErrorAndPath(_paramCheck, 'Missing \'' + prop + '\' property:', options)
 			return true
 		}
 	}
@@ -92,7 +143,7 @@ exports.illFormedOpts = function (schema, options) {
 	for (var prop in options) {
 		// Check for unrecognized properties.
 		if (!schema.hasOwnProperty(prop)) {
-			exports.logErrorAndPath('Unrecognized property:', prop)
+			exports.logErrorAndPath(_paramCheck, 'Unrecognized property: \'' + prop + '\'', options)
 			return true
 		}
 
@@ -103,38 +154,46 @@ exports.illFormedOpts = function (schema, options) {
 
 		// Check for an accidentally passed `undefined` object; e.g., `undefined`, `[]`, `[ 1, undefined ]`.
 		if (optsVal === undefined || (Array.isArray(optsVal) && (optsVal.length === 0 || optsVal.indexOf(undefined) !== -1))) {
-			exports.logErrorAndPath('undefined ' + prop + ':', optsVal)
+			exports.logErrorAndPath(_paramCheck, 'undefined \'' + prop + '\':', optsVal, options)
 			return true
 		}
 
 		if (paramSchemaVals) {
 			// Check if passed value is not an accepted value.
 			if (paramSchemaVals.indexOf(optsVal) === -1) {
-				exports.logError('Unrecognized value for \'' + prop + '\':', optsVal)
+				exports.logError('Unrecognized value for \'' + prop + '\':', exports.stylize(optsVal))
 				exports.log('       Accepted values for \'' + prop + '\':', paramSchemaVals)
-				exports.log('  ' + exports.getModuleCallerPathAndLineNumber())
+				exports.log()
+				exports.log(options)
+				if (_paramCheck) {
+					exports.log('  ' + exports.getPathAndLineNumber())
+				} else {
+					exports.log('  ' + exports.getModuleCallerPathAndLineNumber())
+				}
 				return true
 			}
 		} else if (Array.isArray(paramSchemaType)) {
 			// Check if passed value is not of an accepted type.
 			if (paramSchemaType.indexOf(optsVal.constructor) === -1) {
-				exports.logError('Incorrect type for \'' + prop + '\':', optsVal)
+				exports.logError('Incorrect type for \'' + prop + '\':', exports.stylize(optsVal))
 				exports.log('       Accepted types for \'' + prop + '\':', paramSchemaType.map(function (constructor) {
 					return constructor.name
 				}))
+				exports.log()
+				exports.log(options)
 				exports.log('  ' + exports.getModuleCallerPathAndLineNumber())
 				return true
 			}
 		} else {
 			// Check if passed value is not of correct type.
 			if (optsVal.constructor !== paramSchemaType) {
-				exports.logErrorAndPath('\'' + prop + '\' not of type ' + paramSchemaType.name + ':', optsVal)
+				exports.logErrorAndPath(_paramCheck, '\'' + prop + '\' not of type ' + paramSchemaType.name + ':', exports.stylize(optsVal), options)
 				return true
 			}
 
 			// Check if passed Array contains elements not of `arrayType` (if `arrayType` is defined).
-			if (Array.isArray(optsVal) && paramSchema.arrayType && !optsVal.every(function (el) { return el.constructor === paramSchema.arrayType })) {
-				exports.logErrorAndPath('\'' + prop + '\' not an array of type \'' + paramSchema.arrayType.name + '\':', optsVal)
+			if (Array.isArray(optsVal) && paramSchema.arrayType && optsVal.some(function (el) { return el.constructor !== paramSchema.arrayType })) {
+				exports.logErrorAndPath(_paramCheck, '\'' + prop + '\' array contains elements other than of type ' + paramSchema.arrayType.name + ':', optsVal, options)
 				return true
 			}
 		}
