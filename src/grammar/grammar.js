@@ -3,14 +3,14 @@ var util = require('../util')
 
 
 var symbol = require('./symbol')
-// Creates a new `Symbol`
+// Creates a new `Symbol`.
 exports.newSymbol = symbol.new
-// Creates a new `Symbol` with a single binary nonterminal rule
+// Creates a new `Symbol` with a single binary nonterminal rule.
 exports.newBinaryRule = symbol.newBinaryRule
-// The grammar
+// The grammar.
 var grammar = symbol.grammar
 
-// The start symbol of `grammar`
+// The start symbol of `grammar`.
 exports.startSymbol = exports.newSymbol('start')
 
 // The terminal symbol for empty strings. Rules with '<empty>' optionalize their LHS symbols and subsequent unary reductions. Original unary rules with '<empty>' are omitted from `grammar` when output.
@@ -19,32 +19,32 @@ exports.emptySymbol = '<empty>'
 // The terminal symbol for integers. Terminal rules with <int> are assigned minimum and maximum values.
 exports.intSymbol = '<int>'
 
-// Concatenates variadic string arguments (including `Symbol.name`) with dashes
+// Concatenates variadic string arguments (including `Symbol.name`) with dashes.
 exports.hyphenate = require('./stringUtil').hyphenate
 
-// Extend `Symbol` with functions for predefined sets of rules (e.g., verbs, stop words)
+// Extend `Symbol` with functions for predefined sets of rules (e.g., verbs, stop words).
 require('./ruleFunctions')
 
 var semantic = require('./semantic')
-// Creates a new semantic function or argument
+// Creates a new semantic function or argument.
 exports.newSemantic = semantic.new
-// Applies a completed semantic rule to a more recent semantic tree, joining them together as one semantic tree with a new root function
+// Applies a completed semantic rule to a more recent semantic tree, joining them together as one semantic tree with a new root function.
 exports.reduceSemantic = semantic.reduce
 
 var entityCategory = require('./entityCategory')
-// Creates a new entity category containing the passed entities
+// Creates a new entity category containing the passed entities.
 exports.newEntityCategory = entityCategory.new
 
-// Creates grammar rules derived from insertion and transposition costs, and empty strings in `grammar`
+// Creates grammar rules derived from insertion and transposition costs, and empty strings in `grammar`.
 exports.createEditRules = require('./createEditRules').bind(null, grammar)
 
-// Determines if a rule lacks and cannot produce a RHS semantic needed by itself or an ancestor rule in `grammar`
+// Determines if a rule lacks and cannot produce a RHS semantic needed by itself or an ancestor rule in `grammar`.
 exports.ruleMissingNeededRHSSemantic = require('./ruleMissingNeededRHSSemantic').bind(null, grammar)
 
-// Finds and prints instances of nonterminal symbols, entity categories, or semantic functions and arguments not used in any rules of `grammar`
+// Finds and prints instances of nonterminal symbols, entity categories, or semantic functions and arguments not used in any rules of `grammar`.
 exports.checkForUnusedComponents = require('./checkForUnusedComponents').bind(null, grammar)
 
-// Finds and prints instances of ambiguity in `grammar`
+// Finds and prints instances of ambiguity in `grammar`.
 exports.checkForAmbiguity = require('./checkForAmbiguity').bind(null, grammar)
 
 /**
@@ -52,12 +52,12 @@ exports.checkForAmbiguity = require('./checkForAmbiguity').bind(null, grammar)
  */
 exports.sortGrammar = function () {
 	Object.keys(grammar).sort().forEach(function (symbolName) {
-		// Sort rules by increasing cost
+		// Sort rules by increasing cost.
 		var rules = grammar[symbolName].sort(function (ruleA, ruleB) {
 			return ruleA.cost - ruleB.cost
 		})
 
-		// Sort nonterminal symbols alphabetically
+		// Sort nonterminal symbols alphabetically.
 		delete grammar[symbolName]
 		grammar[symbolName] = rules
 	})
