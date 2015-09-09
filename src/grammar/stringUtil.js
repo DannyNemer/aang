@@ -57,7 +57,7 @@ exports.hasIllegalCharacters = function (string) {
 	var match = string.match(/[\(\){}<>]/)
 
 	if (match) {
-		util.logError('The character \'' + match[0] + '\' is forbidden in names:', string)
+		util.logError('The character', util.stylize(match[0]), 'is forbidden:', util.stylize(string))
 		return true
 	}
 
