@@ -16,8 +16,9 @@ exports.startSymbol = exports.newSymbol('start')
 // The terminal symbol for empty strings. Rules with '<empty>' optionalize their LHS symbols and subsequent unary reductions. Original unary rules with '<empty>' are omitted from `grammar` when output.
 exports.emptySymbol = '<empty>'
 
-// The terminal symbol for integers. Terminal rules with <int> are assigned minimum and maximum values.
-exports.intSymbol = '<int>'
+var intSymbol = require('./intSymbol')
+// Creates a unique terminal symbol that recognizes integers in input within the specified range.
+exports.newIntSymbol = intSymbol.new
 
 // Concatenates variadic string arguments (including `Symbol.name`) with dashes.
 exports.hyphenate = require('./stringUtil').hyphenate
@@ -102,7 +103,7 @@ exports.getRuleCount = function (grammar) {
 exports.writeGrammarToFile = function (outputFilePath) {
 	util.writeJSONFile(outputFilePath, {
 		startSymbol: exports.startSymbol.name,
-		intSymbol: exports.intSymbol,
+		intSymbols: intSymbol.intSymbols,
 		grammar: grammar,
 		deletables: require('./deletables'),
 		semantics: semantic.semantics,

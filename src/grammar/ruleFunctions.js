@@ -286,46 +286,6 @@ Symbol.prototype.addWord = function (opts) {
 }
 
 /**
- * Creates a terminal rule for this symbol to accept integers within a range.
- *
- * @param {Object} opts The options object.
- * @param {number} opts.min The minimum value of integers this symbol can accept.
- * @param {number} [opts.max=Number.MAX_SAFE_INTEGER] The maximum value of integers this symbol can accept.
- * @returns {Symbol} Returns `this` symbol for chaining.
- */
-
-// Schema for <int>
-var intOptsSchema = {
-	// Minimum value
-	min: Number,
-	// Maximum value; if max undefined, set to Number.MAX_SAFE_INTEGER
-	max: { type: Number, optional: true },
-}
-
-Symbol.prototype.addInt = function (opts) {
-	if (util.illFormedOpts(intOptsSchema, opts)) {
-		throw new Error('Ill-formed <int> Symbol')
-	}
-
-	// If defined, maximum value must be greater than minimum value.
-	if (opts.min >= opts.max) {
-		util.logErrorAndPath('<int> max value must be greater than min value:', 'min: ' + opts.min + ', max: ' + opts.max)
-		throw new Error('Ill-formed <int> Symbol')
-	}
-
-	this.addRule({
-		terminal: true,
-		RHS: g.intSymbol,
-		intMin: opts.min,
-		// If maximum value `undefined`, set to `Number.MAX_SAFE_INTEGER`
-		// - `Infinity` unrecognized in `JSON.stringify()` and will accept 'Infinity' in input
-		intMax: opts.max !== undefined ? opts.max : Number.MAX_SAFE_INTEGER,
-	})
-
-	return this
-}
-
-/**
  * Creates an optionalized version of an existing nonterminal symbol.
  *
  * @returns {Symbol} Returns the new Symbol

@@ -4,7 +4,7 @@ var conjunctions = require('./conjunctions')
 
 
 var number = g.newSymbol('number')
-number.addInt({ min: 0 })
+number.addRule({ terminal: true, RHS: g.newIntSymbol({ min: 0 }) })
 
 // (issues with under <int> comments) and over (<int> comments)
 var andPrepOver = g.newBinaryRule({ RHS: [ conjunctions.and, preps.over ] })

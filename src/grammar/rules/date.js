@@ -90,7 +90,7 @@ datePhrase.addRule({
 // (repos created in) [year]
 // Cannot add [year-phrase] to [year] because creates ambiguity when both [year] and [date-phrase] used in [date-phrase-or-value]
 var year = g.newSymbol('year')
-year.addInt({ min: 1950, max: 2050 })
+year.addRule({ terminal: true, RHS: g.newIntSymbol({ min: 1950, max: 2050 }) })
 
 var month = g.newSymbol('month')
 month.addRule({
@@ -148,7 +148,7 @@ monthYear.addRule({ RHS: [ month, year ], transpositionCost: 0.1 })
 monthYear.addRule({ RHS: [ month, yearPhrase ] })
 
 var day = g.newSymbol('day')
-day.addInt({ min: 1, max: 31 })
+day.addRule({ terminal: true, RHS: g.newIntSymbol({ min: 1, max: 31 }) })
 var monthDay = g.newSymbol('month', 'day')
 monthDay.addRule({ RHS: [ month, day ], transpositionCost: 0.1 })
 var monthDayYear = g.newSymbol('month', 'day', 'year')

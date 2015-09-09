@@ -43,6 +43,22 @@ module.exports = function (grammar) {
 	})
 
 
+	// Check for integer symbols not used in any rules.
+	var intSymbolsCreationLines = require('./intSymbol').creationLines
+
+	Object.keys(intSymbolsCreationLines).forEach(function (integerSymbol) {
+		for (var sym in grammar) {
+			var rules = grammar[sym]
+			for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
+				if (rules[r].RHS.indexOf(integerSymbol) !== -1) return
+			}
+		}
+
+		util.logWarning('Unused integer symbol:', util.stylize(integerSymbol))
+		util.log('  ' + intSymbolsCreationLines[integerSymbol])
+	})
+
+
 	// Check for semantic functions and arguments not used in any rules.
 	var semantic = require('./semantic')
 

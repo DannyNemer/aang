@@ -3,6 +3,7 @@ var g = require('./grammar')
 var stringUtil = require('./stringUtil')
 var semantic = require('./semantic')
 var entityCategory = require('./entityCategory')
+var intSymbol = require('./intSymbol')
 
 
 // A mapping of symbols to rules
@@ -67,8 +68,6 @@ var termRuleOptsSchema = {
 	// If `options.text` is `undefined`, and RHS is neither <int>, <empty>, nor an entity category, use `options.RHS` as `text`.
 	// Use `options.text = ''` for a terminal rule with no display text (e.g., stop-words).
 	text: { type: [ String, Object ], optional: true },
-	intMin: { type: Number, optional: true },
-	intMax: { type: Number, optional: true },
 }
 
 // Create a new terminal rule from passed opts
@@ -90,8 +89,17 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	var newRule = {
 		RHS: [ opts.RHS.toLowerCase() ],
 		isTerminal: true,
-		intMin: opts.intMin,
-		intMax: opts.intMax,
+	}
+
+	// If RHS is an integer symbol or an entity category, prevent those terminal symbols from being accepted as input
+	if (opts.RHS === g.emptySymbol || intSymbol.creationLines.hasOwnProperty(opts.RHS) || entityCategory.creationLines.hasOwnProperty(opts.RHS)) {
+		newRule.isPlaceholder = true
+
+		// Forbid display text on placeholder symbols.
+		if (opts.text) {
+			util.logErrorAndPath('\'' + opts.RHS + '\', a placeholder symbol, cannot have \'text\':', opts)
+			throw new Error('Ill-formed terminal rule')
+		}
 	}
 
 	// Assign text to display in output when terminal rule is seen in input
@@ -99,7 +107,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 		// Object of inflected forms for conjugation.
 		// String for symbols not needing conjugation.
 		newRule.text = opts.text
-	} else if (opts.text === undefined && opts.RHS !== g.emptySymbol && opts.RHS !== g.intSymbol && !entityCategory.creationLines.hasOwnProperty(opts.RHS)) {
+	} else if (opts.text === undefined && !newRule.isPlaceholder) {
 		// Use RHS as text if `text` are undefined
 		newRule.text = opts.RHS
 	}
@@ -108,34 +116,11 @@ Symbol.prototype.newTerminalRule = function (opts) {
 		newRule.insertionCost = opts.insertionCost
 	}
 
-	// If RHS is <int> or an entity category, prevent those terminal symbols from being accepted as input
-	if (opts.RHS === g.intSymbol || entityCategory.creationLines.hasOwnProperty(opts.RHS)) {
-		newRule.isPlaceholder = true
-	}
-
 	// If semantic, must be complete and constitute a RHS
 	// Exceptions: terminal symbol is an entity category or <int>
-	else if (opts.semantic && !semantic.isRHS(opts.semantic)) {
-		util.logError('Terminal rules can only hold complete (RHS) semantics:', this.name, '->', newRule.RHS)
-		util.dir(opts.semantic)
-		console.log('  ' + util.getModuleCallerPathAndLineNumber())
-		throw new Error('Ill-formed terminal rule')
-	}
-
-	// <empty>, <int>, and entities cannot have predefined display text
-	if (newRule.text) {
-		if (opts.RHS === g.emptySymbol || opts.RHS === g.intSymbol) {
-			util.logErrorAndPath(opts.RHS + ' cannot have predefined display text:', this.name, '->', newRule.RHS)
-			throw new Error('Ill-formed terminal rule')
-		} else if (entityCategory.creationLines.hasOwnProperty(opts.RHS)) {
-			util.logErrorAndPath('Entities cannot have predefined display text:', this.name, '->', newRule.RHS)
-			throw new Error('Ill-formed terminal rule')
-		}
-	}
-
-	// intMin and intMax can only be used with <int>
-	if (opts.RHS !== g.intSymbol && (opts.intMin !== undefined || opts.intMax !== undefined)) {
-		util.logErrorAndPath('\'intMin\' and \'intMax\' can only be used with ' + g.intSymbol + ':', this.name, '->', newRule.RHS)
+	if (opts.semantic && !semantic.isRHS(opts.semantic) && (opts.RHS === g.emptySymbol || !newRule.isPlaceholder)) {
+		util.logError('Terminal rules cannot hold incomplete (LHS) semantics:', opts.semantic)
+		util.logPathAndObject(opts, true)
 		throw new Error('Ill-formed terminal rule')
 	}
 
