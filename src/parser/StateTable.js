@@ -134,14 +134,6 @@ function createRuleProps(origRule) {
 		}
 	}
 
-	if (origRule.intMin !== undefined) {
-		ruleProps.intMin = origRule.intMin
-	}
-
-	if (origRule.intMax !== undefined) {
-		ruleProps.intMax = origRule.intMax
-	}
-
 	if (origRule.isTransposition) {
 		ruleProps.isTransposition = true
 	}
