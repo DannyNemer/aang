@@ -1065,26 +1065,3 @@ exports.dashedToCamelCase = function (dashedString) {
 		return group1.toUpperCase()
 	})
 }
-
-/**
- * Checks if `value` is a plain object, that is, an object created by the `Object` constructor or literal.
- *
- * @static
- * @memberOf dantil
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
- * @example
- *
- * dantil.isObject([1, 2, 3])
- * // => false
- *
- * dantil.isObject({ x: 0, y: 0 })
- * // => true
- *
- * dantil.isObject(Object.create(null))
- * // => true
- */
-exports.isObject = function (value) {
-	return value && value.constructor === Object
-}
