@@ -892,7 +892,7 @@ exports.timeEnd = function (label) {
 	var time = _times.get(label)
 
 	if (!time) {
-		throw new Error('No such label:', label)
+		throw new Error('No such label: ' + label)
 	}
 
 	var durationTuple = process.hrtime(time)
