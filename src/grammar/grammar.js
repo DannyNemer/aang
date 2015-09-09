@@ -50,6 +50,8 @@ exports.checkForAmbiguity = require('./checkForAmbiguity').bind(null, grammar)
 
 /**
  * Sorts `grammar`'s nonterminal symbols alphabetically and the symbols' rules by increasing cost.
+ *
+ * Sorts `grammar`'s integer symbols by increasing minimum value and then by increasing maximum value.
  */
 exports.sortGrammar = function () {
 	Object.keys(grammar).sort().forEach(function (symbolName) {
@@ -61,6 +63,23 @@ exports.sortGrammar = function () {
 		// Sort nonterminal symbols alphabetically.
 		delete grammar[symbolName]
 		grammar[symbolName] = rules
+	})
+
+	// Sort integer symbols by increasing minimum value and then by increasing maximum value.
+	intSymbol.intSymbols.sort(function (a, b) {
+		// Sort `a` before `b`.
+		if (a.min < b.min) return -1
+
+		// Sort `a` after `b`.
+		if (a.min > b.min) return 1
+
+		// Sort `a` before `b`.
+		if (a.max < b.max) return -1
+
+		// Sort `a` after `b`.
+		if (a.max > b.max) return 1
+
+		else throw new Error('Integer symbols with identical ranges')
 	})
 }
 
