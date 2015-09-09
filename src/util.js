@@ -470,9 +470,9 @@ exports.expandHomeDir = function (path) {
 /**
  * Pretty-prints the provided values and objects in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
  *
- * Prints `Object`s on separate lines. Concatenates and prints all other successive values on the same line.
+ * Formats arguments of complex types (e.g., `Object`, `Array`) on separate lines. Concatenates and formats all other successive values on the same line.
  *
- * If the first argument is an `Object`, left-aligns all remaining lines. Otherwise, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
+ * If the first argument is of a complex type, left-aligns all remaining lines. Otherwise, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @static
  * @memberOf dantil
@@ -506,9 +506,9 @@ exports.dir = function () {
 /**
  * Formats the provided values and objects in color for pretty-printing, recursing `options.depth` times while formatting objects.
  *
- * Formats `Object`s on separate lines. Concatenates and formats all other successive values on the same line.
+ * Formats arguments of complex types (e.g., `Object`, `Array`) on separate lines. Concatenates and formats all other successive values on the same line.
  *
- * If the first argument is an `Object`, left-aligns all remaining lines. Otherwise, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
+ * If the first argument is of a complex type, left-aligns all remaining lines. Otherwise, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @private
  * @param {Object} args The `arguments` object (passed to the callee) with the values and objects to format.
@@ -548,17 +548,17 @@ function format(args, options) {
 
 				// JavaScript will not properly indent if '\t' is appended to spaces (i.e., reverse order as here).
 				indent = arg + indent
-			} else if (exports.isObject(arg)) {
-				// Do not indent if the first argument is an object.
+			} else if (arg instanceof Object) {
+				// Do not indent successive lines if the first argument is a complex type.
 				indent = ''
 			}
 
 			formattedArgs.push(formattedArg)
-		} else if (exports.isObject(arg)) {
-			// Print all objects on separate lines.
+		} else if (reMultiLined.test(formattedArg)) {
+			// Print object with multi-line string representations on separate lines.
 			formattedArgs.push(indent + formattedArg.replace(reMultiLined, reMultiLined.source + indent))
-		} else if (exports.isObject(args[i - 1])) {
-			// Do not concatenate objects with other arguments.
+		} else if (args[i - 1] instanceof Object) {
+			// Do not concatenate objects with other arguments (except if single-lined and following a primitive type).
 			formattedArgs.push(indent + formattedArg)
 		} else {
 			// Concatenate all successive primitive data types.
