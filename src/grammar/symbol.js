@@ -207,7 +207,7 @@ Symbol.prototype.newNonterminalRule = function (opts) {
 
 // Creates a new Symbol with a signle binary nonterminal rule
 // - Symbol's name is a concatenation of the RHS Symbols
-// Accepts the same `opts` as `Symbol.newNonterminalRule()`
+// Accepts the same `opts` as `Symbol.prototype.newNonterminalRule()`
 // As the Symbol's name is created from the rule's RHS, this new Symbol is intended only for this rule
 // RHS can be an array of Symbols and/or nested arrays of RHS for new binary rules
 // - However, these sub-rules can only contain a RHS and no other rule properties

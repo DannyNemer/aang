@@ -266,7 +266,7 @@ exports.reduce = function (lhs, rhs) {
 
 
 /**
- * Recursively compares semantic trees for sorting. Sorts arguments before functions, sorts functions and arguments separately alphabetically, and recursively sorts identical functions by their arguments. This function is used as the compare function for `Array.sort()`.
+ * Recursively compares semantic trees for sorting. Sorts arguments before functions, sorts functions and arguments separately alphabetically, and recursively sorts identical functions by their arguments. This function is used as the compare function for `Array.prototype.sort()`.
  *
  * @param {Object} a The semantic tree to compare.
  * @param {Object} b The other semantic tree to compare.

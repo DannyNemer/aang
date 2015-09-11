@@ -20,7 +20,7 @@ var intSymbol = require('./intSymbol')
 // Creates a unique terminal symbol that recognizes integers in input within the specified range.
 exports.newIntSymbol = intSymbol.new
 
-// Concatenates variadic string arguments (including `Symbol.name`) with dashes.
+// Concatenates variadic string arguments (including `Symbol.prototype.name`) with dashes.
 exports.hyphenate = require('./stringUtil').hyphenate
 
 // Extend `Symbol` with functions for predefined sets of rules (e.g., verbs, stop words).

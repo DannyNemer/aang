@@ -5,7 +5,7 @@ var util = require('../util')
  */
 
 /**
- * Concatenates variadic string arguments (including `Symbol.name`) with dashes. This is used for the `Symbol()` constructor and when defining `name` in the schemas for `semantic.new(schema)` and `entityCategory.new(schema)`.
+ * Concatenates variadic string arguments (including `Symbol.prototype.name`) with dashes. This is used for the `Symbol()` constructor and when defining `name` in the schemas for `semantic.new(schema)` and `entityCategory.new(schema)`.
  *
  * @param {...string} [strN] The strings to concatenate.
  * @returns {string} Returns the dash-separated string.
@@ -28,7 +28,7 @@ exports.hyphenate = function () {
 }
 
 /**
- * Converts the name of a new grammar element to lowercase, strips brackets from passed instances of `Symbol.name`, and checks for illegal characters.
+ * Converts the name of a new grammar element to lowercase, strips brackets from passed instances of `Symbol.prototype.name`, and checks for illegal characters.
  *
  * @param {string} string The name of the grammar element.
  * @returns {string} Returns the validated, lowercase version of `name`.
@@ -38,7 +38,7 @@ exports.formatName = function (string) {
 		throw new Error('Grammar element name error')
 	}
 
-	// Remove brackets from instances of `Symbol.name`
+	// Remove brackets from instances of `Symbol.prototype.name`
 	// Convert to lower case
 	return string.replace(/[\[\]]/g, '').toLowerCase()
 }
