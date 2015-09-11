@@ -100,6 +100,12 @@ Symbol.prototype.newTerminalRule = function (opts) {
 			util.logErrorAndPath('\'' + opts.RHS + '\', a placeholder symbol, cannot have \'text\':', opts)
 			throw new Error('Ill-formed terminal rule')
 		}
+
+		// Forbid insertions of placeholder symbols.
+		if (opts.insertionCost !== undefined) {
+			util.logErrorAndPath('\'' + opts.RHS + '\', a placeholder symbol, cannot have \'insertionCost\':', opts)
+			throw new Error('Ill-formed terminal rule')
+		}
 	}
 
 	// Assign text to display in output when terminal rule is seen in input
