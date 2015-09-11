@@ -30,7 +30,7 @@ var util = require('util')
  *   args: [ Array, Object ],
  *
  *   // Must be of type `Array` or `Object` (identical to previous parameter).
- *   args: { type: [ Array, Object ] },
+ *   otherArgs: { type: [ Array, Object ] },
  *
  *   // Must be `Array` containing only strings.
  *   strings: { type: Array, arrayType: String },
@@ -133,7 +133,7 @@ exports.illFormedOpts = function (schema, options) {
  * @category Utility
  * @param {Function} func The function to execute within a `try` block.
  * @param {boolean} rethrow Specify rethrowing a caught error from `func` after printing the stack trace.
- * @returns {*} Returns the value returned by `func`, if any.
+ * @returns {*} Returns the return value of `func`, if any.
  * @example
  *
  * dantil.tryCatchWrapper(function () {
@@ -198,7 +198,7 @@ exports.deleteModuleCache = function () {
 }
 
 /**
- * Gets the file path and line number of where this function was called in the format "path:line-number".
+ * Gets the file path and line number of where this function is invoked in the format "path:line-number".
  *
  * @static
  * @memberOf dantil
@@ -213,7 +213,7 @@ exports.deleteModuleCache = function () {
  */
 exports.getPathAndLineNumber = function () {
 	return getFormattedStackFrame(function (stack) {
-		// Get the frame for where this function was called.
+		// Get the frame for where this function is invoked.
 		return stack[0]
 	})
 }
@@ -254,8 +254,7 @@ exports.getPathAndLineNumber = function () {
  *   dantil.getModuleCallerPathAndLineNumber()
  *   // => '/Users/Danny/main.js:2'
  *
- *   // Call another function within the same module, though the retrieved frame will be
- *   // the same.
+ *   // Call another function within the same module, though retrieves the same frame.
  *   subFunc()
  *
  *   // Call a function in another module.
@@ -480,7 +479,7 @@ exports.expandHomeDir = function (path) {
  * @param {...*} values The values and objects to print.
  */
 exports.log = function () {
-	if (arguments.length) {
+	if (arguments.length > 0) {
 		console.log(format(arguments))
 	} else {
 		// Print a blank line when called with no arguments
@@ -558,7 +557,7 @@ function format(args, options) {
 			// Print object with multi-line string representations on separate lines.
 			formattedArgs.push(indent + formattedArg.replace(reMultiLined, reMultiLined.source + indent))
 		} else if (args[i - 1] instanceof Object) {
-			// Do not concatenate objects with other arguments (except if single-lined and following a primitive type).
+			// Concatenate objects with other arguments only if single-lined and following a primitive type.
 			formattedArgs.push(indent + formattedArg)
 		} else {
 			// Concatenate all successive primitive data types.
@@ -923,8 +922,8 @@ var _counts = new Map()
  * }
  *
  * dantil.countEnd('even')
- * // => Resets the count for 'even' to 0
  * // => Prints "even: 50"
+ * // => Resets the count for 'even' to 0
  */
 exports.count = function (label) {
 	var val = _counts.get(label) || 0
@@ -1043,7 +1042,7 @@ exports.arraysEqual = function (a, b) {
  * // => 0.02
  */
 exports.cleanNumber = function (number) {
-	// JavaScript's floating point number precision 13 digits after the decimal point.
+	// JavaScript has floating point number precision of 13 digits after the decimal point.
 	return Number(number.toFixed(13))
 }
 
