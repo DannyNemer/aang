@@ -27,13 +27,11 @@ Parser.prototype.entityLookup = function (endPos, nGram) {
 		for (var e = 0, entityInstancesLen = entityInstances.length; e < entityInstancesLen; ++e) {
 			var entity = entityInstances[e]
 			var wordSym = this.stateTable.symbolTab[entity.category]
-			// Create node with terminal symbol.
-			var wordNode = this.addSub(wordSym)
 
 			var entityId = entity.id
 			var semanticArg = this.newSemanticArgs[entityId] || (this.newSemanticArgs[entityId] = [ { semantic: { name: entityId } } ])
 
-			this.createWords(wordNode, endPos, function (ruleProps) {
+			this.createWords(wordSym, endPos, function (ruleProps) {
 				return {
 					cost: ruleProps.cost,
 					semantic: ruleProps.semantic ? semantic.reduce(ruleProps.semantic, semanticArg) : semanticArg,
@@ -60,15 +58,12 @@ Parser.prototype.intSymbolLookup = function (nGram) {
 		if (parsedFloat <= intSymbol.max) {
 			var wordSym = this.stateTable.symbolTab[intSymbol.name]
 
-			// Create node with terminal symbol.
-			var wordNode = this.addSub(wordSym)
-
 			// Create a new semantic argument using the integer. Reuse if it already exists (same integer used in multiple places in same query) so semantics can be found identical just by their object references (without needing to compare names).
 			// Use string version of integer for the semantic.
 			var semanticArg = this.newSemanticArgs[nGram] || (this.newSemanticArgs[nGram] = [ { semantic: { name: nGram } } ])
 
 			// Generate all nodes for rules that produce the terminal symbol
-			this.createWords(wordNode, this.position, function (ruleProps) {
+			this.createWords(wordSym, this.position, function (ruleProps) {
 				return {
 					cost: ruleProps.cost,
 					semantic: semanticArg,
@@ -82,11 +77,14 @@ Parser.prototype.intSymbolLookup = function (nGram) {
 
 // FIXME: we are creating the anonymous function object everytime
 // Create nodes for terminal symbols
-Parser.prototype.createWords = function (wordNode, endPos, makeRuleProps) {
+Parser.prototype.createWords = function (wordSym, endPos, makeRuleProps) {
+	// Create node with terminal symbol.
+	var wordNode = this.addSub(wordSym)
+
 	// Loop through all terminal rules that produce the terminal symbol.
 	var wordNodes = []
 	var wordSize = wordNode.size
-	var rules = wordNode.sym.rules
+	var rules = wordSym.rules
 
 	for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 		var rule = rules[r]
@@ -198,11 +196,8 @@ Parser.prototype.matchTerminalRules = function (query) {
 				var wordSym = this.stateTable.symbolTab[nGram]
 				// Prevent terminal symbol match with placeholder symbols: <int>, entities category names (e.g., {user})
 				if (wordSym && !wordSym.isPlaceholder) {
-					// Create node with terminal symbol.
-					var wordNode = this.addSub(wordSym)
-
 					// No `makeRuleProps` to avoid unnecessarily duplicating `ruleProps`
-					this.createWords(wordNode, endPos)
+					this.createWords(wordSym, endPos)
 				}
 
 				if (++endPos === this.tokensLen) break
