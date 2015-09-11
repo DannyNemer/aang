@@ -33,27 +33,14 @@ Parser.prototype.entityLookup = function (endPos, nGram) {
 			var entityId = entity.id
 			var semanticArg = this.newSemanticArgs[entityId] || (this.newSemanticArgs[entityId] = [ { semantic: { name: entityId } } ])
 
-			var words = this.createWords(wordNode, endPos, function (ruleProps) {
+			this.createWords(wordNode, endPos, function (ruleProps) {
 				return {
 					cost: ruleProps.cost,
-
 					semantic: ruleProps.semantic ? semantic.reduce(ruleProps.semantic, semanticArg) : semanticArg,
 					// Use saved text with correct capitalization.
 					text: entity.text,
 				}
 			})
-
-			this.createDeletions(words, wordNode, function (ruleProps, deletionLen) {
-				return {
-					cost: ruleProps.cost + deletionLen,
-					// FIXME: we are duplicating the work when this done on multiple runs for `deletions()`
-					// could check for deleltions first, then can save them - if deletions after we would save them and most often not use them. The same semantic reductions will occur once above and then again.
-					// Could change all deletions to go back through what is already in words, take the ruleProps, copy them, then change the cost.
-					semantic: ruleProps.semantic ? semantic.reduce(ruleProps.semantic, semanticArg) : semanticArg,
-					text: entity.text,
-				}
-			})
-
 		}
 	}
 }
@@ -81,18 +68,11 @@ Parser.prototype.intSymbolLookup = function (nGram) {
 			var semanticArg = this.newSemanticArgs[nGram] || (this.newSemanticArgs[nGram] = [ { semantic: { name: nGram } } ])
 
 			// Generate all nodes for rules that produce the terminal symbol
-			var words = this.createWords(wordNode, this.position, function (ruleProps) {
+			this.createWords(wordNode, this.position, function (ruleProps) {
 				return {
 					cost: ruleProps.cost,
 					semantic: semanticArg,
-					text: nGram,
-				}
-			})
-
-			this.createDeletions(words, wordNode, function (ruleProps, deletionLen) {
-				return {
-					cost: ruleProps.cost + deletionLen,
-					semantic: semanticArg,
+					// Use nGram so do not have to convert Number back to String later
 					text: nGram,
 				}
 			})
@@ -129,14 +109,14 @@ Parser.prototype.createWords = function (wordNode, endPos, makeRuleProps) {
 		nodes: wordNodes,
 	})
 
-	return words
+	this.createDeletions(words, wordNode)
 }
 
-Parser.prototype.createDeletions = function (words, wordNode, makeRuleProps) {
+Parser.prototype.createDeletions = function (words, wordNode) {
 	// Avoid as much as possible before knowing there are deletions
 	var wordSize = wordNode.size
-	var rules = wordNode.sym.rules
-	var rulesLen = rules.length
+	var oldWordNodes = words[words.length - 1].nodes
+	var oldWordNodesLen = oldWordNodes.length
 
 	// Step backward checking for continuous spans of deltable tokens end at the start of this token
 	for (var deletionLen = 1; this.deletionTokenIdxes[this.position - deletionLen]; ++deletionLen) {
@@ -145,19 +125,29 @@ Parser.prototype.createDeletions = function (words, wordNode, makeRuleProps) {
 		++wordSize
 
 		// Create a new node for each terminal rule with a deletion cost penalty and the new token span
-		for (var r = 0; r < rulesLen; ++r) {
-			var rule = rules[r]
+		for (var n = 0; n < oldWordNodesLen; ++n) {
+			var oldNode = oldWordNodes[n]
+			var oldRuleProps = oldNode.subs[0].ruleProps
 
 			var sub = {
 				// Span of tokens
 				size: wordSize,
 				node: wordNode,
-				// Add cost penalty of 1 per deleted token
-				ruleProps: makeRuleProps(rule.ruleProps, deletionLen),
+				ruleProps: {
+					// Add cost penalty of 1 per deleted token
+					cost: oldRuleProps.cost + deletionLen,
+					// Reuse previously created semantic arguments or semantic reductions
+					semantic: oldRuleProps.semantic,
+					// Reuse previously determined text (e.g., properly capitalized)
+					text: oldRuleProps.text,
+				},
 				minCost: undefined,
 			}
 
-			var newNode = this.addSub(rule.RHS[0], sub) // FIXME: replace "rhs[0]" thing
+			// Add to nodeTab, because of the edge cases where the node can be reused:
+					// X -> "not word" | "word" - both are X with size of 2
+					// X -> 'x' | (Y -> 'x')
+			var newNode = this.addSub(oldNode.sym, sub)
 			newNode.start = startPos
 			wordNodes.push(newNode)
 		}
@@ -212,15 +202,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 					var wordNode = this.addSub(wordSym)
 
 					// No `makeRuleProps` to avoid unnecessarily duplicating `ruleProps`
-					var words = this.createWords(wordNode, endPos)
-
-					this.createDeletions(words, wordNode, function (ruleProps, deletionLen) {
-						return {
-							cost: ruleProps.cost + deletionLen,
-							semantic: ruleProps.semantic,
-							text: ruleProps.text,
-						}
-					})
+					this.createWords(wordNode, endPos)
 				}
 
 				if (++endPos === this.tokensLen) break
