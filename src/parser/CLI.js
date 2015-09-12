@@ -18,7 +18,7 @@ var rl = require('readline').createInterface(process.stdin, process.stdout, func
 
 	var matches = completions.filter(function (c) { return c.indexOf(line) === 0 })
 
-	// Show nothing if no completions found
+	// Show nothing if no completions found.
 	return [ matches, line ]
 })
 
@@ -26,7 +26,7 @@ rl.setPrompt('❯ ')
 
 rl.prompt()
 rl.on('line', function (line) {
-	// Reload `util` module (to enable changes)
+	// Reload `util` module (to enable changes).
 	util = require(utilPath)
 
 	util.tryCatchWrapper(function () {
@@ -37,7 +37,7 @@ rl.on('line', function (line) {
 		}
 	})
 
-	// If no '-t' arg (for 'time'), reload modules after every input to enable module changes
+	// If no '-t' argument (for 'time'), reload modules after every input to enable module changes.
 	if (process.argv.indexOf('-t') === -1) {
 		deleteModuleCaches()
 	}
@@ -78,7 +78,7 @@ function parse(query, K) {
 			else util.log('Failed to find legal parse trees.')
 		}
 
-		// Return trees for conjugation test
+		// Return trees for conjugation test.
 		return trees
 	} else {
 		if (printOutput) util.log('Failed to reach start node.')
@@ -88,14 +88,14 @@ function parse(query, K) {
 
 // Parser settings:
 var K = 7
+var printOutput = true
+var printTrees = false
+var printCosts = true
 var printTime = false
 var printQuery = false
-var printOutput = true
 var printStack = false
 var printForest = false
 var printForestGraph = false
-var printTrees = false
-var printCosts = true
 
 /**
  * Evaluates a line of input from the CLI as either a command to execute, or a search query to parse.
@@ -112,12 +112,12 @@ function runCommand(input) {
 	var secondArg = args[1]
 
 	// COMMANDS:
-	// Run test queries
+	// Run test queries.
 	if (firstArg === '.test') {
-		// Set number of times to cycle test queries on test
+		// Set number of times to cycle test queries on test.
 		var testRuns = isNaN(secondArg) ? 1 : Number(secondArg)
 
-		// If testRuns > 1, then test is a benchmark and prevent output
+		// If testRuns > 1, then test is a benchmark and prevent output.
 		if (testRuns > 1) {
 			var origPrintOutput = printOutput
 			printOutput = false
@@ -127,7 +127,7 @@ function runCommand(input) {
 			var origPrintQuery = printQuery
 			printQuery = true
 		} else {
-			// Benchmark test
+			// Benchmark test.
 			util.time('test')
 		}
 
@@ -153,7 +153,7 @@ function runCommand(input) {
 		}
 	}
 
-	// Output a run of test queries to file
+	// Output a run of test queries to file.
 	else if (firstArg === '.logTest') {
 		var origPrintOutput = printOutput
 		printOutput = true
@@ -165,7 +165,7 @@ function runCommand(input) {
 		printOutput = origPrintOutput
 	}
 
-	// Run conjugation tests
+	// Run conjugation tests.
 	else if (firstArg === '.conjugationTest') {
 		var origPrintTrees = printTrees
 		printTrees = false
@@ -187,7 +187,7 @@ function runCommand(input) {
 		printTrees = origPrintTrees
 	}
 
-	// Rebuild grammar and state table
+	// Rebuild grammar and state table.
 	else if (firstArg === '.rebuild') {
 		util.log('Rebuild grammar and state table:')
 
@@ -228,18 +228,18 @@ function runCommand(input) {
 		})
 	}
 
-	// Delete module cache
+	// Delete module cache.
 	else if (firstArg === '.deleteCache') {
 		deleteModuleCaches()
 		util.log('Deleted cache of modules.')
 	}
 
-	// Print state table
+	// Print state table.
 	else if (firstArg === '.stateTable') {
 		stateTable.print()
 	}
 
-	// Print CLI history
+	// Print CLI history.
 	else if (firstArg === '.history') {
 		var historyLen = rl.history.length
 		for (var i = historyLen - 1; i > 0; --i) {
@@ -248,67 +248,67 @@ function runCommand(input) {
 		}
 	}
 
-	// Enter REPL mode
+	// Enter REPL.
 	else if (firstArg === '.repl') {
 		child_process.execSync('node', { stdio: 'inherit' })
 	}
 
 	// PARSER SETTINGS:
-	// Set number of parse trees to search for
+	// Set number of parse trees to search for.
 	else if (firstArg === '.k') {
 		if (!isNaN(secondArg)) K = Number(secondArg)
 		util.log('K:', K)
 	}
 
-	// Toggle printing parse output
+	// Toggle printing parse output.
 	else if (firstArg === '.out') {
 		printOutput = !printOutput
 		util.log('Print parse output:', printOutput)
 	}
 
-	// Toggle constructing and printing parse trees
+	// Toggle constructing and printing parse trees.
 	else if (firstArg === '.trees') {
 		printTrees = !printTrees
 		util.log('Construct and print parse trees:', printTrees)
 	}
 
-	// Toggle printing parse costs
+	// Toggle printing parse costs.
 	else if (firstArg === '.costs') {
 		printCosts = !printCosts
 		util.log('Print parse costs:', printCosts)
 	}
 
-	// Toggle printing parse time
+	// Toggle printing parse time.
 	else if (firstArg === '.time') {
 		printTime = !printTime
 		util.log('Print parse time:', printTime)
 	}
 
-	// Toggle printing parse query
+	// Toggle printing parse query.
 	else if (firstArg === '.query') {
 		printQuery = !printQuery
 		util.log('Print parse query:', printQuery)
 	}
 
-	// Toggle printing parse stack
+	// Toggle printing parse stack.
 	else if (firstArg === '.stack') {
 		printStack = !printStack
 		util.log('Print parse stack:', printStack)
 	}
 
-	// Toggle printing parse forest
+	// Toggle printing parse forest.
 	else if (firstArg === '.forest') {
 		printForest = !printForest
 		util.log('Print parse forest:', printForest)
 	}
 
-	// Toggle printing parse forest graph
+	// Toggle printing parse forest graph.
 	else if (firstArg === '.graph') {
 		printForestGraph = !printForestGraph
 		util.log('Print parse forest graph:', printForestGraph)
 	}
 
-	// Print help screen
+	// Print help screen.
 	else {
 		util.log('Commands:')
 		util.log('.test [<int>]     run test queries [<int> times]')
@@ -318,7 +318,7 @@ function runCommand(input) {
 		util.log('.deleteCache      delete module cache')
 		util.log('.stateTable       print state table')
 		util.log('.history          print CLI history')
-		util.log('.repl             enter REPL mode')
+		util.log('.repl             enter REPL')
 		util.log('.help             print this screen')
 
 		util.log('\nParser settings:')
@@ -333,7 +333,7 @@ function runCommand(input) {
 		util.log('.graph   print parse forest graph:', printForestGraph)
 	}
 
-	// Input as a command; do not parse as query
+	// Input as a command; do not parse as query.
 	return true
 }
 
