@@ -10,7 +10,7 @@ exports.basic = [
 	'repos people who like and created',
 	'repos that have been created by people and like and I contributed to',
 	'repos that are repos',
-	'my followers who are my followers', // intentionally fails
+	'my followers who are my followers', // Intentionally fails
 	'my followers who are followers of followers of mine',
 	'my followers who are followers of followers of mine who liked that repos contributed to of mine',
 	'repos',
@@ -23,7 +23,7 @@ exports.basic = [
 	'my repos that are JavaScript repos',
 	'my JavaScript repos',
 	'repos that are written in JavaScript',
-	'my JavaScript repos that are written in JavaScript', // intentionally fails
+	'my JavaScript repos that are written in JavaScript', // Intentionally fails
 	'issues assigned to me I opened and am mentioned in',
 	'people who are assigned to my issues and follow people who contributed to repos I created and are mentioned in pull requests of mine',
 	'people who are mentioned in my issues and pull requests',
@@ -92,8 +92,8 @@ exports.basic = [
 	'repos created between last year and this year',
 	'repos created from 2012 to 2014',
 	'repos created before June 20 2000 and after this year',
-	'people I and Danny follows', // intentionally incorrect
-	'people people Danny follow and Danny follows', // intentionally incorrect
+	'people I and Danny follows', // Intentionally fails
+	'people people Danny follow and Danny follows', // Intentionally fails
 	'likers of my repos I contributed to that I like and my repos I contributed to',
 	'my GitHub repos liked by my github followers',
 	'my followers\' repos',
@@ -115,7 +115,7 @@ exports.basic = [
 	'repos that are not created today liked by me',
 	'people who are not my followers',
 	'repos not created today not liked by me', // should produce results
-	'repos created today created yesterday', // intentionally incorrect
+	'repos created today created yesterday', // Intentionally fails
 	'women',
 	'men I follow',
 	'people who are males',
@@ -177,6 +177,10 @@ exports.basic = [
 	'issues opened me followers people repos creators of Node contributed to assigned to pull requests am not mentioned in',
 	'people who do contributed to my repos',
 	'people who do contributed not to my repos',
+	'issues with -20 to 34 comments I opened', // Intentionally fails
+	'repos created before June 0 2000 and July -2 3000', // Intentionally fails
+	'repos created before June 32 1940', // Intentionally fails
+	'repos created before June 31 1950',
 
 	// 'followers my followers share',
 	// 'followers I and Danny have in common',
