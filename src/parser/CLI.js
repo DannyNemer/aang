@@ -12,7 +12,7 @@ var stateTable = buildStateTable()
 
 
 var rl = require('readline').createInterface(process.stdin, process.stdout, function (line) {
-	var completions = [ '.test', '.logTest', '.conjugationTest', '.rebuild', '.deleteCache', '.stateTable', '.history', '.help', '.k', '.out', '.trees', '.costs', '.time', '.query', '.stack', '.forest', '.graph' ]
+	var completions = [ '.test', '.logTest', '.conjugationTest', '.rebuild', '.deleteCache', '.stateTable', '.history', '.repl', '.help', '.k', '.out', '.trees', '.costs', '.time', '.query', '.stack', '.forest', '.graph' ]
 
 	var matches = completions.filter(function (c) { return c.indexOf(line) === 0 })
 
@@ -20,7 +20,42 @@ var rl = require('readline').createInterface(process.stdin, process.stdout, func
 	return [ matches, line ]
 })
 
+// Re-opens the readline `Interface` instance. Regains control of the `input` and `output` streams by restoring listeners removed by the "close" event.
+rl.open = (function () {
+	// Change one time event listener for "close" event to a normal event listener.
+	var onclose = rl.listeners('close')[0]
+	rl.removeListener('close', onclose)
+	rl.on('close', onclose.listener)
+
+	// Save the `input` and `output` listeners which are removed by the "close" event.
+	var onkeypress = rl.input.listeners('keypress')[0]
+	var ontermend = rl.input.listeners('end')[1]
+	var onresize = rl.output.listeners('resize')[0]
+
+	return function () {
+		if (!this.closed) return
+
+		this.resume()
+
+		if (this.terminal) {
+			this._setRawMode(true)
+		}
+
+		this.closed = false
+
+		// Restore `input` listeners.
+		this.input.on('keypress', onkeypress)
+		this.input.on('end', ontermend)
+
+		// Restore `output` listener.
+		if (this.output !== null && this.output !== undefined) {
+			this.output.on('resize', onresize)
+		}
+	}
+})()
+
 rl.setPrompt('❯ ')
+
 rl.prompt()
 rl.on('line', function (line) {
 	// Reload `util` module (to enable changes)
@@ -39,7 +74,10 @@ rl.on('line', function (line) {
 		deleteModuleCaches()
 	}
 
-	rl.prompt()
+	// Prevent resumption of the `input` stream when it is paused for the REPL.
+	if (!rl.paused) {
+		rl.prompt()
+	}
 })
 
 /**
@@ -212,6 +250,23 @@ function runCommand(input) {
 		}
 	}
 
+	// Enter REPL mode
+	else if (firstArg === '.repl') {
+		var repl = require('repl')
+
+		rl.close()
+
+		var r = repl.start({
+			prompt: 'node> ',
+		})
+
+		r.on('exit', function () {
+			// Re-open the readline `Interface` instance, regaining control of the `input` and `output` streams.
+			rl.open()
+			rl.prompt()
+		})
+	}
+
 	// PARSER SETTINGS:
 	// Set number of parse trees to search for
 	else if (firstArg === '.k') {
@@ -277,6 +332,7 @@ function runCommand(input) {
 		util.log('.deleteCache      delete module cache')
 		util.log('.stateTable       print state table')
 		util.log('.history          print CLI history')
+		util.log('.repl             enter REPL mode')
 		util.log('.help             print this screen')
 
 		util.log('\nParser settings:')
