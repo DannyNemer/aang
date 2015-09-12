@@ -23,4 +23,4 @@ require('../util').tryCatchWrapper(function () {
 
 	Foolish to implement multiple things at once
 	*/
-})
+}, true)

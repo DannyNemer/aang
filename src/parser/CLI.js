@@ -42,7 +42,10 @@ rl.on('line', function (line) {
 		deleteModuleCaches()
 	}
 
-	rl.prompt()
+	// Do not print prompt during an asynchronous process, such as rebuilding the grammar.
+	if (!rl.paused) {
+		rl.prompt()
+	}
 })
 
 /**
@@ -188,11 +191,41 @@ function runCommand(input) {
 	else if (firstArg === '.rebuild') {
 		util.log('Rebuild grammar and state table:')
 
-		// Rebuild grammar
-		child_process.execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
+		// Prevent printing prompt when executing child process, but continue processing input such as `^C` for `SIGINT` (which `rl.pause()` would prevent).
+		rl.paused = true
 
-		// Rebuild state table
-		stateTable = buildStateTable()
+		// Rebuild grammar asynchronously to avoid blocking the event loop.
+		var buildGrammar = child_process.spawn('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
+
+		// Send `SIGINT` to child process when received by the CLI.
+		function killChild() {
+			buildGrammar.kill('SIGINT')
+		}
+
+		rl.on('SIGINT', killChild)
+
+		buildGrammar.on('error', function (err) {
+			util.logError('Failed to start child process:', err.code)
+		})
+
+		buildGrammar.on('close', function (code, signal) {
+			rl.removeListener('SIGINT', killChild)
+
+			if (signal) {
+				// `buildGrammar` was killed (most often is due to `SIGINT` sent by the CLI).
+			  util.logError('Child process terminated due to receipt of signal', signal)
+			} else if (code !== 0) {
+				// `buildGrammar` exited with a `failure` code (most often after an error is thrown).
+				util.logError('Child process exited with code', code)
+			} else {
+				// Exited normally.
+				// Rebuild state table.
+				stateTable = buildStateTable()
+			}
+
+			// Resume CLI.
+			rl.prompt()
+		})
 	}
 
 	// Delete module cache
