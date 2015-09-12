@@ -1,3 +1,5 @@
+var child_process = require('child_process')
+
 var utilPath = '../util.js'
 var inputFilePath = '../aang.json'
 var parserPath = './Parser.js'
@@ -20,40 +22,6 @@ var rl = require('readline').createInterface(process.stdin, process.stdout, func
 	return [ matches, line ]
 })
 
-// Re-opens the readline `Interface` instance. Regains control of the `input` and `output` streams by restoring listeners removed by the "close" event.
-rl.open = (function () {
-	// Change one time event listener for "close" event to a normal event listener.
-	var onclose = rl.listeners('close')[0]
-	rl.removeListener('close', onclose)
-	rl.on('close', onclose.listener)
-
-	// Save the `input` and `output` listeners which are removed by the "close" event.
-	var onkeypress = rl.input.listeners('keypress')[0]
-	var ontermend = rl.input.listeners('end')[1]
-	var onresize = rl.output.listeners('resize')[0]
-
-	return function () {
-		if (!this.closed) return
-
-		this.resume()
-
-		if (this.terminal) {
-			this._setRawMode(true)
-		}
-
-		this.closed = false
-
-		// Restore `input` listeners.
-		this.input.on('keypress', onkeypress)
-		this.input.on('end', ontermend)
-
-		// Restore `output` listener.
-		if (this.output !== null && this.output !== undefined) {
-			this.output.on('resize', onresize)
-		}
-	}
-})()
-
 rl.setPrompt('❯ ')
 
 rl.prompt()
@@ -74,10 +42,7 @@ rl.on('line', function (line) {
 		deleteModuleCaches()
 	}
 
-	// Prevent resumption of the `input` stream when it is paused for the REPL.
-	if (!rl.paused) {
-		rl.prompt()
-	}
+	rl.prompt()
 })
 
 /**
@@ -224,7 +189,7 @@ function runCommand(input) {
 		util.log('Rebuild grammar and state table:')
 
 		// Rebuild grammar
-		require('child_process').execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
+		child_process.execFileSync('node', [ '../grammar/buildGrammar.js' ], { stdio: 'inherit' })
 
 		// Rebuild state table
 		stateTable = buildStateTable()
@@ -252,19 +217,7 @@ function runCommand(input) {
 
 	// Enter REPL mode
 	else if (firstArg === '.repl') {
-		var repl = require('repl')
-
-		rl.close()
-
-		var r = repl.start({
-			prompt: 'node> ',
-		})
-
-		r.on('exit', function () {
-			// Re-open the readline `Interface` instance, regaining control of the `input` and `output` streams.
-			rl.open()
-			rl.prompt()
-		})
+		child_process.execSync('node', { stdio: 'inherit' })
 	}
 
 	// PARSER SETTINGS:
