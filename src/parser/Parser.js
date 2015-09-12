@@ -31,14 +31,8 @@ Parser.prototype.entityLookup = function (endPos, nGram) {
 			var entityId = entity.id
 			var semanticArg = this.newSemanticArgs[entityId] || (this.newSemanticArgs[entityId] = [ { semantic: { name: entityId } } ])
 
-			this.createWords(wordSym, endPos, function (ruleProps) {
-				return {
-					cost: ruleProps.cost,
-					semantic: ruleProps.semantic ? semantic.reduce(ruleProps.semantic, semanticArg) : semanticArg,
-					// Use saved text with correct capitalization.
-					text: entity.text,
-				}
-			})
+			// Generate all nodes for rules that produce the terminal symbol
+			this.createWords(wordSym, endPos, semanticArg, entity.text)
 		}
 	}
 }
@@ -63,21 +57,20 @@ Parser.prototype.intSymbolLookup = function (nGram) {
 			var semanticArg = this.newSemanticArgs[nGram] || (this.newSemanticArgs[nGram] = [ { semantic: { name: nGram } } ])
 
 			// Generate all nodes for rules that produce the terminal symbol
-			this.createWords(wordSym, this.position, function (ruleProps) {
-				return {
-					cost: ruleProps.cost,
-					semantic: ruleProps.semantic ? semantic.reduce(ruleProps.semantic, semanticArg) : semanticArg,
-					// Use nGram so do not have to convert Number back to String later
-					text: nGram,
-				}
-			})
+			this.createWords(wordSym, this.position, semanticArg, nGram)
 		}
 	}
 }
 
-// FIXME: we are creating the anonymous function object everytime
-// Create nodes for terminal symbols
-Parser.prototype.createWords = function (wordSym, endPos, makeRuleProps) {
+/**
+ * Create nodes for terminal rules.
+ *
+ * @param {Object} wordSym The terminal symbol.
+ * @param {number} endPos The end index of a terminal symbol in input.
+ * @param {Array} [semanticArg] The semantic argument if the terminal symbol is a placeholder (i.e., the semantic created from an entity or integer in input).
+ * @param {string} [text] The display text if the terminal symbol is a placeholder (i.e., entities and integers).
+ */
+Parser.prototype.createWords = function (wordSym, endPos, semanticArg, text) {
 	// Create node with terminal symbol.
 	var wordNode = this.addSub(wordSym)
 
@@ -92,8 +85,23 @@ Parser.prototype.createWords = function (wordSym, endPos, makeRuleProps) {
 			// Number of tokens in the terminal symbol
 			size: wordSize,
 			node: wordNode,
-			ruleProps: makeRuleProps ? makeRuleProps(rule.ruleProps) : rule.ruleProps,
+			ruleProps: undefined,
 			minCost: undefined,
+		}
+
+		// Recreate `ruleProps` if terminal symbol is a placeholder and special display text and creates a semantic argument from input.
+		if (semanticArg) {
+			var origRuleProps = rule.ruleProps
+			sub.ruleProps = {
+				cost: origRuleProps.cost,
+				// Use the semantic argument created from input (e.g., an entity or integer).
+				semantic: origRuleProps.semantic ? semantic.reduce(origRuleProps.semantic, semanticArg) : semanticArg,
+				// Entities: use saved text with correct capitalization.
+				// Integers: use string of number to avoid converting number to string later.
+				text: text,
+			}
+		} else {
+			sub.ruleProps = rule.ruleProps
 		}
 
 		// Create a node with LHS of terminal rule
