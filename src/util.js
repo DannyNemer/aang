@@ -132,7 +132,7 @@ exports.illFormedOpts = function (schema, options) {
  * @memberOf dantil
  * @category Utility
  * @param {Function} func The function to execute within a `try` block.
- * @param {boolean} rethrow Specify rethrowing a caught error from `func` after printing the stack trace.
+ * @param {boolean} [exitProcessIfFailure] Specify ending the process with 'failure' code `1` after catching an error from `func` and printing its stack trace. The shell that executed Node will see the exit code as `1`.
  * @returns {*} Returns the return value of `func`, if any.
  * @example
  *
@@ -142,7 +142,7 @@ exports.illFormedOpts = function (schema, options) {
  * })
  * // => Catches thrown error and prints a formatted stack trace
  */
-exports.tryCatchWrapper = function (func, rethrow) {
+exports.tryCatchWrapper = function (func, exitProcessIfFailure) {
 	try {
 		return func()
 	} catch (e) {
@@ -169,7 +169,7 @@ exports.tryCatchWrapper = function (func, rethrow) {
 			exports.log(e)
 		}
 
-		if (rethrow) throw e
+		if (exitProcessIfFailure) process.exit(1)
 	}
 }
 
