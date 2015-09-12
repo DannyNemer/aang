@@ -66,7 +66,7 @@ Parser.prototype.intSymbolLookup = function (nGram) {
 			this.createWords(wordSym, this.position, function (ruleProps) {
 				return {
 					cost: ruleProps.cost,
-					semantic: semanticArg,
+					semantic: ruleProps.semantic ? semantic.reduce(ruleProps.semantic, semanticArg) : semanticArg,
 					// Use nGram so do not have to convert Number back to String later
 					text: nGram,
 				}
