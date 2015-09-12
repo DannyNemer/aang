@@ -204,6 +204,10 @@ function runCommand(input) {
 
 		rl.on('SIGINT', killChild)
 
+		// Temporarily remove CLI `line` event listener (when the user hits `enter`).
+		var online = rl._events.line
+		rl.removeListener('line', online)
+
 		buildGrammar.on('error', function (err) {
 			util.logError('Failed to start child process:', err.code)
 		})
@@ -222,6 +226,9 @@ function runCommand(input) {
 				// Rebuild state table.
 				stateTable = buildStateTable()
 			}
+
+			// Restore `line` event listener.
+			rl.on('line', online)
 
 			// Resume CLI.
 			rl.prompt()
