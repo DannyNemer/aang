@@ -95,7 +95,7 @@ issue.inner.addRule({ RHS: [ preps.possessed, github.commentCount ], semantic: i
 // DATE:
 var updated = g.newSymbol('updated')
 updated.addWord({
-	insertionCost: 3,
+	insertionCost: 2,
 	accepted: [ 'updated' ],
 })
 

@@ -138,7 +138,7 @@ repository.preModifier.addRule({ RHS: [ language ] })
 
 var writtenIn = g.newSymbol('written', 'in')
 writtenIn.addWord({
-	insertionCost: 3,
+	insertionCost: 2,
 	accepted: [ 'written in' ],
 	// substitutions: [ 'in' ],
 })

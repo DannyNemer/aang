@@ -46,7 +46,7 @@ exports.mention.addWord({
 
 var mentionedIn = g.newSymbol('mentioned', 'in')
 mentionedIn.addWord({
-	insertionCost: 2,
+	insertionCost: 1.1,
 	accepted: [ 'mentioned in' ],
 })
 
@@ -67,7 +67,7 @@ user.inner.addRule({
 // ASSIGNED-TO:
 exports.assignedTo = g.newSymbol('assigned', 'to')
 exports.assignedTo.addWord({
-  insertionCost: 2,
+  insertionCost: 1.2,
   accepted: [ 'assigned to' ],
 })
 
