@@ -1,4 +1,4 @@
-// Queries to test speed and various cases
+// Queries to test speed and various cases.
 exports.basic = [
 	'repos I have liked',
 	'repos created by me and my followers',
@@ -10,7 +10,7 @@ exports.basic = [
 	'repos people who like and created',
 	'repos that have been created by people and like and I contributed to',
 	'repos that are repos',
-	'my followers who are my followers', // Intentionally fails
+	'my followers who are my followers', // Intentionally wrong
 	'my followers who are followers of followers of mine',
 	'my followers who are followers of followers of mine who liked that repos contributed to of mine',
 	'repos',
@@ -43,7 +43,7 @@ exports.basic = [
 	'creators of repos I like',
 	'likers of repos I like and repos I contributed to',
 	'creators of repos I like and repos I contributed to',
-	'creators of repos I like and pull requests I am mentioned in', // unimplemented
+	'creators of repos I like and pull requests I am mentioned in', // Unimplemented
 	'openers of closed issues that mention people I and my followers follow',
 	'people who are not followers of mine',
 	'people who have not been followed by me',
@@ -70,9 +70,9 @@ exports.basic = [
 	'repos people people Danny follows follow created Danny likes',
 	'followers of my followers who are followers of mine my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed to follow',
 	'repos contributed to by me',
-	'repos to by me', // intentionally wrong
-	'repos liked contributed to by me', // intentionally wrong
-	'repos by me', // should insert 'liked'
+	'repos to by me', // Intentionally wrong
+	'repos liked contributed to by me', // Intentionally wrong
+	'repos by me',
 	'issues opened by me assigned to me', // transposition
 	'issues with 22 comments',
 	'issues assigned to me with 22 comments',
@@ -92,8 +92,8 @@ exports.basic = [
 	'repos created between last year and this year',
 	'repos created from 2012 to 2014',
 	'repos created before June 20 2000 and after this year',
-	'people I and Danny follows', // Intentionally fails
-	'people people Danny follow and Danny follows', // Intentionally fails
+	'people I and Danny follows', // Intentionally wrong
+	'people people Danny follow and Danny follows', // Intentionally wrong
 	'likers of my repos I contributed to that I like and my repos I contributed to',
 	'my GitHub repos liked by my github followers',
 	'my followers\' repos',
@@ -115,7 +115,6 @@ exports.basic = [
 	'repos that are not created today liked by me',
 	'people who are not my followers',
 	'repos not created today not liked by me', // should produce results
-	'repos created today created yesterday', // Intentionally fails
 	'women',
 	'men I follow',
 	'people who are males',
@@ -126,9 +125,9 @@ exports.basic = [
 	'people people I follow who Danny follow and follow Danny follow',
 	'repos people I follow created that Danny like',
 	'issues assigned to me Danny opened and Aang are mentioned in',
-	'people {user} follows', // intentionally wrong
-	'people I and {user} follow', // intentionally wrong
-	'issues with <int> comments', // intentionally wrong
+	'people {user} follows', // Intentionally fails
+	'people I and {user} follow', // Intentionally fails
+	'issues with <int> comments', // Intentionally fails
 	'my repos me people who follow my followers have been and',
 	'people my followers who created repositories of my followers followers of mine who I follow like follow',
 	'contributors to my repos or repos I like or Danny likes',
@@ -151,7 +150,6 @@ exports.basic = [
 	'people who have liked my repos',
 	'people who',
 	'people who like',
-	'people who repos',
 	'people who have',
 	'people who have been',
 	'repos that',
@@ -166,8 +164,15 @@ exports.basic = [
 	'pull requests that have',
 	'pull requests that been',
 	'pull requests that have been',
+	'people who repos',
 	'people who have repos',
 	'people who have my repos',
+	'people who issues',
+	'people who have issues',
+	'people who have my issues',
+	'people who pull requests',
+	'people who have pull requests',
+	'people who have my pull requests',
 	'repos who have liked my repos',
 	'people who have issues pull requests',
 	'people who have issues pull requests repos',
@@ -181,6 +186,50 @@ exports.basic = [
 	'repos created before June 0 2000 and July -2 3000', // Intentionally fails
 	'repos created before June 32 1940', // Intentionally fails
 	'repos created before June 31 1950',
+	'people who do not follow me',
+	'people who people',
+	'people who followers',
+	'my pull requests assigned to me',
+	'repos I do not like',
+	'repos I did not like',
+	'repos Danny does not like',
+	'repos Danny has not liked',
+	'repos Danny has liked',
+	'repos Danny have likes',
+	'repos I have not liked',
+	'repos I has not liked',
+	'repos I not have liked', // enable transpositions?
+	'repos people who follow me and I do not like',
+	'repos people who follow me and me do not like',
+	'repos people who follow me and I does not like',
+	'repos people who follow me and I have not liked',
+	'repos people who follow me and I has not likes',
+	'repos people who have not liked Danny\'s repos created',
+	'repos I did not have liked',
+	'repos Danny and I do not like',
+	'repos Danny and people who follow Danny have not liked',
+	'repos that have been liked by me',
+	'people who do not like my repos',
+	'repos that have not been liked by me',
+	'repos that not been liked by me',
+	'repos not been liked by me',
+	'people who have not liked my repos',
+	'repos I and Danny do not liked',
+	'repos I and Danny do not like',
+	'repos I and Danny have not liked',
+	'repos Danny does like',
+	'repos I not liked',
+	'repos Danny and Aang and I do not like',
+	'repos Danny and has not liked',
+	'repos Danny and Aang not have liked',
+	'repos my followers have not liked',
+	'repos my followers like',
+	'my repositories people who created my repos created', // Intentionally wrong
+	'repos created today created yesterday', // Should fail
+	'people who like my repos liked by people who follow me that people I follow created', // Intentionally wrong, but should produce results
+	'repos Danny by me',
+	'repos Danny by me Danny',
+
 
 	// 'followers my followers share',
 	// 'followers I and Danny have in common',
@@ -190,20 +239,15 @@ exports.basic = [
 	// 'followers I and Danny share with Aang and my followers',
 
 	// 'followers Danny has in common with' // doesn't work
-	// 'repos danny by me', // intentionally wrong - requires implementation of deletions
-	// 'repos danny by me danny', // intentionally wrong - requires implementation of deletions
-	// 'repos that I created I like', // intentionally wrong
-	// 'people who I follow Danny follows', // intentionally wrong
-	// 'pull requests of mine created by my followers' // reaches startNode but produces no legal trees
-	// 'my followers who created pull requests of mine my followers who created repositories followers of mine mentioned in issues of my followers who I follow like that are repos created by me I contributed to am mentioned in that I am mentioned in', // really slow, but because of some rule - look at parse stack
-	// illegal, but takes a long time for search to fail (produce no results):
-	// 'my repositories people who created my repos created'
-	// 'my' // doesn't work
-	// 'people who like my repos liked by people who follow me that people I follow created'
+	// 'repos that I created I like', // intentionally wrong - unimplemented
+	// 'people who I follow Danny follows', // intentionally wrong - unimplemented
+	// 'pull requests of mine created by my followers' // no results, too slow. Look at parse stack
+	// 'my followers who created pull requests of mine my followers who created repositories followers of mine mentioned in issues of my followers who I follow like that are repos created by me I contributed to am mentioned in that I am mentioned in', // really slow, but because of some rule - look at parse stack. Remove some ambiguous insertions
+	// 'my' - no results, but should have some
 ]
 
-// Queries to test conjugation
-// The first result for these queries must match the input exactly
+// Queries to test conjugation.
+// The display text of the first test must match the input query exactly.
 exports.conjugation = [
 	'people I follow',
 	'people Danny follows',
@@ -219,4 +263,23 @@ exports.conjugation = [
 	'people who have liked my repos',
 	'repos that are liked by my followers',
 	'repos that were liked by my followers',
+	'people who have not been followed by me',
+	'people who do not follow me',
+	'repos I do not like',
+	'repos Danny does not like',
+	'repos Danny has not liked',
+	'repos I have not liked',
+	'repos people who follow me and I do not like',
+	'repos people who follow me and I have not liked',
+	'repos Danny and I do not like',
+	'repos Danny and people who follow Danny have not liked',
+	'repos that have been liked by me',
+	'people who do not like my repos',
+	'repos that have not been liked by me',
+	'people who have not liked my repos',
+	'repos I and Danny do not like',
+	'repos I and Danny have not liked',
+	'repos Danny and Aang and I do not like',
+	'repos my followers have not liked',
+	'repos my followers like',
 ]
