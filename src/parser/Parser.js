@@ -46,7 +46,7 @@ Parser.prototype.intSymbolLookup = function (nGram) {
 	for (var i = 0, intSymbolsLen = intSymbols.length; i < intSymbolsLen; ++i) {
 		var intSymbol = intSymbols[i]
 
-		// Interger symbols are sorted by increasing minimum value, so all following values are equal to or greater than this.
+		// Integer symbols are sorted by increasing minimum value, so all following values are equal to or greater than this.
 		if (parsedFloat < intSymbol.min) return
 
 		if (parsedFloat <= intSymbol.max) {
@@ -82,7 +82,7 @@ Parser.prototype.createWords = function (wordSym, endPos, semanticArg, text) {
 	for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 		var rule = rules[r]
 		var sub = {
-			// Number of tokens in the terminal symbol
+			// The number of lexical tokens in the terminal symbol.
 			size: wordSize,
 			node: wordNode,
 			ruleProps: undefined,
@@ -108,7 +108,7 @@ Parser.prototype.createWords = function (wordSym, endPos, semanticArg, text) {
 		wordNodes.push(this.addSub(rule.RHS[0], sub)) // FIXME: rename prop - rule.RHS[0] is LHS for terms
 	}
 
-	// Save word to index of last token
+	// Save word to index of last lexical token
 	var words = this.wordTab[endPos] || (this.wordTab[endPos] = [])
 	words.push({
 		start: this.position,
@@ -124,7 +124,7 @@ Parser.prototype.createDeletions = function (words, wordNode) {
 	var oldWordNodes = words[words.length - 1].nodes
 	var oldWordNodesLen = oldWordNodes.length
 
-	// Step backward checking for continuous spans of deltable tokens end at the start of this token
+	// Step backward checking for continuous spans of deletable tokens end at the start of this token
 	for (var deletionLen = 1; this.deletionTokenIdxes[this.position - deletionLen]; ++deletionLen) {
 		var wordNodes = []
 		var startPos = this.position - deletionLen
@@ -136,7 +136,7 @@ Parser.prototype.createDeletions = function (words, wordNode) {
 			var oldRuleProps = oldNode.subs[0].ruleProps
 
 			var sub = {
-				// Span of tokens
+				// The number of lexical tokens spanned by this node.
 				size: wordSize,
 				node: wordNode,
 				ruleProps: {
@@ -192,7 +192,7 @@ Parser.prototype.matchTerminalRules = function (query) {
 			// Check every possible n-gram for multi-word terminal symbols
 			var endPos = this.position
 
-			// Mark index as deletable if token is deletable
+			// Mark index as deletable if lexical token is deletable
 			// Could be faster because `deletables` is alphabetically sorted, but elasticsearch will take care of that
 			if (deletables.indexOf(nGram) !== -1) {
 				this.deletionTokenIdxes[endPos] = true
@@ -214,13 +214,13 @@ Parser.prototype.matchTerminalRules = function (query) {
 			}
 		}
 
-		// If unigram is a number, match with rules with interger terminal symbol placeholders, using the unigram as the semantic argument.
+		// If unigram is a number, match with rules with integer terminal symbol placeholders, using the unigram as the semantic argument.
 		else {
 			this.intSymbolLookup(nGram)
 		}
 	}
 
-	// Reset token position.
+	// Reset token scan position.
 	this.position = 0
 
 	return this.wordTab
@@ -255,7 +255,7 @@ Parser.prototype.parse = function (query) {
 			if (this.position === this.tokensLen) break
 
 			// No token at index - either unrecognized word, or a multi-token terminal symbol
-			// This array will not be used, but creating and checking its length is faster than always checking for if array exists
+			// This array will not be used, but creating and checking its length (which occurs anyway) is faster than always checking for if array exists
 			this.vertTabs[++this.position] = []
 			continue
 		}
@@ -269,7 +269,7 @@ Parser.prototype.parse = function (query) {
 			var oldVertTab = this.vertTabs[word.start]
 			var oldVertTabLen = oldVertTab.length
 
-			// Loop through all term rules that produce the terminal symbol
+			// Loop through all terminal rules that produce the terminal symbol
 			var nodes = word.nodes
 			for (var n = 0, nodesLen = nodes.length; n < nodesLen; ++n) {
 				var node = nodes[n]
@@ -308,8 +308,9 @@ Parser.prototype.parse = function (query) {
 /**
  * Adds a new subnode.
  *
- * @param {[type]} sym The new symbol.
- * @param {[type]} [sub] The subnode (i.e., RHS) which is produced by `sym`. Does not exist if `sym` is a terminal symbol.
+ * @param {Object} sym The new symbol.
+ * @param {Object} [sub] The subnode (i.e., RHS) which is produced by `sym`. Does not exist if `sym` is a terminal symbol.
+ * @return {Object} The node to which `sub` was added to.
  */
 Parser.prototype.addSub = function (sym, sub) {
 	var size = sub ? sub.size : sym.size // no sub -> terminal symbol
@@ -324,11 +325,12 @@ Parser.prototype.addSub = function (sym, sub) {
 	// Create a new node
 	if (n === -1) {
 		node = {
+			// The LHS of `sub`
 			sym: sym,
-			// The token index of input at which this node's span begin; only used for debuging
-			start: undefined,
-			// The number of tokens in input this node spans
+			// The number of lexical tokens spanned by this node.
 			size: size,
+			// The token index of input at which this node's span begin; only used for debugging
+			start: undefined,
 			// The child nodes produces by this node's rules (i.e., the RHS)
 			subs: undefined,
 		}
@@ -365,7 +367,7 @@ Parser.prototype.addSub = function (sym, sub) {
  *
  * @param {Array} existingSubs The subnodes of the parent node.
  * @param {Object} newSub The new subnode.
- * @returns {boolean} Returns `true` if `newSub` already exists, else `falase.
+ * @returns {boolean} Returns `true` if `newSub` already exists, else `falas`.
  */
 function subIsNew(existingSubs, newSub) {
 	var newSubNext = newSub.next
@@ -405,7 +407,7 @@ Parser.prototype.addVertex = function (state) {
 	}
 
 	var vertex = {
-		// Index of state in stateTable of reds + shifts
+		// State in stateTable with reds + shifts
 		state: state,
 		// Index in input string tokens array; only used for debugging
 		start: this.position,
@@ -432,6 +434,7 @@ Parser.prototype.nextState = function (state, sym) {
 	for (var s = 0, stateShiftsLen = stateShifts.length; s < stateShiftsLen; ++s) {
 		var shift = stateShifts[s]
 		if (shift.sym === sym) {
+			// Tests show it is >2x faster to get the state directly using its index rather than saving a pointer to the state.
 			return this.stateTable.states[shift.stateIdx]
 		}
 	}
@@ -550,10 +553,10 @@ function printNode(node) {
 }
 
 Parser.prototype.printForest = function (startNode) {
-	console.log("\nParse Forest:")
+	util.log("\nParse Forest:")
 
 	if (startNode) {
-		console.log('*' + printNode(startNode) + '.')
+		util.log('*' + printNode(startNode) + '.')
 	}
 
 	this.nodeTabs.forEach(function (nodeTab) {
@@ -573,7 +576,7 @@ Parser.prototype.printForest = function (startNode) {
 					toPrint += printNode(sub.node)
 			})
 
-			console.log(toPrint + '.');
+			util.log(toPrint + '.');
 		})
 	})
 }
@@ -581,14 +584,14 @@ Parser.prototype.printForest = function (startNode) {
 Parser.prototype.printStack = function () {
 	var states = this.stateTable.states
 
-	console.log("\nParse Stack:")
+	util.log("\nParse Stack:")
 
 	this.vertTabs.forEach(function (vertTab) {
 		vertTab.forEach(function (vertex) {
 			var toPrint = ' v_' + vertex.start + '_' + states.indexOf(vertex.state)
 
 			if (vertex.zNodes.length > 0) toPrint += ' <=\t'
-			else console.log(toPrint)
+			else util.log(toPrint)
 
 			vertex.zNodes.forEach(function (zNode, Z) {
 				if (Z > 0) toPrint += '\t\t'
@@ -599,7 +602,7 @@ Parser.prototype.printStack = function () {
 					toPrint += ' v_' + subVertex.start + '_' + states.indexOf(subVertex.state)
 				})
 
-				if (Z === vertex.zNodes.length - 1) console.log(toPrint)
+				if (Z === vertex.zNodes.length - 1) util.log(toPrint)
 				else toPrint += '\n'
 			})
 		})
