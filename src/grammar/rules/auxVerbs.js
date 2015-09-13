@@ -58,20 +58,26 @@ negation.addWord({
 	substitutions: [ 'are|can|could|did|does|do|had|has|have|is|should|was|were|will|would not' ],
 })
 
-// (people who) do not (follow me)
 var doTerm = g.newSymbol('do')
-doTerm.addWord({
+doTerm.addVerb({
 	insertionCost: 0.2,
-	accepted: [ 'do' ],
-	substitutions: [ 'did', 'does' ],
+	oneOrPl: [ 'do' ],
+	threeSg: [ 'does' ],
+	substitutions: [ 'did' ]
 })
+// (people who) do not (follow me)
+// (people I) do not (follow)
 exports.doNegation = g.newBinaryRule({ RHS: [ doTerm, negation ] })
 
-// (people who) are not followers of mine
 // (issues that) are not (open)
-// (people who) are not (follwed by me)
+// (people who) are not (followers of mine)
+// (people who) are not (followed by me)
 exports.beNon1SgNegation = g.newBinaryRule({ RHS: [ exports.beNon1Sg, negation ] })
 
+// (people I) have not (followed)
+// (repos I) have not (liked)
+// No insertion for '[have]' to prevent "people I not" suggesting two semantically identical trees: "have not" and "do not".
+exports.haveNoInsertNegation = g.newBinaryRule({ RHS: [ exports.have, negation ], noInsertionIndexes: [ 0 ] })
 // (people who) have not been (followed by me)
-var haveNegation = g.newBinaryRule({ RHS: [ exports.have, negation ], personNumber: 'pl' })
-exports.haveNegationBePast = g.newBinaryRule({ RHS: [ haveNegation, exports.bePast ] })
+var haveNegationPlSubj = g.newBinaryRule({ RHS: [ exports.have, negation ], personNumber: 'pl' })
+exports.haveNegationBePast = g.newBinaryRule({ RHS: [ haveNegationPlSubj, exports.bePast ] })

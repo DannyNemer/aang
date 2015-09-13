@@ -47,9 +47,6 @@ user.head.addRule({ RHS: [ github.creatorsOf, repository.catPl ], semantic: repo
 
 
 // LIKE:
-var repositoriesLikedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'liked'), cost: 0.5, minParams: 1, maxParams: 1 })
-var repositoryLikersSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'likers'), cost: 0.5, minParams: 1, maxParams: 1 })
-
 var like = g.newSymbol('like')
 like.addVerb({
 	insertionCost: 0.8,
@@ -58,12 +55,21 @@ like.addVerb({
 	past: [ 'liked' ],
 })
 
+var repositoriesLikedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'liked'), cost: 0.5, minParams: 1, maxParams: 1 })
 // (repos) liked by me
 repository.passive.addRule({ RHS: [ like, user.byObjUsersPlus ], semantic: repositoriesLikedSemantic, verbForm: 'past' })
 // (repos) I like
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, like ], semantic: repositoriesLikedSemantic })
 // (repos) I have liked
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsert, like ], semantic: repositoriesLikedSemantic, verbForm: 'past' })
+
+var notRepositoriesLikedSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoriesLikedSemantic)
+// (repos) I do not like
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlusDoNegation, like ], semantic: notRepositoriesLikedSemantic, personNumber: 'pl' })
+// (repos) I have not liked
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertNegation, like ], semantic: notRepositoriesLikedSemantic, verbForm: 'past' })
+
+var repositoryLikersSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'likers'), cost: 0.5, minParams: 1, maxParams: 1 })
 // (people who) like [repositories+]
 user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
 // (people who) have liked [repositories+]
