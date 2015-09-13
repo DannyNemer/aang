@@ -72,10 +72,16 @@ repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertNegation, lik
 var repositoryLikersSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'likers'), cost: 0.5, minParams: 1, maxParams: 1 })
 // (people who) like [repositories+]
 user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
+
+// Hack: manually create symbol name to avoid '+' to allow insertions
+var likeRepositoriesPlus = g.newSymbol(like.name, repository.namePl)
+likeRepositoriesPlus.addRule({ RHS: [ like, repository.catPlPlus ], verbForm: 'past' })
 // (people who) have liked [repositories+]
-// Cannot put the grammar properties on the same rule because conjugation cannot not handle it
-var haveNoInsertLike = g.newBinaryRule({ RHS: [ auxVerbs.have, like ], noInsertionIndexes: [ 0 ], verbForm: 'past' })
-user.subjFilter.addRule({ RHS: [ haveNoInsertLike, repository.catPlPlus ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
+// No insertion for '[have]' to prevent "people who like" suggesting two semantically identical trees: "who like" and "who have liked".
+user.subjFilter.addRule({ RHS: [ auxVerbs.have, likeRepositoriesPlus ], semantic: repositoryLikersSemantic, noInsertionIndexes: [ 0 ], personNumber: 'pl' })
+// (people who) have not liked [repositories+]
+// No insertion for '[have]' to prevent "people who not like" suggesting two semantically identical trees: "who do not like" and "who have not liked".
+user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, likeRepositoriesPlus ], semantic: g.reduceSemantic(auxVerbs.notSemantic, repositoryLikersSemantic), personNumber: 'pl' })
 
 var likersOf = g.newSymbol('likers', 'of')
 likersOf.addWord({

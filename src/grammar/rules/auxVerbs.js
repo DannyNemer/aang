@@ -76,6 +76,7 @@ exports.beNon1SgNegation = g.newBinaryRule({ RHS: [ exports.beNon1Sg, negation ]
 
 // (people I) have not (followed)
 // (repos I) have not (liked)
+// (people who) have not (liked my repos)
 // No insertion for '[have]' to prevent "people I not" suggesting two semantically identical trees: "have not" and "do not".
 exports.haveNoInsertNegation = g.newBinaryRule({ RHS: [ exports.have, negation ], noInsertionIndexes: [ 0 ] })
 // (people who) have not been (followed by me)
