@@ -553,7 +553,7 @@ function format(args, options) {
 			}
 
 			formattedArgs.push(formattedArg)
-		} else if (reMultiLined.test(formattedArg)) {
+		} else if (arg instanceof Object) {
 			// Print object with multi-line string representations on separate lines.
 			formattedArgs.push(indent + formattedArg.replace(reMultiLined, reMultiLined.source + indent))
 		} else if (args[i - 1] instanceof Object) {
