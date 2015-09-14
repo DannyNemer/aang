@@ -469,9 +469,9 @@ exports.expandHomeDir = function (path) {
 /**
  * Pretty-prints the provided values and objects in color, recursing 2 times while formatting objects (which is identical to `console.log()`).
  *
- * Formats arguments of complex types (e.g., `Object`, `Array`) on separate lines. Concatenates and formats all other successive values on the same line.
+ * Formats plain `Object`s and `Array`s with multi-line string representations on separate lines. Concatenates and formats all other successive values on the same line.
  *
- * If the first argument is of a complex type, left-aligns all remaining lines. Otherwise, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
+ * If the first argument is of a complex type (e.g., `Object`, `Array`), left-aligns all remaining lines. Otherwise, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @static
  * @memberOf dantil
@@ -505,9 +505,9 @@ exports.dir = function () {
 /**
  * Formats the provided values and objects in color for pretty-printing, recursing `options.depth` times while formatting objects.
  *
- * Formats arguments of complex types (e.g., `Object`, `Array`) on separate lines. Concatenates and formats all other successive values on the same line.
+ * Formats plain `Object`s and `Array`s with multi-line string representations on separate lines. Concatenates and formats all other successive values on the same line.
  *
- * If the first argument is of a complex type, left-aligns all remaining lines. Otherwise, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
+ * If the first argument is of a complex type (e.g., `Object`, `Array`), left-aligns all remaining lines. Otherwise, equally indents each line after the first line, if any. If the first argument has leading whitespace, prepends all remaining arguments with the same whitespace excluding line breaks.
  *
  * @private
  * @param {Object} args The `arguments` object (passed to the callee) with the values and objects to format.
@@ -522,19 +522,21 @@ function format(args, options) {
 	var inspectOptions = {
 		// Number of times to recurse while formatting; defaults to 2.
 		depth: options.depth,
-		// Print in color if the terminal supports color.
+		// Format in color if the terminal supports color.
 		colors: exports.colors.supportsColor,
 	}
 
 	// Use `RegExp()` to get correct `reMultiLined.source`.
 	var reMultiLined = RegExp(',\n', 'g')
+	var reWhitespaceOnly = /^\s+$/
 	var indent = '  '
 
 	return Array.prototype.slice.call(args).reduce(function (formattedArgs, arg, i, args) {
-		// Print strings passed as arguments (i.e., not `Object` properties) without styling.
+		// Do not stylize strings passed as arguments (i.e., not `Object` properties).
 		// - This also preserves any already-stylized arguments.
 		var argIsString = typeof arg === 'string'
 		var formattedArg = !options.stylizeStings && argIsString ? arg : util.inspect(arg, inspectOptions)
+		var lastFormattedArgIdx = formattedArgs.length - 1
 
 		if (i === 0) {
 			// Extend indent for successive lines with the first argument's leading whitespace, if any.
@@ -548,20 +550,20 @@ function format(args, options) {
 				// JavaScript will not properly indent if '\t' is appended to spaces (i.e., reverse order as here).
 				indent = arg + indent
 			} else if (arg instanceof Object) {
-				// Do not indent successive lines if the first argument is a complex type.
+				// Do not indent successive lines if the first argument is of a complex type.
 				indent = ''
 			}
 
 			formattedArgs.push(formattedArg)
-		} else if (arg instanceof Object) {
-			// Print object with multi-line string representations on separate lines.
+		} else if (reWhitespaceOnly.test(formattedArgs[lastFormattedArgIdx])) {
+			// Concatenate with the previous formatted argument if the previous formatted argument is only whitespace.
+			formattedArgs[lastFormattedArgIdx] += formattedArg.replace(reMultiLined, reMultiLined.source + indent)
+		} else if (arg instanceof Object && (!Array.isArray(arg) || reMultiLined.test(formattedArg) || args[0] instanceof Object)) {
+			// Format plain `Object`s,  `Array`s with multi-line string representations, and `Array`s when the first argument is of a complex type on separate lines.
 			formattedArgs.push(indent + formattedArg.replace(reMultiLined, reMultiLined.source + indent))
-		} else if (args[i - 1] instanceof Object) {
-			// Concatenate objects with other arguments only if single-lined and following a primitive type.
-			formattedArgs.push(indent + formattedArg)
 		} else {
 			// Concatenate all successive primitive data types.
-			formattedArgs[formattedArgs.length - 1] += ' ' + formattedArg
+			formattedArgs[lastFormattedArgIdx] += ' ' + formattedArg
 		}
 
 		return formattedArgs
