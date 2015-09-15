@@ -58,6 +58,8 @@ var verbOptsSchema = {
 	threeSg: { type: Array, arrayType: String, optional: true },
 	oneOrThreeSg: { type: Array, arrayType: String, optional: true },
 	past: { type: Array, arrayType: String, optional: true },
+	// Specify allowing the `past` terminal symbols, if defined, to be accepted in every rule with the verb in addition to past-tense rules.
+	pastIsAlwaysAccepted: { type: Boolean, optional: true },
 	substitutions: { type: Array, arrayType: String, optional: true },
 }
 
@@ -184,12 +186,18 @@ Symbol.prototype.addVerb = function (opts) {
 	// Past tense - optional
 	if (opts.past) {
 		opts.past.forEach(function (termSym) {
-			this.addRule({ terminal: true, RHS: termSym, text: {
-				one: defaultTextForms.one,
-				pl: defaultTextForms.pl,
-				threeSg: defaultTextForms.threeSg,
-				past: termSym,
-			} })
+			if (opts.pastIsAlwaysAccepted) {
+				// Accept `past` terminal symbols for every grammatical case. E.g., accept both "repos I like" and "repos I liked".
+				this.addRule({ terminal: true, RHS: termSym, text: termSym })
+			} else {
+				// Only accept `past` terminal symbols for rules defined as past-tense.
+				this.addRule({ terminal: true, RHS: termSym, text: {
+					one: defaultTextForms.one,
+					pl: defaultTextForms.pl,
+					threeSg: defaultTextForms.threeSg,
+					past: termSym,
+				} })
+			}
 		}, this)
 	}
 
