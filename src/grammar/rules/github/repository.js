@@ -72,7 +72,7 @@ repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsert, like ], sem
 
 var notRepositoriesLikedSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoriesLikedSemantic)
 // (repos) I do not like
-repository.objFilter.addRule({ RHS: [ user.nomUsersPlusDoNegation, like ], semantic: notRepositoriesLikedSemantic, personNumber: 'pl' })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlusDoPresentNegation, like ], semantic: notRepositoriesLikedSemantic, personNumber: 'pl' })
 // (repos) I have not liked
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertNegation, like ], semantic: notRepositoriesLikedSemantic, verbForm: 'past' })
 

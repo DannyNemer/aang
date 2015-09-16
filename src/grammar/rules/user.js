@@ -74,7 +74,7 @@ user.nomUsersPlusHaveNoInsert = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxV
 user.nomUsersPlusHaveNoInsertPreVerbStopWords = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.haveNoInsertPreVerbStopWords ] })
 
 // (repos) I do not (like)
-user.nomUsersPlusDoNegation = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.doNegation ] })
+user.nomUsersPlusDoPresentNegation = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.doPresentNegation ] })
 // (repos) I have not (liked)
 // No insertion for '[have]' to prevent "repos I not" suggesting two semantically identical trees: "have not" and "do not".
 user.nomUsersPlusHaveNoInsertNegation = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.haveNoInsertNegation ] })

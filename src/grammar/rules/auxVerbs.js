@@ -58,16 +58,17 @@ negation.addWord({
 	substitutions: [ 'are|can|could|did|does|do|had|has|have|is|should|was|were|will|would not' ],
 })
 
-var doTerm = g.newSymbol('do')
-doTerm.addVerb({
+var doPresent = g.newSymbol('do', 'present')
+doPresent.addVerb({
 	insertionCost: 0.2,
 	oneOrPl: [ 'do' ],
 	threeSg: [ 'does' ],
-	substitutions: [ 'did' ]
+	substitutions: [ 'did' ],
 })
+
 // (people who) do not (follow me)
 // (people I) do not (follow)
-exports.doNegation = g.newBinaryRule({ RHS: [ doTerm, negation ] })
+exports.doPresentNegation = g.newBinaryRule({ RHS: [ doPresent, negation ] })
 
 var doPast = g.newSymbol('do', 'past')
 doPast.addWord({
