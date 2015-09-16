@@ -33,15 +33,15 @@ repository.head.addRule({ RHS: [ repository.headMayPoss, poss.ofPossUsers ], sem
 
 // CREATED:
 // (repos) created by me
-repository.passive.addRule({ RHS: [ github.created, user.byObjUsers ], semantic: repositoriesCreatedSemantic })
+repository.passive.addRule({ RHS: [ github.createPast, user.byObjUsers ], semantic: repositoriesCreatedSemantic })
 // (repos) I <stop> created
-repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.created ], semantic: repositoriesCreatedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.createPast ], semantic: repositoriesCreatedSemantic })
 // (repos) I <stop> have created
-repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHaveNoInsert, github.created ], semantic: repositoriesCreatedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHaveNoInsert, github.createPast ], semantic: repositoriesCreatedSemantic })
 // (people who) created [repositories]
-user.subjFilter.addRule({ RHS: [ github.created, repository.catPl ], semantic: repositoryCreatorsSemantic })
+user.subjFilter.addRule({ RHS: [ github.createPast, repository.catPl ], semantic: repositoryCreatorsSemantic })
 // (people who) have created [repositories] - not [repositories+] because 'by'
-user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreated, repository.catPl ], semantic: repositoryCreatorsSemantic })
+user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreatePast, repository.catPl ], semantic: repositoryCreatorsSemantic })
 // creators of [repositories]
 user.head.addRule({ RHS: [ github.creatorsOf, repository.catPl ], semantic: repositoryCreatorsSemantic })
 
@@ -191,7 +191,7 @@ repository.postModifer.addRule({ RHS: [ count.createForItems(size) ], semantic: 
 
 // DATE:
 // (repos) created in [year]
-repository.inner.addRule({ RHS: [ github.created, date.general ], semantic: repository.semantic })
+repository.inner.addRule({ RHS: [ github.createPast, date.general ], semantic: repository.semantic })
 
 // (repos) pushed in [year]
 var pushed = g.newSymbol('pushed')

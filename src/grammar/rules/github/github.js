@@ -19,8 +19,8 @@ exports.termOpt = github.createNonterminalOpt()
 user.company.addRule({ RHS: [ github ] })
 
 
-exports.created = g.newSymbol('created')
-exports.created.addWord({
+exports.createPast = g.newSymbol('create', 'past')
+exports.createPast.addWord({
 	insertionCost: 0.5,
 	accepted: [ 'created' ],
 	substitutions: [ 'create' ],
@@ -28,7 +28,7 @@ exports.created.addWord({
 
 // (repos/pull-requests I) have created
 // (people who) have created ([repos]/[pull-requests])
-exports.haveNoInsertCreated = g.newBinaryRule({ RHS: [ auxVerbs.have, exports.created ], noInsertionIndexes: [ 0 ], personNumber: 'pl' })
+exports.haveNoInsertCreatePast = g.newBinaryRule({ RHS: [ auxVerbs.have, exports.createPast ], noInsertionIndexes: [ 0 ], personNumber: 'pl' })
 
 // creators of ([repositories]/[pull-requests])
 exports.creatorsOf = g.newSymbol('creators', 'of')

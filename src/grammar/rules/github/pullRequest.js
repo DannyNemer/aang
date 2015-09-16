@@ -31,15 +31,15 @@ pullRequest.head.addRule({ RHS: [ pullRequest.headMayPoss, poss.ofPossUsers ], s
 
 // CREATED:
 // (pull requests) created by me
-pullRequest.passive.addRule({ RHS: [ github.created, user.byObjUsers ], semantic: pullRequestsCreatedSemantic })
+pullRequest.passive.addRule({ RHS: [ github.createPast, user.byObjUsers ], semantic: pullRequestsCreatedSemantic })
 // (pull requests) I <stop> created
-pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.created ], semantic: pullRequestsCreatedSemantic })
+pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.createPast ], semantic: pullRequestsCreatedSemantic })
 // (pull requests) I <stop> have created
-pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHaveNoInsert, github.created ], semantic: pullRequestsCreatedSemantic })
+pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHaveNoInsert, github.createPast ], semantic: pullRequestsCreatedSemantic })
 // (people who) created pull [pull-requests]
-user.subjFilter.addRule({ RHS: [ github.created, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
+user.subjFilter.addRule({ RHS: [ github.createPast, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
 // (people who) have created pull [pull-requests] - not [pull-requests+] because 'by'
-user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreated, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
+user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreatePast, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
 // creators of [pull-requests]
 user.head.addRule({ RHS: [ github.creatorsOf, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
 
