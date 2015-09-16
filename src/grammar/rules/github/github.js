@@ -22,7 +22,7 @@ var createPresent = g.newSymbol('create', 'present')
 createPresent.addWord({
 	insertionCost: 0.5,
 	accepted: [ 'create' ],
-	substitutions: [ 'created' ],
+	substitutions: [ 'created', 'make', 'made' ],
 })
 
 // (repos/pull-requests I) did not create
@@ -32,7 +32,7 @@ exports.createPast = g.newSymbol('create', 'past')
 exports.createPast.addWord({
 	insertionCost: 0.5,
 	accepted: [ 'created' ],
-	substitutions: [ 'create' ],
+	substitutions: [ 'create', 'make', 'made' ],
 })
 
 // (repos/pull-requests I) have created
