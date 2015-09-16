@@ -234,6 +234,9 @@ exports.basic = [
 	'repos Danny has not contributed to',
 	'repos people who do not like my repos have not contributed to',
 	'people who have not contributed to my repos',
+	'repos I did not create',
+	'repos Danny did not create',
+	'repos Danny do not creates',
 
 
 	// 'followers my followers share',
@@ -291,4 +294,6 @@ exports.conjugation = [
 	'repos I and Danny have not contributed to',
 	'repos Danny has not contributed to',
 	'repos people who do not like my repos have not contributed to',
+	'repos I did not create',
+	'repos Danny did not create',
 ]

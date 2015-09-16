@@ -22,14 +22,14 @@ user.head.addRule({ RHS: [ user.companyOpt, user.term ] })
 
 
 // Person-number property only exists for nominative case
-var nomUsers = g.newSymbol('nom', user.namePl)
+user.nomUsers = g.newSymbol('nom', user.namePl)
 // (repos) people who follow me (like)
-nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'pl' })
+user.nomUsers.addRule({ RHS: [ user.plural ], personNumber: 'pl' })
 // (people) {user} (follows)
-nomUsers.addRule({ RHS: [ user.catSg ], personNumber: 'threeSg' })
-// nomUsers.addRule({ RHS: [ user.term ], personNumber: 'pl' }) // there is a semantic, no cost
+user.nomUsers.addRule({ RHS: [ user.catSg ], personNumber: 'threeSg' })
+// user.nomUsers.addRule({ RHS: [ user.term ], personNumber: 'pl' }) // there is a semantic, no cost
 // (people) I (follow)
-nomUsers.addRule({ RHS: [ oneSg.plain ], semantic: oneSg.semantic, gramCase: 'nom', personNumber: 'one' })
+user.nomUsers.addRule({ RHS: [ oneSg.plain ], semantic: oneSg.semantic, gramCase: 'nom', personNumber: 'one' })
 
 // No personNumber because only used in conjunctions, which are always plural
 var nomPlUsers = g.newSymbol('nom', 'pl', user.namePl)
@@ -50,9 +50,9 @@ nomPlUsersPlus.addRule({ RHS: [ nomPlUsers, andNomPlUsersPlus ] })
 var unionNomPlUsersPlus = g.newBinaryRule({ RHS: [ conjunctions.union, nomPlUsersPlus ] })
 nomPlUsersPlus.addRule({ RHS: [ nomPlUsers, unionNomPlUsersPlus ], semantic: conjunctions.unionSemantic })
 
-user.nomUsersPlus = g.newSymbol(nomUsers.name + '+')
+user.nomUsersPlus = g.newSymbol(user.nomUsers.name + '+')
 // (people) I follow
-user.nomUsersPlus.addRule({ RHS: [ nomUsers ] })
+user.nomUsersPlus.addRule({ RHS: [ user.nomUsers ] })
 // (people) I and {user} follow
 user.nomUsersPlus.addRule({ RHS: [ nomPlUsers, andNomPlUsersPlus ], personNumber: 'pl' })
 // (people) I or {user} follow
@@ -60,7 +60,7 @@ user.nomUsersPlus.addRule({ RHS: [ nomPlUsers, unionNomPlUsersPlus ], personNumb
 
 
 // (repos) I <stop> (created)
-user.nomUsersPreVerbStopWords = g.newBinaryRule({ RHS: [ nomUsers, stopWords.preVerb ] })
+user.nomUsersPreVerbStopWords = g.newBinaryRule({ RHS: [ user.nomUsers, stopWords.preVerb ] })
 
 // (repos) I <stop> (contributed to)
 // Exclude the "+" character as a hack to get around parsing issue

@@ -38,6 +38,13 @@ repository.passive.addRule({ RHS: [ github.createPast, user.byObjUsers ], semant
 repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.createPast ], semantic: repositoriesCreatedSemantic })
 // (repos) I <stop> have created
 repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.haveNoInsertCreatePast ], semantic: repositoriesCreatedSemantic })
+
+var notNepositoriesCreatedSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoriesCreatedSemantic)
+// (repos) I did not create
+// Do not add rules for "repos I have not created" because it suggests those results can be created in the future.
+// NOTE: All [nom-users+]?
+repository.objFilter.addRule({ RHS: [ user.nomUsers, github.doPastNegationCreatePresent ], semantic: notNepositoriesCreatedSemantic })
+
 // (people who) created [repositories]
 user.subjFilter.addRule({ RHS: [ github.createPast, repository.catPl ], semantic: repositoryCreatorsSemantic })
 // (people who) have created [repositories] - not [repositories+] because 'by'

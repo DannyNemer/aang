@@ -69,6 +69,16 @@ doTerm.addVerb({
 // (people I) do not (follow)
 exports.doNegation = g.newBinaryRule({ RHS: [ doTerm, negation ] })
 
+var doPast = g.newSymbol('do', 'past')
+doPast.addWord({
+	insertionCost: 0.2,
+	accepted: [ 'did' ],
+	substitutions: [ 'do', 'does' ],
+})
+
+// (issues/pull-requests I) did not (create)
+exports.doPastNegation = g.newBinaryRule({ RHS: [ doPast, negation ] })
+
 // (issues that) are not (open)
 // (people who) are not (followers of mine)
 // (people who) are not (followed by me)

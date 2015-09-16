@@ -3,6 +3,7 @@ var category = require('../category')
 var github = require('./github')
 var poss = require('../poss')
 var user = require('../user')
+var auxVerbs = require('../auxVerbs')
 var preps = require('../prepositions')
 var count = require('../count')
 
@@ -37,6 +38,11 @@ pullRequest.passive.addRule({ RHS: [ github.createPast, user.byObjUsers ], seman
 pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.createPast ], semantic: pullRequestsCreatedSemantic })
 // (pull requests) I <stop> have created
 pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.haveNoInsertCreatePast ], semantic: pullRequestsCreatedSemantic })
+
+var notPullRequestsCreatedSemantic = g.reduceSemantic(auxVerbs.notSemantic, pullRequestsCreatedSemantic)
+// (pull requests) I did not create
+pullRequest.objFilter.addRule({ RHS: [ user.nomUsers, github.doPastNegationCreatePresent ], semantic: notPullRequestsCreatedSemantic })
+
 // (people who) created pull [pull-requests]
 user.subjFilter.addRule({ RHS: [ github.createPast, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
 // (people who) have created pull [pull-requests] - not [pull-requests+] because 'by'

@@ -18,6 +18,15 @@ exports.termOpt = github.createNonterminalOpt()
 // GitHub (users I follow); (my) GitHub (followers)
 user.company.addRule({ RHS: [ github ] })
 
+var createPresent = g.newSymbol('create', 'present')
+createPresent.addWord({
+	insertionCost: 0.5,
+	accepted: [ 'create' ],
+	substitutions: [ 'created' ],
+})
+
+// (repos/pull-requests I) did not create
+exports.doPastNegationCreatePresent = g.newBinaryRule({ RHS: [ auxVerbs.doPastNegation, createPresent ] })
 
 exports.createPast = g.newSymbol('create', 'past')
 exports.createPast.addWord({
