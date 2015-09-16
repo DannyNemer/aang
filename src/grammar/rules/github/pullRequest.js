@@ -12,6 +12,7 @@ var pullRequest = category.new({ sg: 'pull-request', pl: 'pull-requests' })
 pullRequest.term.addWord({
 	insertionCost: 3.5,
 	accepted: [ 'pull requests' ],
+	substitutions: [ 'PRs' ],
 })
 
 // |Github pull requests (I created)
