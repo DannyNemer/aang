@@ -229,6 +229,11 @@ exports.basic = [
 	'people who like my repos liked by people who follow me that people I follow created', // Intentionally wrong, but should produce results
 	'repos Danny by me',
 	'repos Danny by me Danny',
+	'repos Danny contributed to and I like',
+	'repos I and Danny have not contributed to',
+	'repos Danny has not contributed to',
+	'repos people who do not like my repos have not contributed to',
+	'people who have not contributed to my repos',
 
 
 	// 'followers my followers share',
@@ -282,4 +287,8 @@ exports.conjugation = [
 	'repos Danny and Aang and I do not like',
 	'repos my followers have not liked',
 	'repos my followers like',
+	'repos Danny contributed to and I like',
+	'repos I and Danny have not contributed to',
+	'repos Danny has not contributed to',
+	'repos people who do not like my repos have not contributed to',
 ]

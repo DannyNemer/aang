@@ -99,19 +99,32 @@ contributedTo.addWord({
 })
 
 var repositoriesContributedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'contributed'), cost: 0.5, minParams: 1, maxParams: 1 })
-var repositoryContributorsSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'contributors'), cost: 0.5, minParams: 1, maxParams: 1 })
-
 // (repos) contributed to by me
 repository.passive.addRule({ RHS: [ contributedTo, user.byObjUsersPlus ], semantic: repositoriesContributedSemantic })
 // (repos) I <stop> contributed to
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, contributedTo ], semantic: repositoriesContributedSemantic })
-// (repos) I have contributed to
+// (repos) I have <stop> contributed to
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertPreVerbStopWords, contributedTo ], semantic: repositoriesContributedSemantic })
+
+var notRepositoriesContributedSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoriesContributedSemantic)
+// (repos) I have not contributed to
+// FIXME: might need to allow insertion of '[have]', because no 'do not contribute to'
+// No stop word after '[have]' to match:
+// [cat-filter] -> [ [have], [sentence-adverbial] ], [be-past]
+// [cat-filter] -> [ [have], [negation] ], [be-past]
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertNegation, contributedTo ], semantic: notRepositoriesContributedSemantic })
+
+var repositoryContributorsSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'contributors'), cost: 0.5, minParams: 1, maxParams: 1 })
 // (people who) contributed to [repositories+]
 user.subjFilter.addRule({ RHS: [ contributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
+
+// Hack: manually create symbol name to avoid '+' to allow insertions
+var contributedToRepositoriesPlus = g.newSymbol(contributedTo.name, repository.namePl)
+contributedToRepositoriesPlus.addRule({ RHS: [ contributedTo, repository.catPlPlus ] })
 // (people who) have contributed to [repositories+]
-var haveNoInsertContributedTo = g.newBinaryRule({ RHS: [ auxVerbs.have, contributedTo ], noInsertionIndexes: [ 0 ], personNumber: 'pl' })
-user.subjFilter.addRule({ RHS: [ haveNoInsertContributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
+user.subjFilter.addRule({ RHS: [ auxVerbs.have, contributedToRepositoriesPlus ], semantic: repositoryContributorsSemantic, noInsertionIndexes: [ 0 ], personNumber: 'pl' })
+// (people who) have not contributed to [repositories+]
+user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, contributedToRepositoriesPlus ], semantic: repositoryContributorsSemantic, personNumber: 'pl' })
 
 var contributorsTo = g.newSymbol('contributors', 'to')
 contributorsTo.addWord({
