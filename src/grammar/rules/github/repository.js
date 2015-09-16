@@ -37,11 +37,11 @@ repository.passive.addRule({ RHS: [ github.createPast, user.byObjUsers ], semant
 // (repos) I <stop> created
 repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.createPast ], semantic: repositoriesCreatedSemantic })
 // (repos) I <stop> have created
-repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHaveNoInsert, github.createPast ], semantic: repositoriesCreatedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.haveNoInsertCreatePast ], semantic: repositoriesCreatedSemantic })
 // (people who) created [repositories]
 user.subjFilter.addRule({ RHS: [ github.createPast, repository.catPl ], semantic: repositoryCreatorsSemantic })
 // (people who) have created [repositories] - not [repositories+] because 'by'
-user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreatePast, repository.catPl ], semantic: repositoryCreatorsSemantic })
+user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreatePast, repository.catPl ], semantic: repositoryCreatorsSemantic, personNumber: 'pl' })
 // creators of [repositories]
 user.head.addRule({ RHS: [ github.creatorsOf, repository.catPl ], semantic: repositoryCreatorsSemantic })
 

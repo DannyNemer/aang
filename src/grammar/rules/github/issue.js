@@ -39,17 +39,18 @@ opened.addWord({
 	accepted: [ 'opened', 'created' ],
 })
 
+var haveNoInsertOpened = g.newBinaryRule({ RHS: [ auxVerbs.have, opened ], noInsertionIndexes: [ 0 ] })
+
 // (issues) opened by me
 issue.passive.addRule({ RHS: [ opened, user.byObjUsers ], semantic: issuesOpenedSemantic })
 // (issues) I <stop> opened
 issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, opened ], semantic: issuesOpenedSemantic })
 // (issues) I <stop> have opened
-issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWordsHaveNoInsert, opened ], semantic: issuesOpenedSemantic })
+issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, haveNoInsertOpened ], semantic: issuesOpenedSemantic })
 // (people who) opened [issues]
 user.subjFilter.addRule({ RHS: [ opened, issue.catPl ], semantic: issuesOpenersSemantic })
 // (people who) have opened [issues] - not [issues+] because 'by'
-var haveNoInsertOpened = g.newBinaryRule({ RHS: [ auxVerbs.have, opened ], noInsertionIndexes: [ 0 ], personNumber: 'pl' })
-user.subjFilter.addRule({ RHS: [ haveNoInsertOpened, issue.catPl ], semantic: issuesOpenersSemantic })
+user.subjFilter.addRule({ RHS: [ haveNoInsertOpened, issue.catPl ], semantic: issuesOpenersSemantic, personNumber: 'pl' })
 
 var openersOf = g.newSymbol('openers', 'of')
 openersOf.addWord({

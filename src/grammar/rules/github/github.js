@@ -28,7 +28,7 @@ exports.createPast.addWord({
 
 // (repos/pull-requests I) have created
 // (people who) have created ([repos]/[pull-requests])
-exports.haveNoInsertCreatePast = g.newBinaryRule({ RHS: [ auxVerbs.have, exports.createPast ], noInsertionIndexes: [ 0 ], personNumber: 'pl' })
+exports.haveNoInsertCreatePast = g.newBinaryRule({ RHS: [ auxVerbs.have, exports.createPast ], noInsertionIndexes: [ 0 ] })
 
 // creators of ([repositories]/[pull-requests])
 exports.creatorsOf = g.newSymbol('creators', 'of')

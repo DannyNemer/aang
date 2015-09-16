@@ -72,8 +72,6 @@ user.nomUsersPlusPreVerbStopWords.addRule({ RHS: [ user.nomUsersPlus, stopWords.
 user.nomUsersPlusHaveNoInsert = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.have ], noInsertionIndexes: [ 1 ] })
 // (repos) I have (contributed to)
 user.nomUsersPlusHaveNoInsertPreVerbStopWords = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.haveNoInsertPreVerbStopWords ] })
-// (repos/issues/pull-requests) I <stop> have (created)
-user.nomUsersPreVerbStopWordsHaveNoInsert = g.newBinaryRule({ RHS: [ user.nomUsersPreVerbStopWords, auxVerbs.have ], noInsertionIndexes: [ 1 ] })
 
 // (repos) I do not (like)
 user.nomUsersPlusDoNegation = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.doNegation ] })
