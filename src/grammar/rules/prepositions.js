@@ -81,12 +81,12 @@ exports.between.addWord({
 exports.over = g.newSymbol(prepStr, 'over')
 exports.over.addWord({
 	insertionCost: 0.5,
-	accepted: [ 'over', 'above|beyond', 'more than', '>' ],
+	accepted: [ 'over', 'above|beyond', 'greater than', 'more than', '>' ],
 })
 
 // (issues with) under (<int> comments)
 exports.under = g.newSymbol(prepStr, 'under')
 exports.under.addWord({
 	insertionCost: 0.5,
-	accepted: [ 'under', 'below', 'less than', '<' ],
+	accepted: [ 'under', 'below', 'less than', 'fewer than', '<' ],
 })

@@ -275,6 +275,8 @@ exports.basic = [
 	'people who forked Node',
 	'people who forked my repos',
 	'repos I have not forked',
+	'repos I forked pushed last year',
+	'repos with greater than 20 forks and fewer than 0 forks',
 
 
 	// 'followers my followers share',
