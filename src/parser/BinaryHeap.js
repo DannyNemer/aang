@@ -1,99 +1,123 @@
-module.exports = BinaryHeap
-
-// Binary min heap
+/**
+ * The `BinaryHeap` constructor.
+ *
+ * Creates a min heap data structure created using a binary tree. All nodes are less than or equal to each of its children.
+ *
+ * @constructor
+ */
 function BinaryHeap() {
 	this.content = []
 	this.pushCount = 0
 }
 
-BinaryHeap.prototype.push = function (element) {
-	// Add the new element to the end of the array
-	this.content.push(element)
-	this.pushCount++
+/**
+ * Adds `node` to the heap.
+ *
+ * Performs an up-heap operation to resort the heap:
+ * 1. Add `node` to the bottom level of the heap.
+ * 2. If `node`'s parent's value is less than or equal to `node`'s value, stop.
+ * 3. If not, swap `node` with its parent and return to the previous step.
+ *
+ * @memberOf BinaryHeap
+ * @param {Object} node The node to add to the heap.
+ */
+BinaryHeap.prototype.push = function (node) {
+	// Add the new node to the bottom of the heap (at the end of the array).
+	var length = this.content.push(node)
 
-	// Allow it to upHeap
-	this.upHeap(this.content.length - 1)
-}
+	// Up-heap at the index of the new node.
+	var nodeIndex = length - 1
+	var nodeCost = node.cost
 
-BinaryHeap.prototype.pop = function () {
-	// Store the first element so we can return it later
-	var result = this.content[0]
-
-	// Get the element at the end of the array
-	var end = this.content.pop()
-
-	// If there are any elements left, put the end element at the start, and downHeap
-	if (this.content.length > 0) {
-		this.content[0] = end
-		this.downHeap(0)
-	}
-
-	return result
-}
-
-BinaryHeap.prototype.size = function () {
-	return this.content.length
-}
-
-BinaryHeap.prototype.upHeap = function (nodeIndex) {
-	// Fetch the element that has to be moved
-	var element = this.content[nodeIndex]
-	var score = element.cost
-
-	// When at 0, an element can not go up any further
+	// Up-heap while the new node is not the root of the heap.
 	while (nodeIndex > 0) {
-		// Compute the parent element's index, and fetch it
-		var parentN = Math.floor((nodeIndex + 1) / 2) - 1
-		var parent = this.content[parentN]
+		// Get the parent node.
+		var parentIndex = Math.floor((nodeIndex + 1) / 2) - 1
+		var parent = this.content[parentIndex]
 
-		// If the parent has a lesser score, things are in order and we are done
-		if (score >= parent.cost) break
+		// If the parent node's value is less than or equal to the new node's value, stop.
+		if (parent.cost <= nodeCost) {
+			break
+		}
 
-		// Otherwise, swap the parent with the current element and continue
-		this.content[parentN] = element
+		// Otherwise, swap the parent node with the new node and repeat the previous step.
+		this.content[parentIndex] = node
 		this.content[nodeIndex] = parent
-		nodeIndex = parentN
+		nodeIndex = parentIndex
 	}
+
+	// Profile the number of insertions.
+	this.pushCount++
 }
 
-BinaryHeap.prototype.downHeap = function (nodeIndex) {
-	// Look up the target element and its score
+/**
+ * Extracts the node from the heap with the lowest value.
+ *
+ * Performs a down-heap operation to resort the heap:
+ * 1. Replace the root of the heap with the last node on the last level.
+ * 2. If the new root's value is less than or equal to the value of both of its children, stop.
+ * 3. If not, swap the node with its child of smallest value and return to the previous step.
+ *
+ * @memberOf BinaryHeap
+ * @returns {Object} Returns the node with the lowest value.
+ */
+BinaryHeap.prototype.pop = function () {
+	// Get the root of the heap, which has the lowest value of all nodes.
+	var rootNode = this.content[0]
+
+	// Get the last node on the last level.
+	var node = this.content.pop()
 	var length = this.content.length
-	var element = this.content[nodeIndex]
-	var elemScore = element.cost
 
-	while (true) {
-		// Compute the indices of the child elements
-		var child2N = (nodeIndex + 1) * 2
-		var child1N = child2N - 1
+	// Down-heap if nodes remain.
+	if (length > 0) {
+		// Put the last node at the root of the heap.
+		var nodeIndex = 0
+		this.content[nodeIndex] = node
+		var nodeCost = node.cost
 
-		// This is used to store the new position of the element, if any
-		var swap = null
+		while (true) {
+			// Compute the indexes of the child nodes.
+			var child2Index = (nodeIndex + 1) * 2
+			var child1Index = child2Index - 1
 
-		// If the first child exists (is inside the array)...
-		if (child1N < length) {
-			// Look it up and compute its score
-			var child1 = this.content[child1N]
-			var child1Score = child1.cost
+			// The index of the child with the smallest value, if any.
+			var swapIndex = null
 
-			// If the score is less than our element's, we need to swap
-			if (child1Score < elemScore) swap = child1N
+			// If the first child exists (is inside the array).
+			if (child1Index < length) {
+				var child1Cost = this.content[child1Index].cost
+
+				// If the value of the child is less than the node's value, swap the two.
+				if (child1Cost < nodeCost) {
+					swapIndex = child1Index
+				}
+			}
+
+			// If the second child exists (is inside the array).
+			if (child2Index < length) {
+				var child2Cost = this.content[child2Index].cost
+
+				// If the value of the child is less than the node's value and the other child's value, swap it with the node.
+				if (child2Cost < (swapIndex === null ? nodeCost : child1Cost)) {
+					swapIndex = child2Index
+				}
+			}
+
+			// If the node's value is less than or equal to its children, stop.
+			if (swapIndex === null) {
+				break
+			}
+
+			// Otherwise, swap the node with its child of smallest value and repeat the previous step.
+			this.content[nodeIndex] = this.content[swapIndex]
+			this.content[swapIndex] = node
+			nodeIndex = swapIndex
 		}
-
-		// Do the same checks for the other child
-		if (child2N < length) {
-			var child2 = this.content[child2N]
-			var child2Score = child2.cost
-
-			if (child2Score < (swap === null ? elemScore : child1Score)) swap = child2N
-		}
-
-		// No need to swap further, we are done
-		if (swap === null) break
-
-		// Otherwise, swap and continue
-		this.content[nodeIndex] = this.content[swap]
-		this.content[swap] = element
-		nodeIndex = swap
 	}
+
+	return rootNode
 }
+
+// Export `BinaryHeap`.
+module.exports = BinaryHeap
