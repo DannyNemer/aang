@@ -272,6 +272,9 @@ exports.basic = [
 	'that I contributed to',
 	'people who did not contributed to my repos',
 	'Danny\'s followers who do not follow me',
+	'people who forked Node',
+	'people who forked my repos',
+	'repos I have not forked',
 
 
 	// 'followers my followers share',

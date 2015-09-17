@@ -147,6 +147,56 @@ contributorsTo.addWord({
 user.head.addRule({ RHS: [ contributorsTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 
 
+// FORK:
+var forkPresent = g.newSymbol('fork', 'present')
+forkPresent.addWord({
+	insertionCost: 2,
+	accepted: [ 'fork' ],
+	substitutions: [ 'forked' ],
+})
+
+// (repos I) did not (fork)
+// (people who) did not (fork [repositories+])
+var doPastNegationForkPresent = g.newBinaryRule({ RHS: [ auxVerbs.doPastNegation, forkPresent ] })
+
+var forkPast = g.newSymbol('fork', 'past')
+forkPast.addWord({
+	insertionCost: 2,
+	accepted: [ 'forked' ],
+	substitutions: [ 'fork' ],
+})
+
+// (people who have) forked [repositories+]
+// Hack: manually create symbol name to avoid '+' to allow insertions
+var forkPastRepositoriesPlus = g.newSymbol(forkPast.name, repository.namePl)
+forkPastRepositoriesPlus.addRule({ RHS: [ forkPast, repository.catPlPlus ] })
+
+var repositoriesForkedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'forked'), cost: 0.5, minParams: 1, maxParams: 1 })
+// (repos) forked by me
+repository.passive.addRule({ RHS: [ forkPast, user.byObjUsersPlus ], semantic: repositoriesForkedSemantic })
+// (repos) I <stop> forked
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, forkPast ], semantic: repositoriesForkedSemantic })
+// (repos) I have <stop> forked
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertPreVerbStopWords, forkPast ], semantic: repositoriesForkedSemantic })
+
+var notRepositoriesForkedSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoriesForkedSemantic)
+// (repos) I did not fork
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, doPastNegationForkPresent ], semantic: notRepositoriesForkedSemantic })
+// (repos) I have not forked
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertNegation, forkPast ], semantic: notRepositoriesForkedSemantic })
+
+var repositoryForkersSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'forkers'), cost: 0.5, minParams: 1, maxParams: 1 })
+// (people who) forked [repositories+]
+user.subjFilter.addRule({ RHS: [ forkPast, repository.catPlPlus ], semantic: repositoryForkersSemantic })
+// (people who) have forked [repositories+]
+user.subjFilter.addRule({ RHS: [ auxVerbs.have, forkPastRepositoriesPlus ], semantic: repositoryForkersSemantic, noInsertionIndexes: [ 0 ], personNumber: 'pl' })
+
+var notRepositoryForkersSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoryForkersSemantic)
+// (people who) did not fork [repositories+]
+user.subjFilter.addRule({ RHS: [ doPastNegationForkPresent, repository.catPlPlus ], semantic: notRepositoryForkersSemantic })
+// (people who) have not forked [repositories+]
+user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, forkPastRepositoriesPlus ], semantic: notRepositoryForkersSemantic, personNumber: 'pl' })
+
 // LANGUAGE:
 var languageEntity = g.newEntityCategory({
 	name: 'language',
