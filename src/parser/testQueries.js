@@ -240,6 +240,8 @@ exports.basic = [
 	'repos I made',
 	'repos I did not make',
 	'issues I did not open',
+	'issues I create', // Intentionally wrong
+	'issues I did not created', // Intentionally wrong
 
 
 	// 'followers my followers share',

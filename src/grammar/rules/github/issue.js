@@ -39,11 +39,22 @@ openPresent.addWord({
 	accepted: [ 'open' ],
 	substitutions: [ 'opened' ],
 })
+// Add in a separate call to `openPresent.addWord()` so "created" corrects to "create", not "open".
+openPresent.addWord({
+	accepted: [ 'create' ],
+	substitutions: [ 'created' ],
+})
 
 var openPast = g.newSymbol('open', 'past')
 openPast.addWord({
 	insertionCost: 1,
-	accepted: [ 'opened', 'created' ],
+	accepted: [ 'opened' ],
+	substitutions: [ 'open' ],
+})
+// Add in a separate call to `openPast.addWord()` so "create" corrects to "created", not "opened".
+openPast.addWord({
+	accepted: [ 'created' ],
+	substitutions: [ 'create' ],
 })
 
 var haveNoInsertOpenPast = g.newBinaryRule({ RHS: [ auxVerbs.have, openPast ], noInsertionIndexes: [ 0 ] })
