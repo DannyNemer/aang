@@ -239,6 +239,7 @@ exports.basic = [
 	'repos Danny do not creates',
 	'repos I made',
 	'repos I did not make',
+	'issues I did not open',
 
 
 	// 'followers my followers share',

@@ -33,6 +33,13 @@ issue.head.addRule({ RHS: [ issue.headMayPoss, poss.ofPossUsers ], semantic: iss
 
 
 // OPEN:
+var openPresent = g.newSymbol('open', 'present')
+openPresent.addWord({
+	insertionCost: 1,
+	accepted: [ 'open' ],
+	substitutions: [ 'opened' ],
+})
+
 var openPast = g.newSymbol('open', 'past')
 openPast.addWord({
 	insertionCost: 1,
@@ -47,6 +54,11 @@ issue.passive.addRule({ RHS: [ openPast, user.byObjUsers ], semantic: issuesOpen
 issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, openPast ], semantic: issuesOpenedSemantic })
 // (issues) I <stop> have opened
 issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, haveNoInsertOpenPast ], semantic: issuesOpenedSemantic })
+
+var notIssuesOpenedSemantic = g.reduceSemantic(auxVerbs.notSemantic, issuesOpenedSemantic)
+// (issues) I did not open
+issue.objFilter.addRule({ RHS: [ user.nomUsers, [ auxVerbs.doPastNegation, openPresent ] ], semantic: notIssuesOpenedSemantic })
+
 // (people who) opened [issues]
 user.subjFilter.addRule({ RHS: [ openPast, issue.catPl ], semantic: issuesOpenersSemantic })
 // (people who) have opened [issues] - not [issues+] because 'by'
