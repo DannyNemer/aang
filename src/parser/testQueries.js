@@ -49,7 +49,7 @@ exports.basic = [
 	'people who have not been followed by me',
 	'issues that are not open',
 	'people who are not followed by me',
-	'people I do not follow', // unimplemented
+	'people I do not follow',
 	'people who follow me and do not follow Danny',
 	'issues I am assigned to',
 	'{left-stop-words} open issues that are never assigned to people who {pre-filter-stop-words} follow me',
@@ -241,7 +241,9 @@ exports.basic = [
 	'repos that are not written in JavaScript',
 	'people who are not followed by me',
 	'people not followed by me', // Only allowing "people who are not followed by me"
-	'repos not written in JavaScript',
+	'repos not written in JavaScript', // Not allowing
+	'people not mentioned in my issues', // Not allowing
+	'issues not assigned to me',
 	'repos that are not my repos',
 	'repos I create',
 	'repos Danny has created',
@@ -254,6 +256,22 @@ exports.basic = [
 	'issues I did not open',
 	'issues I create', // Intentionally wrong
 	'issues I did not created', // Intentionally wrong
+	'people who do not created my repos', // Should not accept
+	'people who did not create my repos',
+	'people who do not have liked my repos', // Should not accept
+	'people who do not have opened my issues', // Should not accept
+	'issues that do not mention me',
+	'issues that are not assigned to my followers',
+	'issues that have not been assigned to me',
+	'issues Danny is not assigned to',
+	'pull requests my followers are not mentioned in',
+	'pull requests that have not been assigned to me',
+	'people who did not like',
+	'people who like my',
+	'that mention me',
+	'that I contributed to',
+	'people who did not contributed to my repos',
+	'Danny\'s followers who do not follow me',
 
 
 	// 'followers my followers share',
@@ -262,8 +280,8 @@ exports.basic = [
 	// 'followers I share with Danny',
 	// 'followers I and Danny share with Aang',
 	// 'followers I and Danny share with Aang and my followers',
-
 	// 'followers Danny has in common with' // doesn't work
+
 	// 'repos that I created I like', // intentionally wrong - unimplemented
 	// 'people who I follow Danny follows', // intentionally wrong - unimplemented
 	// 'pull requests of mine created by my followers' // no results, too slow. Look at parse stack
@@ -315,4 +333,10 @@ exports.conjugation = [
 	'repos Danny has created',
 	'repos I did not create',
 	'repos Danny did not create',
+	'people who did not create my repos',
+	'issues Danny is not assigned to',
+	'pull requests my followers are not mentioned in',
+	'people I do not follow',
+	'issues that do not mention me',
+	'people who did not contribute to my repos',
 ]
