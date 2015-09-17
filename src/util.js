@@ -558,7 +558,7 @@ function format(args, options) {
 			formattedArgs.push(formattedArg)
 		} else if (reWhitespaceOnly.test(formattedArgs[lastFormattedArgIdx])) {
 			// Concatenate with the previous formatted argument if the previous formatted argument is only whitespace.
-			formattedArgs[lastFormattedArgIdx] += formattedArg.replace(reMultiLined, reMultiLined.source + indent)
+			formattedArgs[lastFormattedArgIdx] += ' ' + formattedArg.replace(reMultiLined, reMultiLined.source + indent)
 		} else if (arg instanceof Object && (!Array.isArray(arg) || reMultiLined.test(formattedArg) || args[0] instanceof Object)) {
 			// Format plain `Object`s,  `Array`s with multi-line string representations, and `Array`s when the first argument is of a complex type on separate lines.
 			formattedArgs.push(indent + formattedArg.replace(reMultiLined, reMultiLined.source + indent))
