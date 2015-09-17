@@ -31,7 +31,7 @@ function Symbol() {
 
 	this.rules = exports.grammar[this.name] = []
 
-	// Save instantiation path and line number for error reporting
+	// Save instantiation file path and line number for error reporting
 	exports.creationLines[this.name] = util.getModuleCallerPathAndLineNumber()
 }
 
@@ -65,7 +65,7 @@ var termRuleOptsSchema = {
 	insertionCost: { type: Number, optional: true },
 	// If `options.text` is an `Object`, then it is a set of inflected forms for conjugation.
 	// If `options.text` is a `string`, then it is the literal display text.
-	// If `options.text` is `undefined`, and RHS is neither <int>, <empty>, nor an entity category, use `options.RHS` as `text`.
+	// If `options.text` is `undefined` and RHS is not a placeholder symbol, use `options.RHS` as `text`.
 	// Use `options.text = ''` for a terminal rule with no display text (e.g., stop-words).
 	text: { type: [ String, Object ], optional: true },
 }
@@ -96,7 +96,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 		newRule.isPlaceholder = true
 
 		// Forbid display text on placeholder symbols.
-		if (opts.text) {
+		if (opts.text !== undefined) {
 			util.logErrorAndPath('\'' + opts.RHS + '\', a placeholder symbol, cannot have \'text\':', opts)
 			throw new Error('Ill-formed terminal rule')
 		}
@@ -125,7 +125,7 @@ Symbol.prototype.newTerminalRule = function (opts) {
 	// If semantic, must be complete and constitute a RHS
 	// Exceptions: terminal symbol is an entity category or <int>
 	if (opts.semantic && !semantic.isRHS(opts.semantic) && (opts.RHS === g.emptySymbol || !newRule.isPlaceholder)) {
-		util.logError('Terminal rules cannot hold incomplete (LHS) semantics:', opts.semantic)
+		util.logError('Terminal rules cannot hold incomplete (LHS) semantic functions:', opts.semantic)
 		util.logPathAndObject(opts, true)
 		throw new Error('Ill-formed terminal rule')
 	}
