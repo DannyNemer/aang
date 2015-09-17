@@ -87,6 +87,8 @@ exports.assignedTo.addWord({
 
 // (issues/pull-requests) I-am/{user}-is/[users]-are assigned to
 exports.beGeneralAssignedTo = g.newBinaryRule({ RHS: [ auxVerbs.beGeneral, exports.assignedTo ] })
+// (issues/pull-requests) I-am/{user}-is/[users]-are not assigned to
+exports.beGeneralNegationAssignedTo = g.newBinaryRule({ RHS: [ auxVerbs.beGeneralNegation, exports.assignedTo ] })
 
 // (people assigned to) [issues]/[pull-requests]
 exports.assigners = g.newSymbol('assigners')

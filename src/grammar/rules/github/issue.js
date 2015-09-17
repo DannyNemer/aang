@@ -106,6 +106,8 @@ var issuesAssignedSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'as
 issue.inner.addRule({ RHS: [ github.assignedTo, user.objUsersPlus ], semantic: issuesAssignedSemantic })
 // (issues) I-am/{user}-is/[users]-are assigned to
 issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralAssignedTo ], semantic: issuesAssignedSemantic })
+// (issues) I-am/{user}-is/[users]-are not assigned to
+issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralNegationAssignedTo ], semantic: g.reduceSemantic(auxVerbs.notSemantic, issuesAssignedSemantic) })
 // (people assigned to) [issues]/[pull-requests] (and/or) [issues]/[pull-requests]
 github.assigners.addRule({ RHS: [ issue.catPl ] })
 

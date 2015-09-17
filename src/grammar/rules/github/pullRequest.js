@@ -73,6 +73,8 @@ var pullRequestsAssignedSemantic = g.newSemantic({ name: g.hyphenate(pullRequest
 pullRequest.inner.addRule({ RHS: [ github.assignedTo, user.objUsersPlus ], semantic: pullRequestsAssignedSemantic })
 // (pull requests) I-am/{user}-is/[users]-are assigned to
 pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralAssignedTo ], semantic: pullRequestsAssignedSemantic })
+// (pull requests) I-am/{user}-is/[users]-are not assigned to
+pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralNegationAssignedTo ], semantic: g.reduceSemantic(auxVerbs.notSemantic, pullRequestsAssignedSemantic) })
 // (people assigned to) [issues]/[pull-requests] (and/or) [issues]/[pull-requests]
 github.assigners.addRule({ RHS: [ pullRequest.catPl ] })
 
