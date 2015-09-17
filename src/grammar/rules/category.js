@@ -175,8 +175,9 @@ function Category(opts) {
 	filterPlus.addRule({ RHS: [ filter, [ conjunctions.union, relPronounFilterPlus ] ], semantic: conjunctions.unionSemantic })
 
 
-	// (people) who are followed by me; (repos) that are liked by me
 	var relativeClause = g.newSymbol(this.nameSg, 'relative', 'clause')
+	// (people) who are followed by me; (people) who I follow
+	// (repos) that are liked by me; (repos) that I like
 	relativeClause.addRule({ RHS: [ opts.isPerson ? relPronouns.who : relPronouns.that, filterPlus ] })
 
 	this.plural = g.newSymbol(this.nameSg, 'plural')
@@ -197,7 +198,8 @@ function Category(opts) {
 			RHS: g.newEntityCategory({ name: this.nameSg, entities: opts.entities }),
 		})
 
-		// (people who like) {repo}; {user}
+		// (people who like) {repo}
+		// Direct entity suggestion: {user}
 		this.catPl.addRule({ RHS: [ this.catSg ] })
 	}
 

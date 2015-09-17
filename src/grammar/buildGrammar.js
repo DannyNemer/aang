@@ -11,7 +11,7 @@ require('../util').tryCatchWrapper(function () {
 
 	g.checkForUnusedComponents()
 	g.createEditRules()
-	g.checkForAmbiguity({ treeSymsLimit: 14 })
+	// g.checkForAmbiguity({ treeSymsLimit: 14, findAll: false })
 	g.sortGrammar()
 	g.printRuleCount(outputFilePath)
 	g.writeGrammarToFile(outputFilePath)
