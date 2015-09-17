@@ -73,7 +73,7 @@ var issuesOpenersSemantic = g.newSemantic({ name: g.hyphenate(issue.nameSg, 'ope
 // (people who) opened [issues]
 user.subjFilter.addRule({ RHS: [ openPast, issue.catPl ], semantic: issuesOpenersSemantic })
 // (people who) have opened [issues] - not [issues+] because 'by'
-user.subjFilter.addRule({ RHS: [ haveNoInsertOpenPast, issue.catPl ], semantic: issuesOpenersSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ haveNoInsertOpenPast, issue.catPl ], semantic: issuesOpenersSemantic })
 // (people who) did not open [issues]
 user.subjFilter.addRule({ RHS: [ doPastNegationOpenPresent, issue.catPl ], semantic: g.reduceSemantic(auxVerbs.notSemantic, issuesOpenersSemantic) })
 
@@ -91,7 +91,7 @@ var notIssuesMentionedSemantic = g.reduceSemantic(auxVerbs.notSemantic, issuesMe
 // (issues that) mention me
 issue.subjFilter.addRule({ RHS: [ github.mention, user.objUsersPlus ], semantic: issuesMentionedSemantic })
 // (issues that) do not mention me
-issue.subjFilter.addRule({ RHS: [ github.doPresentNegationMention, user.objUsersPlus ], semantic: notIssuesMentionedSemantic, personNumber: 'pl' })
+issue.subjFilter.addRule({ RHS: [ github.doPresentNegationMention, user.objUsersPlus ], semantic: notIssuesMentionedSemantic })
 // (issues) I-am/{user}-is/[users]-are mentioned in
 issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralMentionedIn ], semantic: issuesMentionedSemantic })
 // (issues) I-am/{user}-is/[users]-are not mentioned in

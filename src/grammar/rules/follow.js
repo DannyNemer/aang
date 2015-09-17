@@ -31,10 +31,10 @@ user.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, follow ], sem
 // (people) I do not follow
 user.objFilter.addRule({ RHS: [ user.nomUsersPlusDoPresentNegation, follow ], semantic: g.reduceSemantic(auxVerbs.notSemantic, usersFollowedSemantic), personNumber: 'pl' })
 // (people who) follow me
-user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: followersSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: followersSemantic })
 // (people who) do not follow me
 var doPresentNegationFollow = g.newBinaryRule({ RHS: [ auxVerbs.doPresentNegation, follow ], personNumber: 'pl' })
-user.subjFilter.addRule({ RHS: [ doPresentNegationFollow, user.objUsersPlus ], semantic: g.reduceSemantic(auxVerbs.notSemantic, followersSemantic), personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ doPresentNegationFollow, user.objUsersPlus ], semantic: g.reduceSemantic(auxVerbs.notSemantic, followersSemantic) })
 
 
 var followersTerm = g.newSymbol('followers', 'term')

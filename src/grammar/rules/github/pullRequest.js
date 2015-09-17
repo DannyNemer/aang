@@ -44,7 +44,7 @@ var pullRequestCreatorsSemantic = g.newSemantic({ name: g.hyphenate(pullRequest.
 // (people who) created [pull-requests]
 user.subjFilter.addRule({ RHS: [ github.createPast, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
 // (people who) have created [pull-requests] - not [pull-requests+] because 'by'
-user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreatePast, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreatePast, pullRequest.catPl ], semantic: pullRequestCreatorsSemantic })
 // (people who) did not create [pull-requests]
 // Use [pull-requests+]?
 user.subjFilter.addRule({ RHS: [ github.doPastNegationCreatePresent, pullRequest.catPl ], semantic: g.reduceSemantic(auxVerbs.notSemantic, pullRequestCreatorsSemantic) })
@@ -58,7 +58,7 @@ var notPullRequestsMentionedSemantic = g.reduceSemantic(auxVerbs.notSemantic, pu
 // (pull requests that) mention me
 pullRequest.subjFilter.addRule({ RHS: [ github.mention, user.objUsersPlus ], semantic: pullRequestsMentionedSemantic })
 // (pull requests that) do not mention me
-pullRequest.subjFilter.addRule({ RHS: [ github.doPresentNegationMention, user.objUsersPlus ], semantic: notPullRequestsMentionedSemantic, personNumber: 'pl' })
+pullRequest.subjFilter.addRule({ RHS: [ github.doPresentNegationMention, user.objUsersPlus ], semantic: notPullRequestsMentionedSemantic })
 // (pull requests) I-am/{user}-is/[users]-are mentioned in
 pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralMentionedIn ], semantic: pullRequestsMentionedSemantic })
 // (pull requests) I-am/{user}-is/[users]-are not mentioned in

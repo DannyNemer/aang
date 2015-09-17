@@ -45,7 +45,7 @@ var repositoryCreatorsSemantic = g.newSemantic({ name: g.hyphenate(repository.na
 // (people who) created [repositories]
 user.subjFilter.addRule({ RHS: [ github.createPast, repository.catPl ], semantic: repositoryCreatorsSemantic })
 // (people who) have created [repositories] - not [repositories+] because 'by'
-user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreatePast, repository.catPl ], semantic: repositoryCreatorsSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreatePast, repository.catPl ], semantic: repositoryCreatorsSemantic })
 // (people who) did not create [repositories]
 user.subjFilter.addRule({ RHS: [ github.doPastNegationCreatePresent, repository.catPl ], semantic: g.reduceSemantic(auxVerbs.notSemantic, repositoryCreatorsSemantic) })
 // creators of [repositories]
@@ -79,20 +79,20 @@ var repositoryLikersSemantic = g.newSemantic({ name: g.hyphenate(repository.name
 var notRepositoryLikersSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoryLikersSemantic)
 
 // (people who) like [repositories+]
-user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], semantic: repositoryLikersSemantic })
 
 // Hack: manually create symbol name to avoid '+' to allow insertions
 var likePastRepositoriesPlus = g.newSymbol(like.name, repository.namePl)
 likePastRepositoriesPlus.addRule({ RHS: [ like, repository.catPlPlus ], verbForm: 'past' })
 // (people who) have liked [repositories+]
 // No insertion for '[have]' to prevent "people who like" suggesting two semantically identical trees: "who like" and "who have liked".
-user.subjFilter.addRule({ RHS: [ auxVerbs.have, likePastRepositoriesPlus ], semantic: repositoryLikersSemantic, noInsertionIndexes: [ 0 ], personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ auxVerbs.have, likePastRepositoriesPlus ], semantic: repositoryLikersSemantic, noInsertionIndexes: [ 0 ] })
 // (people who) do not like [repositories+] - WRONG? Liked? also, 'do' need to be verb
 var doPresentNegationLike = g.newBinaryRule({ RHS: [ auxVerbs.doPresentNegation, like ], personNumber: 'pl' })
-user.subjFilter.addRule({ RHS: [ doPresentNegationLike, repository.catPlPlus ], semantic: notRepositoryLikersSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ doPresentNegationLike, repository.catPlPlus ], semantic: notRepositoryLikersSemantic })
 // (people who) have not liked [repositories+]
 // No insertion for '[have]' to prevent "people who not like" suggesting two semantically identical trees: "who do not like" and "who have not liked".
-user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, likePastRepositoriesPlus ], semantic: notRepositoryLikersSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, likePastRepositoriesPlus ], semantic: notRepositoryLikersSemantic })
 
 var likersOf = g.newSymbol('likers', 'of')
 likersOf.addWord({
@@ -131,16 +131,16 @@ repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertNegation, con
 
 var repositoryContributorsSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'contributors'), cost: 0.5, minParams: 1, maxParams: 1 })
 // (people who) contribute to [repositories+]
-user.subjFilter.addRule({ RHS: [ contributeTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ contributeTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 // (people who) have contributed to [repositories+]
-user.subjFilter.addRule({ RHS: [ auxVerbs.have, contributeToPastRepositoriesPlus ], semantic: repositoryContributorsSemantic, noInsertionIndexes: [ 0 ], personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ auxVerbs.have, contributeToPastRepositoriesPlus ], semantic: repositoryContributorsSemantic, noInsertionIndexes: [ 0 ] })
 
 var notRepositoryContributorsSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoryContributorsSemantic)
 // (people who) do not contribute to [repositories+]
 var doPresentNegationContributeTo = g.newBinaryRule({ RHS: [ auxVerbs.doPresentNegation, contributeTo ], personNumber: 'pl' })
-user.subjFilter.addRule({ RHS: [ doPresentNegationContributeTo, repository.catPlPlus ], semantic: notRepositoryContributorsSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ doPresentNegationContributeTo, repository.catPlPlus ], semantic: notRepositoryContributorsSemantic })
 // (people who) have not contributed to [repositories+]
-user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, contributeToPastRepositoriesPlus ], semantic: notRepositoryContributorsSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, contributeToPastRepositoriesPlus ], semantic: notRepositoryContributorsSemantic })
 
 var contributorsTo = g.newSymbol('contributors', 'to')
 contributorsTo.addWord({
@@ -193,13 +193,13 @@ var repositoryForkersSemantic = g.newSemantic({ name: g.hyphenate(repository.nam
 // (people who) forked [repositories+]
 user.subjFilter.addRule({ RHS: [ forkPast, repository.catPlPlus ], semantic: repositoryForkersSemantic })
 // (people who) have forked [repositories+]
-user.subjFilter.addRule({ RHS: [ auxVerbs.have, forkPastRepositoriesPlus ], semantic: repositoryForkersSemantic, noInsertionIndexes: [ 0 ], personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ auxVerbs.have, forkPastRepositoriesPlus ], semantic: repositoryForkersSemantic, noInsertionIndexes: [ 0 ] })
 
 var notRepositoryForkersSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoryForkersSemantic)
 // (people who) did not fork [repositories+]
 user.subjFilter.addRule({ RHS: [ doPastNegationForkPresent, repository.catPlPlus ], semantic: notRepositoryForkersSemantic })
 // (people who) have not forked [repositories+]
-user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, forkPastRepositoriesPlus ], semantic: notRepositoryForkersSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, forkPastRepositoriesPlus ], semantic: notRepositoryForkersSemantic })
 
 // LANGUAGE:
 var languageEntity = g.newEntityCategory({

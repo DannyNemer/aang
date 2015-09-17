@@ -133,7 +133,7 @@ function Category(opts) {
 	// Segment that forms the relative clause
 	var filter = g.newSymbol(this.nameSg, 'filter')
 	// (people who) follow me
-	filter.addRule({ RHS: [ this.subjFilter ] })
+	filter.addRule({ RHS: [ this.subjFilter ], personNumber: 'pl' })
 	// (people who) I follow
 	filter.addRule({ RHS: [ this.objFilter ] })
 	// (people who) <stop> follow me, I follow
