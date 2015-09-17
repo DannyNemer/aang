@@ -9,6 +9,9 @@ var stateTablePath = './StateTable.js'
 var testQueries = require('./testQueries')
 var util
 
+// If '-t' argument passed to CLI, do not reload modules after every input.
+var benchmarkMode = process.argv.indexOf('-t') !== -1
+
 var buildStateTable = require('./buildStateTable').bind(null, inputFilePath, stateTablePath)
 var stateTable = buildStateTable()
 
@@ -37,8 +40,8 @@ rl.on('line', function (line) {
 		}
 	})
 
-	// If no '-t' argument (for 'time'), reload modules after every input to enable module changes.
-	if (process.argv.indexOf('-t') === -1) {
+	// Reload modules after every input to enable module changes.
+	if (!benchmarkMode) {
 		deleteModuleCaches()
 	}
 
@@ -88,7 +91,8 @@ function parse(query, K) {
 
 // Parser settings:
 var K = 7
-var printOutput = true
+// Start CLI with no output if passed '-t' argument.
+var printOutput = !benchmarkMode
 var printTrees = false
 var printCosts = false
 var printTime = false
