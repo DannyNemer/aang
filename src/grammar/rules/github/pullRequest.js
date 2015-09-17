@@ -61,6 +61,8 @@ pullRequest.subjFilter.addRule({ RHS: [ github.mention, user.objUsersPlus ], sem
 pullRequest.subjFilter.addRule({ RHS: [ github.doPresentNegationMention, user.objUsersPlus ], semantic: notPullRequestsMentionedSemantic, personNumber: 'pl' })
 // (pull requests) I-am/{user}-is/[users]-are mentioned in
 pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralMentionedIn ], semantic: pullRequestsMentionedSemantic })
+// (pull requests) I-am/{user}-is/[users]-are not mentioned in
+pullRequest.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralNegationMentionedIn ], semantic: notPullRequestsMentionedSemantic })
 // (people mentioned in) [issues]/[pull-requests] (and/or) [issues]/[pull-requests]
 github.mentioners.addRule({ RHS: [ pullRequest.catPl ] })
 

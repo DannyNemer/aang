@@ -64,6 +64,8 @@ mentionedIn.addWord({
 
 // (pull-requests/issues) I-am/{user}-is/[users]-are mentioned in
 exports.beGeneralMentionedIn = g.newBinaryRule({ RHS: [ auxVerbs.beGeneral, mentionedIn ] })
+// (pull-requests/issues) I-am/{user}-is/[users]-are not mentioned in
+exports.beGeneralNegationMentionedIn = g.newBinaryRule({ RHS: [ auxVerbs.beGeneralNegation, mentionedIn ] })
 
 // (people mentioned in) [issues]/[pull-requests]
 exports.mentioners = g.newSymbol('mentioners')

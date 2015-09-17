@@ -40,6 +40,9 @@ exports.beGeneral.addVerb({
 	oneOrThreeSg: [ 'was' ],
 })
 
+// (pull requests I/{user}/[nom-users]) am/is/are not (mentioned in)
+exports.beGeneralNegation = g.newBinaryRule({ RHS: [ exports.beGeneral, negation ] })
+
 
 // (people who) have (been followed by me)
 // - No past tense ('had') because it implies semantic no longer true; "had liked" -> no longer liked
