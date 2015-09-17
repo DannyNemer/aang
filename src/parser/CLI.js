@@ -90,7 +90,7 @@ function parse(query, K) {
 var K = 7
 var printOutput = true
 var printTrees = false
-var printCosts = true
+var printCosts = false
 var printTime = false
 var printQuery = false
 var printStack = false
@@ -176,8 +176,8 @@ function runCommand(input) {
 		testQueries.conjugation.forEach(function (query) {
 			var trees = parse(query, 1)
 			if (!trees || trees[0].text !== query) {
-				util.logError('Expected:', query)
-				util.log('       Actual:', trees[0].text)
+				util.logError('Expected:', util.stylize(query))
+				util.log('         Actual:', util.stylize(trees[0].text))
 				failed = true
 			}
 		})
