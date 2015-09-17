@@ -45,6 +45,8 @@ openPresent.addWord({
 	substitutions: [ 'created' ],
 })
 
+var doPastNegationOpenPresent = g.newBinaryRule({ RHS: [ auxVerbs.doPastNegation, openPresent ] })
+
 var openPast = g.newSymbol('open', 'past')
 openPast.addWord({
 	insertionCost: 1,
@@ -74,6 +76,8 @@ issue.objFilter.addRule({ RHS: [ user.nomUsers, [ auxVerbs.doPastNegation, openP
 user.subjFilter.addRule({ RHS: [ openPast, issue.catPl ], semantic: issuesOpenersSemantic })
 // (people who) have opened [issues] - not [issues+] because 'by'
 user.subjFilter.addRule({ RHS: [ haveNoInsertOpenPast, issue.catPl ], semantic: issuesOpenersSemantic, personNumber: 'pl' })
+// (people who) did not open [issues]
+user.subjFilter.addRule({ RHS: [ doPastNegationOpenPresent, issue.catPl ], semantic: g.reduceSemantic(auxVerbs.notSemantic, issuesOpenersSemantic) })
 
 var openersOf = g.newSymbol('openers', 'of')
 openersOf.addWord({
@@ -85,8 +89,11 @@ user.head.addRule({ RHS: [ openersOf, issue.catPl ], semantic: issuesOpenersSema
 
 // MENTION:
 var issuesMentionedSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'mentioned'), cost: 0.5, minParams: 1, maxParams: 1 })
+var notIssuesMentionedSemantic = g.reduceSemantic(auxVerbs.notSemantic, issuesMentionedSemantic)
 // (issues that) mention me
 issue.subjFilter.addRule({ RHS: [ github.mention, user.objUsersPlus ], semantic: issuesMentionedSemantic })
+// (issues that) do not mention me
+issue.subjFilter.addRule({ RHS: [ github.doPresentNegationMention, user.objUsersPlus ], semantic: notIssuesMentionedSemantic, personNumber: 'pl' })
 // (issues) I-am/{user}-is/[users]-are mentioned in
 issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralMentionedIn ], semantic: issuesMentionedSemantic })
 // (people mentioned in) [issues]/[pull-requests] (and/or) [issues]/[pull-requests]

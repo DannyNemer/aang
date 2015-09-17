@@ -53,6 +53,9 @@ exports.mention.addWord({
 	accepted: [ 'mention' ],
 })
 
+// (pull-requests/issues that) do not mention ([obj-users+])
+exports.doPresentNegationMention = g.newBinaryRule({ RHS: [ auxVerbs.doPresentNegation, exports.mention ] })
+
 var mentionedIn = g.newSymbol('mentioned', 'in')
 mentionedIn.addWord({
 	insertionCost: 1.1,

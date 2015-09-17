@@ -1,6 +1,7 @@
 var g = require('../grammar')
 var user = require('./user')
 var stopWords = require('./stopWords')
+var auxVerbs = require('./auxVerbs')
 var poss = require('./poss')
 var preps = require('./prepositions')
 var count = require('./count')
@@ -30,6 +31,9 @@ user.passive.addRule({ RHS: [ follow, user.byObjUsersPlus ], semantic: usersFoll
 user.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, follow ], semantic: usersFollowedSemantic })
 // (people who) follow me
 user.subjFilter.addRule({ RHS: [ follow, user.objUsersPlus ], semantic: followersSemantic, personNumber: 'pl' })
+// (people who) do not follow me
+var doPresentNegationFollow = g.newBinaryRule({ RHS: [ auxVerbs.doPresentNegation, follow ], personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ doPresentNegationFollow, user.objUsersPlus ], semantic: g.reduceSemantic(auxVerbs.notSemantic, followersSemantic), personNumber: 'pl' })
 
 
 var followersTerm = g.newSymbol('followers', 'term')

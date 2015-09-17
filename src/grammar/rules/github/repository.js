@@ -49,6 +49,8 @@ repository.objFilter.addRule({ RHS: [ user.nomUsers, github.doPastNegationCreate
 user.subjFilter.addRule({ RHS: [ github.createPast, repository.catPl ], semantic: repositoryCreatorsSemantic })
 // (people who) have created [repositories] - not [repositories+] because 'by'
 user.subjFilter.addRule({ RHS: [ github.haveNoInsertCreatePast, repository.catPl ], semantic: repositoryCreatorsSemantic, personNumber: 'pl' })
+// (people who) did not create [repositories]
+user.subjFilter.addRule({ RHS: [ github.doPastNegationCreatePresent, repository.catPl ], semantic: g.reduceSemantic(auxVerbs.notSemantic, repositoryCreatorsSemantic) })
 // creators of [repositories]
 user.head.addRule({ RHS: [ github.creatorsOf, repository.catPl ], semantic: repositoryCreatorsSemantic })
 
@@ -77,18 +79,23 @@ repository.objFilter.addRule({ RHS: [ user.nomUsersPlusDoPresentNegation, like ]
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertNegation, like ], semantic: notRepositoriesLikedSemantic, verbForm: 'past' })
 
 var repositoryLikersSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'likers'), cost: 0.5, minParams: 1, maxParams: 1 })
+var notRepositoryLikersSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoryLikersSemantic)
+
 // (people who) like [repositories+]
 user.subjFilter.addRule({ RHS: [ like, repository.catPlPlus ], semantic: repositoryLikersSemantic, personNumber: 'pl' })
 
 // Hack: manually create symbol name to avoid '+' to allow insertions
-var likeRepositoriesPlus = g.newSymbol(like.name, repository.namePl)
-likeRepositoriesPlus.addRule({ RHS: [ like, repository.catPlPlus ], verbForm: 'past' })
+var likePastRepositoriesPlus = g.newSymbol(like.name, repository.namePl)
+likePastRepositoriesPlus.addRule({ RHS: [ like, repository.catPlPlus ], verbForm: 'past' })
 // (people who) have liked [repositories+]
 // No insertion for '[have]' to prevent "people who like" suggesting two semantically identical trees: "who like" and "who have liked".
-user.subjFilter.addRule({ RHS: [ auxVerbs.have, likeRepositoriesPlus ], semantic: repositoryLikersSemantic, noInsertionIndexes: [ 0 ], personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ auxVerbs.have, likePastRepositoriesPlus ], semantic: repositoryLikersSemantic, noInsertionIndexes: [ 0 ], personNumber: 'pl' })
+// (people who) do not like [repositories+] - WRONG? Liked? also, 'do' need to be verb
+var doPresentNegationLike = g.newBinaryRule({ RHS: [ auxVerbs.doPresentNegation, like ], personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ doPresentNegationLike, repository.catPlPlus ], semantic: notRepositoryLikersSemantic, personNumber: 'pl' })
 // (people who) have not liked [repositories+]
 // No insertion for '[have]' to prevent "people who not like" suggesting two semantically identical trees: "who do not like" and "who have not liked".
-user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, likeRepositoriesPlus ], semantic: g.reduceSemantic(auxVerbs.notSemantic, repositoryLikersSemantic), personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, likePastRepositoriesPlus ], semantic: notRepositoryLikersSemantic, personNumber: 'pl' })
 
 var likersOf = g.newSymbol('likers', 'of')
 likersOf.addWord({

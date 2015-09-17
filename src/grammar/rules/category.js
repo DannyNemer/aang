@@ -150,8 +150,6 @@ function Category(opts) {
 	filter.addRule({ RHS: [ auxVerbs.haveSentenceAdverbialBePast, reducedNoTense ] })
 	// (people who) <stop> follow me, I follow
 	filter.addRule({ RHS: [ stopWords.left, filter ] })
-	// (people who) do not follow me
-	filter.addRule({ RHS: [ auxVerbs.doPresentNegation, this.subjFilter ], semantic: auxVerbs.notSemantic, personNumber: 'pl' })
 	// (people who) are not followers of mine
 	filter.addRule({ RHS: [ auxVerbs.beNon1SgNegation, noRelative ], semantic: auxVerbs.notSemantic })
 	// (issues that) are not open
