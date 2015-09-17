@@ -69,8 +69,9 @@ exports.illFormedOpts = function (schema, options) {
 	for (var paramName in options) {
 		// Check for unrecognized properties.
 		if (!schema.hasOwnProperty(paramName)) {
-			exports.logError('Unrecognized property: \'' + paramName + '\'')
+			exports.logError('Unrecognized property:', exports.stylize(paramName))
 			exports.logPathAndObject(options, true)
+			exports.log('\nAccepted properties:', schema)
 			return true
 		}
 
