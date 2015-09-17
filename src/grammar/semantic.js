@@ -17,7 +17,7 @@ exports.new = function (opts) {
 
 	var semantic = opts.isArg ? newSemanticArg(opts) : newSemanticFunc(opts)
 
-	// Save instantiation path and line number for error reporting
+	// Save instantiation file path and line number for error reporting
 	exports.creationLines[opts.name] = util.getModuleCallerPathAndLineNumber()
 
 	return semantic

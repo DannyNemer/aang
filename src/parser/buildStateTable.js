@@ -2,7 +2,9 @@ var util = require('../util')
 var fs = require('fs')
 
 /**
- * Initialize the grammar and semantics, and instantiate the StateTable used in parsing.
+ * Initializes the grammar and semantics, and instantiate the StateTable used in parsing.
+ *
+ * Reloads input file (with grammar) and `StateTable` module on every call for debugging (e.g., benchmarking or running from CLI).
  *
  * @param {string} inputFilePath The file path of the input file containing the grammar, semantics, and entities.
  * @param {string} stateTablePath The file path of the StateTable module.

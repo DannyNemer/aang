@@ -2,7 +2,7 @@ var util = require('../util')
 
 
  /**
-  * Finds and prints instances of ambiguity in the context-free grammar.
+  * Finds and prints instances of ambiguity in the grammar.
   *
   * Ambiguity exists when there are multiple paths from a single nonterminal symbol to the same rightmost symbols. When ambiguity is found, parse trees demonstrating the ambiguity are printed to demonstrate the necessary changes to make to the grammar.
   *
@@ -438,7 +438,7 @@ function diffTrees(a, b) {
 /**
  * Inverts a parse tree produced by `rulesToTree()` to an array of rightmost nodes with pointers to their parent nodes, ending at the tree's root node.
  *
- * @param {Object} tree The root node of the parse tree.
+ * @param {Object} tree The root node of the parse tree to invert.
  * @returns {Array} Returns the inverted tree as an array of rightmost nodes with pointers to parents.
  */
 function invertTree(tree) {

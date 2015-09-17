@@ -81,7 +81,8 @@ function insertRule(sym, symBuf, origRule) {
 	}
 
 	existingRules.splice(r, 0, {
-		RHS: symBuf, // for term syms, this is the LHS (that produces the term syms)
+		// For terminal symbols, this is the LHS
+		RHS: symBuf,
 		ruleProps: createRuleProps(origRule),
 	})
 }

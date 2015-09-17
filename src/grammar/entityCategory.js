@@ -37,7 +37,7 @@ exports.new = function (opts) {
 		throw new Error('Duplicate entity category')
 	}
 
-	// Save instantiation path and line number for error reporting
+	// Save instantiation file path and line number for error reporting
 	exports.creationLines[categoryName] = util.getModuleCallerPathAndLineNumber()
 
 	var newEntities = opts.entities
