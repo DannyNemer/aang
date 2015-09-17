@@ -277,6 +277,10 @@ exports.basic = [
 	'repos I have not forked',
 	'repos I forked pushed last year',
 	'repos with greater than 20 forks and fewer than 0 forks',
+	'repos Danny does not contribute to',
+	'repos Danny has not contributed to',
+	'repos Danny or Aang do not contribute to',
+	'contributors of repos I did not contribute to pushed last year',
 
 
 	// 'followers my followers share',
@@ -344,4 +348,6 @@ exports.conjugation = [
 	'people I do not follow',
 	'issues that do not mention me',
 	'people who did not contribute to my repos',
+	'repos Danny does not contribute to',
+	'repos Danny has not contributed to',
 ]
