@@ -97,9 +97,10 @@ Symbol.prototype.addVerb = function (opts) {
 		threeSg: opts.threeSg ? opts.threeSg[0] : opts.oneOrThreeSg[0],
 	}
 
-	// Past tense is optional (e.g.: [have])
+	// Past tense is optional
+	// - E.g., (repos) liked (by me), (repos I have) liked
 	if (opts.past) {
-		defaultTextForms.past = opts.past[0] // "liked"
+		defaultTextForms.past = opts.past[0]
 	}
 
 	// Inflected forms for first-person (e.g., "am")
@@ -237,9 +238,11 @@ Symbol.prototype.addStopWord = function (opts) {
 
 // Schema for other words
 var wordOptsSchema = {
+	// Optional terminal rule: rule can be omitted from input by accepting empty string without penalty.
 	optional: { type: Boolean, optional: true },
 	insertionCost: { type: Number, optional: true },
 	accepted: { type: Array, arrayType: String },
+	// First of `accepted` terminal symbols replaces `substitutions` when seen in input.
 	substitutions: { type: Array, arrayType: String, optional: true },
 }
 
@@ -251,8 +254,8 @@ Symbol.prototype.addWord = function (opts) {
 
 	if (opts.accepted.indexOf(g.emptySymbol) !== -1) {
 		util.logError('Words cannot have <empty> strings:', opts.name)
-		console.log('       Only stop-words or opt-terms can have <empty> strings')
-		console.log('  ' + util.getModuleCallerPathAndLineNumber())
+		util.log('       Only stop-words or opt-terms can have <empty> strings')
+		util.log('  ' + util.getModuleCallerPathAndLineNumber())
 		throw new Error('Ill-formed word')
 	}
 
@@ -282,7 +285,7 @@ Symbol.prototype.addWord = function (opts) {
 
 	// Terminal symbols which are replaced when input
 	if (opts.substitutions) {
-		// First of 'accepted' terminal symbol is used to substitute rejected symbols
+		// First of `accepted` terminal symbols replaces `substitutions` when seen in input.
 		var correctedText = opts.accepted[0]
 
 		opts.substitutions.forEach(function (termSym) {
