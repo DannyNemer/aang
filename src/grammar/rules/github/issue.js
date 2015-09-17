@@ -22,7 +22,6 @@ issue.headMayPoss.addRule({ RHS: [ github.termOpt, issue.term ] })
 
 
 var issuesOpenedSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'opened'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true })
-var issuesOpenersSemantic = g.newSemantic({ name: g.hyphenate(issue.nameSg, 'openers'), cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my issues; my closed issues
 var issuePossDeterminer = g.newSymbol(issue.nameSg, 'poss', 'determiner')
@@ -67,11 +66,10 @@ issue.passive.addRule({ RHS: [ openPast, user.byObjUsers ], semantic: issuesOpen
 issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, openPast ], semantic: issuesOpenedSemantic })
 // (issues) I <stop> have opened
 issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, haveNoInsertOpenPast ], semantic: issuesOpenedSemantic })
-
-var notIssuesOpenedSemantic = g.reduceSemantic(auxVerbs.notSemantic, issuesOpenedSemantic)
 // (issues) I did not open
-issue.objFilter.addRule({ RHS: [ user.nomUsers, [ auxVerbs.doPastNegation, openPresent ] ], semantic: notIssuesOpenedSemantic })
+issue.objFilter.addRule({ RHS: [ user.nomUsers, doPastNegationOpenPresent ], semantic: g.reduceSemantic(auxVerbs.notSemantic, issuesOpenedSemantic) })
 
+var issuesOpenersSemantic = g.newSemantic({ name: g.hyphenate(issue.nameSg, 'openers'), cost: 0.5, minParams: 1, maxParams: 1 })
 // (people who) opened [issues]
 user.subjFilter.addRule({ RHS: [ openPast, issue.catPl ], semantic: issuesOpenersSemantic })
 // (people who) have opened [issues] - not [issues+] because 'by'

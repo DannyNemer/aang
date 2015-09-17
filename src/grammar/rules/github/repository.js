@@ -21,7 +21,6 @@ repository.headMayPoss.addRule({ RHS: [ github.termOpt, repository.term ] })
 
 // `forbidMultiple` because repos only have one author, so an intersection of repos from different authors is empty
 var repositoriesCreatedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'created'), cost: 0.5, minParams: 1, maxParams: 1, forbidMultiple: true })
-var repositoryCreatorsSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'creators'), cost: 0.5, minParams: 1, maxParams: 1 })
 
 // my repos; my {language} repos
 var repositoryPossDeterminer = g.newSymbol(repository.nameSg, 'poss', 'determiner')
@@ -31,20 +30,18 @@ repository.noRelativePossessive.addRule({ RHS: [ repositoryPossDeterminer, repos
 repository.head.addRule({ RHS: [ repository.headMayPoss, poss.ofPossUsers ], semantic: repositoriesCreatedSemantic })
 
 
-// CREATED:
+// CREATE:
 // (repos) created by me
 repository.passive.addRule({ RHS: [ github.createPast, user.byObjUsers ], semantic: repositoriesCreatedSemantic })
 // (repos) I <stop> created
 repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.createPast ], semantic: repositoriesCreatedSemantic })
 // (repos) I <stop> have created
 repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.haveNoInsertCreatePast ], semantic: repositoriesCreatedSemantic })
-
-var notNepositoriesCreatedSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoriesCreatedSemantic)
 // (repos) I did not create
 // Do not add rules for "repos I have not created" because it suggests those results can be created in the future.
-// NOTE: All [nom-users+]?
-repository.objFilter.addRule({ RHS: [ user.nomUsers, github.doPastNegationCreatePresent ], semantic: notNepositoriesCreatedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsers, github.doPastNegationCreatePresent ], semantic: g.reduceSemantic(auxVerbs.notSemantic, repositoriesCreatedSemantic) })
 
+var repositoryCreatorsSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'creators'), cost: 0.5, minParams: 1, maxParams: 1 })
 // (people who) created [repositories]
 user.subjFilter.addRule({ RHS: [ github.createPast, repository.catPl ], semantic: repositoryCreatorsSemantic })
 // (people who) have created [repositories] - not [repositories+] because 'by'
@@ -67,7 +64,7 @@ like.addVerb({
 var repositoriesLikedSemantic = g.newSemantic({ name: g.hyphenate(repository.namePl, 'liked'), cost: 0.5, minParams: 1, maxParams: 1 })
 // (repos) liked by me
 repository.passive.addRule({ RHS: [ like, user.byObjUsersPlus ], semantic: repositoriesLikedSemantic, verbForm: 'past' })
-// (repos) I like
+// (repos) I like - why not stop-words like 'follow'?
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlus, like ], semantic: repositoriesLikedSemantic })
 // (repos) I have liked
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsert, like ], semantic: repositoriesLikedSemantic, verbForm: 'past' })
@@ -129,6 +126,8 @@ var notRepositoriesContributedSemantic = g.reduceSemantic(auxVerbs.notSemantic, 
 repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertNegation, contributedTo ], semantic: notRepositoriesContributedSemantic })
 
 var repositoryContributorsSemantic = g.newSemantic({ name: g.hyphenate(repository.nameSg, 'contributors'), cost: 0.5, minParams: 1, maxParams: 1 })
+var notRepositoryContributorsSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoryContributorsSemantic)
+
 // (people who) contributed to [repositories+]
 user.subjFilter.addRule({ RHS: [ contributedTo, repository.catPlPlus ], semantic: repositoryContributorsSemantic })
 
@@ -138,7 +137,7 @@ contributedToRepositoriesPlus.addRule({ RHS: [ contributedTo, repository.catPlPl
 // (people who) have contributed to [repositories+]
 user.subjFilter.addRule({ RHS: [ auxVerbs.have, contributedToRepositoriesPlus ], semantic: repositoryContributorsSemantic, noInsertionIndexes: [ 0 ], personNumber: 'pl' })
 // (people who) have not contributed to [repositories+]
-user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, contributedToRepositoriesPlus ], semantic: repositoryContributorsSemantic, personNumber: 'pl' })
+user.subjFilter.addRule({ RHS: [ auxVerbs.haveNoInsertNegation, contributedToRepositoriesPlus ], semantic: notRepositoryContributorsSemantic, personNumber: 'pl' })
 
 var contributorsTo = g.newSymbol('contributors', 'to')
 contributorsTo.addWord({

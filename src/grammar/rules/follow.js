@@ -1,6 +1,5 @@
 var g = require('../grammar')
 var user = require('./user')
-var stopWords = require('./stopWords')
 var auxVerbs = require('./auxVerbs')
 var poss = require('./poss')
 var preps = require('./prepositions')
