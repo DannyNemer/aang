@@ -130,8 +130,8 @@ exports.search = function (startNode, K, buildDebugTrees, printStats) {
 	}
 
 	if (printStats) {
-		console.log('paths created:', heap.pushCount)
-		console.log('ambiguous trees:', ambiguousTrees)
+		util.log('paths created:', heap.pushCount)
+		util.log('ambiguous trees:', ambiguousTrees)
 	}
 
 	return trees
@@ -302,6 +302,7 @@ function createItem(sub, prevItem, ruleProps) {
 		}
 
 		// Terminal rule
+		// If there is a semantic on the terminal rule, then it is reduced (i.e., RHS).
 		else {
 			var prevSemantic = prevItem.semantics
 			while (prevSemantic) {
@@ -416,7 +417,7 @@ function conjugateText(item, textObj) {
 		gramPropsList = gramPropsList.prev
 	}
 
-	util.logError('Failed to conjugate:', textObj, item)
+	util.logError('Failed to conjugate:', textObj, item.gramProps)
 	throw new Error('Failed conjugation')
 }
 
@@ -617,15 +618,15 @@ exports.print = function (trees, printCosts, printTrees) {
 		}
 
 		// Print display text (and cost)
-		console.log(tree.text, printCosts ? tree.cost : '')
+		util.log(tree.text + (printCosts ? ' ' + tree.cost : ''))
 
 		// Print semantic
-		util.log(' ', tree.semanticStr)
+		util.log('  ' + tree.semanticStr)
 
 		// Print additional semantics that produced identical display text
 		if (tree.disambiguation) {
 			tree.disambiguation.forEach(function (semanticStr) {
-				util.log(' ', semanticStr)
+				util.log('  ' + semanticStr)
 			})
 		}
 
