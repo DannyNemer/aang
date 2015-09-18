@@ -543,8 +543,21 @@ Parser.prototype.reduce = function (redZNode, red) {
 }
 
 
-
-function printNode(node) {
+/**
+ * Constructs a string representation of `node`.
+ *
+ * Terminal symbols are constructed as follows:
+ *   "<literal>"
+ *
+ * Nonterminal symbols are constructed as follows:
+ *   [symbol]_M_N
+ * where M and N are the start and end positions, respectively, of the span of [symbol] in the input.
+ *
+ * @private
+ * @param {Object} node The node of which to construct a string representation.
+ * @returns {string} Returns the string representation of `node`.
+ */
+function stringifyNode(node) {
 	if (node.sym.isTerminal) {
 		return ' \"' + node.sym.name + '\"'
 	} else {
@@ -552,35 +565,72 @@ function printNode(node) {
 	}
 }
 
+/**
+ * Prints the parse forest of the last parse.
+ *
+ * This forest is listed in equational form as a grammar which even can be constructed into a `StateTable` used by `Parser` This grammar is characterized as the largest sub-grammar of the input grammar that generates the one element set { the input }.
+ *
+ * @memberOf Parser
+ * @param {Object} startNode The start node output by the last call to `Parser.prototype.parse()`.
+ */
 Parser.prototype.printForest = function (startNode) {
 	util.log("\nParse Forest:")
 
 	if (startNode) {
-		util.log('*' + printNode(startNode) + '.')
+		util.log('*' + stringifyNode(startNode) + '.')
 	}
 
 	this.nodeTabs.forEach(function (nodeTab) {
 		nodeTab.forEach(function (node) {
 			if (node.sym.isTerminal) return
 
-			var toPrint = printNode(node)
+			var toPrint = stringifyNode(node)
 
 			if (node.subs.length > 0) {
-				if (node.subs[0].node.sym.isTerminal) toPrint += ':'
-				else toPrint += ' ='
+				toPrint += node.subs[0].node.sym.isTerminal ? ':' : ' ='
 			}
 
-			node.subs.forEach(function (sub, S) {
-				if (S > 0) toPrint += ' |'
-				for (; sub; sub = sub.next)
-					toPrint += printNode(sub.node)
+			node.subs.forEach(function (sub, s) {
+				if (s > 0) {
+					toPrint += ' |'
+				}
+
+				do {
+					toPrint += stringifyNode(sub.node)
+				} while (sub = sub.next)
 			})
 
-			util.log(toPrint + '.');
+			util.log(toPrint + '.')
 		})
 	})
 }
 
+/**
+ * Prints the parsing stack of the last parse.
+ *
+ * The stack a graph consisting of nodes labeled v_N_S, with edges labeled by nodes of the form [ SYM_M_N ]. All connections are of the form:
+ *   v_N_T <= [ SYM_M_N ] <= v_M_S1  v_M_S2 ...
+ *
+ * The following properties will always hold:
+ *   1. SHIFT(S1, X) = SHIFT(S2, X) = ... = T
+ *   2. M <= N
+ *
+ * The labels are defined as follows:
+ *   v_N_S: N = the parsing position in the input
+ *          S = the parsing state number
+ *   SYM_M_N: SYM = the name of the nonterminal symbol
+ *            M, N = the start and end positions of the span of SYM in the input
+ *
+ * @memberOf Parser
+ * @example
+ *
+ * If the input is labeled as follows:
+ *   0   1   2   3   4    5
+ *    the boy saw the girl
+ * then the edge:
+ *   v_5_11 <= [ NP_3_5 ] <= v_3_7
+ * indicates that the parser went from state 7 at position 3 to state 11 at position 5 by shifting a symbol named "NP", which spans the tokens "the girl".
+ */
 Parser.prototype.printStack = function () {
 	var states = this.stateTable.states
 
@@ -590,21 +640,23 @@ Parser.prototype.printStack = function () {
 		vertTab.forEach(function (vertex) {
 			var toPrint = ' v_' + vertex.start + '_' + states.indexOf(vertex.state)
 
-			if (vertex.zNodes.length > 0) toPrint += ' <=\t'
-			else util.log(toPrint)
+			if (vertex.zNodes.length > 0) {
+				toPrint += ' <=\t'
 
-			vertex.zNodes.forEach(function (zNode, Z) {
-				if (Z > 0) toPrint += '\t\t'
+				vertex.zNodes.forEach(function (zNode, z) {
+					if (z > 0) {
+						toPrint += '\n\t\t'
+					}
 
-				toPrint += ' [' + printNode(zNode.node) + ' ] <='
+					toPrint += ' [' + stringifyNode(zNode.node) + ' ] <='
 
-				zNode.vertices.forEach(function (subVertex) {
-					toPrint += ' v_' + subVertex.start + '_' + states.indexOf(subVertex.state)
+					zNode.vertices.forEach(function (subVertex) {
+						toPrint += ' v_' + subVertex.start + '_' + states.indexOf(subVertex.state)
+					})
 				})
+			}
 
-				if (Z === vertex.zNodes.length - 1) util.log(toPrint)
-				else toPrint += '\n'
-			})
+			util.log(toPrint)
 		})
 	})
 }
