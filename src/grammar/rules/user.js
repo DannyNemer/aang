@@ -60,17 +60,17 @@ user.nomUsersPlus.addRule({ RHS: [ nomPlUsers, unionNomPlUsersPlus ], personNumb
 
 
 // (repos) I <stop> (created)
-user.nomUsersPreVerbStopWords = g.newBinaryRule({ RHS: [ user.nomUsers, stopWords.preVerb ] })
+user.nomUsersPreVerbStopWord = g.newBinaryRule({ RHS: [ user.nomUsers, stopWords.preVerb ] })
 // (repos) I <stop> (contributed to)
 // Exclude the "+" character as a hack to get around parsing issue
-user.nomUsersPlusPreVerbStopWords = g.newSymbol(user.nomUsers.name, 'plus', stopWords.preVerb.name)
-user.nomUsersPlusPreVerbStopWords.addRule({ RHS: [ user.nomUsersPlus, stopWords.preVerb ] })
+user.nomUsersPlusPreVerbStopWord = g.newSymbol(user.nomUsers.name, 'plus', stopWords.preVerb.name)
+user.nomUsersPlusPreVerbStopWord.addRule({ RHS: [ user.nomUsersPlus, stopWords.preVerb ] })
 
 // No insertion for '[have]' to prevent semantically identical trees from being created, such as "repos I like" suggesting "repos I have liked".
 // (repos) I have (liked)
 user.nomUsersPlusHaveNoInsert = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.have ], noInsertionIndexes: [ 1 ] })
 // (repos) I have <stop> (contributed to)
-user.nomUsersPlusHaveNoInsertPreVerbStopWords = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.haveNoInsertPreVerbStopWords ] })
+user.nomUsersPlusHaveNoInsertPreVerbStopWord = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.haveNoInsertPreVerbStopWord ] })
 
 // (repos) I do not (like)
 user.nomUsersPlusDoPresentNegation = g.newBinaryRule({ RHS: [ user.nomUsersPlus, auxVerbs.doPresentNegation ] })

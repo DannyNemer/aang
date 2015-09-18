@@ -34,9 +34,9 @@ repository.head.addRule({ RHS: [ repository.headMayPoss, poss.ofPossUsers ], sem
 // (repos) created by me
 repository.passive.addRule({ RHS: [ github.createPast, user.byObjUsers ], semantic: repositoriesCreatedSemantic })
 // (repos) I <stop> created
-repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.createPast ], semantic: repositoriesCreatedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWord, github.createPast ], semantic: repositoriesCreatedSemantic })
 // (repos) I <stop> have created
-repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, github.haveNoInsertCreatePast ], semantic: repositoriesCreatedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWord, github.haveNoInsertCreatePast ], semantic: repositoriesCreatedSemantic })
 // (repos) I did not create
 // Do not add rules for "repos I have not created" because it suggests those results can be created in the future.
 repository.objFilter.addRule({ RHS: [ user.nomUsers, github.doPastNegationCreatePresent ], semantic: g.reduceSemantic(auxVerbs.notSemantic, repositoriesCreatedSemantic) })
@@ -179,9 +179,9 @@ var repositoriesForkedSemantic = g.newSemantic({ name: g.hyphenate(repository.na
 // (repos) forked by me
 repository.passive.addRule({ RHS: [ forkPast, user.byObjUsersPlus ], semantic: repositoriesForkedSemantic })
 // (repos) I <stop> forked
-repository.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, forkPast ], semantic: repositoriesForkedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWord, forkPast ], semantic: repositoriesForkedSemantic })
 // (repos) I have <stop> forked
-repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertPreVerbStopWords, forkPast ], semantic: repositoriesForkedSemantic })
+repository.objFilter.addRule({ RHS: [ user.nomUsersPlusHaveNoInsertPreVerbStopWord, forkPast ], semantic: repositoriesForkedSemantic })
 
 var notRepositoriesForkedSemantic = g.reduceSemantic(auxVerbs.notSemantic, repositoriesForkedSemantic)
 // (repos) I did not fork

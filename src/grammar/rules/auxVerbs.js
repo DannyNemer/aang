@@ -56,7 +56,7 @@ exports.have.addVerb({
 
 // (repos I) have <stop> (contributed to)
 // No insertion to prevent semantically identical trees from being created, such as "repos I like" suggesting "repos I have liked".
-exports.haveNoInsertPreVerbStopWords = g.newBinaryRule({ RHS: [ exports.have, stopWords.preVerb ], noInsertionIndexes: [ 0 ] })
+exports.haveNoInsertPreVerbStopWord = g.newBinaryRule({ RHS: [ exports.have, stopWords.preVerb ], noInsertionIndexes: [ 0 ] })
 
 // (people who have) been (followed by me)
 exports.bePast = g.newSymbol('be', 'past')

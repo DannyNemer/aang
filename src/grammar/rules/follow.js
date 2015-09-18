@@ -27,7 +27,7 @@ follow.addVerb({
 // (people) followed by me
 user.passive.addRule({ RHS: [ follow, user.byObjUsersPlus ], semantic: usersFollowedSemantic, verbForm: 'past' })
 // (people) I follow
-user.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, follow ], semantic: usersFollowedSemantic })
+user.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWord, follow ], semantic: usersFollowedSemantic })
 // (people) I do not follow
 user.objFilter.addRule({ RHS: [ user.nomUsersPlusDoPresentNegation, follow ], semantic: g.reduceSemantic(auxVerbs.notSemantic, usersFollowedSemantic), personNumber: 'pl' })
 // (people who) follow me

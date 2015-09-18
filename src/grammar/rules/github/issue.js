@@ -63,9 +63,9 @@ var haveNoInsertOpenPast = g.newBinaryRule({ RHS: [ auxVerbs.have, openPast ], n
 // (issues) opened by me
 issue.passive.addRule({ RHS: [ openPast, user.byObjUsers ], semantic: issuesOpenedSemantic })
 // (issues) I <stop> opened
-issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, openPast ], semantic: issuesOpenedSemantic })
+issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWord, openPast ], semantic: issuesOpenedSemantic })
 // (issues) I <stop> have opened
-issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWords, haveNoInsertOpenPast ], semantic: issuesOpenedSemantic })
+issue.objFilter.addRule({ RHS: [ user.nomUsersPreVerbStopWord, haveNoInsertOpenPast ], semantic: issuesOpenedSemantic })
 // (issues) I did not open
 issue.objFilter.addRule({ RHS: [ user.nomUsers, doPastNegationOpenPresent ], semantic: g.reduceSemantic(auxVerbs.notSemantic, issuesOpenedSemantic) })
 
@@ -93,9 +93,9 @@ issue.subjFilter.addRule({ RHS: [ github.mention, user.objUsersPlus ], semantic:
 // (issues that) do not mention me
 issue.subjFilter.addRule({ RHS: [ github.doPresentNegationMention, user.objUsersPlus ], semantic: notIssuesMentionedSemantic })
 // (issues) I-am/{user}-is/[users]-are mentioned in
-issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralMentionedIn ], semantic: issuesMentionedSemantic })
+issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWord, github.beGeneralMentionedIn ], semantic: issuesMentionedSemantic })
 // (issues) I-am/{user}-is/[users]-are not mentioned in
-issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralNegationMentionedIn ], semantic: notIssuesMentionedSemantic })
+issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWord, github.beGeneralNegationMentionedIn ], semantic: notIssuesMentionedSemantic })
 // (people mentioned in) [issues]/[pull-requests] (and/or) [issues]/[pull-requests]
 github.mentioners.addRule({ RHS: [ issue.catPl ] })
 
@@ -105,9 +105,9 @@ var issuesAssignedSemantic = g.newSemantic({ name: g.hyphenate(issue.namePl, 'as
 // (issues) assigned to me
 issue.inner.addRule({ RHS: [ github.assignedTo, user.objUsersPlus ], semantic: issuesAssignedSemantic })
 // (issues) I-am/{user}-is/[users]-are assigned to
-issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralAssignedTo ], semantic: issuesAssignedSemantic })
+issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWord, github.beGeneralAssignedTo ], semantic: issuesAssignedSemantic })
 // (issues) I-am/{user}-is/[users]-are not assigned to
-issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWords, github.beGeneralNegationAssignedTo ], semantic: g.reduceSemantic(auxVerbs.notSemantic, issuesAssignedSemantic) })
+issue.objFilter.addRule({ RHS: [ user.nomUsersPlusPreVerbStopWord, github.beGeneralNegationAssignedTo ], semantic: g.reduceSemantic(auxVerbs.notSemantic, issuesAssignedSemantic) })
 // (people assigned to) [issues]/[pull-requests] (and/or) [issues]/[pull-requests]
 github.assigners.addRule({ RHS: [ issue.catPl ] })
 
