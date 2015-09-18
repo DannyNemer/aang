@@ -609,30 +609,45 @@ Parser.prototype.printStack = function () {
 	})
 }
 
-Parser.prototype.printNodeGraph = function (sub) {
-	var node = sub.node || sub
-
-	var newNode = {
-		symbol: node.sym.name,
-		ruleProps: sub.ruleProps,
-		subs: undefined,
+/**
+ * Prints a graph representation of a parse forest output by `Parser.prototype.parse()`, starting at `startNode`. Most often, this will be too large to print.
+ *
+ * @static
+ * @memberOf Parser
+ * @param {Object} startNode The root of the parse forest.
+ */
+Parser.prototype.printNodeGraph = function (startNode) {
+	var startNode = {
+		symbol: startNode.sym.name,
+		subs: startNode.subs,
 	}
 
-	if (node.subs) {
-		newNode.subs = node.subs.map(function (sub) {
-			var children = []
+	var stack = [ startNode ]
 
-			for (; sub; sub = sub.next) {
-				children.push(this.printNodeGraph(sub))
-			}
+	while (stack.length > 0) {
+		var node = stack.pop()
 
-			return children
-		}, this)
+		if (node.subs) {
+			node.subs = node.subs.map(function (sub) {
+				var children = []
+
+				do {
+					var subNode = sub.node
+
+					var childNode = {
+						symbol: subNode.sym.name,
+						ruleProps: sub.ruleProps,
+						subs: subNode.subs,
+					}
+
+					children.push(childNode)
+					stack.push(childNode)
+				} while (sub = sub.next)
+
+				return children
+			})
+		}
 	}
 
-	if (sub.node) {
-		return newNode
-	} else {
-		util.dir(newNode) // Start node
-	}
+	util.dir(startNode)
 }
