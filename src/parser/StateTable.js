@@ -1,17 +1,22 @@
 var util = require('../util')
 
 
-module.exports = StateTable
-
-function StateTable(inputGrammar, startSymbolStr) {
+/**
+ * The `StateTable` constructor.
+ *
+ * @constructor
+ * @param {Object} grammar The input grammar
+ * @param {string} startSymbol The name of the start symbol of `grammar`.
+ */
+function StateTable(grammar, startSymbol) {
 	this.symbolTab = {}
 	this.states = []
 
-	for (var nontermSym in inputGrammar) {
+	for (var nontermSym in grammar) {
 		var LHS = this.lookUp(nontermSym)
 		var symBuf = [ LHS ]
 
-		inputGrammar[nontermSym].forEach(function (rule) {
+		grammar[nontermSym].forEach(function (rule) {
 			if (rule.isTerminal) {
 				insertRule(this.lookUp(rule.RHS[0], true, rule.isPlaceholder), symBuf, rule)
 			} else {
@@ -24,7 +29,7 @@ function StateTable(inputGrammar, startSymbolStr) {
 		}, this)
 	}
 
-	this.generate(this.lookUp(startSymbolStr))
+	this.generate(this.lookUp(startSymbol))
 }
 
 // Could seperate term/nonterm symbol tabs for faster term symbol lookup
@@ -321,3 +326,6 @@ StateTable.prototype.print = function () {
 		})
 	})
 }
+
+// Export `StateTable`.
+module.exports = StateTable
