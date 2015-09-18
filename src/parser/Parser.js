@@ -6,18 +6,20 @@ var intSymbols = inputFile.intSymbols
 var deletables = inputFile.deletables
 
 
-module.exports = Parser
-
+/**
+ * The `Parser` constructor.
+ *
+ * @constructor
+ * @param {StateTable} stateTable The `StateTable` instance generated from the grammar.
+ */
 function Parser(stateTable) {
 	this.stateTable = stateTable
-
-	// Use a search index for partial-matches of input to terminal symbols
-	// this.matchTerminalRules = require('./util/matchTerminalRulesWithSearchIndex')(this)
 }
 
 /**
  * Checks if an n-gram from the input query is an entity. This is a simple, temporary entity resolution implementation that will be replaced by language models for each category and Elasticsearch for look up.
  *
+ * @memberOf Parser
  * @param {number} endPos The end index in the input query of `nGram`.
  * @param {string} nGram A token from the input query.
  */
@@ -26,21 +28,26 @@ Parser.prototype.entityLookup = function (endPos, nGram) {
 	if (entityInstances) {
 		for (var e = 0, entityInstancesLen = entityInstances.length; e < entityInstancesLen; ++e) {
 			var entity = entityInstances[e]
-			var wordSym = this.stateTable.symbolTab[entity.category]
+			var terminalSym = this.stateTable.symbolTab[entity.category]
 
 			var entityId = entity.id
 			var semanticArg = this.newSemanticArgs[entityId] || (this.newSemanticArgs[entityId] = [ { semantic: { name: entityId } } ])
 
 			// Generate all nodes for rules that produce the terminal symbol
-			this.createWords(wordSym, endPos, semanticArg, entity.text)
+			this.createWords(terminalSym, endPos, semanticArg, entity.text)
 		}
 	}
 }
 
-// If unigram is a number, match with rules with '<int>' term symbol, using unigram as semantic argument
-Parser.prototype.intSymbolLookup = function (nGram) {
+/**
+ * Finds the integer symbols for which `unigramNum` is within range, and creates nodes for those rules with `unigramNum` as a semantic argument.
+ *
+ * @memberOf Parser
+ * @param {string} unigramNum A token of an integer from input.
+ */
+Parser.prototype.intSymbolLookup = function (unigramNum) {
 	// It is faster to parse the number from the string and compare it to the numeric min and max values than to compare the original string, though they have the same outcome.
-	var parsedFloat = parseFloat(nGram)
+	var parsedFloat = parseFloat(unigramNum)
 
 	// Assuming the intSymbols are already sorted by increasing minimum value and then by increasing maximum value.
 	for (var i = 0, intSymbolsLen = intSymbols.length; i < intSymbolsLen; ++i) {
@@ -50,14 +57,14 @@ Parser.prototype.intSymbolLookup = function (nGram) {
 		if (parsedFloat < intSymbol.min) return
 
 		if (parsedFloat <= intSymbol.max) {
-			var wordSym = this.stateTable.symbolTab[intSymbol.name]
+			var terminalSym = this.stateTable.symbolTab[intSymbol.name]
 
 			// Create a new semantic argument using the integer. Reuse if it already exists (same integer used in multiple places in same query) so semantics can be found identical just by their object references (without needing to compare names).
 			// Use string version of integer for the semantic.
-			var semanticArg = this.newSemanticArgs[nGram] || (this.newSemanticArgs[nGram] = [ { semantic: { name: nGram } } ])
+			var semanticArg = this.newSemanticArgs[unigramNum] || (this.newSemanticArgs[unigramNum] = [ { semantic: { name: unigramNum } } ])
 
 			// Generate all nodes for rules that produce the terminal symbol
-			this.createWords(wordSym, this.position, semanticArg, nGram)
+			this.createWords(terminalSym, this.position, semanticArg, unigramNum)
 		}
 	}
 }
@@ -65,26 +72,27 @@ Parser.prototype.intSymbolLookup = function (nGram) {
 /**
  * Create nodes for terminal rules.
  *
- * @param {Object} wordSym The terminal symbol.
+ * @memberOf Parser
+ * @param {Object} terminalSym The terminal symbol.
  * @param {number} endPos The end index of a terminal symbol in input.
  * @param {Array} [semanticArg] The semantic argument if the terminal symbol is a placeholder (i.e., the semantic created from an entity or integer in input).
  * @param {string} [text] The display text if the terminal symbol is a placeholder (i.e., entities and integers).
  */
-Parser.prototype.createWords = function (wordSym, endPos, semanticArg, text) {
+Parser.prototype.createWords = function (terminalSym, endPos, semanticArg, text) {
 	// Create node with terminal symbol.
-	var wordNode = this.addSub(wordSym)
+	var terminalNode = this.addSub(terminalSym)
 
 	// Loop through all terminal rules that produce the terminal symbol.
 	var wordNodes = []
-	var wordSize = wordNode.size
-	var rules = wordSym.rules
+	var wordSize = terminalNode.size
+	var rules = terminalSym.rules
 
 	for (var r = 0, rulesLen = rules.length; r < rulesLen; ++r) {
 		var rule = rules[r]
 		var sub = {
 			// The number of lexical tokens in the terminal symbol.
 			size: wordSize,
-			node: wordNode,
+			node: terminalNode,
 			ruleProps: undefined,
 			minCost: undefined,
 		}
@@ -115,13 +123,19 @@ Parser.prototype.createWords = function (wordSym, endPos, semanticArg, text) {
 		nodes: wordNodes,
 	})
 
-	this.createDeletions(words, wordNode)
+	this.createDeletions(terminalNode, wordNodes, words)
 }
 
-Parser.prototype.createDeletions = function (words, wordNode) {
+/**
+ * Searches input for deletables, and creates new nodes for existing nodes that follow the deletables, with a span overlapping the deletables and cost penalty.
+ *
+ * @param {Object} terminalNode The node of a terminal symbol.
+ * @param {Array} oldWordNodes Nodes for the LHS of terminal rules producing `terminalNode`
+ * @param {Array} words Sets of nodes for the LHS of terminal rules at the current input position.
+ */
+Parser.prototype.createDeletions = function (terminalNode, oldWordNodes, words) {
 	// Avoid as much as possible before knowing there are deletions
-	var wordSize = wordNode.size
-	var oldWordNodes = words[words.length - 1].nodes
+	var wordSize = terminalNode.size
 	var oldWordNodesLen = oldWordNodes.length
 
 	// Step backward checking for continuous spans of deletable tokens end at the start of this token
@@ -138,7 +152,7 @@ Parser.prototype.createDeletions = function (words, wordNode) {
 			var sub = {
 				// The number of lexical tokens spanned by this node.
 				size: wordSize,
-				node: wordNode,
+				node: terminalNode,
 				ruleProps: {
 					// Add cost penalty of 1 per deleted token
 					cost: oldRuleProps.cost + deletionLen,
@@ -169,6 +183,7 @@ Parser.prototype.createDeletions = function (words, wordNode) {
 /**
  * Tokenizes the input query and look for terminal symbol matches using n-gram analysis.
  *
+ * @memberOf Parser
  * @param {string} query The input query.
  * @returns {Array} Returns the array of matches for each index of `query`.
  */
@@ -201,11 +216,11 @@ Parser.prototype.matchTerminalRules = function (query) {
 			while (true) {
 				this.entityLookup(endPos, nGram)
 
-				var wordSym = this.stateTable.symbolTab[nGram]
+				var terminalSym = this.stateTable.symbolTab[nGram]
 				// Prevent terminal symbol match with placeholder symbols: <int>, entities category names (e.g., {user})
-				if (wordSym && !wordSym.isPlaceholder) {
+				if (terminalSym && !terminalSym.isPlaceholder) {
 					// No `makeRuleProps` to avoid unnecessarily duplicating `ruleProps`
-					this.createWords(wordSym, endPos)
+					this.createWords(terminalSym, endPos)
 				}
 
 				if (++endPos === this.tokensLen) break
@@ -229,13 +244,14 @@ Parser.prototype.matchTerminalRules = function (query) {
 /**
  * Parses and constructs a parse forest for an input query using the state table generated for the grammar.
  *
+ * @memberOf Parser
  * @param {string} query The input query to parse.
  * @returns {Object} Returns the start node of the parse forest if the parse succeeds, else `null`.
  */
 Parser.prototype.parse = function (query) {
 	this.nodeTabs = []
 	this.position = 0
-	// var wordTab = this.lunr(query)
+
 	// An array of arrays of matched terms, sorted where the matched term is at the wordTab index of its end idx
 	var wordTab = this.matchTerminalRules(query)
 
@@ -293,7 +309,7 @@ Parser.prototype.parse = function (query) {
 
 	// ACCEPT
 	// Find the start node; otherwise the parse failed
-	// Tests show 1.9x more likely to find the start node faster by iterating backward
+	// Tests show 1.9x more likely to find the start node faster by iterating backward.
 	for (var v = this.vertTab.length - 1; v > -1; --v) {
 		var vertex = this.vertTab[v]
 		if (vertex.state.isFinal) {
@@ -308,6 +324,7 @@ Parser.prototype.parse = function (query) {
 /**
  * Adds a new subnode.
  *
+ * @memberOf Parser
  * @param {Object} sym The new symbol.
  * @param {Object} [sub] The subnode (i.e., RHS) which is produced by `sym`. Does not exist if `sym` is a terminal symbol.
  * @return {Object} The node to which `sub` was added to.
@@ -316,7 +333,7 @@ Parser.prototype.addSub = function (sym, sub) {
 	var size = sub ? sub.size : sym.size // no sub -> terminal symbol
 	var node
 
-	// Tests show 1.25x more likely to find the node faster by iterating backward
+	// Tests show 1.25x more likely to find the node faster by iterating backward.
 	for (var n = this.nodeTab.length - 1; n > -1; --n) {
 		node = this.nodeTab[n]
 		if (node.sym === sym && node.size === size) break
@@ -365,6 +382,7 @@ Parser.prototype.addSub = function (sym, sub) {
 /**
  * Checks if `newSub` already exists in `existingSubs`.
  *
+ * @static
  * @param {Array} existingSubs The subnodes of the parent node.
  * @param {Object} newSub The new subnode.
  * @returns {boolean} Returns `true` if `newSub` already exists, else `falas`.
@@ -372,7 +390,7 @@ Parser.prototype.addSub = function (sym, sub) {
 function subIsNew(existingSubs, newSub) {
 	var newSubNext = newSub.next
 
-	// Tests show 1.15x more likely to find the subnode faster by iterating backward
+	// Tests show 1.15x more likely to find the subnode faster by iterating backward.
 	for (var s = existingSubs.length - 1; s > -1; --s) {
 		var oldSub = existingSubs[s]
 
@@ -396,11 +414,12 @@ function subIsNew(existingSubs, newSub) {
 /**
  * Creates a vertex for a new state if no vertex exists; otherwise return the existing vertex.
  *
+ * @memberOf Parser
  * @param {Object} state The new state.
  * @returns {Object} Returns a new vertex if no vertex for `state` exists, else the existing vertex for `state`.
  */
 Parser.prototype.addVertex = function (state) {
-	// Tests show 3x more likely to find the vertex faster by iterating backward
+	// Tests show 3x more likely to find the vertex faster by iterating backward.
 	for (var v = this.vertTab.length - 1; v > -1; --v) {
 		var vertex = this.vertTab[v]
 		if (vertex.state === state) return vertex
@@ -423,6 +442,7 @@ Parser.prototype.addVertex = function (state) {
 /**
  * Gets the next state from the state table.
  *
+ * @memberOf Parser
  * @param {Object} state The previous state.
  * @param {Object} sym The symbol to check.
  * @returns {Object} Returns the next state.
@@ -443,8 +463,9 @@ Parser.prototype.nextState = function (state, sym) {
 /**
  * Adds a new node.
  *
+ * @memberOf Parser
  * @param {Object} node The new node.
- * @param {Objkect} oldVertex The vertex which points to the new node (i.e., the previous state).
+ * @param {Object} oldVertex The vertex which points to the new node (i.e., the previous state).
  */
 Parser.prototype.addNode = function (node, oldVertex) {
 	var state = this.nextState(oldVertex.state, node.sym)
@@ -454,7 +475,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 	var vertexZNodes = vertex.zNodes
 	var zNode // holds a node and vertices that point to that node
 
-	// Tests show 1.5x more likely to find the zNode faster by iterating backward
+	// Tests show 1.5x more likely to find the zNode faster by iterating backward.
 	for (var v = vertexZNodes.length - 1; v > -1; --v) {
 		zNode = vertexZNodes[v]
 		if (zNode.node === node) break
@@ -479,6 +500,7 @@ Parser.prototype.addNode = function (node, oldVertex) {
 /**
  * Reduces a node using reductions.
  *
+ * @memberOf Parser
  * @param {Object} redZNode The zNode from which to build subnodes using the reductions.
  * @param {Object} red The reduction to execute on `redZNode`.
  */
@@ -554,6 +576,7 @@ Parser.prototype.reduce = function (redZNode, red) {
  * where M and N are the start and end positions, respectively, of the span of [symbol] in the input.
  *
  * @private
+ * @static
  * @param {Object} node The node of which to construct a string representation.
  * @returns {string} Returns the string representation of `node`.
  */
@@ -569,6 +592,8 @@ function stringifyNode(node) {
  * Prints the parse forest of the last parse.
  *
  * This forest is listed in equational form as a grammar which even can be constructed into a `StateTable` used by `Parser` This grammar is characterized as the largest sub-grammar of the input grammar that generates the one element set { the input }.
+ *
+ * This illustrates that the parsing algorithm also computes the intersection of a context free grammar with a regular grammar.
  *
  * @memberOf Parser
  * @param {Object} startNode The start node output by the last call to `Parser.prototype.parse()`.
@@ -703,3 +728,6 @@ Parser.prototype.printNodeGraph = function (startNode) {
 
 	util.dir(startNode)
 }
+
+// Export Parser.
+module.exports = Parser
