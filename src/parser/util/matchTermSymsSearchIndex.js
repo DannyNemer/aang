@@ -1,7 +1,21 @@
-// Use a search index for partial-matches of input to terminal symbols
-
 var lunr = require('lunr')
 
+
+/**
+ * A temporary solution for partial-matches of input to terminal symbols using a search index.
+ *
+ * @param {Parser} Parser The `Parser` instance.
+ * @example
+ *
+ * // Instantiate parser.
+ * var parser = new Parser(myStateTable)
+ *
+ * // Replace Parser's `matchTerminalRules()` method.
+ * require('./util/matchTermSymsSearchIndex.js')(parser)
+ *
+ * // Execute parse
+ * parser.parse(query)
+ */
 module.exports = function (Parser) {
 	// Initialize search index with terminal symbols
 	Parser.index = new lunr.Index
@@ -17,17 +31,18 @@ module.exports = function (Parser) {
 		}
 	}
 
-	// Return function to match terminal rules to input
 	// Lunr could support "cont to" -> [ "contributors to", "contributed to" ]
 	// But we are not currently permitting that
 	// That should not matter because this is temporary solution
-	return function (query) {
+
+	// Replace Parser's `matchTerminalRules()` method.
+	Parser.matchTerminalRules = function (query) {
 		var tokens = query.split(' ')
 		Parser.tokensLen = tokens.length
 
-		// First, match input to term symbols
-		// If it is a multi-word term sym, check out far the match extends
-		// This must be seperate because resorting is required after checking for extending matches
+		// First, match input to terminal symbols
+		// If it is a multi-word terminal symbol, check out far the match extends
+		// This must be separate because resorting is required after checking for extending matches
 		var multiTokenWords = []
 		var matchTab = []
 		for (var t = 0; t < Parser.tokensLen; ++t) {
@@ -42,7 +57,7 @@ module.exports = function (Parser) {
 				var matchRef = match.ref
 				match.score = matchRef === nGram ? 0 : 1 - match.score
 
-				// Loop through all term rules that produce term sym
+				// Loop through all terminal rules that produce terminal symbol
 				var wordNodes = []
 				match.size = 1
 				var symSize = matchRef.split(' ').length
@@ -94,12 +109,12 @@ module.exports = function (Parser) {
 			Parser.nodeTab = Parser.nodeTabs[Parser.position] = []
 
 			if (isNaN(nGram)) {
-				// Score can change after checking for extent of multi-word term sym matches
-				// Must reorder because choose the first terminal symbol to match to a term rule
+				// Score can change after checking for extent of multi-word terminal symbol matches
+				// Must reorder because choose the first terminal symbol to match to a terminal rule
 				var matches = matchTab[Parser.position].sort(function (a, b) {
 					return a.score - b.score
 				})
-				// Multiple terminal symbols can match to the same term rule, so choose the first (best match)
+				// Multiple terminal symbols can match to the same terminal rule, so choose the first (best match)
 				// Ex: 'repos' -> [ 'repos', 'repositories' ]
 				var LHSSeen = []
 
@@ -108,7 +123,7 @@ module.exports = function (Parser) {
 					var wordSym = Parser.stateTable.symbolTab[match.ref]
 					var wordNode = Parser.addSub(wordSym)
 
-					// Loop through all term rules that produce term sym
+					// Loop through all terminal rules that produce terminal symbol
 					var wordNodes = []
 					var wordSize = match.size
 
@@ -154,7 +169,7 @@ module.exports = function (Parser) {
 
 				var semanticArg = newSemanticArgs[nGram] || (newSemanticArgs[nGram] = [ { semantic: { name: nGram } } ])
 
-				// Loop through all term rules that produce term sym
+				// Loop through all terminal rules that produce terminal symbol
 				var wordNodes = []
 				var wordSize = wordSym.size
 				for (var rules = wordSym.rules, r = rules.length; r-- > 0;) {
@@ -173,7 +188,7 @@ module.exports = function (Parser) {
 					wordNodes.push(Parser.addSub(rule.RHS[0], sub)) // FIX: rename prop - rule.RHS[0] is LHS for terms
 				}
 
-				// will only be one term sym match (<int>) and only of length 1
+				// will only be one terminal symbol match (<int>) and only of length 1
 				wordTab[Parser.position] = [ {
 					start: Parser.position,
 					nodes: wordNodes
