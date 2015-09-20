@@ -101,3 +101,94 @@
 - When Steven Sinofsky first saw Tanium software in action, he - along with the rest of a conference room full of Andreessen Horowitz partners - thought it was a trick. "It was too fast,"" says Sinofsky, who used to run Microsoft's Windows division. "To a person, we just assumed it was a mock-up. We asked how long it would take to build for real."
 - "I'd never seen anything like it," Sinofsky says nearly a year later. "It was a wild, surreal experience. We all knew this space - or so we thought - super-, super-well." "How the f- did you do that?"
 - Our system should be considered as fast relative to existing tech as Tanium is in its field.
+
+- I wrote the following during the horrid time between the end of classes senior year and graduation, titled "Plan.txt":
+1. Return to parent’s home in Michigan for a few weeks (i.e., I failed massively).
+2. While there, finish remaining portions of my project and launch a website to host the project.
+3. Use my project to demonstrate the following:
+(a) Experience taking an ambitious idea from conception to final product by way of 1500+ hours of work (experience nearly nonexistent for undergraduates)
+(b) Skill in building something difficult with little existing work for reference (which normally would require a team of experienced people)
+(c) Full-stack engineering skills: algorithms, UI design, back-end servers, et cetera
+4. Share the website with the (surprisingly small) community at the crux of the tech industry. (This is the same (Internet) community where Twitter, Uber, and all other big companies over the past 15 years began.)
+5. As people use the website, add more features and lightly transform it to a Maccaw-style business. Set up a bank account, incorporate the company, integrate with Stripe for recurring payments, create a TOS, privacy policy, and other necessary pages.
+6. Try to build a limited reputation for myself in the community. Everyone in this community - from CEOs to venture capitalists to writers to designers to scientists - all communicate over Twitter, Internet forums, and blogs.
+7. Try to get a job at a startup in San Francisco, working with people I have admired for years. These companies have ≤ 5 employees, so when they use their limited capital to hire someone, they are betting their company on them. I need steps 2-6 because these guys don't simply hire college kids - they hire the best in the world.
+8. While at this job, attain enormous experience and try to meet some of the amazing people whom I've admired from afar.
+9. Refrain from waking up one day, realizing that I have settled, forgotten my childhood dreams, and am unknowingly bound to a life that would make childhood-me apoplectic.
+10. After 2-4 years, try again.
+
+- My vision of a calendar + task manager would be enormously successful, just as my vision for a better messenger became Slack.
+- The user enters in tasks and parameters including time required, whether it should be split up over time, how early before the due date its work should begin, etc.
+- The application automatically optimizes your day's schedule. It resorts the schedule when you need more or less time on a task or a new task arises. It would be very powerful and show you how early you need to start working on things - nothing currently does this. It accounts for location, driving, eating.
+- For example, the user can specify her need to do laundry every other week, but while she is doing laundry, she can exercise, but will need to shower. The program suggests loading washer -> exercise -> load dryer -> shower -> unload dryer.
+
+- The pain and anxiety of missing a fruitful opportunity is far greater and longer lasting than the losses of a failed attempt. Employees and investors agonize more after learning they missed a great opportunity than when suffering the losses of a failed bet.
+- This is true for employee recruitment and fundraising.
+- Furthermore, I will go mad if someone else succeeds with the same tech I am building. It would be the biggest missed opportunity of my life. Hence, this is another reason urging its completion.
+
+- Searching music is an excellent idea. Everyone uses it, and it is all structured data, and you know what you are looking for. Keyword search is ill-fit. "Song by ARTIST last year", "Music video for SONG". I would like to launch using a public music database.
+- Could possibly include lyrics, search them and highlight the match, but the returned result/suggestions is song name. Best to avoid this because it is overly complex and distracting.
+- Examining Clearbit, their forthcoming Company Search API, using Elasticsearch, is designed for nearly identical queries as my system. Their Company Name Autocomplete is the same as my system.
+- I would like to be able to enter a company's URL and get the company as a result. This would be a similar implementation as looking up songs by lyrics.
+
+- I need to focus on the future, otherwise present turmoil is all there is to matter. I need long-term goals in order to make sacrifices in the present. That is how I succeeded in school: I was looking toward the future.
+- The focus on the future was the source of confidence in everything I did, every minute: talking to people, interacting, participating; anything that made me vulnerable. My performance was stronger in every regard.
+- Fake it (the beliefs) until you become it (habituate the confident behavior and performance).
+
+- Elasticsearch is exciting, powerful, and useful. It handles suggestions based on misspellings (including phonetic similarity). It also might provide a string-match score we can use can for costs.
+- Creating language models will not be that difficult, if we generate possible queries in the grammar, as long as we use smoothing parameters. And I'm confident Elasticsearch can use the language models for suggestions and provide appropriate weights.
+- This will be awesome, and we will start with music data.
+
+- Seeing Alex Maccaw (Clearbit) star a GitHub repo of nlp resources for Ruby scares me.
+
+- Sam Altman: "The most impressive people I know spent their time with their head down getting shit done for a long, long time. You can skip all the parties, all the conferences, all the press, all the tweets. Build a great product and get users and win."
+
+- I am considering writing to Alex Maccaw. If I could get a job at this amazing place with amazing people, I would learn so much and be better positioned. However, I won't be able to finish my project. I won't be able to try and sell it. I won't be able to make a name for myself. I could ask to join after I finish, but the earlier I join the better: I will be part of the beginning helping build it as opposed to another employee coming on later. I would be giving up a chance to sell my project. If what you have is valuable, approach your offering in the context of M&A.
+
+- "Making something among the best in the world is at least 1.5 orders of magnitude more work than what most sane people consider reasonable." - Dustin Curtis. Applies exactly to my work.
+
+- It is insanely fast.
+
+- No overnight success. To become as good as I aspire, it will take a long time. If I continue working at the pace that I have over past weekend, it will be incredible.
+
+- It might be better to start with data for companies, like what Clearbit uses. It will appear as a more legitimate venture with application.
+
+- I am now committing code far, far more often. It is better for organization, having versions to restore to, and maintaining current work. I wish I did this earlier, where I would commit 20 hours worth of work at a time. If I understood this at the beginning, I would have 5x the 490 commits I have now.
+
+- Throughout all of this work, I did not know what I was doing. Not only was I unfamiliar with the domain, I did not know the domain existed. I did not know I was creating a shift-reduce parser just for the semantics.
+
+- I am developing this such that there are enormous fixed costs (solving everything, implementing all possible features, building all the tools and checks, making it incredibly fast), creating very low marginal costs for expanding the features (by expanding grammar + DB). This is not intrinsic in the interface's nature, but by how I developed it (i.e., a similar technology developed by others would almost certainly have a small fraction of this foundation). This enables me to move extremely fast later.
+
+- I remember watching obscure presentations by university professors on advanced parsing techniques, and looking through every paper I could find on the subject, full of Greek symbols.
+
+- Search as a service. Infrastructure for software developers, like payments.
+- You store an index of your data on my server. (Not the data itself, just the metadata)
+- You design grammar for your data. It will inevitably use query-forms I already created. More than just a template. Almost as simple as choosing from a list of queries and replacing verbs (“like, star, post”) and nouns (“tweets, repos (git), songs). And, of course, this handles everything → automatically creating all possible forms ("Brian’s repos", "repos created by Brian", "repos that were made by Brian", "repos of Brian's").
+- 2 problems:
+	1. There is an extra hop, which can add >50 ms, which is difficult because the system much be magically instant as you type:
+		product-hunt-site → product-hunt-server → my-server → product-hunt-server → product-hunt-site
+		v.s.
+		my-site → my-server → my-site
+	2. Customers need constantly update an index on someone else's server. This is okay for some stuff, like Product Hunt, or public GitHub repos. But Dropbox could never post their user's metadata on my servers - privacy concerns.
+- Unknown portion: There are two requests that can occur:
+	1. The user inputs a query → send to my server to parse and display list of results.
+	2. The user chose a result/suggestion → execute that search (which is a very complex search with logic operators) and return a list of matches for a search results page.
+- The customer (Product Hunt), might want to do the second part themselves. They could, no stopping them. Just, a little weird they can use half of your service on not the other half.
+- Except, the third feature (above is (1) and (2)) is on the search results page, you see a table/box of all of the filters/parameters of your search, and you can click to modify any of them.
+- Product Hunt could do this and their users would love it. GitHub could do it too and their users would love it. Sites that would pay for this are not consumer-focused businesses. They are sites that cater to people who would use complex queries.
+- Hence, nearly 1% of people would use this on Twitter. However, professionals who use Twitter for advertising and market research would use my program. Twitter has many tools accessible to anyone (e.g., 'analytics.twitter.com'), but this same <1% of users use these tools.
+- Problem: Any startup would use AWS. It is an essential cost. Any startup would use Stripe. It is just % cut of your revenue. But, this search as a service is just a unessential additional expense. No software/service has ever struggled yet with average keyword based search.
+- The only possible customers are well established tech services (Product Hunt, GitHub, Box, several security services selling to the enterprise) who would use this for their large and well developed software. They would use it to make their customers additionally happy and add extra value to their product.
+- But, you look at Dropbox doing much work to add extra features for their enterprise customers (administrative controls, etc).
+- Second big problem: Many of these customers, if not all, would require full-text search: searching Dropbox documents, searching GitHub code, etc. My program cannot do that, because it means it would need your database. (That, or I open source the software that you run on your servers, and I charge for support services like many database companies do.)
+
+- I absolutely love Patrick Crowley. He reminds me of Mark Benioff. He is so kind, honest, giving, caring, smart, confident. He is humble and appears incredibly in control. I am so thankful I met him.
+
+- It always bothered me when startups, markets, or industries are described as "sexy". I was so thrown off guard when I first heard it.
+
+- Refer to Apple's language in videos and promotional copy: "While the way you use 3D Touch is simple, the engineering behind it is some of our most advanced."
+
+- An incredible, amazing name is very important: "Live Photos shows how an idea and a good name is much more important than underlying technology."
+
+- Sam Altman encapsulates what I am doing: "If you want to be a long-term success, build a great product. If you want to be a short-term success, build a great growth hack. Although, to be fair, a great product that people tell their friends about is the best growth hack."
+- "The most valuable paths usually involve not being rich for awhile." ~ Altman
