@@ -117,6 +117,14 @@
 9. Refrain from waking up one day, realizing that I have settled, forgotten my childhood dreams, and am unknowingly bound to a life that would make childhood-me apoplectic.
 10. After 2-4 years, try again.
 
+- I wrote the following during the horrid graduation week:
+	- Month of hell.
+	- Wanted to end this.
+	- Then decided to build a Maccaw-style service.
+	- Devastating.
+	- Should have known from the start.
+	- No one works nearly as diligently as me, working 13 hours every day, arduously and nonstop. Never going out, eating meals with friends, or doing anything else.
+
 - My vision of a calendar + task manager would be enormously successful, just as my vision for a better messenger became Slack.
 - The user enters in tasks and parameters including time required, whether it should be split up over time, how early before the due date its work should begin, etc.
 - The application automatically optimizes your day's schedule. It resorts the schedule when you need more or less time on a task or a new task arises. It would be very powerful and show you how early you need to start working on things - nothing currently does this. It accounts for location, driving, eating.
