@@ -200,3 +200,6 @@
 
 - Sam Altman encapsulates what I am doing: "If you want to be a long-term success, build a great product. If you want to be a short-term success, build a great growth hack. Although, to be fair, a great product that people tell their friends about is the best growth hack."
 - "The most valuable paths usually involve not being rich for awhile." ~ Altman
+
+- I am getting faster every day. I did work with multi-processing over the past few days (child processes, forks, etc.). I learned and can now think, design, and develop with these tools ever faster. I keep learning more git features, proper wording for documentation and comments, command line argument parsing, project organization, asynchronous functions, and more.
+- I will be able to act on ideas faster. I will be able to try out ideas and different implementations faster.
