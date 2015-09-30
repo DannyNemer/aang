@@ -203,3 +203,13 @@
 
 - I am getting faster every day. I did work with multi-processing over the past few days (child processes, forks, etc.). I learned and can now think, design, and develop with these tools ever faster. I keep learning more git features, proper wording for documentation and comments, command line argument parsing, project organization, asynchronous functions, and more.
 - I will be able to act on ideas faster. I will be able to try out ideas and different implementations faster.
+
+- Spending 3 hours testing every Node package for command line argument parsing seemed like a mistake at the time. As did spending hours more perfecting an implementation of command line argument parsing. Nevertheless, I now have 8 command line programs using what I learned. These command line interfaces will be essential for the server as well.
+
+- I spent a total of two weeks working on the ambiguity checker. It seemed like wasted time when done, because it barely improves the core project. But I learned many ways to improve performance: using linked lists instead of copying to avoid mutation of shared arrays (huge improvement), and defining all object properties at instantiation. Still, I thought that was not enough. Now, I see the ambiguity checker can be applied to insertions (i.e., preventing insertions that will create trees we know will be rejected for having identical semantics to other trees). This turns out to be essential.
+- Also benefited by skill development due to the algorithmic difficulty.
+- Again, I did not understand the value at the time, but it was time well spent.
+
+- I learned about git branches, merging, remotes, and more by doing GitHub pull requests.
+- I learned about process management by implementing child processes in the cli. That work also lead to enormous advancement of the project's organization and aspects that will be employed by the server.
+- Again, all of this time ended up being well spent despite my initial impression.
