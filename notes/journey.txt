@@ -213,3 +213,5 @@
 - I learned about git branches, merging, remotes, and more by doing GitHub pull requests.
 - I learned about process management by implementing child processes in the cli. That work also lead to enormous advancement of the project's organization and aspects that will be employed by the server.
 - Again, all of this time ended up being well spent despite my initial impression.
+
+- All of the pain, struggle, and poison in my mind during the end of university and through the summer existed for me to learn a lot, mature, endure, experience, and gain wisdom for my future. They were necessary and extremely valuable.
