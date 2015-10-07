@@ -215,3 +215,8 @@
 - Again, all of this time ended up being well spent despite my initial impression.
 
 - All of the pain, struggle, and poison in my mind during the end of university and through the summer existed for me to learn a lot, mature, endure, experience, and gain wisdom for my future. They were necessary and extremely valuable.
+
+- The ambiguity checker was a massive undertaking. All cases of possible ambiguity were documented in detail. Many algorithms were created and ensured to catch all possible ambiguous cases. Several algorithms and unique data structures were developed and heuristics developed to make the construction of all possible paths and the comparison of paths as fast as possible. Many trials and errors. It was over 100 hours of work.
+
+- Everything needs to be absolutely instant. The whole web page needs to be loaded in < 100 ms. Like Hacker News and Daring Fireball. It needs to be the site people check to determine if they are connected to the Internet.
+- No animations. No UI frameworks. No styling. As default as possible. Anything more is superfluous.
