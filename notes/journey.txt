@@ -220,3 +220,7 @@
 
 - Everything needs to be absolutely instant. The whole web page needs to be loaded in < 100 ms. Like Hacker News and Daring Fireball. It needs to be the site people check to determine if they are connected to the Internet.
 - No animations. No UI frameworks. No styling. As default as possible. Anything more is superfluous.
+
+- I've had tragedies and I will have triumphs.
+
+- I did more work on the ambiguity checker, a seemingly poor waste of time. However, I found more optimizations to apply to forest search, found an error in forest search, and simplified the forest search algorithm. Hence, it absolutely was time well spent.
