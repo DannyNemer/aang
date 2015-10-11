@@ -224,3 +224,7 @@
 - I've had tragedies and I will have triumphs.
 
 - I did more work on the ambiguity checker, a seemingly poor waste of time. However, I found more optimizations to apply to forest search, found an error in forest search, and simplified the forest search algorithm. Hence, it absolutely was time well spent.
+
+- So many algorithms within algorithms. So many distinct modules each with complex behavior and operations that were enormous amounts of work to invent. Nothing was easy or straightforward. Everything has been made simple, organized masterfully, commented beautifully. Every single instruction was measured and variable name obsessed over. And refined, and thrown out and restarted, and tried and failed and succeeded.
+
+- I am working and learning so much so fast. I think, "wow, when did I work on this", and am surprised to find it was only two days ago. I keep finding more command line programs and tools developed over decades that remain just as useful and applicable today. I am amazed by `git-blame`, `diffstat`, and so many more. I am able to ever faster solve and implement many algorithmic operations and functions.
