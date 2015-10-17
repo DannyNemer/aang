@@ -227,4 +227,8 @@
 
 - So many algorithms within algorithms. So many distinct modules each with complex behavior and operations that were enormous amounts of work to invent. Nothing was easy or straightforward. Everything has been made simple, organized masterfully, commented beautifully. Every single instruction was measured and variable name obsessed over. And refined, and thrown out and restarted, and tried and failed and succeeded.
 
-- I am working and learning so much so fast. I think, "wow, when did I work on this", and am surprised to find it was only two days ago. I keep finding more command line programs and tools developed over decades that remain just as useful and applicable today. I am amazed by `git-blame`, `diffstat`, and so many more. I am able to ever faster solve and implement many algorithmic operations and functions.
+- I am working and learning so much, so fast. I think, "Wow, when did I work on this?" and surprise myself to learn it was only two days ago. I keep finding more command line programs and tools developed over decades that remain just as useful and applicable today. I am amazed by `git-blame`, `diffstat`, and many more. I am able to ever faster solve and implement many algorithmic operations and functions.
+
+- The project is so detailed, complex, meticulously thought out, agonized over, and trialled + failed + trialled, that the commit summaries alone contain content fit for computer science publications.
+
+- I wake at 5:00am, sometimes earlier. I arrive at 6:00am, sometimes earlier. I leave close to 10pm. I average 14 hours a day, every day of the week. I am building stamina.
