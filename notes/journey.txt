@@ -232,3 +232,6 @@
 - The project is so detailed, complex, meticulously thought out, agonized over, and trialled + failed + trialled, that the commit summaries alone contain content fit for computer science publications.
 
 - I wake at 5:00am, sometimes earlier. I arrive at 6:00am, sometimes earlier. I leave close to 10pm. I average 14 hours a day, every day of the week. I am building stamina.
+
+- The difference in power + complexity between my system and the NLP in Siri, for example, is at least 4:1. They simply must parse for certain words in a certain order, ignoring noise, which maps to a single, simple non-nested command, and all text generation (Siri's feedback) is pre-written with placeholders for things like names. Mine, in contrast, is much faster, outputs k matches, generates text, handles and inspects conjugation, morphology, and syntax, and handles infinitely complex semantics.
+- This is not a problem! They are for different jobs, of course! I am just noting the difficultly of what I am building.
