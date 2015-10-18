@@ -235,3 +235,11 @@
 
 - The difference in power + complexity between my system and the NLP in Siri, for example, is at least 4:1. They simply must parse for certain words in a certain order, ignoring noise, which maps to a single, simple non-nested command, and all text generation (Siri's feedback) is pre-written with placeholders for things like names. Mine, in contrast, is much faster, outputs k matches, generates text, handles and inspects conjugation, morphology, and syntax, and handles infinitely complex semantics.
 - This is not a problem! They are for different jobs, of course! I am just noting the difficultly of what I am building.
+
+- The work on the ambiguity checker, which we originally thought was a waste of time, continues to bear fruit.
+
+- I have become much faster at articulating comments and commit descriptions in detail.
+
+- I continue to grow faster at implementing complex changes affecting many modules, algorithms and data structures, etc.
+
+- How I learned: "The 1910 [Flexner] Report emphasized experience oriented methods of teaching and denigrated the early traditional didactic and mental disciplinary methods. Flexner further stressed the investigative process or inquiry as a method of promoting critical thinking. Through inquiry as a model of reflective thinking the traditional fundamental sciences would be rendered dynamic establishing organic connection to real world experience." ~ Zelenka
