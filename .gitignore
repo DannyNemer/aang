@@ -1,3 +1,4 @@
 *.json
+!*tests.json
 /notes/ignore
 /out/
