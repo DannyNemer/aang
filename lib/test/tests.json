@@ -1,9 +1,11 @@
 [
 	{
 		"query": "repos I have liked",
-		"correction": false,
-		"semantic": "repositories-liked(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I have liked",
+			"semantic": "repositories-liked(me)"
+		},
+		"semantics": [
 			"repositories-liked(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-liked(me))",
@@ -58,8 +60,7 @@
 	},
 	{
 		"query": "repos created by me and my followers",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories-created(me),repositories-liked(me),repositories-liked(followers(me)))",
 			"intersect(repositories-created(me),repositories-liked(followers(me)))",
 			"intersect(repositories-contributed(me),repositories-contributed(followers(me)),repositories-created(me))",
@@ -114,8 +115,7 @@
 	},
 	{
 		"query": "repos I and my followers created",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories-created(followers(me)),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(followers(me)))",
 			"intersect(repositories-created(me),repositories-liked(me),repositories-liked(followers(me)))",
@@ -170,9 +170,11 @@
 	},
 	{
 		"query": "people who like my repos liked by people who follow people I follow",
-		"correction": false,
-		"semantic": "repository-likers(intersect(repositories-created(me),repositories-liked(followers(users-followed(me)))))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who like my repos liked by people who follow people I follow",
+			"semantic": "repository-likers(intersect(repositories-created(me),repositories-liked(followers(users-followed(me)))))"
+		},
+		"semantics": [
 			"repository-likers(intersect(repositories-created(me),repositories-liked(followers(users-followed(me)))))",
 			"repository-likers(intersect(repositories-created(me),repositories-liked(followers(me)),repositories-liked(users-followed(me))))",
 			"repository-likers(intersect(repositories-created(me),repositories-liked(me),repositories-liked(followers(users-followed(me)))))",
@@ -227,8 +229,7 @@
 	},
 	{
 		"query": "people who like repos",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repository-likers(repositories-created(me))",
 			"repository-likers(repositories-liked(me))",
 			"repository-likers(repositories-contributed(me))",
@@ -283,8 +284,7 @@
 	},
 	{
 		"query": "repos been followers",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repositories-created(followers(me))",
 			"intersect(repositories-created(followers(me)),repositories-liked(me))",
 			"repositories-created(intersect(followers(me),users-followed(me)))",
@@ -313,8 +313,7 @@
 	},
 	{
 		"query": "repos been followers people who like repos that I have",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repositories-created(intersect(followers(me),users-followed(repository-likers(repositories-created(me)))))",
 			"repositories-created(intersect(followers(me),followers(repository-likers(repositories-created(me)))))",
 			"repositories-created(intersect(followers(me),users-followed(repository-likers(repositories-liked(me)))))",
@@ -369,8 +368,7 @@
 	},
 	{
 		"query": "repos people who like and created",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories-created(me),repositories-liked(followers(me)))",
 			"intersect(repositories-created(me),repositories-liked(users-followed(me)))",
 			"intersect(repositories-created(me),repositories-liked(me),repositories-liked(followers(me)))",
@@ -425,8 +423,7 @@
 	},
 	{
 		"query": "repos that have been created by people and like and I contributed to",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories-contributed(me),repositories-created(users-followed(me)),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(intersect(followers(me),users-followed(me))),repositories-liked(me))",
@@ -481,8 +478,7 @@
 	},
 	{
 		"query": "repos that are repos",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repositories-created(me)",
 			"repositories-liked(me)",
 			"repositories-contributed(me)",
@@ -537,8 +533,7 @@
 	},
 	{
 		"query": "my followers who are my followers",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(followers(me),followers(followers(me)))",
 			"intersect(followers(me),users-followed(followers(me)))",
 			"intersect(followers(me),followers(intersect(followers(me),users-followed(me))))",
@@ -551,9 +546,11 @@
 	},
 	{
 		"query": "my followers who are followers of followers of mine",
-		"correction": false,
-		"semantic": "intersect(followers(me),followers(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "my followers who are followers of followers of mine",
+			"semantic": "intersect(followers(me),followers(followers(me)))"
+		},
+		"semantics": [
 			"intersect(followers(me),followers(followers(me)))",
 			"intersect(followers(me),followers(followers(me)),users-followed(me))",
 			"intersect(followers(me),followers(intersect(followers(me),users-followed(me))))",
@@ -620,8 +617,7 @@
 	},
 	{
 		"query": "my followers who are followers of followers of mine who liked that repos contributed to of mine",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(followers(me),repository-creators(intersect(repositories-contributed(intersect(followers(me),repository-creators(intersect(repositories-created(intersect(followers(me),users-followed(me))),repositories-liked(me))))),repositories-created(me))))",
 			"intersect(followers(me),repository-creators(intersect(repositories-contributed(intersect(followers(me),repository-likers(intersect(repositories-created(intersect(followers(me),users-followed(me))),repositories-liked(me))))),repositories-created(me))))",
 			"intersect(followers(me),repository-likers(intersect(repositories-contributed(intersect(followers(me),repository-creators(intersect(repositories-created(intersect(followers(me),users-followed(me))),repositories-liked(me))))),repositories-created(me))))",
@@ -676,8 +672,7 @@
 	},
 	{
 		"query": "repos",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repositories-created(me)",
 			"repositories-liked(me)",
 			"repositories-contributed(me)",
@@ -732,8 +727,7 @@
 	},
 	{
 		"query": "people",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"users-followed(me)",
 			"followers(me)",
 			"intersect(followers(me),users-followed(me))"
@@ -741,8 +735,7 @@
 	},
 	{
 		"query": "people who created my repos and my pull requests",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(pull-request-creators(pull-requests-created(me)),repository-creators(repositories-created(me)))",
 			"intersect(repository-creators(repositories-created(me)),users-mentioned(pull-requests-created(me)))",
 			"intersect(repository-creators(repositories-created(me)),users-assigned(pull-requests-created(me)))",
@@ -797,8 +790,7 @@
 	},
 	{
 		"query": "people pull requests like repos I like",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repository-likers(repositories-liked(me)),users-mentioned(pull-requests-created(me)))",
 			"intersect(repository-likers(repositories-liked(me)),users-assigned(pull-requests-created(me)))",
 			"intersect(repositories-liked(me),repositories-liked(pull-request-creators(pull-requests-created(me))))",
@@ -853,9 +845,11 @@
 	},
 	{
 		"query": "repos liked by followers of followers of mine",
-		"correction": false,
-		"semantic": "repositories-liked(followers(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos liked by followers of followers of mine",
+			"semantic": "repositories-liked(followers(followers(me)))"
+		},
+		"semantics": [
 			"repositories-liked(followers(followers(me)))",
 			"intersect(repositories-created(me),repositories-liked(followers(followers(me))))",
 			"intersect(repositories-created(followers(followers(me))),repositories-liked(me))",
@@ -922,9 +916,11 @@
 	},
 	{
 		"query": "repos liked by me and my followers",
-		"correction": false,
-		"semantic": "intersect(repositories-liked(me),repositories-liked(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos liked by me and my followers",
+			"semantic": "intersect(repositories-liked(me),repositories-liked(followers(me)))"
+		},
+		"semantics": [
 			"intersect(repositories-liked(me),repositories-liked(followers(me)))",
 			"intersect(repositories-created(me),repositories-liked(me),repositories-liked(followers(me)))",
 			"intersect(repositories-created(followers(me)),repositories-liked(me))",
@@ -979,9 +975,11 @@
 	},
 	{
 		"query": "repos liked by me and my followers and people who like JavaScript repos liked by me and my followers",
-		"correction": false,
-		"semantic": "intersect(repositories-liked(me),repositories-liked(followers(me)),repositories-liked(repository-likers(intersect(repositories-language(18),repositories-liked(me),repositories-liked(followers(me))))))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos liked by me and my followers and people who like JavaScript repos liked by me and my followers",
+			"semantic": "intersect(repositories-liked(me),repositories-liked(followers(me)),repositories-liked(repository-likers(intersect(repositories-language(18),repositories-liked(me),repositories-liked(followers(me))))))"
+		},
+		"semantics": [
 			"intersect(repositories-liked(me),repositories-liked(followers(me)),repositories-liked(repository-likers(intersect(repositories-language(18),repositories-liked(me),repositories-liked(followers(me))))))",
 			"intersect(repositories-created(me),repositories-liked(me),repositories-liked(followers(me)),repositories-liked(repository-likers(intersect(repositories-language(18),repositories-liked(me),repositories-liked(followers(me))))))",
 			"intersect(repositories-liked(me),repositories-liked(followers(me)),repositories-liked(repository-likers(intersect(repositories-created(me),repositories-language(18),repositories-liked(me),repositories-liked(followers(me))))))",
@@ -1050,9 +1048,11 @@
 	},
 	{
 		"query": "my repos that are JavaScript repos",
-		"correction": false,
-		"semantic": "intersect(repositories-created(me),repositories-language(18))",
-		"suggestions": [
+		"topResult": {
+			"text": "my repos that are JavaScript repos",
+			"semantic": "intersect(repositories-created(me),repositories-language(18))"
+		},
+		"semantics": [
 			"intersect(repositories-created(me),repositories-language(18))",
 			"intersect(repositories-created(me),repositories-language(18),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-language(18))",
@@ -1107,9 +1107,11 @@
 	},
 	{
 		"query": "my JavaScript repos",
-		"correction": false,
-		"semantic": "intersect(repositories-created(me),repositories-language(18))",
-		"suggestions": [
+		"topResult": {
+			"text": "my JavaScript repos",
+			"semantic": "intersect(repositories-created(me),repositories-language(18))"
+		},
+		"semantics": [
 			"intersect(repositories-created(me),repositories-language(18))",
 			"intersect(repositories-created(me),repositories-language(18),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-language(18))",
@@ -1164,9 +1166,11 @@
 	},
 	{
 		"query": "repos that are written in JavaScript",
-		"correction": false,
-		"semantic": "repositories-language(18)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that are written in JavaScript",
+			"semantic": "repositories-language(18)"
+		},
+		"semantics": [
 			"repositories-language(18)",
 			"intersect(repositories-created(me),repositories-language(18))",
 			"intersect(repositories-language(18),repositories-liked(me))",
@@ -1195,14 +1199,15 @@
 	},
 	{
 		"query": "my JavaScript repos that are written in JavaScript",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "issues assigned to me I opened and am mentioned in",
-		"correction": false,
-		"semantic": "intersect(issues-assigned(me),issues-mentioned(me),issues-opened(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues assigned to me I opened and am mentioned in",
+			"semantic": "intersect(issues-assigned(me),issues-mentioned(me),issues-opened(me))"
+		},
+		"semantics": [
 			"intersect(issues-assigned(me),issues-mentioned(me),issues-opened(me))",
 			"intersect(issues(date(today)),issues-assigned(me),issues-mentioned(me),issues-opened(me))",
 			"intersect(issues(date-after(today)),issues-assigned(me),issues-mentioned(me),issues-opened(me))",
@@ -1215,9 +1220,11 @@
 	},
 	{
 		"query": "people who are assigned to my issues and follow people who contributed to repos I created and are mentioned in pull requests of mine",
-		"correction": false,
-		"semantic": "intersect(followers(intersect(repository-contributors(repositories-created(me)),users-mentioned(pull-requests-created(me)))),users-assigned(issues-opened(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who are assigned to my issues and follow people who contributed to repos I created and are mentioned in pull requests of mine",
+			"semantic": "intersect(followers(intersect(repository-contributors(repositories-created(me)),users-mentioned(pull-requests-created(me)))),users-assigned(issues-opened(me)))"
+		},
+		"semantics": [
 			"intersect(followers(intersect(repository-contributors(repositories-created(me)),users-mentioned(pull-requests-created(me)))),users-assigned(issues-opened(me)))",
 			"intersect(followers(repository-contributors(repositories-created(me))),users-assigned(issues-opened(me)),users-mentioned(pull-requests-created(me)))",
 			"intersect(pull-requests-created(me),pull-requests-mentioned(intersect(followers(repository-contributors(repositories-created(me))),users-assigned(issues-opened(me)))))",
@@ -1299,9 +1306,11 @@
 	},
 	{
 		"query": "people who are mentioned in my issues and pull requests",
-		"correction": false,
-		"semantic": "intersect(users-mentioned(issues-opened(me)),users-mentioned(pull-requests-created(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who are mentioned in my issues and pull requests",
+			"semantic": "intersect(users-mentioned(issues-opened(me)),users-mentioned(pull-requests-created(me)))"
+		},
+		"semantics": [
 			"intersect(users-mentioned(issues-opened(me)),users-mentioned(pull-requests-created(me)))",
 			"intersect(pull-request-creators(pull-requests-created(me)),users-mentioned(issues-opened(me)))",
 			"intersect(users-mentioned(issues-opened(me)),users-mentioned(pull-requests-assigned(me)))",
@@ -1357,9 +1366,11 @@
 	},
 	{
 		"query": "people who are assigned to my issues and my pull requests",
-		"correction": false,
-		"semantic": "intersect(users-assigned(issues-opened(me)),users-assigned(pull-requests-created(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who are assigned to my issues and my pull requests",
+			"semantic": "intersect(users-assigned(issues-opened(me)),users-assigned(pull-requests-created(me)))"
+		},
+		"semantics": [
 			"intersect(users-assigned(issues-opened(me)),users-assigned(pull-requests-created(me)))",
 			"intersect(pull-request-creators(pull-requests-created(me)),users-assigned(issues-opened(me)))",
 			"intersect(users-assigned(issues-opened(me)),users-assigned(pull-requests-created(me)),users-followed(me))",
@@ -1415,9 +1426,11 @@
 	},
 	{
 		"query": "people mentioned in my issues and my pull requests",
-		"correction": false,
-		"semantic": "intersect(users-mentioned(issues-opened(me)),users-mentioned(pull-requests-created(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people mentioned in my issues and my pull requests",
+			"semantic": "intersect(users-mentioned(issues-opened(me)),users-mentioned(pull-requests-created(me)))"
+		},
+		"semantics": [
 			"intersect(users-mentioned(issues-opened(me)),users-mentioned(pull-requests-created(me)))",
 			"intersect(pull-request-creators(pull-requests-created(me)),users-mentioned(issues-opened(me)))",
 			"intersect(users-followed(me),users-mentioned(issues-opened(me)),users-mentioned(pull-requests-created(me)))",
@@ -1473,15 +1486,19 @@
 	},
 	{
 		"query": "people not mentioned in my issues and my pull requests",
-		"correction": false,
-		"semantic": "intersect(not(users-mentioned(issues-opened(me))),not(users-mentioned(pull-requests-created(me))))"
+		"topResult": {
+			"text": "people not mentioned in my issues and my pull requests",
+			"semantic": "intersect(not(users-mentioned(issues-opened(me))),not(users-mentioned(pull-requests-created(me))))"
+		}
 	},
 	{
 		"query": "my {left-stop-word} repos",
-		"correction": "my repos",
-		"semantic": "repositories-created(me)",
 		"note": "Stop words.",
-		"suggestions": [
+		"topResult": {
+			"text": "my repos",
+			"semantic": "repositories-created(me)"
+		},
+		"semantics": [
 			"repositories-created(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me))",
@@ -1536,10 +1553,12 @@
 	},
 	{
 		"query": "my {left-stop-word} JavaScript repos",
-		"correction": "my JavaScript repos",
-		"semantic": "intersect(repositories-created(me),repositories-language(18))",
 		"note": "Stop words.",
-		"suggestions": [
+		"topResult": {
+			"text": "my JavaScript repos",
+			"semantic": "intersect(repositories-created(me),repositories-language(18))"
+		},
+		"semantics": [
 			"intersect(repositories-created(me),repositories-language(18))",
 			"intersect(repositories-created(me),repositories-language(18),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-language(18))",
@@ -1594,10 +1613,12 @@
 	},
 	{
 		"query": "my JavaScript {left-stop-word} repos",
-		"correction": "my JavaScript repos",
-		"semantic": "intersect(repositories-created(me),repositories-language(18))",
 		"note": "Stop words.",
-		"suggestions": [
+		"topResult": {
+			"text": "my JavaScript repos",
+			"semantic": "intersect(repositories-created(me),repositories-language(18))"
+		},
+		"semantics": [
 			"intersect(repositories-created(me),repositories-language(18))",
 			"intersect(repositories-created(me),repositories-language(18),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-language(18))",
@@ -1652,10 +1673,12 @@
 	},
 	{
 		"query": "my {left-stop-word} JavaScript {left-stop-word} repos",
-		"correction": "my JavaScript repos",
-		"semantic": "intersect(repositories-created(me),repositories-language(18))",
 		"note": "Stop words.",
-		"suggestions": [
+		"topResult": {
+			"text": "my JavaScript repos",
+			"semantic": "intersect(repositories-created(me),repositories-language(18))"
+		},
+		"semantics": [
 			"intersect(repositories-created(me),repositories-language(18))",
 			"intersect(repositories-created(me),repositories-language(18),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-language(18))",
@@ -1710,10 +1733,12 @@
 	},
 	{
 		"query": "my {left-stop-word} {left-stop-word} repos",
-		"correction": "my repos",
-		"semantic": "repositories-created(me)",
 		"note": "Stop words.",
-		"suggestions": [
+		"topResult": {
+			"text": "my repos",
+			"semantic": "repositories-created(me)"
+		},
+		"semantics": [
 			"repositories-created(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me))",
@@ -1768,9 +1793,11 @@
 	},
 	{
 		"query": "open issues",
-		"correction": false,
-		"semantic": "issues-state(open)",
-		"suggestions": [
+		"topResult": {
+			"text": "open issues",
+			"semantic": "issues-state(open)"
+		},
+		"semantics": [
 			"issues-state(open)",
 			"intersect(issues-opened(me),issues-state(open))",
 			"issues-opened(me)",
@@ -1825,9 +1852,11 @@
 	},
 	{
 		"query": "issues that are open",
-		"correction": false,
-		"semantic": "issues-state(open)",
-		"suggestions": [
+		"topResult": {
+			"text": "issues that are open",
+			"semantic": "issues-state(open)"
+		},
+		"semantics": [
 			"issues-state(open)",
 			"intersect(issues-opened(me),issues-state(open))",
 			"issues-opened(me)",
@@ -1882,9 +1911,11 @@
 	},
 	{
 		"query": "people assigned to my closed issues",
-		"correction": false,
-		"semantic": "users-assigned(intersect(issues-opened(me),issues-state(closed)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people assigned to my closed issues",
+			"semantic": "users-assigned(intersect(issues-opened(me),issues-state(closed)))"
+		},
+		"semantics": [
 			"users-assigned(intersect(issues-opened(me),issues-state(closed)))",
 			"intersect(users-assigned(intersect(issues-opened(me),issues-state(closed))),users-followed(me))",
 			"intersect(followers(me),users-assigned(intersect(issues-opened(me),issues-state(closed))))",
@@ -1939,19 +1970,22 @@
 	},
 	{
 		"query": "contributors to my repos",
-		"correction": false,
-		"semantic": "repository-contributors(repositories-created(me))"
+		"topResult": {
+			"text": "contributors to my repos",
+			"semantic": "repository-contributors(repositories-created(me))"
+		}
 	},
 	{
 		"query": "contributors to my repos and repos of mine",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "likers of my repos",
-		"correction": false,
-		"semantic": "repository-likers(repositories-created(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "likers of my repos",
+			"semantic": "repository-likers(repositories-created(me))"
+		},
+		"semantics": [
 			"repository-likers(repositories-created(me))",
 			"repository-likers(intersect(repositories-created(me),repositories-liked(me)))",
 			"intersect(repository-likers(repositories-created(me)),users-followed(me))",
@@ -2006,9 +2040,11 @@
 	},
 	{
 		"query": "creators of repos I like",
-		"correction": false,
-		"semantic": "repository-creators(repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "creators of repos I like",
+			"semantic": "repository-creators(repositories-liked(me))"
+		},
+		"semantics": [
 			"repository-creators(repositories-liked(me))",
 			"repository-creators(intersect(repositories-created(me),repositories-liked(me)))",
 			"intersect(repository-creators(repositories-liked(me)),users-followed(me))",
@@ -2063,9 +2099,11 @@
 	},
 	{
 		"query": "likers of repos I like and repos I contributed to",
-		"correction": false,
-		"semantic": "intersect(repository-likers(repositories-contributed(me)),repository-likers(repositories-liked(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "likers of repos I like and repos I contributed to",
+			"semantic": "intersect(repository-likers(repositories-contributed(me)),repository-likers(repositories-liked(me)))"
+		},
+		"semantics": [
 			"intersect(repository-likers(repositories-contributed(me)),repository-likers(repositories-liked(me)))",
 			"intersect(repository-likers(intersect(repositories-contributed(me),repositories-created(me))),repository-likers(repositories-liked(me)))",
 			"intersect(repository-likers(intersect(repositories-created(me),repositories-liked(me))),repository-likers(repositories-contributed(me)))",
@@ -2120,9 +2158,11 @@
 	},
 	{
 		"query": "creators of repos I like and repos I contributed to",
-		"correction": false,
-		"semantic": "repository-creators(intersect(repositories-contributed(me),repositories-liked(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "creators of repos I like and repos I contributed to",
+			"semantic": "repository-creators(intersect(repositories-contributed(me),repositories-liked(me)))"
+		},
+		"semantics": [
 			"repository-creators(intersect(repositories-contributed(me),repositories-liked(me)))",
 			"repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me)))",
 			"intersect(repository-creators(repositories-created(me)),repository-likers(repositories-contributed(me)))",
@@ -2177,8 +2217,7 @@
 	},
 	{
 		"query": "creators of pull requests I like and repos I like",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(pull-request-creators(pull-requests-created(me)),repository-likers(repositories-liked(me)))",
 			"intersect(pull-request-creators(pull-requests-assigned(me)),repository-likers(repositories-liked(me)))",
 			"intersect(pull-request-creators(pull-requests-created(me)),repository-likers(intersect(repositories-created(me),repositories-liked(me))))",
@@ -2233,9 +2272,11 @@
 	},
 	{
 		"query": "likers of my repos and repos I contributed to",
-		"correction": false,
-		"semantic": "intersect(repository-likers(repositories-contributed(me)),repository-likers(repositories-created(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "likers of my repos and repos I contributed to",
+			"semantic": "intersect(repository-likers(repositories-contributed(me)),repository-likers(repositories-created(me)))"
+		},
+		"semantics": [
 			"intersect(repository-likers(repositories-contributed(me)),repository-likers(repositories-created(me)))",
 			"intersect(repository-likers(intersect(repositories-contributed(me),repositories-created(me))),repository-likers(repositories-created(me)))",
 			"intersect(repository-likers(intersect(repositories-created(me),repositories-liked(me))),repository-likers(repositories-contributed(me)))",
@@ -2290,15 +2331,19 @@
 	},
 	{
 		"query": "creators of repos I like and pull requests I am mentioned in",
-		"correction": false,
-		"semantic": "intersect(creators(repositories-liked(me)),creators(pull-requests-mentioned(me)))",
-		"note": "Unsure about semantic."
+		"note": "Unsure about semantic.",
+		"topResult": {
+			"text": "creators of repos I like and pull requests I am mentioned in",
+			"semantic": "intersect(creators(repositories-liked(me)),creators(pull-requests-mentioned(me)))"
+		}
 	},
 	{
 		"query": "openers of closed issues that mention people I and my followers follow",
-		"correction": false,
-		"semantic": "issue-openers(intersect(issues-mentioned(intersect(users-followed(me),users-followed(followers(me)))),issues-state(closed)))",
-		"suggestions": [
+		"topResult": {
+			"text": "openers of closed issues that mention people I and my followers follow",
+			"semantic": "issue-openers(intersect(issues-mentioned(intersect(users-followed(me),users-followed(followers(me)))),issues-state(closed)))"
+		},
+		"semantics": [
 			"issue-openers(intersect(issues-mentioned(intersect(users-followed(me),users-followed(followers(me)))),issues-state(closed)))",
 			"issue-openers(intersect(issues-mentioned(intersect(users-followed(me),users-followed(followers(me)))),issues-opened(me),issues-state(closed)))",
 			"issue-openers(intersect(issues-mentioned(intersect(followers(me),users-followed(followers(me)))),issues-state(closed)))",
@@ -2361,9 +2406,11 @@
 	},
 	{
 		"query": "people who are not followers of mine",
-		"correction": false,
-		"semantic": "not(followers(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who are not followers of mine",
+			"semantic": "not(followers(me))"
+		},
+		"semantics": [
 			"not(followers(me))",
 			"followers(me)",
 			"intersect(not(followers(me)),users-followed(me))",
@@ -2418,18 +2465,22 @@
 	},
 	{
 		"query": "people who have not been followed by me",
-		"correction": false,
-		"semantic": "not(users-followed(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who have not been followed by me",
+			"semantic": "not(users-followed(me))"
+		},
+		"semantics": [
 			"not(users-followed(me))",
 			"users-followed(me)"
 		]
 	},
 	{
 		"query": "issues that are not open",
-		"correction": false,
-		"semantic": "not(issues-state(open))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues that are not open",
+			"semantic": "not(issues-state(open))"
+		},
+		"semantics": [
 			"not(issues-state(open))",
 			"issues-state(open)",
 			"intersect(issues-opened(me),not(issues-state(open)))",
@@ -2484,9 +2535,11 @@
 	},
 	{
 		"query": "issues that are closed",
-		"correction": false,
-		"semantic": "issues-state(closed)",
-		"suggestions": [
+		"topResult": {
+			"text": "issues that are closed",
+			"semantic": "issues-state(closed)"
+		},
+		"semantics": [
 			"issues-state(closed)",
 			"intersect(issues-opened(me),issues-state(closed))",
 			"intersect(issues-assigned(me),issues-state(closed))",
@@ -2541,9 +2594,11 @@
 	},
 	{
 		"query": "people I do not follow",
-		"correction": false,
-		"semantic": "not(users-followed(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "people I do not follow",
+			"semantic": "not(users-followed(me))"
+		},
+		"semantics": [
 			"not(users-followed(me))",
 			"users-followed(me)",
 			"intersect(followers(me),not(users-followed(me)))",
@@ -2553,9 +2608,11 @@
 	},
 	{
 		"query": "people who follow me and do not follow Danny",
-		"correction": false,
-		"semantic": "intersect(followers(me),not(followers(0)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who follow me and do not follow Danny",
+			"semantic": "intersect(followers(me),not(followers(0)))"
+		},
+		"semantics": [
 			"intersect(followers(me),not(followers(0)))",
 			"intersect(followers(0),followers(me))",
 			"intersect(followers(me),not(followers(0)),users-followed(me))",
@@ -2564,9 +2621,11 @@
 	},
 	{
 		"query": "issues I am assigned to",
-		"correction": false,
-		"semantic": "issues-assigned(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "issues I am assigned to",
+			"semantic": "issues-assigned(me)"
+		},
+		"semantics": [
 			"issues-assigned(me)",
 			"intersect(issues-assigned(me),issues-opened(me))",
 			"intersect(issues-assigned(me),issues-mentioned(me))",
@@ -2612,9 +2671,11 @@
 	},
 	{
 		"query": "issues assigned to me",
-		"correction": false,
-		"semantic": "issues-assigned(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "issues assigned to me",
+			"semantic": "issues-assigned(me)"
+		},
+		"semantics": [
 			"issues-assigned(me)",
 			"intersect(issues-assigned(me),issues-opened(me))",
 			"intersect(issues-assigned(me),issues-mentioned(me))",
@@ -2657,10 +2718,12 @@
 	},
 	{
 		"query": "{left-stop-word} open issues that are never assigned to people who {pre-filter-stop-word} follow me",
-		"correction": "open issues that are assigned to people who follow me",
-		"semantic": "intersect(issues-assigned(followers(me)),issues-state(open))",
 		"note": "Stop words.",
-		"suggestions": [
+		"topResult": {
+			"text": "open issues that are assigned to people who follow me",
+			"semantic": "intersect(issues-assigned(followers(me)),issues-state(open))"
+		},
+		"semantics": [
 			"intersect(issues-assigned(followers(me)),issues-state(open))",
 			"intersect(issues-assigned(followers(me)),issues-opened(me),issues-state(open))",
 			"intersect(issues-assigned(followers(me)),issues-opened(me))",
@@ -2715,9 +2778,11 @@
 	},
 	{
 		"query": "repos of people who follow me",
-		"correction": false,
-		"semantic": "repositories-created(followers(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos of people who follow me",
+			"semantic": "repositories-created(followers(me))"
+		},
+		"semantics": [
 			"repositories-created(followers(me))",
 			"intersect(repositories-created(followers(me)),repositories-liked(me))",
 			"intersect(repositories-created(users-followed(me)),repositories-liked(me))",
@@ -2772,9 +2837,11 @@
 	},
 	{
 		"query": "followers of mine and people who follow me",
-		"correction": false,
-		"semantic": "intersect(followers(me),followers(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "followers of mine and people who follow me",
+			"semantic": "intersect(followers(me),followers(followers(me)))"
+		},
+		"semantics": [
 			"intersect(followers(me),followers(followers(me)))",
 			"intersect(followers(me),followers(intersect(followers(me),users-followed(me))))",
 			"intersect(followers(me),followers(followers(me)),users-followed(me))",
@@ -2829,8 +2896,7 @@
 	},
 	{
 		"query": "repos of mine and people who follow me",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories-created(me),repositories-liked(followers(me)))",
 			"intersect(repositories-contributed(followers(me)),repositories-created(me))",
 			"intersect(repositories-created(me),repositories-forked(followers(me)))",
@@ -2885,9 +2951,11 @@
 	},
 	{
 		"query": "repos I like or my followers likes",
-		"correction": "repos I like or my followers like",
-		"semantic": "union(repositories-liked(me),repositories-liked(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I like or my followers like",
+			"semantic": "union(repositories-liked(me),repositories-liked(followers(me)))"
+		},
+		"semantics": [
 			"union(repositories-liked(me),repositories-liked(followers(me)))",
 			"intersect(repositories-liked(me),repositories-liked(followers(me)))",
 			"intersect(repositories-created(me),union(repositories-liked(me),repositories-liked(followers(me))))",
@@ -2942,14 +3010,18 @@
 	},
 	{
 		"query": "repos I or my followers likes",
-		"correction": "repos I or my followers like",
-		"semantic": "union(repositories-liked(me),repositories-liked(followers(me)))"
+		"topResult": {
+			"text": "repos I or my followers like",
+			"semantic": "union(repositories-liked(me),repositories-liked(followers(me)))"
+		}
 	},
 	{
 		"query": "repos created by people I follow and Danny follows",
-		"correction": false,
-		"semantic": "repositories-created(intersect(users-followed(0),users-followed(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created by people I follow and Danny follows",
+			"semantic": "repositories-created(intersect(users-followed(0),users-followed(me)))"
+		},
+		"semantics": [
 			"repositories-created(intersect(users-followed(0),users-followed(me)))",
 			"intersect(repositories-created(me),repositories-liked(intersect(users-followed(0),users-followed(me))))",
 			"intersect(repositories-created(intersect(users-followed(0),users-followed(me))),repositories-liked(me))",
@@ -3004,9 +3076,11 @@
 	},
 	{
 		"query": "repos created by people I and Danny follow",
-		"correction": false,
-		"semantic": "repositories-created(intersect(users-followed(0),users-followed(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created by people I and Danny follow",
+			"semantic": "repositories-created(intersect(users-followed(0),users-followed(me)))"
+		},
+		"semantics": [
 			"repositories-created(intersect(users-followed(0),users-followed(me)))",
 			"repositories-created(intersect(followers(me),users-followed(0)))",
 			"intersect(repositories-created(me),repositories-liked(intersect(users-followed(0),users-followed(me))))",
@@ -3061,8 +3135,7 @@
 	},
 	{
 		"query": "people who follow people",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"followers(users-followed(me))",
 			"followers(followers(me))",
 			"users-followed(me)",
@@ -3083,36 +3156,44 @@
 	},
 	{
 		"query": "people followed by myself",
-		"correction": "people followed by me",
-		"semantic": "users-followed(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "people followed by me",
+			"semantic": "users-followed(me)"
+		},
+		"semantics": [
 			"users-followed(me)",
 			"intersect(followers(me),users-followed(me))"
 		]
 	},
 	{
 		"query": "people who follow I",
-		"correction": "people who follow me",
-		"semantic": "followers(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "people who follow me",
+			"semantic": "followers(me)"
+		},
+		"semantics": [
 			"followers(me)",
 			"intersect(followers(me),users-followed(me))"
 		]
 	},
 	{
 		"query": "people me follows",
-		"correction": "people I follow",
-		"semantic": "users-followed(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "people I follow",
+			"semantic": "users-followed(me)"
+		},
+		"semantics": [
 			"users-followed(me)",
 			"intersect(followers(me),users-followed(me))"
 		]
 	},
 	{
 		"query": "openers of my closed issues that mention me people who follow me and my followers follow follow",
-		"correction": false,
-		"semantic": "intersect(issue-openers(intersect(issues-mentioned(me),issues-opened(me),issues-state(closed))),users-followed(intersect(followers(me),users-followed(followers(me)))))",
-		"suggestions": [
+		"topResult": {
+			"text": "openers of my closed issues that mention me people who follow me and my followers follow follow",
+			"semantic": "intersect(issue-openers(intersect(issues-mentioned(me),issues-opened(me),issues-state(closed))),users-followed(intersect(followers(me),users-followed(followers(me)))))"
+		},
+		"semantics": [
 			"intersect(issue-openers(intersect(issues-mentioned(me),issues-opened(me),issues-state(closed))),users-followed(intersect(followers(me),users-followed(followers(me)))))",
 			"intersect(issue-openers(intersect(issues-mentioned(me),issues-opened(me),issues-state(closed))),users-followed(intersect(followers(me),followers(intersect(followers(me),users-followed(me))))))",
 			"intersect(issue-openers(intersect(issues-mentioned(me),issues-opened(me),issues-state(closed))),users-followed(followers(me)),users-followed(intersect(followers(me),users-followed(me))))",
@@ -3178,9 +3259,11 @@
 	},
 	{
 		"query": "repos people my followers follow like",
-		"correction": false,
-		"semantic": "repositories-liked(users-followed(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos people my followers follow like",
+			"semantic": "repositories-liked(users-followed(followers(me)))"
+		},
+		"semantics": [
 			"repositories-liked(users-followed(followers(me)))",
 			"intersect(repositories-created(me),repositories-liked(users-followed(followers(me))))",
 			"intersect(repositories-created(users-followed(followers(me))),repositories-liked(me))",
@@ -3235,9 +3318,11 @@
 	},
 	{
 		"query": "people people Danny follows follow",
-		"correction": false,
-		"semantic": "users-followed(users-followed(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "people people Danny follows follow",
+			"semantic": "users-followed(users-followed(0))"
+		},
+		"semantics": [
 			"users-followed(users-followed(0))",
 			"users-followed(intersect(followers(me),users-followed(0)))",
 			"intersect(followers(me),users-followed(users-followed(0)))",
@@ -3259,8 +3344,7 @@
 	},
 	{
 		"query": "repos people people Danny follows follow created Danny likes",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories-created(users-followed(users-followed(0))),repositories-liked(0))",
 			"intersect(repositories-created(users-followed(intersect(followers(me),users-followed(0)))),repositories-liked(0))",
 			"intersect(repositories-created(intersect(followers(me),users-followed(users-followed(0)))),repositories-liked(0))",
@@ -3315,9 +3399,11 @@
 	},
 	{
 		"query": "followers of my followers who are followers of mine my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed to follow",
-		"correction": false,
-		"semantic": "intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))",
-		"suggestions": [
+		"topResult": {
+			"text": "followers of my followers who are followers of mine my followers who created repositories of my followers followers of mine who I follow like that are repos I contributed to follow",
+			"semantic": "intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))"
+		},
+		"semantics": [
 			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))",
 			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(intersect(followers(me),users-followed(me))),repositories-liked(intersect(followers(me),users-followed(me))))))))",
 			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(intersect(followers(me),users-followed(intersect(followers(me),users-followed(me))))),repositories-liked(me))))))",
@@ -3399,9 +3485,11 @@
 	},
 	{
 		"query": "repos contributed to by me",
-		"correction": false,
-		"semantic": "repositories-contributed(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos contributed to by me",
+			"semantic": "repositories-contributed(me)"
+		},
+		"semantics": [
 			"repositories-contributed(me)",
 			"intersect(repositories-contributed(me),repositories-created(me))",
 			"intersect(repositories-contributed(me),repositories-liked(me))",
@@ -3456,8 +3544,7 @@
 	},
 	{
 		"query": "repos to by me",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me))",
 			"intersect(repositories-created(me),repositories-forked(me))",
@@ -3512,8 +3599,7 @@
 	},
 	{
 		"query": "repos liked contributed to by me",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories-contributed(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
@@ -3538,9 +3624,11 @@
 	},
 	{
 		"query": "repos by me",
-		"correction": "repos created by me",
-		"semantic": "repositories-created(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created by me",
+			"semantic": "repositories-created(me)"
+		},
+		"semantics": [
 			"repositories-created(me)",
 			"repositories-liked(me)",
 			"repositories-contributed(me)",
@@ -3595,10 +3683,12 @@
 	},
 	{
 		"query": "issues opened by me assigned to me",
-		"correction": "issues assigned to me opened by me",
-		"semantic": "intersect(issues-assigned(me),issues-opened(me))",
 		"note": "Transposition.",
-		"suggestions": [
+		"topResult": {
+			"text": "issues assigned to me opened by me",
+			"semantic": "intersect(issues-assigned(me),issues-opened(me))"
+		},
+		"semantics": [
 			"intersect(issues-assigned(me),issues-opened(me))",
 			"intersect(issues-assigned(me),issues-mentioned(me),issues-opened(me))",
 			"intersect(issues(date(today)),issues-assigned(me),issues-opened(me))",
@@ -3613,9 +3703,11 @@
 	},
 	{
 		"query": "issues with 22 comments",
-		"correction": false,
-		"semantic": "issues(comments-count(22))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues with 22 comments",
+			"semantic": "issues(comments-count(22))"
+		},
+		"semantics": [
 			"issues(comments-count(22))",
 			"issues(comments-count-under(22))",
 			"issues(comments-count-over(22))",
@@ -3670,9 +3762,11 @@
 	},
 	{
 		"query": "issues assigned to me with 22 comments",
-		"correction": false,
-		"semantic": "intersect(issues(comments-count(22)),issues-assigned(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues assigned to me with 22 comments",
+			"semantic": "intersect(issues(comments-count(22)),issues-assigned(me))"
+		},
+		"semantics": [
 			"intersect(issues(comments-count(22)),issues-assigned(me))",
 			"intersect(issues(comments-count-under(22)),issues-assigned(me))",
 			"intersect(issues(comments-count-over(22)),issues-assigned(me))",
@@ -3727,9 +3821,11 @@
 	},
 	{
 		"query": "issues with 20 to 34 comments I opened",
-		"correction": false,
-		"semantic": "intersect(issues(comments-count(20,34)),issues-opened(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues with 20 to 34 comments I opened",
+			"semantic": "intersect(issues(comments-count(20,34)),issues-opened(me))"
+		},
+		"semantics": [
 			"intersect(issues(comments-count(20,34)),issues-opened(me))",
 			"intersect(issues(comments-count(20,34)),issues-assigned(me),issues-opened(me))",
 			"intersect(issues(comments-count(20,34)),issues-mentioned(me),issues-opened(me))",
@@ -3784,10 +3880,12 @@
 	},
 	{
 		"query": "issues that are with between 20 comments and 34 comments",
-		"correction": false,
-		"semantic": "issues(comments-count(20,34))",
 		"note": "I do not like how this sounds. Might be okay.",
-		"suggestions": [
+		"topResult": {
+			"text": "issues that are with between 20 comments and 34 comments",
+			"semantic": "issues(comments-count(20,34))"
+		},
+		"semantics": [
 			"issues(comments-count(20,34))",
 			"intersect(issues(comments-count(20,34)),issues-opened(me))",
 			"intersect(issues(comments-count(20,34)),issues-assigned(me))",
@@ -3836,9 +3934,11 @@
 	},
 	{
 		"query": "issues that have 20 comments",
-		"correction": false,
-		"semantic": "issues(comments-count(20))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues that have 20 comments",
+			"semantic": "issues(comments-count(20))"
+		},
+		"semantics": [
 			"issues(comments-count(20))",
 			"issues(comments-count-under(20))",
 			"issues(comments-count-over(20))",
@@ -3893,9 +3993,11 @@
 	},
 	{
 		"query": "issues that have between 20 and 24 comments",
-		"correction": false,
-		"semantic": "issues(comments-count(20,24))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues that have between 20 and 24 comments",
+			"semantic": "issues(comments-count(20,24))"
+		},
+		"semantics": [
 			"issues(comments-count(20,24))",
 			"intersect(issues(comments-count(20,24)),issues-opened(me))",
 			"intersect(issues(comments-count(20,24)),issues-assigned(me))",
@@ -3950,9 +4052,11 @@
 	},
 	{
 		"query": "issues with between 20 and 24 comments",
-		"correction": false,
-		"semantic": "issues(comments-count(20,24))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues with between 20 and 24 comments",
+			"semantic": "issues(comments-count(20,24))"
+		},
+		"semantics": [
 			"issues(comments-count(20,24))",
 			"intersect(issues(comments-count(20,24)),issues-opened(me))",
 			"intersect(issues(comments-count(20,24)),issues-assigned(me))",
@@ -4007,9 +4111,11 @@
 	},
 	{
 		"query": "issues with between 20 and 24 comment",
-		"correction": "issues with between 20 and 24 comments",
-		"semantic": "issues(comments-count(20,24))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues with between 20 and 24 comments",
+			"semantic": "issues(comments-count(20,24))"
+		},
+		"semantics": [
 			"issues(comments-count(20,24))",
 			"intersect(issues(comments-count(20,24)),issues-opened(me))",
 			"intersect(issues(comments-count(20,24)),issues-assigned(me))",
@@ -4064,9 +4170,11 @@
 	},
 	{
 		"query": "issues with between 20 comments and 24 comments",
-		"correction": false,
-		"semantic": "issues(comments-count(20,24))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues with between 20 comments and 24 comments",
+			"semantic": "issues(comments-count(20,24))"
+		},
+		"semantics": [
 			"issues(comments-count(20,24))",
 			"intersect(issues(comments-count(20,24)),issues-opened(me))",
 			"intersect(issues(comments-count(20,24)),issues-assigned(me))",
@@ -4121,13 +4229,14 @@
 	},
 	{
 		"query": "issues with between 20 comment and 24 comment",
-		"correction": "issues with between 20 comments and 24 comments",
-		"semantic": "issues(comments-count(20,24))"
+		"topResult": {
+			"text": "issues with between 20 comments and 24 comments",
+			"semantic": "issues(comments-count(20,24))"
+		}
 	},
 	{
 		"query": "issues with 3 comments to 3 comments",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(issues(comments-count(3)),issues(comments-count-under(3)),issues-opened(me))",
 			"intersect(issues(comments-count(3)),issues(comments-count-over(3)),issues-opened(me))",
 			"intersect(issues(comments-count-over(3)),issues(comments-count-under(3)),issues-opened(me))",
@@ -4182,8 +4291,7 @@
 	},
 	{
 		"query": "issues with 3 to 3 comments",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(issues(comments-count(3)),issues(comments-count-under(3)),issues-opened(me))",
 			"intersect(issues(comments-count(3)),issues(comments-count-over(3)),issues-opened(me))",
 			"intersect(issues(comments-count-over(3)),issues(comments-count-under(3)),issues-opened(me))",
@@ -4238,9 +4346,11 @@
 	},
 	{
 		"query": "issues with 1 comments to 5 comments",
-		"correction": false,
-		"semantic": "issues(comments-count(1,5))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues with 1 comments to 5 comments",
+			"semantic": "issues(comments-count(1,5))"
+		},
+		"semantics": [
 			"issues(comments-count(1,5))",
 			"intersect(issues(comments-count(1,5)),issues-opened(me))",
 			"intersect(issues(comments-count(1,5)),issues-assigned(me))",
@@ -4295,9 +4405,11 @@
 	},
 	{
 		"query": "issues with 1 to 5 comments",
-		"correction": false,
-		"semantic": "issues(comments-count(1,5))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues with 1 to 5 comments",
+			"semantic": "issues(comments-count(1,5))"
+		},
+		"semantics": [
 			"issues(comments-count(1,5))",
 			"intersect(issues(comments-count(1,5)),issues-opened(me))",
 			"intersect(issues(comments-count(1,5)),issues-assigned(me))",
@@ -4352,19 +4464,25 @@
 	},
 	{
 		"query": "issues with less than 2 > 4 comments",
-		"correction": "issues with less than 2 and > 4 comments",
-		"semantic": "issues(comments-count-over(4),comments-count-under(2))"
+		"topResult": {
+			"text": "issues with less than 2 and > 4 comments",
+			"semantic": "issues(comments-count-over(4),comments-count-under(2))"
+		}
 	},
 	{
 		"query": "issues with less than 2 and > 4 comments",
-		"correction": false,
-		"semantic": "issues(comments-count-over(4),comments-count-under(2))"
+		"topResult": {
+			"text": "issues with less than 2 and > 4 comments",
+			"semantic": "issues(comments-count-over(4),comments-count-under(2))"
+		}
 	},
 	{
 		"query": "JavaScript repos liked by me and my followers",
-		"correction": false,
-		"semantic": "intersect(repositories-language(18),repositories-liked(me),repositories-liked(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "JavaScript repos liked by me and my followers",
+			"semantic": "intersect(repositories-language(18),repositories-liked(me),repositories-liked(followers(me)))"
+		},
+		"semantics": [
 			"intersect(repositories-language(18),repositories-liked(me),repositories-liked(followers(me)))",
 			"intersect(repositories-created(me),repositories-language(18),repositories-liked(me),repositories-liked(followers(me)))",
 			"intersect(repositories-created(followers(me)),repositories-language(18),repositories-liked(me))",
@@ -4419,9 +4537,11 @@
 	},
 	{
 		"query": "repos with between 22 and 23 likes",
-		"correction": "repos with between 22 and 23 stars",
-		"semantic": "repositories(stars-count(22,23))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos with between 22 and 23 stars",
+			"semantic": "repositories(stars-count(22,23))"
+		},
+		"semantics": [
 			"repositories(stars-count(22,23))",
 			"intersect(repositories(stars-count(22,23)),repositories-created(me))",
 			"intersect(repositories(stars-count(22,23)),repositories-liked(me))",
@@ -4476,9 +4596,11 @@
 	},
 	{
 		"query": "repos with between 22 and 23 stars",
-		"correction": false,
-		"semantic": "repositories(stars-count(22,23))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos with between 22 and 23 stars",
+			"semantic": "repositories(stars-count(22,23))"
+		},
+		"semantics": [
 			"repositories(stars-count(22,23))",
 			"intersect(repositories(stars-count(22,23)),repositories-created(me))",
 			"intersect(repositories(stars-count(22,23)),repositories-liked(me))",
@@ -4533,9 +4655,11 @@
 	},
 	{
 		"query": "repos created in 2014",
-		"correction": false,
-		"semantic": "repositories(date(2014))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created in 2014",
+			"semantic": "repositories(date(2014))"
+		},
+		"semantics": [
 			"repositories(date(2014))",
 			"intersect(repositories(date(2014)),repositories-created(me))",
 			"intersect(repositories(date(2014)),repositories-liked(me))",
@@ -4590,9 +4714,11 @@
 	},
 	{
 		"query": "repos created 2014",
-		"correction": "repos created in 2014",
-		"semantic": "repositories(date(2014))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created in 2014",
+			"semantic": "repositories(date(2014))"
+		},
+		"semantics": [
 			"repositories(date(2014))",
 			"repositories(date-after(2014))",
 			"repositories(date-before(2014))",
@@ -4647,9 +4773,11 @@
 	},
 	{
 		"query": "repos created in June 2014",
-		"correction": false,
-		"semantic": "repositories(date(2014,jun))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created in June 2014",
+			"semantic": "repositories(date(2014,jun))"
+		},
+		"semantics": [
 			"repositories(date(2014,jun))",
 			"intersect(repositories(date(2014,jun)),repositories-created(me))",
 			"intersect(repositories(date(2014,jun)),repositories-liked(me))",
@@ -4704,9 +4832,11 @@
 	},
 	{
 		"query": "repos created in June 24 2014",
-		"correction": "repos created on June 24 2014",
-		"semantic": "repositories(date(2014,24,jun))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created on June 24 2014",
+			"semantic": "repositories(date(2014,24,jun))"
+		},
+		"semantics": [
 			"repositories(date(2014,24,jun))",
 			"intersect(repositories(date(2014,24,jun)),repositories-created(me))",
 			"intersect(repositories(date(2014,24,jun)),repositories-liked(me))",
@@ -4761,9 +4891,11 @@
 	},
 	{
 		"query": "repos created this year",
-		"correction": false,
-		"semantic": "repositories(date(this-year))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created this year",
+			"semantic": "repositories(date(this-year))"
+		},
+		"semantics": [
 			"repositories(date(this-year))",
 			"repositories(date-after(this-year))",
 			"intersect(repositories(date(this-year)),repositories-created(me))",
@@ -4818,9 +4950,11 @@
 	},
 	{
 		"query": "repos created after this year",
-		"correction": false,
-		"semantic": "repositories(date-after(this-year))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created after this year",
+			"semantic": "repositories(date-after(this-year))"
+		},
+		"semantics": [
 			"repositories(date-after(this-year))",
 			"intersect(repositories(date-after(this-year)),repositories-created(me))",
 			"intersect(repositories(date-after(this-year)),repositories-liked(me))",
@@ -4875,9 +5009,11 @@
 	},
 	{
 		"query": "repos created between last year and this year",
-		"correction": false,
-		"semantic": "repositories(date-interval-end(this-year),date-interval-start(last-year))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created between last year and this year",
+			"semantic": "repositories(date-interval-end(this-year),date-interval-start(last-year))"
+		},
+		"semantics": [
 			"repositories(date-interval-end(this-year),date-interval-start(last-year))",
 			"intersect(repositories(date-interval-end(this-year),date-interval-start(last-year)),repositories-created(me))",
 			"intersect(repositories(date-interval-end(this-year),date-interval-start(last-year)),repositories-liked(me))",
@@ -4932,9 +5068,11 @@
 	},
 	{
 		"query": "repos created from 2012 to 2014",
-		"correction": false,
-		"semantic": "repositories(date-interval-end(2014),date-interval-start(2012))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created from 2012 to 2014",
+			"semantic": "repositories(date-interval-end(2014),date-interval-start(2012))"
+		},
+		"semantics": [
 			"repositories(date-interval-end(2014),date-interval-start(2012))",
 			"intersect(repositories(date-interval-end(2014),date-interval-start(2012)),repositories-created(me))",
 			"intersect(repositories(date-interval-end(2014),date-interval-start(2012)),repositories-liked(me))",
@@ -4989,10 +5127,12 @@
 	},
 	{
 		"query": "repos created before June 20 2000 and after this year",
-		"correction": false,
-		"semantic": "repositories(date-after(this-year),date-before(20,2000,jun))",
 		"note": "Perhaps prevent this because logically contradictory.",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created before June 20 2000 and after this year",
+			"semantic": "repositories(date-after(this-year),date-before(20,2000,jun))"
+		},
+		"semantics": [
 			"repositories(date-after(this-year),date-before(20,2000,jun))",
 			"intersect(repositories(date-after(this-year),date-before(20,2000,jun)),repositories-created(me))",
 			"intersect(repositories(date-after(this-year)),repositories(date-before(20,2000,jun)))",
@@ -5047,9 +5187,11 @@
 	},
 	{
 		"query": "people I and Danny follows",
-		"correction": "people I and Danny follow",
-		"semantic": "intersect(users-followed(0),users-followed(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "people I and Danny follow",
+			"semantic": "intersect(users-followed(0),users-followed(me))"
+		},
+		"semantics": [
 			"intersect(users-followed(0),users-followed(me))",
 			"intersect(followers(me),users-followed(0))",
 			"intersect(followers(me),users-followed(0),users-followed(me))"
@@ -5057,9 +5199,11 @@
 	},
 	{
 		"query": "people people Danny follow and Danny follows",
-		"correction": "people people Danny follows and Danny follow",
-		"semantic": "intersect(users-followed(0),users-followed(users-followed(0)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people people Danny follows and Danny follow",
+			"semantic": "intersect(users-followed(0),users-followed(users-followed(0)))"
+		},
+		"semantics": [
 			"intersect(users-followed(0),users-followed(users-followed(0)))",
 			"intersect(users-followed(0),users-followed(followers(0)))",
 			"intersect(followers(users-followed(0)),users-followed(0))",
@@ -5094,9 +5238,11 @@
 	},
 	{
 		"query": "likers of my repos I contributed to that I like and my repos I contributed to",
-		"correction": false,
-		"semantic": "intersect(repository-likers(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me))),repository-likers(intersect(repositories-contributed(me),repositories-created(me))))",
-		"suggestions": [
+		"topResult": {
+			"text": "likers of my repos I contributed to that I like and my repos I contributed to",
+			"semantic": "intersect(repository-likers(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me))),repository-likers(intersect(repositories-contributed(me),repositories-created(me))))"
+		},
+		"semantics": [
 			"intersect(repository-likers(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me))),repository-likers(intersect(repositories-contributed(me),repositories-created(me))))",
 			"intersect(repository-creators(intersect(repositories-contributed(me),repositories-created(me))),repository-likers(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me))))",
 			"intersect(repository-likers(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me))),repository-likers(intersect(repositories-contributed(me),repositories-created(me))),users-followed(me))",
@@ -5151,10 +5297,12 @@
 	},
 	{
 		"query": "my GitHub repos liked by my github followers",
-		"correction": "my GitHub repos liked by my GitHub followers",
-		"semantic": "intersect(repositories-created(me),repositories-liked(followers(me)))",
 		"note": "Corrects capitalization.",
-		"suggestions": [
+		"topResult": {
+			"text": "my GitHub repos liked by my GitHub followers",
+			"semantic": "intersect(repositories-created(me),repositories-liked(followers(me)))"
+		},
+		"semantics": [
 			"intersect(repositories-created(me),repositories-liked(followers(me)))",
 			"intersect(repositories-created(me),repositories-liked(me),repositories-liked(followers(me)))",
 			"intersect(repositories-created(me),repositories-liked(intersect(followers(me),users-followed(me))))",
@@ -5209,9 +5357,11 @@
 	},
 	{
 		"query": "my followers' repos",
-		"correction": false,
-		"semantic": "repositories-created(followers(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "my followers' repos",
+			"semantic": "repositories-created(followers(me))"
+		},
+		"semantics": [
 			"repositories-created(followers(me))",
 			"intersect(repositories-created(followers(me)),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(followers(me)))",
@@ -5266,10 +5416,12 @@
 	},
 	{
 		"query": "my {left-stop-word} followers' repos",
-		"correction": "my followers' repos",
-		"semantic": "repositories-created(followers(me))",
 		"note": "Stop words.",
-		"suggestions": [
+		"topResult": {
+			"text": "my followers' repos",
+			"semantic": "repositories-created(followers(me))"
+		},
+		"semantics": [
 			"repositories-created(followers(me))",
 			"intersect(repositories-created(followers(me)),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(followers(me)))",
@@ -5324,10 +5476,12 @@
 	},
 	{
 		"query": "my {left-stop-word} followers' {left-stop-word} repos",
-		"correction": "my followers' repos",
-		"semantic": "repositories-created(followers(me))",
 		"note": "Stop words.",
-		"suggestions": [
+		"topResult": {
+			"text": "my followers' repos",
+			"semantic": "repositories-created(followers(me))"
+		},
+		"semantics": [
 			"repositories-created(followers(me))",
 			"intersect(repositories-created(followers(me)),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(followers(me)))",
@@ -5382,9 +5536,11 @@
 	},
 	{
 		"query": "Danny's followers' followers",
-		"correction": false,
-		"semantic": "followers(followers(3))",
-		"suggestions": [
+		"topResult": {
+			"text": "Danny's followers' followers",
+			"semantic": "followers(followers(3))"
+		},
+		"semantics": [
 			"followers(followers(3))",
 			"intersect(followers(followers(3)),users-followed(me))",
 			"intersect(followers(me),followers(followers(3)))",
@@ -5393,9 +5549,11 @@
 	},
 	{
 		"query": "repos of Danny's",
-		"correction": false,
-		"semantic": "repositories-created(3)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos of Danny's",
+			"semantic": "repositories-created(3)"
+		},
+		"semantics": [
 			"repositories-created(3)",
 			"intersect(repositories-created(3),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(3))",
@@ -5450,9 +5608,11 @@
 	},
 	{
 		"query": "Danny's followers",
-		"correction": false,
-		"semantic": "followers(3)",
-		"suggestions": [
+		"topResult": {
+			"text": "Danny's followers",
+			"semantic": "followers(3)"
+		},
+		"semantics": [
 			"followers(3)",
 			"intersect(followers(3),users-followed(me))",
 			"intersect(followers(3),followers(me))",
@@ -5461,10 +5621,12 @@
 	},
 	{
 		"query": "female people",
-		"correction": false,
-		"semantic": "users-gender(female)",
 		"note": "Perhaps correct to \"females\".",
-		"suggestions": [
+		"topResult": {
+			"text": "female people",
+			"semantic": "users-gender(female)"
+		},
+		"semantics": [
 			"users-gender(female)",
 			"intersect(users-followed(me),users-gender(female))",
 			"intersect(followers(me),users-gender(female))",
@@ -5500,8 +5662,7 @@
 	},
 	{
 		"query": "female people who are male",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(users-followed(users-gender(male)),users-gender(female))",
 			"intersect(followers(users-gender(male)),users-gender(female))",
 			"intersect(users-followed(users-gender(female)),users-gender(male))",
@@ -5556,8 +5717,7 @@
 	},
 	{
 		"query": "male people who are not male",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(users-followed(not(users-gender(male))),users-gender(male))",
 			"intersect(followers(not(users-gender(male))),users-gender(male))",
 			"intersect(users-followed(users-gender(male)),users-gender(male))",
@@ -5612,18 +5772,22 @@
 	},
 	{
 		"query": "my male followers",
-		"correction": false,
-		"semantic": "intersect(followers(me),users-gender(male))",
-		"suggestions": [
+		"topResult": {
+			"text": "my male followers",
+			"semantic": "intersect(followers(me),users-gender(male))"
+		},
+		"semantics": [
 			"intersect(followers(me),users-gender(male))",
 			"intersect(followers(me),users-followed(me),users-gender(male))"
 		]
 	},
 	{
 		"query": "Danny's male followers",
-		"correction": false,
-		"semantic": "intersect(followers(3),users-gender(male))",
-		"suggestions": [
+		"topResult": {
+			"text": "Danny's male followers",
+			"semantic": "intersect(followers(3),users-gender(male))"
+		},
+		"semantics": [
 			"intersect(followers(3),users-gender(male))",
 			"intersect(followers(3),users-followed(me),users-gender(male))",
 			"intersect(followers(3),followers(me),users-gender(male))",
@@ -5632,9 +5796,11 @@
 	},
 	{
 		"query": "my followers' female followers",
-		"correction": false,
-		"semantic": "intersect(followers(followers(me)),users-gender(female))",
-		"suggestions": [
+		"topResult": {
+			"text": "my followers' female followers",
+			"semantic": "intersect(followers(followers(me)),users-gender(female))"
+		},
+		"semantics": [
 			"intersect(followers(followers(me)),users-gender(female))",
 			"intersect(followers(followers(me)),users-followed(me),users-gender(female))",
 			"intersect(followers(me),followers(followers(me)),users-gender(female))",
@@ -5643,9 +5809,11 @@
 	},
 	{
 		"query": "my female followers' female followers",
-		"correction": false,
-		"semantic": "intersect(followers(intersect(followers(me),users-gender(female))),users-gender(female))",
-		"suggestions": [
+		"topResult": {
+			"text": "my female followers' female followers",
+			"semantic": "intersect(followers(intersect(followers(me),users-gender(female))),users-gender(female))"
+		},
+		"semantics": [
 			"intersect(followers(intersect(followers(me),users-gender(female))),users-gender(female))",
 			"intersect(followers(intersect(followers(me),users-gender(female))),users-followed(me),users-gender(female))",
 			"intersect(followers(me),followers(intersect(followers(me),users-gender(female))),users-gender(female))",
@@ -5654,9 +5822,11 @@
 	},
 	{
 		"query": "my female followers' female followers who are not male",
-		"correction": false,
-		"semantic": "intersect(followers(intersect(followers(me),users-gender(female))),not(users-gender(male)),users-gender(female))",
-		"suggestions": [
+		"topResult": {
+			"text": "my female followers' female followers who are not male",
+			"semantic": "intersect(followers(intersect(followers(me),users-gender(female))),not(users-gender(male)),users-gender(female))"
+		},
+		"semantics": [
 			"intersect(followers(intersect(followers(me),users-gender(female))),not(users-gender(male)),users-gender(female))",
 			"intersect(followers(intersect(followers(me),users-gender(female))),not(users-gender(male)),users-followed(me),users-gender(female))",
 			"intersect(followers(intersect(followers(me),users-gender(female))),not(users-followed(me)),not(users-gender(male)),users-gender(female))",
@@ -5711,9 +5881,11 @@
 	},
 	{
 		"query": "REPOS i LiKe",
-		"correction": "repos I like",
-		"semantic": "repositories-liked(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I like",
+			"semantic": "repositories-liked(me)"
+		},
+		"semantics": [
 			"repositories-liked(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-liked(me))",
@@ -5768,9 +5940,11 @@
 	},
 	{
 		"query": "repos that are not created today liked by me",
-		"correction": "repos that were not created today liked by me",
-		"semantic": "intersect(not(repositories(date(today))),not(repositories-liked(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that were not created today liked by me",
+			"semantic": "intersect(not(repositories(date(today))),not(repositories-liked(me)))"
+		},
+		"semantics": [
 			"intersect(not(repositories(date(today))),not(repositories-liked(me)))",
 			"intersect(repositories(date(today)),repositories-liked(me))",
 			"intersect(not(repositories(date-after(today))),not(repositories-liked(me)))",
@@ -5825,9 +5999,11 @@
 	},
 	{
 		"query": "people who are not my followers",
-		"correction": false,
-		"semantic": "not(followers(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who are not my followers",
+			"semantic": "not(followers(me))"
+		},
+		"semantics": [
 			"not(followers(me))",
 			"followers(me)",
 			"intersect(not(followers(me)),users-followed(me))",
@@ -5865,14 +6041,18 @@
 	},
 	{
 		"query": "repos not created today not liked by me",
-		"correction": "repos not created today that are not liked by me",
-		"semantic": "intersect(not(repositories(date(today))),not(repositories-liked(me)))"
+		"topResult": {
+			"text": "repos not created today that are not liked by me",
+			"semantic": "intersect(not(repositories(date(today))),not(repositories-liked(me)))"
+		}
 	},
 	{
 		"query": "women",
-		"correction": false,
-		"semantic": "users-gender(female)",
-		"suggestions": [
+		"topResult": {
+			"text": "women",
+			"semantic": "users-gender(female)"
+		},
+		"semantics": [
 			"users-gender(female)",
 			"intersect(users-followed(me),users-gender(female))",
 			"intersect(followers(me),users-gender(female))",
@@ -5881,26 +6061,32 @@
 	},
 	{
 		"query": "men I follow",
-		"correction": false,
-		"semantic": "intersect(users-followed(me),users-gender(male))",
-		"suggestions": [
+		"topResult": {
+			"text": "men I follow",
+			"semantic": "intersect(users-followed(me),users-gender(male))"
+		},
+		"semantics": [
 			"intersect(users-followed(me),users-gender(male))",
 			"intersect(followers(me),users-followed(me),users-gender(male))"
 		]
 	},
 	{
 		"query": "men who I follow",
-		"correction": false,
-		"semantic": "intersect(users-followed(me),users-gender(male))",
-		"suggestions": [
+		"topResult": {
+			"text": "men who I follow",
+			"semantic": "intersect(users-followed(me),users-gender(male))"
+		},
+		"semantics": [
 			"intersect(users-followed(me),users-gender(male))"
 		]
 	},
 	{
 		"query": "people who are male",
-		"correction": false,
-		"semantic": "users-gender(male)",
-		"suggestions": [
+		"topResult": {
+			"text": "people who are male",
+			"semantic": "users-gender(male)"
+		},
+		"semantics": [
 			"users-gender(male)",
 			"intersect(users-followed(me),users-gender(male))",
 			"followers(users-gender(male))",
@@ -5932,10 +6118,12 @@
 	},
 	{
 		"query": "people who are males",
-		"correction": false,
-		"semantic": "users-gender(male)",
 		"note": "Should this correct to \"people who are male\"?",
-		"suggestions": [
+		"topResult": {
+			"text": "people who are males",
+			"semantic": "users-gender(male)"
+		},
+		"semantics": [
 			"users-gender(male)",
 			"intersect(users-followed(me),users-gender(male))",
 			"followers(users-gender(male))",
@@ -5967,8 +6155,7 @@
 	},
 	{
 		"query": "male women",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(users-followed(users-gender(female)),users-gender(male))",
 			"intersect(followers(users-gender(female)),users-gender(male))",
 			"intersect(users-followed(users-gender(male)),users-gender(female))",
@@ -6005,8 +6192,7 @@
 	},
 	{
 		"query": "female people who are women",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(followers(users-gender(female)),users-gender(female))",
 			"intersect(users-followed(users-gender(female)),users-gender(female))",
 			"intersect(followers(users-gender(female)),users-followed(me),users-gender(female))",
@@ -6061,8 +6247,7 @@
 	},
 	{
 		"query": "repos that are created by me and are not created by me",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(not(repositories(date(today))),not(repositories-liked(me)),repositories-created(me))",
 			"intersect(not(repositories-created(me)),repositories(date(today)),repositories-liked(me))",
 			"intersect(not(repositories(date(today))),not(repositories-contributed(me)),repositories-created(me))",
@@ -6117,8 +6302,7 @@
 	},
 	{
 		"query": "repos that are not created by me and are created by me",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(not(repositories-created(me)),repositories(date(today)),repositories-liked(me))",
 			"intersect(not(repositories(date(today))),not(repositories-liked(me)),repositories-created(me))",
 			"intersect(not(repositories-created(me)),repositories(date(today)),repositories-contributed(me))",
@@ -6173,9 +6357,11 @@
 	},
 	{
 		"query": "people people I follow who Danny follow and follow Danny follow",
-		"correction": "people people I follow who Danny follows and follow Danny follow",
-		"semantic": "users-followed(intersect(followers(0),users-followed(0),users-followed(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people people I follow who Danny follows and follow Danny follow",
+			"semantic": "users-followed(intersect(followers(0),users-followed(0),users-followed(me)))"
+		},
+		"semantics": [
 			"users-followed(intersect(followers(0),users-followed(0),users-followed(me)))",
 			"intersect(users-followed(0),users-followed(intersect(users-followed(0),users-followed(me))))",
 			"intersect(followers(me),users-followed(intersect(followers(0),users-followed(0),users-followed(me))))",
@@ -6187,9 +6373,11 @@
 	},
 	{
 		"query": "repos people I follow created that Danny like",
-		"correction": "repos people I follow created that Danny likes",
-		"semantic": "intersect(repositories-created(users-followed(me)),repositories-liked(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos people I follow created that Danny likes",
+			"semantic": "intersect(repositories-created(users-followed(me)),repositories-liked(0))"
+		},
+		"semantics": [
 			"intersect(repositories-created(users-followed(me)),repositories-liked(0))",
 			"intersect(repositories-created(intersect(followers(me),users-followed(me))),repositories-liked(0))",
 			"intersect(repositories-created(me),repositories-liked(0),repositories-liked(users-followed(me)))",
@@ -6244,9 +6432,11 @@
 	},
 	{
 		"query": "issues assigned to me Danny opened and Aang are mentioned in",
-		"correction": "issues assigned to me Danny opened and Aang is mentioned in",
-		"semantic": "intersect(issues-assigned(me),issues-mentioned(1),issues-opened(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues assigned to me Danny opened and Aang is mentioned in",
+			"semantic": "intersect(issues-assigned(me),issues-mentioned(1),issues-opened(0))"
+		},
+		"semantics": [
 			"intersect(issues-assigned(me),issues-mentioned(1),issues-opened(0))",
 			"intersect(issues-assigned(0),issues-assigned(me),issues-mentioned(1),issues-opened(me))",
 			"intersect(issues-assigned(me),issues-mentioned(1),issues-mentioned(me),issues-opened(0))",
@@ -6301,26 +6491,22 @@
 	},
 	{
 		"query": "people {user} follows",
-		"correction": true,
 		"note": "Cannot use placeholder symbols.",
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "people I and {user} follow",
-		"correction": true,
 		"note": "Cannot use placeholder symbols.",
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "issues with <int> comments",
-		"correction": true,
 		"note": "Cannot use placeholder symbols.",
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "my repos me people who follow my followers have been and",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories(date-after(today),date-before(today)),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))",
 			"intersect(repositories(date-after(today),date-before(today)),repositories-contributed(intersect(followers(followers(me)),users-followed(me))),repositories-created(me))",
 			"intersect(repositories(date-interval-end(today),date-interval-start(today)),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))",
@@ -6375,9 +6561,11 @@
 	},
 	{
 		"query": "people my followers who created repositories of my followers followers of mine who I follow like follow",
-		"correction": false,
-		"semantic": "users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me)))))))",
-		"suggestions": [
+		"topResult": {
+			"text": "people my followers who created repositories of my followers followers of mine who I follow like follow",
+			"semantic": "users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me)))))))"
+		},
+		"semantics": [
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me)))))))",
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(followers(me)),repositories-liked(me),repositories-liked(intersect(followers(me),users-followed(me)))))))",
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(intersect(followers(me),users-followed(intersect(followers(me),users-followed(me))))),repositories-liked(me)))))",
@@ -6432,14 +6620,18 @@
 	},
 	{
 		"query": "contributors to my repos or repos I like or Danny likes",
-		"correction": false,
-		"semantic": "repository-contributors(union(repositories-created(me),union(repositories-liked(0),repositories-liked(me))))"
+		"topResult": {
+			"text": "contributors to my repos or repos I like or Danny likes",
+			"semantic": "repository-contributors(union(repositories-created(me),union(repositories-liked(0),repositories-liked(me))))"
+		}
 	},
 	{
 		"query": "repos I like or I created",
-		"correction": false,
-		"semantic": "union(repositories-created(me),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I like or I created",
+			"semantic": "union(repositories-created(me),repositories-liked(me))"
+		},
+		"semantics": [
 			"union(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-created(me),union(repositories-created(me),repositories-liked(me)))",
@@ -6494,47 +6686,57 @@
 	},
 	{
 		"query": "repos I or Danny like",
-		"correction": false,
-		"semantic": "union(repositories-liked(0),repositories-liked(me))"
+		"topResult": {
+			"text": "repos I or Danny like",
+			"semantic": "union(repositories-liked(0),repositories-liked(me))"
+		}
 	},
 	{
 		"query": "repos I or Danny or my followers like",
-		"correction": false,
-		"semantic": "union(repositories-liked(0),repositories-liked(me),repositories-liked(followers(me)))"
+		"topResult": {
+			"text": "repos I or Danny or my followers like",
+			"semantic": "union(repositories-liked(0),repositories-liked(me),repositories-liked(followers(me)))"
+		}
 	},
 	{
 		"query": "repos I or Danny and my followers like",
-		"correction": false,
-		"semantic": "union(repositories-liked(0),intersect(repositories-liked(me),repositories-liked(followers(me))))"
+		"topResult": {
+			"text": "repos I or Danny and my followers like",
+			"semantic": "union(repositories-liked(0),intersect(repositories-liked(me),repositories-liked(followers(me))))"
+		}
 	},
 	{
 		"query": "repos I or Danny created",
-		"correction": false,
-		"semantic": "union(repositories-created(me),repositories-created(0))"
+		"topResult": {
+			"text": "repos I or Danny created",
+			"semantic": "union(repositories-created(me),repositories-created(0))"
+		}
 	},
 	{
 		"query": "repos I or Danny or my followers created",
-		"correction": false,
-		"semantic": "union(repositories-created(0),repositories-created(me),repositories-created(followers(me)))"
+		"topResult": {
+			"text": "repos I or Danny or my followers created",
+			"semantic": "union(repositories-created(0),repositories-created(me),repositories-created(followers(me)))"
+		}
 	},
 	{
 		"query": "people never currently I follow",
-		"correction": "people I follow",
-		"semantic": "users-followed(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "people I follow",
+			"semantic": "users-followed(me)"
+		},
+		"semantics": [
 			"users-followed(me)",
 			"intersect(followers(me),users-followed(me))"
 		]
 	},
 	{
 		"query": "people I have",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "repos I have",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repositories-created(me)",
 			"repositories-liked(me)",
 			"repositories-contributed(me)",
@@ -6589,9 +6791,11 @@
 	},
 	{
 		"query": "repos been liked by me",
-		"correction": "repos that have been liked by me",
-		"semantic": "repositories-liked(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that have been liked by me",
+			"semantic": "repositories-liked(me)"
+		},
+		"semantics": [
 			"repositories-liked(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-liked(me))",
@@ -6618,18 +6822,22 @@
 	},
 	{
 		"query": "people who not been followed by me",
-		"correction": "people who have not been followed by me",
-		"semantic": "not(users-followed(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who have not been followed by me",
+			"semantic": "not(users-followed(me))"
+		},
+		"semantics": [
 			"not(users-followed(me))",
 			"users-followed(me)"
 		]
 	},
 	{
 		"query": "repos I contributed to",
-		"correction": false,
-		"semantic": "repositories-contributed(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I contributed to",
+			"semantic": "repositories-contributed(me)"
+		},
+		"semantics": [
 			"repositories-contributed(me)",
 			"intersect(repositories-contributed(me),repositories-created(me))",
 			"intersect(repositories-contributed(me),repositories-liked(me))",
@@ -6684,9 +6892,11 @@
 	},
 	{
 		"query": "repos I did not contributed to",
-		"correction": "repos I do not contribute to",
-		"semantic": "not(repositories-contributed(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I do not contribute to",
+			"semantic": "not(repositories-contributed(me))"
+		},
+		"semantics": [
 			"not(repositories-contributed(me))",
 			"intersect(not(repositories-contributed(me)),repositories-created(me))",
 			"repositories-contributed(me)",
@@ -6741,9 +6951,11 @@
 	},
 	{
 		"query": "repos I have not contributed to",
-		"correction": false,
-		"semantic": "not(repositories-contributed(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I have not contributed to",
+			"semantic": "not(repositories-contributed(me))"
+		},
+		"semantics": [
 			"not(repositories-contributed(me))",
 			"repositories-contributed(me)",
 			"intersect(not(repositories-contributed(me)),repositories-created(me))",
@@ -6798,10 +7010,12 @@
 	},
 	{
 		"query": "repos I did not contribute to",
-		"correction": false,
-		"semantic": "not(repositories-contributed(me))",
 		"note": "Maybe only \"have not\".",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I did not contribute to",
+			"semantic": "not(repositories-contributed(me))"
+		},
+		"semantics": [
 			"not(repositories-contributed(me))",
 			"intersect(not(repositories-contributed(me)),repositories-created(me))",
 			"repositories-contributed(me)",
@@ -6856,10 +7070,12 @@
 	},
 	{
 		"query": "repos I do not contribute to",
-		"correction": false,
-		"semantic": "not(repositories-contributed(me))",
 		"note": "Unsure.",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I do not contribute to",
+			"semantic": "not(repositories-contributed(me))"
+		},
+		"semantics": [
 			"not(repositories-contributed(me))",
 			"intersect(not(repositories-contributed(me)),repositories-created(me))",
 			"repositories-contributed(me)",
@@ -6914,14 +7130,18 @@
 	},
 	{
 		"query": "repos I to contributed to",
-		"correction": "repos I contributed to",
-		"semantic": "repositories-contributed(me)"
+		"topResult": {
+			"text": "repos I contributed to",
+			"semantic": "repositories-contributed(me)"
+		}
 	},
 	{
 		"query": "repos I to created",
-		"correction": "repos I created",
-		"semantic": "repositories-created(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I created",
+			"semantic": "repositories-created(me)"
+		},
+		"semantics": [
 			"repositories-created(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me))",
@@ -6976,9 +7196,11 @@
 	},
 	{
 		"query": "repos I to have created",
-		"correction": "repos I have created",
-		"semantic": "repositories-created(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I have created",
+			"semantic": "repositories-created(me)"
+		},
+		"semantics": [
 			"repositories-created(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me))",
@@ -7033,9 +7255,11 @@
 	},
 	{
 		"query": "repos I and Danny have contributed to",
-		"correction": false,
-		"semantic": "intersect(repositories-contributed(0),repositories-contributed(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I and Danny have contributed to",
+			"semantic": "intersect(repositories-contributed(0),repositories-contributed(me))"
+		},
+		"semantics": [
 			"intersect(repositories-contributed(0),repositories-contributed(me))",
 			"intersect(repositories-contributed(0),repositories-contributed(me),repositories-created(me))",
 			"intersect(repositories-contributed(0),repositories-created(me))",
@@ -7090,14 +7314,18 @@
 	},
 	{
 		"query": "repos I or Danny have contributed to",
-		"correction": false,
-		"semantic": "union(repositories-contributed(0),repositories-contributed(me))"
+		"topResult": {
+			"text": "repos I or Danny have contributed to",
+			"semantic": "union(repositories-contributed(0),repositories-contributed(me))"
+		}
 	},
 	{
 		"query": "repos I did create",
-		"correction": "repos I created",
-		"semantic": "repositories-created(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I created",
+			"semantic": "repositories-created(me)"
+		},
+		"semantics": [
 			"repositories-created(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me))",
@@ -7152,9 +7380,11 @@
 	},
 	{
 		"query": "people who have liked my repos",
-		"correction": false,
-		"semantic": "repository-likers(repositories-created(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who have liked my repos",
+			"semantic": "repository-likers(repositories-created(me))"
+		},
+		"semantics": [
 			"repository-likers(repositories-created(me))",
 			"repository-likers(intersect(repositories-created(me),repositories-liked(me)))",
 			"intersect(repository-likers(repositories-created(me)),users-followed(me))",
@@ -7209,8 +7439,7 @@
 	},
 	{
 		"query": "people who",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"followers(me)",
 			"users-followed(me)",
 			"intersect(followers(me),users-followed(me))"
@@ -7218,23 +7447,19 @@
 	},
 	{
 		"query": "people who like",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "people who have",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "people who have been",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "repos that",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repositories-created(me)",
 			"repositories-liked(me)",
 			"repositories-contributed(me)",
@@ -7289,8 +7514,7 @@
 	},
 	{
 		"query": "repos that have",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repositories-created(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"repositories(date(today))",
@@ -7345,8 +7569,7 @@
 	},
 	{
 		"query": "repos that been",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repositories-created(me)",
 			"repositories(date(today))",
 			"repositories(date-after(today))",
@@ -7401,8 +7624,7 @@
 	},
 	{
 		"query": "repos that have been",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repositories-created(me)",
 			"repositories(date(today))",
 			"repositories(date-after(today))",
@@ -7457,8 +7679,7 @@
 	},
 	{
 		"query": "issues that",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"issues-opened(me)",
 			"issues-mentioned(me)",
 			"issues-assigned(me)",
@@ -7497,8 +7718,7 @@
 	},
 	{
 		"query": "issues that have",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"issues-opened(me)",
 			"issues-assigned(me)",
 			"intersect(issues-assigned(me),issues-opened(me))",
@@ -7545,8 +7765,7 @@
 	},
 	{
 		"query": "issues that been",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"issues-assigned(me)",
 			"issues-opened(me)",
 			"intersect(issues-assigned(me),issues-opened(me))",
@@ -7593,8 +7812,7 @@
 	},
 	{
 		"query": "issues that have been",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"issues-mentioned(me)",
 			"issues-assigned(me)",
 			"issues-opened(me)",
@@ -7642,8 +7860,7 @@
 	},
 	{
 		"query": "pull requests that",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"pull-requests-created(me)",
 			"pull-requests-mentioned(me)",
 			"pull-requests-assigned(me)",
@@ -7655,8 +7872,7 @@
 	},
 	{
 		"query": "pull requests that have",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"pull-requests-created(me)",
 			"pull-requests-assigned(me)",
 			"intersect(pull-requests-assigned(me),pull-requests-created(me))",
@@ -7667,8 +7883,7 @@
 	},
 	{
 		"query": "pull requests that been",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"pull-requests-created(me)",
 			"pull-requests-assigned(me)",
 			"intersect(pull-requests-assigned(me),pull-requests-created(me))",
@@ -7679,8 +7894,7 @@
 	},
 	{
 		"query": "pull requests that have been",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"pull-requests-created(me)",
 			"pull-requests-mentioned(me)",
 			"pull-requests-assigned(me)",
@@ -7692,8 +7906,7 @@
 	},
 	{
 		"query": "people who repos",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repository-creators(repositories-created(me))",
 			"repository-likers(repositories-created(me))",
 			"repository-contributors(repositories-created(me))",
@@ -7748,8 +7961,7 @@
 	},
 	{
 		"query": "people who have repos",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repository-creators(repositories-created(me))",
 			"repository-likers(repositories-created(me))",
 			"repository-contributors(repositories-created(me))",
@@ -7804,8 +8016,7 @@
 	},
 	{
 		"query": "people who have my repos",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repository-creators(repositories-created(me))",
 			"repository-likers(repositories-created(me))",
 			"repository-contributors(repositories-created(me))",
@@ -7860,8 +8071,7 @@
 	},
 	{
 		"query": "people who issues",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"issue-openers(issues-opened(me))",
 			"users-mentioned(issues-opened(me))",
 			"users-assigned(issues-opened(me))",
@@ -7916,8 +8126,7 @@
 	},
 	{
 		"query": "people who have issues",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"issue-openers(issues-opened(me))",
 			"users-mentioned(issues-opened(me))",
 			"users-assigned(issues-opened(me))",
@@ -7972,8 +8181,7 @@
 	},
 	{
 		"query": "people who have my issues",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"issue-openers(issues-opened(me))",
 			"users-mentioned(issues-opened(me))",
 			"users-assigned(issues-opened(me))",
@@ -8028,8 +8236,7 @@
 	},
 	{
 		"query": "people who pull requests",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"pull-request-creators(pull-requests-created(me))",
 			"users-mentioned(pull-requests-created(me))",
 			"users-assigned(pull-requests-created(me))",
@@ -8084,8 +8291,7 @@
 	},
 	{
 		"query": "people who have pull requests",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"pull-request-creators(pull-requests-created(me))",
 			"users-mentioned(pull-requests-created(me))",
 			"users-assigned(pull-requests-created(me))",
@@ -8140,8 +8346,7 @@
 	},
 	{
 		"query": "people who have my pull requests",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"pull-request-creators(pull-requests-created(me))",
 			"users-mentioned(pull-requests-created(me))",
 			"users-assigned(pull-requests-created(me))",
@@ -8170,13 +8375,11 @@
 	},
 	{
 		"query": "repos who have liked my repos",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "people who have issues pull requests",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"pull-requests-created(issue-openers(issues-opened(me)))",
 			"pull-requests-assigned(issue-openers(issues-opened(me)))",
 			"pull-requests-created(users-mentioned(issues-opened(me)))",
@@ -8232,8 +8435,7 @@
 	},
 	{
 		"query": "people who have issues pull requests repos",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repositories-created(intersect(users-mentioned(issues-opened(me)),users-mentioned(pull-requests-created(me))))",
 			"repositories-created(intersect(users-assigned(issues-opened(me)),users-mentioned(pull-requests-created(me))))",
 			"repositories-created(intersect(users-assigned(pull-requests-created(me)),users-mentioned(issues-opened(me))))",
@@ -8288,8 +8490,7 @@
 	},
 	{
 		"query": "issues been",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"issues-assigned(me)",
 			"issues-opened(me)",
 			"intersect(issues-assigned(me),issues-opened(me))",
@@ -8336,9 +8537,11 @@
 	},
 	{
 		"query": "issues opened by me that mention followers of people who like repos creators of Node contributed to",
-		"correction": false,
-		"semantic": "intersect(issues-mentioned(followers(repository-likers(repositories-contributed(repository-creators(4))))),issues-opened(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues opened by me that mention followers of people who like repos creators of Node contributed to",
+			"semantic": "intersect(issues-mentioned(followers(repository-likers(repositories-contributed(repository-creators(4))))),issues-opened(me))"
+		},
+		"semantics": [
 			"intersect(issues-mentioned(followers(repository-likers(repositories-contributed(repository-creators(4))))),issues-opened(me))",
 			"intersect(issues-mentioned(followers(repository-likers(intersect(repositories-contributed(repository-creators(4)),repositories-created(me))))),issues-opened(me))",
 			"intersect(issues-mentioned(followers(repository-likers(intersect(repositories-contributed(me),repositories-created(repository-creators(4)))))),issues-opened(me))",
@@ -8396,9 +8599,11 @@
 	},
 	{
 		"query": "issues opened by me that mention followers of people who like repos creators of Node contributed to and are assigned to pull requests I am not mentioned in",
-		"correction": false,
-		"semantic": "intersect(issues-mentioned(followers(intersect(repository-likers(repositories-contributed(repository-creators(4))),users-assigned(not(pull-requests-mentioned(me)))))),issues-opened(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues opened by me that mention followers of people who like repos creators of Node contributed to and are assigned to pull requests I am not mentioned in",
+			"semantic": "intersect(issues-mentioned(followers(intersect(repository-likers(repositories-contributed(repository-creators(4))),users-assigned(not(pull-requests-mentioned(me)))))),issues-opened(me))"
+		},
+		"semantics": [
 			"intersect(issues-mentioned(followers(intersect(repository-likers(repositories-contributed(repository-creators(4))),users-assigned(not(pull-requests-mentioned(me)))))),issues-opened(me))",
 			"intersect(issues-mentioned(followers(intersect(repository-likers(repositories-contributed(repository-creators(4))),users-assigned(pull-requests-mentioned(me))))),issues-opened(me))",
 			"intersect(issues-mentioned(followers(intersect(repository-likers(intersect(repositories-contributed(repository-creators(4)),repositories-created(me))),users-assigned(not(pull-requests-mentioned(me)))))),issues-opened(me))",
@@ -8455,9 +8660,11 @@
 	},
 	{
 		"query": "issues opened by me that mention followers of people who like repos creators of Node contribute to and are assigned to pull requests I am not mentioned in",
-		"correction": false,
-		"semantic": "intersect(issues-mentioned(followers(intersect(repository-likers(repositories-contributed(repository-creators(4))),users-assigned(not(pull-requests-mentioned(me)))))),issues-opened(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues opened by me that mention followers of people who like repos creators of Node contribute to and are assigned to pull requests I am not mentioned in",
+			"semantic": "intersect(issues-mentioned(followers(intersect(repository-likers(repositories-contributed(repository-creators(4))),users-assigned(not(pull-requests-mentioned(me)))))),issues-opened(me))"
+		},
+		"semantics": [
 			"intersect(issues-mentioned(followers(intersect(repository-likers(repositories-contributed(repository-creators(4))),users-assigned(not(pull-requests-mentioned(me)))))),issues-opened(me))",
 			"intersect(issues-mentioned(followers(intersect(repository-likers(repositories-contributed(repository-creators(4))),users-assigned(pull-requests-mentioned(me))))),issues-opened(me))",
 			"intersect(issues-mentioned(followers(intersect(repository-likers(repositories-contributed(repository-creators(4))),users-assigned(intersect(not(pull-requests-mentioned(me)),pull-requests-created(me)))))),issues-opened(me))",
@@ -8515,8 +8722,7 @@
 	},
 	{
 		"query": "issues opened me followers people repos creators of Node contributed to assigned to pull requests am not mentioned in",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(issues-opened(me),not(issues-mentioned(intersect(followers(me),users-assigned(pull-requests-created(me)),users-followed(repository-creators(repositories-contributed(repository-creators(4))))))))",
 			"intersect(issues-opened(me),not(issues-mentioned(intersect(followers(me),users-assigned(pull-requests-created(me)),users-followed(repository-likers(repositories-contributed(repository-creators(4))))))))",
 			"intersect(issues-mentioned(intersect(followers(me),users-assigned(pull-requests-created(me)),users-followed(repository-creators(repositories-contributed(repository-creators(4)))))),issues-opened(me))",
@@ -8571,35 +8777,35 @@
 	},
 	{
 		"query": "people who do contributed to my repos",
-		"correction": "people who do not contribute to my repos",
-		"semantic": "not(repository-contributors(repositories-created(me)))"
+		"topResult": {
+			"text": "people who do not contribute to my repos",
+			"semantic": "not(repository-contributors(repositories-created(me)))"
+		}
 	},
 	{
 		"query": "people who do contributed not to my repos",
-		"correction": true,
 		"note": "Unsure.",
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "issues with -20 to 34 comments I opened",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "repos created before June 0 2000 and July -2 3000",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "repos created before June 32 1940",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "repos created before June 31 1950",
-		"correction": false,
-		"semantic": "repositories(date-before(1950,31,jun))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created before June 31 1950",
+			"semantic": "repositories(date-before(1950,31,jun))"
+		},
+		"semantics": [
 			"repositories(date-before(1950,31,jun))",
 			"intersect(repositories(date-before(1950,31,jun)),repositories-created(me))",
 			"intersect(repositories(date-before(1950,31,jun)),repositories-liked(me))",
@@ -8654,9 +8860,11 @@
 	},
 	{
 		"query": "people who do not follow me",
-		"correction": false,
-		"semantic": "not(followers(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who do not follow me",
+			"semantic": "not(followers(me))"
+		},
+		"semantics": [
 			"not(followers(me))",
 			"followers(me)",
 			"intersect(not(followers(me)),users-followed(me))",
@@ -8665,8 +8873,7 @@
 	},
 	{
 		"query": "people who people",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"users-followed(me)",
 			"followers(users-followed(me))",
 			"users-followed(users-followed(me))",
@@ -8687,8 +8894,7 @@
 	},
 	{
 		"query": "people who followers",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"followers(me)",
 			"followers(followers(me))",
 			"users-followed(followers(me))",
@@ -8709,18 +8915,22 @@
 	},
 	{
 		"query": "my pull requests assigned to me",
-		"correction": false,
-		"semantic": "intersect(pull-requests-assigned(me),pull-requests-created(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "my pull requests assigned to me",
+			"semantic": "intersect(pull-requests-assigned(me),pull-requests-created(me))"
+		},
+		"semantics": [
 			"intersect(pull-requests-assigned(me),pull-requests-created(me))",
 			"intersect(pull-requests-assigned(me),pull-requests-created(me),pull-requests-mentioned(me))"
 		]
 	},
 	{
 		"query": "repos I do not like",
-		"correction": false,
-		"semantic": "not(repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I do not like",
+			"semantic": "not(repositories-liked(me))"
+		},
+		"semantics": [
 			"not(repositories-liked(me))",
 			"intersect(not(repositories-liked(me)),repositories-created(me))",
 			"repositories-liked(me)",
@@ -8775,9 +8985,8 @@
 	},
 	{
 		"query": "repos I did not like",
-		"correction": true,
 		"note": "I do not know whether to prevent \"repos I did not like\" because \"repos I did not star\" is acceptable.",
-		"suggestions": [
+		"semantics": [
 			"not(repositories-liked(me))",
 			"intersect(not(repositories-liked(me)),repositories-created(me))",
 			"repositories-liked(me)",
@@ -8832,9 +9041,11 @@
 	},
 	{
 		"query": "repos Danny does not like",
-		"correction": false,
-		"semantic": "not(repositories-liked(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny does not like",
+			"semantic": "not(repositories-liked(0))"
+		},
+		"semantics": [
 			"not(repositories-liked(0))",
 			"intersect(not(repositories-liked(0)),repositories-created(me))",
 			"repositories-liked(0)",
@@ -8889,9 +9100,11 @@
 	},
 	{
 		"query": "repos Danny has not liked",
-		"correction": false,
-		"semantic": "not(repositories-liked(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny has not liked",
+			"semantic": "not(repositories-liked(0))"
+		},
+		"semantics": [
 			"not(repositories-liked(0))",
 			"repositories-liked(0)",
 			"intersect(not(repositories-liked(0)),repositories-created(me))",
@@ -8946,9 +9159,11 @@
 	},
 	{
 		"query": "repos Danny has liked",
-		"correction": false,
-		"semantic": "repositories-liked(0)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny has liked",
+			"semantic": "repositories-liked(0)"
+		},
+		"semantics": [
 			"repositories-liked(0)",
 			"intersect(repositories-created(me),repositories-liked(0))",
 			"intersect(repositories-created(0),repositories-liked(me))",
@@ -9003,9 +9218,11 @@
 	},
 	{
 		"query": "repos Danny have likes",
-		"correction": "repos Danny has liked",
-		"semantic": "repositories-liked(0)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny has liked",
+			"semantic": "repositories-liked(0)"
+		},
+		"semantics": [
 			"repositories-liked(0)",
 			"intersect(repositories-created(me),repositories-liked(0))",
 			"intersect(repositories-created(0),repositories-liked(me))",
@@ -9060,9 +9277,11 @@
 	},
 	{
 		"query": "repos I have not liked",
-		"correction": false,
-		"semantic": "not(repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I have not liked",
+			"semantic": "not(repositories-liked(me))"
+		},
+		"semantics": [
 			"not(repositories-liked(me))",
 			"repositories-liked(me)",
 			"intersect(not(repositories-liked(me)),repositories-created(me))",
@@ -9117,9 +9336,11 @@
 	},
 	{
 		"query": "repos I has not liked",
-		"correction": "repos I have not liked",
-		"semantic": "not(repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I have not liked",
+			"semantic": "not(repositories-liked(me))"
+		},
+		"semantics": [
 			"not(repositories-liked(me))",
 			"repositories-liked(me)",
 			"intersect(not(repositories-liked(me)),repositories-created(me))",
@@ -9174,9 +9395,8 @@
 	},
 	{
 		"query": "repos I not have liked",
-		"correction": true,
 		"note": "Add transposition correction?",
-		"suggestions": [
+		"semantics": [
 			"repositories-liked(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-liked(me))",
@@ -9231,9 +9451,11 @@
 	},
 	{
 		"query": "repos people who follow me and I do not like",
-		"correction": false,
-		"semantic": "intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos people who follow me and I do not like",
+			"semantic": "intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))"
+		},
+		"semantics": [
 			"intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))",
 			"intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))),repositories-created(me))",
 			"intersect(not(repositories-liked(me)),repositories-created(followers(me)))",
@@ -9288,9 +9510,11 @@
 	},
 	{
 		"query": "repos people who follow me and me do not like",
-		"correction": "repos people who follow me and I do not like",
-		"semantic": "intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos people who follow me and I do not like",
+			"semantic": "intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))"
+		},
+		"semantics": [
 			"intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))",
 			"intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))),repositories-created(me))",
 			"intersect(not(repositories-liked(me)),repositories-created(followers(me)))",
@@ -9345,9 +9569,11 @@
 	},
 	{
 		"query": "repos people who follow me created that Aang does not like",
-		"correction": false,
-		"semantic": "intersect(not(repositories-liked(1)),repositories-created(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos people who follow me created that Aang does not like",
+			"semantic": "intersect(not(repositories-liked(1)),repositories-created(followers(me)))"
+		},
+		"semantics": [
 			"intersect(not(repositories-liked(1)),repositories-created(followers(me)))",
 			"intersect(repositories-created(followers(me)),repositories-liked(1))",
 			"intersect(not(repositories-liked(1)),repositories-created(intersect(followers(me),users-followed(me))))",
@@ -9402,9 +9628,11 @@
 	},
 	{
 		"query": "repos people who follow me and I does not like",
-		"correction": "repos people who follow me and I do not like",
-		"semantic": "intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos people who follow me and I do not like",
+			"semantic": "intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))"
+		},
+		"semantics": [
 			"intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))",
 			"intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))),repositories-created(me))",
 			"intersect(not(repositories-liked(me)),repositories-created(followers(me)))",
@@ -9459,9 +9687,11 @@
 	},
 	{
 		"query": "repos people who follow me and I have not liked",
-		"correction": false,
-		"semantic": "intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos people who follow me and I have not liked",
+			"semantic": "intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))"
+		},
+		"semantics": [
 			"intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))",
 			"intersect(repositories-liked(me),repositories-liked(followers(me)))",
 			"intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))),repositories-created(me))",
@@ -9516,9 +9746,11 @@
 	},
 	{
 		"query": "repos people who follow me and I has not likes",
-		"correction": "repos people who follow me and I have not liked",
-		"semantic": "intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos people who follow me and I have not liked",
+			"semantic": "intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))"
+		},
+		"semantics": [
 			"intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))))",
 			"intersect(repositories-liked(me),repositories-liked(followers(me)))",
 			"intersect(not(repositories-liked(me)),not(repositories-liked(followers(me))),repositories-created(me))",
@@ -9573,9 +9805,11 @@
 	},
 	{
 		"query": "repos people who have not liked Danny's repos created",
-		"correction": false,
-		"semantic": "repositories-created(not(repository-likers(repositories-created(3))))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos people who have not liked Danny's repos created",
+			"semantic": "repositories-created(not(repository-likers(repositories-created(3))))"
+		},
+		"semantics": [
 			"repositories-created(not(repository-likers(repositories-created(3))))",
 			"repositories-created(repository-likers(repositories-created(3)))",
 			"repositories-created(not(repository-likers(intersect(repositories-created(3),repositories-liked(me)))))",
@@ -9630,8 +9864,7 @@
 	},
 	{
 		"query": "repos I did not have liked",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"repositories-liked(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-liked(me))",
@@ -9686,9 +9919,11 @@
 	},
 	{
 		"query": "repos Danny and I do not like",
-		"correction": false,
-		"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny and I do not like",
+			"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(me)))"
+		},
+		"semantics": [
 			"intersect(not(repositories-liked(0)),not(repositories-liked(me)))",
 			"intersect(not(repositories-liked(0)),not(repositories-liked(me)),repositories-created(me))",
 			"intersect(not(repositories-liked(me)),repositories-created(0))",
@@ -9743,9 +9978,11 @@
 	},
 	{
 		"query": "repos Danny and people who follow Danny have not liked",
-		"correction": false,
-		"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(followers(0))))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny and people who follow Danny have not liked",
+			"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(followers(0))))"
+		},
+		"semantics": [
 			"intersect(not(repositories-liked(0)),not(repositories-liked(followers(0))))",
 			"intersect(repositories-liked(0),repositories-liked(followers(0)))",
 			"intersect(not(repositories-liked(0)),not(repositories-liked(followers(0))),repositories-created(me))",
@@ -9800,9 +10037,11 @@
 	},
 	{
 		"query": "repos that have been liked by me",
-		"correction": false,
-		"semantic": "repositories-liked(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that have been liked by me",
+			"semantic": "repositories-liked(me)"
+		},
+		"semantics": [
 			"repositories-liked(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-liked(me))",
@@ -9829,9 +10068,11 @@
 	},
 	{
 		"query": "people who do not like my repos",
-		"correction": false,
-		"semantic": "not(repository-likers(repositories-created(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who do not like my repos",
+			"semantic": "not(repository-likers(repositories-created(me)))"
+		},
+		"semantics": [
 			"not(repository-likers(repositories-created(me)))",
 			"repository-likers(repositories-created(me))",
 			"not(repository-likers(intersect(repositories-created(me),repositories-liked(me))))",
@@ -9886,9 +10127,11 @@
 	},
 	{
 		"query": "repos that have not been liked by me",
-		"correction": false,
-		"semantic": "not(repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that have not been liked by me",
+			"semantic": "not(repositories-liked(me))"
+		},
+		"semantics": [
 			"not(repositories-liked(me))",
 			"repositories-liked(me)",
 			"intersect(not(repositories-liked(me)),repositories-created(me))",
@@ -9937,9 +10180,11 @@
 	},
 	{
 		"query": "repos that not been liked by me",
-		"correction": "repos that have not been liked by me",
-		"semantic": "not(repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that have not been liked by me",
+			"semantic": "not(repositories-liked(me))"
+		},
+		"semantics": [
 			"not(repositories-liked(me))",
 			"repositories-liked(me)",
 			"intersect(not(repositories-liked(me)),repositories-created(me))",
@@ -9988,9 +10233,11 @@
 	},
 	{
 		"query": "repos not been liked by me",
-		"correction": "repos that have not been liked by me",
-		"semantic": "not(repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that have not been liked by me",
+			"semantic": "not(repositories-liked(me))"
+		},
+		"semantics": [
 			"not(repositories-liked(me))",
 			"repositories-liked(me)",
 			"intersect(not(repositories-liked(me)),repositories-created(me))",
@@ -10045,9 +10292,11 @@
 	},
 	{
 		"query": "people who have not liked my repos",
-		"correction": false,
-		"semantic": "not(repository-likers(repositories-created(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who have not liked my repos",
+			"semantic": "not(repository-likers(repositories-created(me)))"
+		},
+		"semantics": [
 			"not(repository-likers(repositories-created(me)))",
 			"repository-likers(repositories-created(me))",
 			"not(repository-likers(intersect(repositories-created(me),repositories-liked(me))))",
@@ -10102,9 +10351,11 @@
 	},
 	{
 		"query": "repos I and Danny do not liked",
-		"correction": "repos I and Danny do not like",
-		"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I and Danny do not like",
+			"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(me)))"
+		},
+		"semantics": [
 			"intersect(not(repositories-liked(0)),not(repositories-liked(me)))",
 			"intersect(not(repositories-liked(0)),not(repositories-liked(me)),repositories-created(me))",
 			"intersect(not(repositories-liked(0)),repositories-created(me))",
@@ -10159,9 +10410,11 @@
 	},
 	{
 		"query": "repos I and Danny do not like",
-		"correction": false,
-		"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I and Danny do not like",
+			"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(me)))"
+		},
+		"semantics": [
 			"intersect(not(repositories-liked(0)),not(repositories-liked(me)))",
 			"intersect(not(repositories-liked(0)),not(repositories-liked(me)),repositories-created(me))",
 			"intersect(not(repositories-liked(0)),repositories-created(me))",
@@ -10216,9 +10469,11 @@
 	},
 	{
 		"query": "repos I and Danny have not liked",
-		"correction": false,
-		"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I and Danny have not liked",
+			"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(me)))"
+		},
+		"semantics": [
 			"intersect(not(repositories-liked(0)),not(repositories-liked(me)))",
 			"intersect(repositories-liked(0),repositories-liked(me))",
 			"intersect(not(repositories-liked(0)),not(repositories-liked(me)),repositories-created(me))",
@@ -10273,9 +10528,11 @@
 	},
 	{
 		"query": "repos Danny does like",
-		"correction": "repos Danny likes",
-		"semantic": "repositories-liked(0)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny likes",
+			"semantic": "repositories-liked(0)"
+		},
+		"semantics": [
 			"repositories-liked(0)",
 			"intersect(repositories-created(me),repositories-liked(0))",
 			"intersect(repositories-created(0),repositories-liked(me))",
@@ -10330,10 +10587,12 @@
 	},
 	{
 		"query": "repos I not liked",
-		"correction": "repos I do not like",
-		"semantic": "not(repositories-liked(me))",
 		"note": "Unsure.",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I do not like",
+			"semantic": "not(repositories-liked(me))"
+		},
+		"semantics": [
 			"not(repositories-liked(me))",
 			"repositories-liked(me)",
 			"intersect(not(repositories-liked(me)),repositories-created(me))",
@@ -10388,9 +10647,11 @@
 	},
 	{
 		"query": "repos Danny and Aang and I do not like",
-		"correction": false,
-		"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(1)),not(repositories-liked(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny and Aang and I do not like",
+			"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(1)),not(repositories-liked(me)))"
+		},
+		"semantics": [
 			"intersect(not(repositories-liked(0)),not(repositories-liked(1)),not(repositories-liked(me)))",
 			"intersect(not(repositories-liked(0)),not(repositories-liked(1)),not(repositories-liked(me)),repositories-created(me))",
 			"intersect(not(repositories-liked(1)),not(repositories-liked(me)),repositories-created(0))",
@@ -10445,9 +10706,11 @@
 	},
 	{
 		"query": "repos Danny and has not liked",
-		"correction": "repos Danny has not liked",
-		"semantic": "not(repositories-liked(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny has not liked",
+			"semantic": "not(repositories-liked(0))"
+		},
+		"semantics": [
 			"not(repositories-liked(0))",
 			"repositories-liked(0)",
 			"intersect(not(repositories-liked(0)),repositories-created(me))",
@@ -10502,14 +10765,18 @@
 	},
 	{
 		"query": "repos Danny and Aang not have liked",
-		"correction": "repos Danny and Aang have not liked",
-		"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(1)))"
+		"topResult": {
+			"text": "repos Danny and Aang have not liked",
+			"semantic": "intersect(not(repositories-liked(0)),not(repositories-liked(1)))"
+		}
 	},
 	{
 		"query": "repos my followers have not liked",
-		"correction": false,
-		"semantic": "not(repositories-liked(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos my followers have not liked",
+			"semantic": "not(repositories-liked(followers(me)))"
+		},
+		"semantics": [
 			"not(repositories-liked(followers(me)))",
 			"repositories-liked(followers(me))",
 			"intersect(not(repositories-liked(followers(me))),repositories-created(me))",
@@ -10564,9 +10831,11 @@
 	},
 	{
 		"query": "repos my followers like",
-		"correction": false,
-		"semantic": "repositories-liked(followers(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos my followers like",
+			"semantic": "repositories-liked(followers(me))"
+		},
+		"semantics": [
 			"repositories-liked(followers(me))",
 			"intersect(repositories-created(me),repositories-liked(followers(me)))",
 			"intersect(repositories-created(followers(me)),repositories-liked(me))",
@@ -10621,8 +10890,7 @@
 	},
 	{
 		"query": "my repositories people who created my repos created",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories-created(me),repositories-liked(repository-creators(intersect(repositories(date(today)),repositories-created(me)))))",
 			"intersect(repositories(date(today)),repositories-created(me),repositories-liked(repository-creators(repositories-created(me))))",
 			"intersect(repositories-contributed(repository-creators(intersect(repositories(date(today)),repositories-created(me)))),repositories-created(me))",
@@ -10677,8 +10945,7 @@
 	},
 	{
 		"query": "repos created today created yesterday",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories(date(today)),repositories(date(yesterday)))",
 			"intersect(repositories(date(today)),repositories(date-after(yesterday)))",
 			"intersect(repositories(date(yesterday)),repositories(date-after(today)))",
@@ -10733,18 +11000,15 @@
 	},
 	{
 		"query": "people who like my repos liked by people who follow me that people I follow created",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "people who like my repos that people I follow created",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "my repos Danny created",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories(date(today)),repositories-created(me),repositories-liked(0))",
 			"intersect(repositories(date(today)),repositories-contributed(0),repositories-created(me))",
 			"intersect(repositories(date-after(today)),repositories-created(me),repositories-liked(0))",
@@ -10799,8 +11063,7 @@
 	},
 	{
 		"query": "repos Danny by me",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories-created(0),repositories-liked(me))",
 			"intersect(repositories-created(me),repositories-liked(0))",
 			"intersect(repositories-liked(0),repositories-liked(me))",
@@ -10855,8 +11118,7 @@
 	},
 	{
 		"query": "repos Danny by me Danny",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories-created(0),repositories-liked(0),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(0),repositories-liked(0))",
 			"intersect(repositories-contributed(0),repositories-created(0),repositories-liked(me))",
@@ -10891,8 +11153,7 @@
 	},
 	{
 		"query": "repos I not",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"not(repositories-created(me))",
 			"not(repositories-liked(me))",
 			"not(repositories-contributed(me))",
@@ -10947,8 +11208,7 @@
 	},
 	{
 		"query": "issues I not",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"not(issues-opened(me))",
 			"not(issues-mentioned(me))",
 			"not(issues-assigned(me))",
@@ -11003,8 +11263,7 @@
 	},
 	{
 		"query": "pull requests I not",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"not(pull-requests-created(me))",
 			"not(pull-requests-mentioned(me))",
 			"not(pull-requests-assigned(me))",
@@ -11021,9 +11280,11 @@
 	},
 	{
 		"query": "repos Danny contributed to and I like",
-		"correction": false,
-		"semantic": "intersect(repositories-contributed(0),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny contributed to and I like",
+			"semantic": "intersect(repositories-contributed(0),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(repositories-contributed(0),repositories-liked(me))",
 			"intersect(repositories-contributed(0),repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(0),repositories-liked(me))",
@@ -11078,9 +11339,11 @@
 	},
 	{
 		"query": "repos I and Danny have not contributed to",
-		"correction": false,
-		"semantic": "intersect(not(repositories-contributed(0)),not(repositories-contributed(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I and Danny have not contributed to",
+			"semantic": "intersect(not(repositories-contributed(0)),not(repositories-contributed(me)))"
+		},
+		"semantics": [
 			"intersect(not(repositories-contributed(0)),not(repositories-contributed(me)))",
 			"intersect(repositories-contributed(0),repositories-contributed(me))",
 			"intersect(not(repositories-contributed(0)),not(repositories-contributed(me)),repositories-created(me))",
@@ -11135,9 +11398,11 @@
 	},
 	{
 		"query": "repos people who do not like my repos have not contributed to",
-		"correction": false,
-		"semantic": "not(repositories-contributed(not(repository-likers(repositories-created(me)))))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos people who do not like my repos have not contributed to",
+			"semantic": "not(repositories-contributed(not(repository-likers(repositories-created(me)))))"
+		},
+		"semantics": [
 			"not(repositories-contributed(not(repository-likers(repositories-created(me)))))",
 			"repositories-contributed(not(repository-likers(repositories-created(me))))",
 			"intersect(not(repositories-contributed(not(repository-likers(repositories-created(me))))),repositories-created(me))",
@@ -11192,9 +11457,11 @@
 	},
 	{
 		"query": "people who have not contributed to my repos",
-		"correction": false,
-		"semantic": "not(repository-contributors(repositories-created(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who have not contributed to my repos",
+			"semantic": "not(repository-contributors(repositories-created(me)))"
+		},
+		"semantics": [
 			"not(repository-contributors(repositories-created(me)))",
 			"repository-contributors(repositories-created(me))",
 			"not(repository-contributors(intersect(repositories-created(me),repositories-liked(me))))",
@@ -11249,9 +11516,11 @@
 	},
 	{
 		"query": "repos that are not JavaScript repos",
-		"correction": false,
-		"semantic": "not(repositories-language(18))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that are not JavaScript repos",
+			"semantic": "not(repositories-language(18))"
+		},
+		"semantics": [
 			"not(repositories-language(18))",
 			"repositories-language(18)",
 			"intersect(not(repositories-created(me)),not(repositories-language(18)))",
@@ -11306,9 +11575,11 @@
 	},
 	{
 		"query": "repos that are not written in JavaScript",
-		"correction": false,
-		"semantic": "not(repositories-language(18))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that are not written in JavaScript",
+			"semantic": "not(repositories-language(18))"
+		},
+		"semantics": [
 			"not(repositories-language(18))",
 			"repositories-language(18)",
 			"intersect(not(repositories-language(18)),repositories-created(me))",
@@ -11361,38 +11632,50 @@
 	},
 	{
 		"query": "people who are not followed by me",
-		"correction": false,
-		"semantic": "not(users-followed(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who are not followed by me",
+			"semantic": "not(users-followed(me))"
+		},
+		"semantics": [
 			"not(users-followed(me))",
 			"users-followed(me)"
 		]
 	},
 	{
 		"query": "people not followed by me",
-		"correction": false,
-		"semantic": "not(users-followed(me))"
+		"topResult": {
+			"text": "people not followed by me",
+			"semantic": "not(users-followed(me))"
+		}
 	},
 	{
 		"query": "repos not written in JavaScript",
-		"correction": false,
-		"semantic": "not(repositories-language(18))"
+		"topResult": {
+			"text": "repos not written in JavaScript",
+			"semantic": "not(repositories-language(18))"
+		}
 	},
 	{
 		"query": "people not mentioned in my issues",
-		"correction": false,
-		"semantic": "not(users-mentioned(issues-opened(me)))"
+		"topResult": {
+			"text": "people not mentioned in my issues",
+			"semantic": "not(users-mentioned(issues-opened(me)))"
+		}
 	},
 	{
 		"query": "issues not assigned to me",
-		"correction": false,
-		"semantic": "not(issues-assigned(me))"
+		"topResult": {
+			"text": "issues not assigned to me",
+			"semantic": "not(issues-assigned(me))"
+		}
 	},
 	{
 		"query": "issues that are not assigned to me",
-		"correction": false,
-		"semantic": "not(issues-assigned(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues that are not assigned to me",
+			"semantic": "not(issues-assigned(me))"
+		},
+		"semantics": [
 			"not(issues-assigned(me))",
 			"issues-assigned(me)",
 			"intersect(issues-opened(me),not(issues-assigned(me)))",
@@ -11447,9 +11730,11 @@
 	},
 	{
 		"query": "repos that are not my repos",
-		"correction": false,
-		"semantic": "not(repositories-created(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that are not my repos",
+			"semantic": "not(repositories-created(me))"
+		},
+		"semantics": [
 			"not(repositories-created(me))",
 			"repositories-created(me)",
 			"intersect(not(repositories-created(me)),repositories-liked(me))",
@@ -11504,9 +11789,11 @@
 	},
 	{
 		"query": "repos I create",
-		"correction": "repos I created",
-		"semantic": "repositories-created(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I created",
+			"semantic": "repositories-created(me)"
+		},
+		"semantics": [
 			"repositories-created(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me))",
@@ -11561,9 +11848,11 @@
 	},
 	{
 		"query": "repos I created",
-		"correction": false,
-		"semantic": "repositories-created(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I created",
+			"semantic": "repositories-created(me)"
+		},
+		"semantics": [
 			"repositories-created(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me))",
@@ -11618,9 +11907,11 @@
 	},
 	{
 		"query": "repos Danny has created",
-		"correction": false,
-		"semantic": "repositories-created(0)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny has created",
+			"semantic": "repositories-created(0)"
+		},
+		"semantics": [
 			"repositories-created(0)",
 			"intersect(repositories-created(0),repositories-liked(me))",
 			"intersect(repositories-created(me),repositories-liked(0))",
@@ -11675,9 +11966,11 @@
 	},
 	{
 		"query": "repos I did not create",
-		"correction": false,
-		"semantic": "not(repositories-created(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I did not create",
+			"semantic": "not(repositories-created(me))"
+		},
+		"semantics": [
 			"not(repositories-created(me))",
 			"repositories-created(me)",
 			"intersect(not(repositories-created(me)),repositories-liked(me))",
@@ -11732,9 +12025,11 @@
 	},
 	{
 		"query": "repos Danny did not create",
-		"correction": false,
-		"semantic": "not(repositories-created(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny did not create",
+			"semantic": "not(repositories-created(0))"
+		},
+		"semantics": [
 			"not(repositories-created(0))",
 			"intersect(not(repositories-created(0)),repositories-created(me))",
 			"repositories-created(0)",
@@ -11789,9 +12084,11 @@
 	},
 	{
 		"query": "repos Danny do not creates",
-		"correction": "repos Danny did not create",
-		"semantic": "not(repositories-created(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny did not create",
+			"semantic": "not(repositories-created(0))"
+		},
+		"semantics": [
 			"not(repositories-created(0))",
 			"not(repositories-liked(0))",
 			"intersect(not(repositories-created(0)),repositories-created(me))",
@@ -11846,20 +12143,26 @@
 	},
 	{
 		"query": "repos I have not created",
-		"correction": "repos I did not create",
-		"semantic": "not(repositories-created(me))",
-		"note": "Incorrect because implies the returned repos can be \"created\" in the future."
+		"note": "Incorrect because implies the returned repos can be \"created\" in the future.",
+		"topResult": {
+			"text": "repos I did not create",
+			"semantic": "not(repositories-created(me))"
+		}
 	},
 	{
 		"query": "repos Danny has not created",
-		"correction": "repos Danny did not create",
-		"semantic": "not(repositories-created(0))"
+		"topResult": {
+			"text": "repos Danny did not create",
+			"semantic": "not(repositories-created(0))"
+		}
 	},
 	{
 		"query": "repos I made",
-		"correction": "repos I created",
-		"semantic": "repositories-created(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I created",
+			"semantic": "repositories-created(me)"
+		},
+		"semantics": [
 			"repositories-created(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me))",
@@ -11914,9 +12217,11 @@
 	},
 	{
 		"query": "repos I did not make",
-		"correction": "repos I did not create",
-		"semantic": "not(repositories-created(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I did not create",
+			"semantic": "not(repositories-created(me))"
+		},
+		"semantics": [
 			"not(repositories-created(me))",
 			"repositories-created(me)",
 			"intersect(not(repositories-created(me)),repositories-liked(me))",
@@ -11971,9 +12276,11 @@
 	},
 	{
 		"query": "repos I did not made",
-		"correction": "repos I did not create",
-		"semantic": "not(repositories-created(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I did not create",
+			"semantic": "not(repositories-created(me))"
+		},
+		"semantics": [
 			"not(repositories-created(me))",
 			"repositories-created(me)",
 			"intersect(not(repositories-created(me)),repositories-liked(me))",
@@ -12028,9 +12335,11 @@
 	},
 	{
 		"query": "issues I did not open",
-		"correction": false,
-		"semantic": "not(issues-opened(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues I did not open",
+			"semantic": "not(issues-opened(me))"
+		},
+		"semantics": [
 			"not(issues-opened(me))",
 			"issues-opened(me)",
 			"intersect(issues-assigned(me),not(issues-opened(me)))",
@@ -12085,9 +12394,11 @@
 	},
 	{
 		"query": "issues I create",
-		"correction": "issues I created",
-		"semantic": "issues-opened(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "issues I created",
+			"semantic": "issues-opened(me)"
+		},
+		"semantics": [
 			"issues-opened(me)",
 			"intersect(issues-assigned(me),issues-opened(me))",
 			"intersect(issues-mentioned(me),issues-opened(me))",
@@ -12118,9 +12429,11 @@
 	},
 	{
 		"query": "issues I did not created",
-		"correction": "issues I did not create",
-		"semantic": "not(issues-opened(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues I did not create",
+			"semantic": "not(issues-opened(me))"
+		},
+		"semantics": [
 			"not(issues-opened(me))",
 			"issues-opened(me)",
 			"intersect(issues-assigned(me),not(issues-opened(me)))",
@@ -12175,9 +12488,11 @@
 	},
 	{
 		"query": "people who do not created my repos",
-		"correction": "people who did not create my repos",
-		"semantic": "not(repository-creators(repositories-created(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who did not create my repos",
+			"semantic": "not(repository-creators(repositories-created(me)))"
+		},
+		"semantics": [
 			"not(repository-creators(repositories-created(me)))",
 			"repository-creators(repositories-created(me))",
 			"not(repository-creators(intersect(repositories-created(me),repositories-liked(me))))",
@@ -12232,9 +12547,11 @@
 	},
 	{
 		"query": "people who did not create my repos",
-		"correction": false,
-		"semantic": "not(repository-creators(repositories-created(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who did not create my repos",
+			"semantic": "not(repository-creators(repositories-created(me)))"
+		},
+		"semantics": [
 			"not(repository-creators(repositories-created(me)))",
 			"repository-creators(repositories-created(me))",
 			"not(repository-creators(intersect(repositories-created(me),repositories-liked(me))))",
@@ -12289,9 +12606,8 @@
 	},
 	{
 		"query": "people who do not have liked my repos",
-		"correction": true,
 		"note": "Unsure.",
-		"suggestions": [
+		"semantics": [
 			"repository-likers(repositories-created(me))",
 			"intersect(repositories-created(me),repositories-liked(not(followers(me))))",
 			"repository-likers(intersect(repositories-created(me),repositories-liked(me)))",
@@ -12346,9 +12662,8 @@
 	},
 	{
 		"query": "people who do not have opened my issues",
-		"correction": true,
 		"note": "Unsure.",
-		"suggestions": [
+		"semantics": [
 			"issue-openers(issues-opened(me))",
 			"intersect(issue-openers(issues-opened(me)),users-followed(me))",
 			"issue-openers(intersect(issues-assigned(me),issues-opened(me)))",
@@ -12391,9 +12706,11 @@
 	},
 	{
 		"query": "issues that do not mention me",
-		"correction": false,
-		"semantic": "not(issues-mentioned(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues that do not mention me",
+			"semantic": "not(issues-mentioned(me))"
+		},
+		"semantics": [
 			"not(issues-mentioned(me))",
 			"intersect(issues-opened(me),not(issues-mentioned(me)))",
 			"issues-mentioned(me)",
@@ -12422,9 +12739,11 @@
 	},
 	{
 		"query": "issues that are not assigned to my followers",
-		"correction": false,
-		"semantic": "not(issues-assigned(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues that are not assigned to my followers",
+			"semantic": "not(issues-assigned(followers(me)))"
+		},
+		"semantics": [
 			"not(issues-assigned(followers(me)))",
 			"issues-assigned(followers(me))",
 			"intersect(issues-opened(me),not(issues-assigned(followers(me))))",
@@ -12479,9 +12798,11 @@
 	},
 	{
 		"query": "issues that have not been assigned to me",
-		"correction": false,
-		"semantic": "not(issues-assigned(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues that have not been assigned to me",
+			"semantic": "not(issues-assigned(me))"
+		},
+		"semantics": [
 			"not(issues-assigned(me))",
 			"issues-assigned(me)",
 			"intersect(issues-opened(me),not(issues-assigned(me)))",
@@ -12536,9 +12857,11 @@
 	},
 	{
 		"query": "issues Danny is not assigned to",
-		"correction": false,
-		"semantic": "not(issues-assigned(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues Danny is not assigned to",
+			"semantic": "not(issues-assigned(0))"
+		},
+		"semantics": [
 			"not(issues-assigned(0))",
 			"issues-assigned(0)",
 			"intersect(issues-opened(me),not(issues-assigned(0)))",
@@ -12593,9 +12916,11 @@
 	},
 	{
 		"query": "pull requests my followers are not mentioned in",
-		"correction": false,
-		"semantic": "not(pull-requests-mentioned(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "pull requests my followers are not mentioned in",
+			"semantic": "not(pull-requests-mentioned(followers(me)))"
+		},
+		"semantics": [
 			"not(pull-requests-mentioned(followers(me)))",
 			"pull-requests-mentioned(followers(me))",
 			"intersect(not(pull-requests-mentioned(followers(me))),pull-requests-created(me))",
@@ -12650,9 +12975,11 @@
 	},
 	{
 		"query": "pull requests that have not been assigned to me",
-		"correction": false,
-		"semantic": "not(pull-requests-assigned(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "pull requests that have not been assigned to me",
+			"semantic": "not(pull-requests-assigned(me))"
+		},
+		"semantics": [
 			"not(pull-requests-assigned(me))",
 			"pull-requests-assigned(me)",
 			"intersect(not(pull-requests-assigned(me)),pull-requests-created(me))",
@@ -12667,30 +12994,28 @@
 	},
 	{
 		"query": "people who did not like",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "people who like my",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "that mention me",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "that I contributed to",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "people who did not contributed to my repos",
-		"correction": "people who do not contribute to my repos",
-		"semantic": "not(repository-contributors(repositories-created(me)))",
 		"note": "Unsure.",
-		"suggestions": [
+		"topResult": {
+			"text": "people who do not contribute to my repos",
+			"semantic": "not(repository-contributors(repositories-created(me)))"
+		},
+		"semantics": [
 			"not(repository-contributors(repositories-created(me)))",
 			"repository-contributors(repositories-created(me))",
 			"not(repository-contributors(intersect(repositories-created(me),repositories-liked(me))))",
@@ -12745,9 +13070,11 @@
 	},
 	{
 		"query": "Danny's followers who do not follow me",
-		"correction": false,
-		"semantic": "intersect(followers(3),not(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "Danny's followers who do not follow me",
+			"semantic": "intersect(followers(3),not(followers(me)))"
+		},
+		"semantics": [
 			"intersect(followers(3),not(followers(me)))",
 			"intersect(followers(3),followers(me))",
 			"intersect(followers(3),not(followers(me)),users-followed(me))",
@@ -12756,18 +13083,22 @@
 	},
 	{
 		"query": "people who forked Node",
-		"correction": false,
-		"semantic": "repository-forkers(4)",
-		"suggestions": [
+		"topResult": {
+			"text": "people who forked Node",
+			"semantic": "repository-forkers(4)"
+		},
+		"semantics": [
 			"repository-forkers(4)",
 			"intersect(repository-forkers(4),users-followed(me))"
 		]
 	},
 	{
 		"query": "people who forked my repos",
-		"correction": false,
-		"semantic": "repository-forkers(repositories-created(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who forked my repos",
+			"semantic": "repository-forkers(repositories-created(me))"
+		},
+		"semantics": [
 			"repository-forkers(repositories-created(me))",
 			"repository-forkers(intersect(repositories-created(me),repositories-liked(me)))",
 			"intersect(repository-forkers(repositories-created(me)),users-followed(me))",
@@ -12822,9 +13153,11 @@
 	},
 	{
 		"query": "repos I have not forked",
-		"correction": false,
-		"semantic": "not(repositories-forked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I have not forked",
+			"semantic": "not(repositories-forked(me))"
+		},
+		"semantics": [
 			"not(repositories-forked(me))",
 			"repositories-forked(me)",
 			"intersect(not(repositories-forked(me)),repositories-created(me))",
@@ -12879,9 +13212,11 @@
 	},
 	{
 		"query": "repos I forked pushed last year",
-		"correction": "repos pushed last year I forked",
-		"semantic": "intersect(repositories-forked(me),repositories-pushed(date(last-year)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos pushed last year I forked",
+			"semantic": "intersect(repositories-forked(me),repositories-pushed(date(last-year)))"
+		},
+		"semantics": [
 			"intersect(repositories-forked(me),repositories-pushed(date(last-year)))",
 			"intersect(repositories-forked(me),repositories-pushed(date-after(last-year)))",
 			"intersect(repositories-created(me),repositories-forked(me),repositories-pushed(date(last-year)))",
@@ -12936,9 +13271,11 @@
 	},
 	{
 		"query": "repos I forked that are pushed last year",
-		"correction": "repos I forked that were pushed last year",
-		"semantic": "intersect(repositories-forked(me),repositories-pushed(date(last-year)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I forked that were pushed last year",
+			"semantic": "intersect(repositories-forked(me),repositories-pushed(date(last-year)))"
+		},
+		"semantics": [
 			"intersect(repositories-forked(me),repositories-pushed(date(last-year)))",
 			"intersect(repositories-forked(me),repositories-pushed(date-after(last-year)))",
 			"intersect(repositories-created(me),repositories-forked(me),repositories-pushed(date(last-year)))",
@@ -12993,16 +13330,20 @@
 	},
 	{
 		"query": "repos with greater than 20 forks and fewer than 0 forks",
-		"correction": false,
-		"semantic": "repositories(forks-count-over(20),forks-count-under(0))",
-		"note": "Perhaps prevent this."
+		"note": "Perhaps prevent this.",
+		"topResult": {
+			"text": "repos with greater than 20 forks and fewer than 0 forks",
+			"semantic": "repositories(forks-count-over(20),forks-count-under(0))"
+		}
 	},
 	{
 		"query": "repos Danny did not fork",
-		"correction": false,
-		"semantic": "not(repositories-forked(0))",
 		"note": "Should this only be \"has not forked\"?",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny did not fork",
+			"semantic": "not(repositories-forked(0))"
+		},
+		"semantics": [
 			"not(repositories-forked(0))",
 			"intersect(not(repositories-forked(0)),repositories-created(me))",
 			"repositories-forked(0)",
@@ -13057,9 +13398,11 @@
 	},
 	{
 		"query": "repos Danny has not forked",
-		"correction": false,
-		"semantic": "not(repositories-forked(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny has not forked",
+			"semantic": "not(repositories-forked(0))"
+		},
+		"semantics": [
 			"not(repositories-forked(0))",
 			"repositories-forked(0)",
 			"intersect(not(repositories-forked(0)),repositories-created(me))",
@@ -13114,10 +13457,12 @@
 	},
 	{
 		"query": "people who do not contribute to my repos",
-		"correction": false,
-		"semantic": "not(repository-contributors(repositories-created(me)))",
 		"note": "Perhaps correct to \"people who have not\".",
-		"suggestions": [
+		"topResult": {
+			"text": "people who do not contribute to my repos",
+			"semantic": "not(repository-contributors(repositories-created(me)))"
+		},
+		"semantics": [
 			"not(repository-contributors(repositories-created(me)))",
 			"repository-contributors(repositories-created(me))",
 			"not(repository-contributors(intersect(repositories-created(me),repositories-liked(me))))",
@@ -13172,9 +13517,11 @@
 	},
 	{
 		"query": "repos Danny does not contribute to",
-		"correction": false,
-		"semantic": "not(repositories-contributed(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny does not contribute to",
+			"semantic": "not(repositories-contributed(0))"
+		},
+		"semantics": [
 			"not(repositories-contributed(0))",
 			"intersect(not(repositories-contributed(0)),repositories-created(me))",
 			"repositories-contributed(0)",
@@ -13229,9 +13576,11 @@
 	},
 	{
 		"query": "repos Danny has not contributed to",
-		"correction": false,
-		"semantic": "not(repositories-contributed(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny has not contributed to",
+			"semantic": "not(repositories-contributed(0))"
+		},
+		"semantics": [
 			"not(repositories-contributed(0))",
 			"repositories-contributed(0)",
 			"intersect(not(repositories-contributed(0)),repositories-created(me))",
@@ -13286,14 +13635,18 @@
 	},
 	{
 		"query": "repos Danny or Aang do not contribute to",
-		"correction": false,
-		"semantic": "union(not(repositories-contributed(0)),not(repositories-contributed(1)))"
+		"topResult": {
+			"text": "repos Danny or Aang do not contribute to",
+			"semantic": "union(not(repositories-contributed(0)),not(repositories-contributed(1)))"
+		}
 	},
 	{
 		"query": "repos Danny and Aang do not contribute to",
-		"correction": false,
-		"semantic": "intersect(not(repositories-contributed(0)),not(repositories-contributed(1)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos Danny and Aang do not contribute to",
+			"semantic": "intersect(not(repositories-contributed(0)),not(repositories-contributed(1)))"
+		},
+		"semantics": [
 			"intersect(not(repositories-contributed(0)),not(repositories-contributed(1)))",
 			"intersect(not(repositories-contributed(0)),not(repositories-contributed(1)),repositories-created(me))",
 			"intersect(not(repositories-contributed(1)),repositories-created(0))",
@@ -13348,39 +13701,48 @@
 	},
 	{
 		"query": "repos I and Danny or Aang and my followers like",
-		"correction": false,
-		"semantic": "union(intersect(repositories-liked(me),repositories-liked(0)),intersect(repositories-liked(1),repositories-liked(followers(me))))"
+		"topResult": {
+			"text": "repos I and Danny or Aang and my followers like",
+			"semantic": "union(intersect(repositories-liked(me),repositories-liked(0)),intersect(repositories-liked(1),repositories-liked(followers(me))))"
+		}
 	},
 	{
 		"query": "repos I and Danny or Danny and my followers like",
-		"correction": false,
-		"semantic": "union(intersect(repositories-liked(me),repositories-liked(0)),intersect(repositories-liked(0),repositories-liked(followers(me))))"
+		"topResult": {
+			"text": "repos I and Danny or Danny and my followers like",
+			"semantic": "union(intersect(repositories-liked(me),repositories-liked(0)),intersect(repositories-liked(0),repositories-liked(followers(me))))"
+		}
 	},
 	{
 		"query": "contributors of repos I did not contribute to pushed last year",
-		"correction": "contributors of repos pushed last year I do not contribute to",
-		"semantic": "repository-contributors(intersect(not(repositories-contributed(me)),repositories-pushed(date(last-year))))",
-		"note": "Unsure about \"do/did not\"."
+		"note": "Unsure about \"do/did not\".",
+		"topResult": {
+			"text": "contributors of repos pushed last year I do not contribute to",
+			"semantic": "repository-contributors(intersect(not(repositories-contributed(me)),repositories-pushed(date(last-year))))"
+		}
 	},
 	{
 		"query": "people who contributed to issues I opened",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "people I follow",
-		"correction": false,
-		"semantic": "users-followed(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "people I follow",
+			"semantic": "users-followed(me)"
+		},
+		"semantics": [
 			"users-followed(me)",
 			"intersect(followers(me),users-followed(me))"
 		]
 	},
 	{
 		"query": "people Danny follows",
-		"correction": false,
-		"semantic": "users-followed(0)",
-		"suggestions": [
+		"topResult": {
+			"text": "people Danny follows",
+			"semantic": "users-followed(0)"
+		},
+		"semantics": [
 			"users-followed(0)",
 			"intersect(followers(me),users-followed(0))",
 			"intersect(users-followed(0),users-followed(me))"
@@ -13388,9 +13750,11 @@
 	},
 	{
 		"query": "people I and Danny follow",
-		"correction": false,
-		"semantic": "intersect(users-followed(0),users-followed(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "people I and Danny follow",
+			"semantic": "intersect(users-followed(0),users-followed(me))"
+		},
+		"semantics": [
 			"intersect(users-followed(0),users-followed(me))",
 			"intersect(followers(me),users-followed(0))",
 			"intersect(followers(me),users-followed(0),users-followed(me))"
@@ -13398,9 +13762,11 @@
 	},
 	{
 		"query": "people Danny and I follow",
-		"correction": false,
-		"semantic": "intersect(users-followed(0),users-followed(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "people Danny and I follow",
+			"semantic": "intersect(users-followed(0),users-followed(me))"
+		},
+		"semantics": [
 			"intersect(users-followed(0),users-followed(me))",
 			"intersect(followers(0),users-followed(me))",
 			"intersect(followers(me),users-followed(0),users-followed(me))"
@@ -13408,9 +13774,11 @@
 	},
 	{
 		"query": "people people Danny follows and Danny follow",
-		"correction": false,
-		"semantic": "intersect(users-followed(0),users-followed(users-followed(0)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people people Danny follows and Danny follow",
+			"semantic": "intersect(users-followed(0),users-followed(users-followed(0)))"
+		},
+		"semantics": [
 			"intersect(users-followed(0),users-followed(users-followed(0)))",
 			"intersect(users-followed(0),users-followed(followers(0)))",
 			"users-followed(intersect(followers(0),users-followed(0)))",
@@ -13445,9 +13813,11 @@
 	},
 	{
 		"query": "issues assigned to me Danny opened and Aang is mentioned in",
-		"correction": false,
-		"semantic": "intersect(issues-assigned(me),issues-mentioned(1),issues-opened(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues assigned to me Danny opened and Aang is mentioned in",
+			"semantic": "intersect(issues-assigned(me),issues-mentioned(1),issues-opened(0))"
+		},
+		"semantics": [
 			"intersect(issues-assigned(me),issues-mentioned(1),issues-opened(0))",
 			"intersect(issues-assigned(0),issues-assigned(me),issues-mentioned(1),issues-opened(me))",
 			"intersect(issues-assigned(me),issues-mentioned(1),issues-mentioned(me),issues-opened(0))",
@@ -13502,9 +13872,11 @@
 	},
 	{
 		"query": "repos people I follow created that Danny likes",
-		"correction": false,
-		"semantic": "intersect(repositories-created(users-followed(me)),repositories-liked(0))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos people I follow created that Danny likes",
+			"semantic": "intersect(repositories-created(users-followed(me)),repositories-liked(0))"
+		},
+		"semantics": [
 			"intersect(repositories-created(users-followed(me)),repositories-liked(0))",
 			"intersect(repositories-created(intersect(followers(me),users-followed(me))),repositories-liked(0))",
 			"intersect(repositories-created(me),repositories-liked(0),repositories-liked(users-followed(me)))",
@@ -13559,9 +13931,11 @@
 	},
 	{
 		"query": "people people I follow who Danny follows and follow Danny follow",
-		"correction": false,
-		"semantic": "users-followed(intersect(followers(0),users-followed(0),users-followed(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people people I follow who Danny follows and follow Danny follow",
+			"semantic": "users-followed(intersect(followers(0),users-followed(0),users-followed(me)))"
+		},
+		"semantics": [
 			"users-followed(intersect(followers(0),users-followed(0),users-followed(me)))",
 			"intersect(users-followed(0),users-followed(intersect(users-followed(0),users-followed(me))))",
 			"intersect(followers(me),users-followed(intersect(followers(0),users-followed(0),users-followed(me))))",
@@ -13573,9 +13947,11 @@
 	},
 	{
 		"query": "repos that are liked by my followers",
-		"correction": false,
-		"semantic": "repositories-liked(followers(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that are liked by my followers",
+			"semantic": "repositories-liked(followers(me))"
+		},
+		"semantics": [
 			"repositories-liked(followers(me))",
 			"intersect(repositories-created(me),repositories-liked(followers(me)))",
 			"intersect(repositories-liked(me),repositories-liked(followers(me)))",
@@ -13628,9 +14004,11 @@
 	},
 	{
 		"query": "repos that were liked by my followers",
-		"correction": false,
-		"semantic": "repositories-liked(followers(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that were liked by my followers",
+			"semantic": "repositories-liked(followers(me))"
+		},
+		"semantics": [
 			"repositories-liked(followers(me))",
 			"intersect(repositories-created(me),repositories-liked(followers(me)))",
 			"intersect(repositories-liked(me),repositories-liked(followers(me)))",
@@ -13683,9 +14061,11 @@
 	},
 	{
 		"query": "people who did not contribute to my repos",
-		"correction": false,
-		"semantic": "not(repository-contributors(repositories-created(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who did not contribute to my repos",
+			"semantic": "not(repository-contributors(repositories-created(me)))"
+		},
+		"semantics": [
 			"not(repository-contributors(repositories-created(me)))",
 			"repository-contributors(repositories-created(me))",
 			"not(repository-contributors(intersect(repositories-created(me),repositories-liked(me))))",
@@ -13740,9 +14120,11 @@
 	},
 	{
 		"query": "repos that are created in 2014",
-		"correction": "repos that were created in 2014",
-		"semantic": "repositories(date(2014))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that were created in 2014",
+			"semantic": "repositories(date(2014))"
+		},
+		"semantics": [
 			"repositories(date(2014))",
 			"intersect(repositories(date(2014)),repositories-created(me))",
 			"intersect(repositories(date(2014)),repositories-liked(me))",
@@ -13797,9 +14179,11 @@
 	},
 	{
 		"query": "repos that were created in 2014",
-		"correction": false,
-		"semantic": "repositories(date(2014))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that were created in 2014",
+			"semantic": "repositories(date(2014))"
+		},
+		"semantics": [
 			"repositories(date(2014))",
 			"intersect(repositories(date(2014)),repositories-created(me))",
 			"intersect(repositories(date(2014)),repositories-liked(me))",
@@ -13854,10 +14238,12 @@
 	},
 	{
 		"query": "repos that have been created by me",
-		"correction": false,
-		"semantic": "repositories-created(me)",
 		"note": "Perhaps correct to \"repos that were created by me\".",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that have been created by me",
+			"semantic": "repositories-created(me)"
+		},
+		"semantics": [
 			"repositories-created(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me))",
@@ -13912,9 +14298,11 @@
 	},
 	{
 		"query": "issues that have between 20 comments and 34 comments",
-		"correction": false,
-		"semantic": "issues(comments-count(20,34))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues that have between 20 comments and 34 comments",
+			"semantic": "issues(comments-count(20,34))"
+		},
+		"semantics": [
 			"issues(comments-count(20,34))",
 			"intersect(issues(comments-count(20,34)),issues-opened(me))",
 			"intersect(issues(comments-count(20,34)),issues-assigned(me))",
@@ -13969,9 +14357,11 @@
 	},
 	{
 		"query": "repos not liked by me",
-		"correction": false,
-		"semantic": "repositories-liked(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos not liked by me",
+			"semantic": "repositories-liked(me)"
+		},
+		"semantics": [
 			"repositories-liked(me)",
 			"not(repositories-liked(me))",
 			"intersect(repositories-created(me),repositories-liked(me))",
@@ -14026,14 +14416,18 @@
 	},
 	{
 		"query": "repos that have been liked me",
-		"correction": "repos that have been liked by me",
-		"semantic": "repositories-liked(me)"
+		"topResult": {
+			"text": "repos that have been liked by me",
+			"semantic": "repositories-liked(me)"
+		}
 	},
 	{
 		"query": "repos liked by me and forked by me",
-		"correction": false,
-		"semantic": "intersect(repositories-forked(me),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos liked by me and forked by me",
+			"semantic": "intersect(repositories-forked(me),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(repositories-forked(me),repositories-liked(me))",
 			"intersect(repositories-created(me),repositories-forked(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
@@ -14088,9 +14482,11 @@
 	},
 	{
 		"query": "repos liked by me and that are not forked by me",
-		"correction": "repos liked by me that are not forked by me",
-		"semantic": "intersect(not(repositories-forked(me)),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos liked by me that are not forked by me",
+			"semantic": "intersect(not(repositories-forked(me)),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(not(repositories-forked(me)),repositories-liked(me))",
 			"intersect(repositories-forked(me),repositories-liked(me))",
 			"intersect(not(repositories-forked(me)),repositories-created(me),repositories-liked(me))",
@@ -14145,9 +14541,11 @@
 	},
 	{
 		"query": "repos liked by me that are not forked by me",
-		"correction": false,
-		"semantic": "intersect(not(repositories-forked(me)),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos liked by me that are not forked by me",
+			"semantic": "intersect(not(repositories-forked(me)),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(not(repositories-forked(me)),repositories-liked(me))",
 			"intersect(repositories-forked(me),repositories-liked(me))",
 			"intersect(not(repositories-forked(me)),repositories-created(me),repositories-liked(me))",
@@ -14160,9 +14558,11 @@
 	},
 	{
 		"query": "repos liked by me I have not contributed to",
-		"correction": false,
-		"semantic": "intersect(not(repositories-contributed(me)),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos liked by me I have not contributed to",
+			"semantic": "intersect(not(repositories-contributed(me)),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(not(repositories-contributed(me)),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-liked(me))",
 			"intersect(not(repositories-contributed(me)),repositories-created(me),repositories-liked(me))",
@@ -14197,9 +14597,11 @@
 	},
 	{
 		"query": "repos liked by me and forked by me that I have not contributed to",
-		"correction": false,
-		"semantic": "intersect(not(repositories-contributed(me)),repositories-forked(me),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos liked by me and forked by me that I have not contributed to",
+			"semantic": "intersect(not(repositories-contributed(me)),repositories-forked(me),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(not(repositories-contributed(me)),repositories-forked(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
 			"intersect(not(repositories-contributed(me)),repositories-created(me),repositories-forked(me),repositories-liked(me))",
@@ -14208,9 +14610,11 @@
 	},
 	{
 		"query": "issues that were updated today",
-		"correction": false,
-		"semantic": "issues(date(today))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues that were updated today",
+			"semantic": "issues(date(today))"
+		},
+		"semantics": [
 			"issues(date(today))",
 			"issues(date-after(today))",
 			"intersect(issues(date(today)),issues-opened(me))",
@@ -14265,10 +14669,12 @@
 	},
 	{
 		"query": "repos created today liked by me forked by me",
-		"correction": "repos created today and liked by me and forked by me",
-		"semantic": "intersect(repositories(date(today)),repositories-forked(me),repositories-liked(me))",
 		"note": "Perhaps \"that are\" or \"and are\" is inserted instead of \"and\".",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created today and liked by me and forked by me",
+			"semantic": "intersect(repositories(date(today)),repositories-forked(me),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(repositories(date(today)),repositories-forked(me),repositories-liked(me))",
 			"intersect(repositories(date-after(today)),repositories-forked(me),repositories-liked(me))",
 			"intersect(repositories(date(today)),repositories-created(me),repositories-forked(me),repositories-liked(me))",
@@ -14323,10 +14729,12 @@
 	},
 	{
 		"query": "repos created by me forked by me",
-		"correction": "repos created by me that are forked by me",
-		"semantic": "intersect(repositories-created(me),repositories-forked(me))",
 		"note": "Perhaps \"and\" or \"and are\" is inserted instead of \"that are\".",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created by me that are forked by me",
+			"semantic": "intersect(repositories-created(me),repositories-forked(me))"
+		},
+		"semantics": [
 			"intersect(repositories-created(me),repositories-forked(me))",
 			"intersect(repositories-created(me),repositories-forked(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-forked(me))",
@@ -14381,10 +14789,12 @@
 	},
 	{
 		"query": "repos created today liked by me",
-		"correction": "repos created today that are liked by me",
-		"semantic": "intersect(repositories(date(today)),repositories-liked(me))",
 		"note": "Perhaps \"and\" or \"and are\" is inserted instead of \"that are\".",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created today that are liked by me",
+			"semantic": "intersect(repositories(date(today)),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(repositories(date(today)),repositories-liked(me))",
 			"intersect(repositories(date-after(today)),repositories-liked(me))",
 			"intersect(repositories(date(today)),repositories-created(me),repositories-liked(me))",
@@ -14439,10 +14849,12 @@
 	},
 	{
 		"query": "repos not liked by me not forked by me",
-		"correction": "repos liked by me that are not forked by me",
-		"semantic": "intersect(not(repositories-forked(me)),repositories-liked(me))",
 		"note": "Perhaps \"and\" or \"and are\" is inserted instead of \"that are\".",
-		"suggestions": [
+		"topResult": {
+			"text": "repos liked by me that are not forked by me",
+			"semantic": "intersect(not(repositories-forked(me)),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(not(repositories-forked(me)),repositories-liked(me))",
 			"intersect(repositories-forked(me),repositories-liked(me))",
 			"intersect(not(repositories-forked(me)),repositories-created(me),repositories-liked(me))",
@@ -14457,14 +14869,18 @@
 	},
 	{
 		"query": "repos not liked by me and not forked by me",
-		"correction": false,
-		"semantic": "intersect(not(repositories-forked(me)),not(repositories-liked(me)))"
+		"topResult": {
+			"text": "repos not liked by me and not forked by me",
+			"semantic": "intersect(not(repositories-forked(me)),not(repositories-liked(me)))"
+		}
 	},
 	{
 		"query": "repos liked by me and forked by me and contributed to by me",
-		"correction": false,
-		"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos liked by me and forked by me and contributed to by me",
+			"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-forked(me),repositories-liked(me))",
 			"intersect(repositories(date(today)),repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
@@ -14517,37 +14933,47 @@
 	},
 	{
 		"query": "repos liked by me contributed to by me forked by me",
-		"correction": "repos liked by me and contributed to by me and forked by me",
-		"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))"
+		"topResult": {
+			"text": "repos liked by me and contributed to by me and forked by me",
+			"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))"
+		}
 	},
 	{
 		"query": "repos liked by me that are contributed to by me and forked by me",
-		"correction": false,
-		"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos liked by me that are contributed to by me and forked by me",
+			"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-forked(me),repositories-liked(me))"
 		]
 	},
 	{
 		"query": "repos liked by me that are contributed to by me that are forked by me",
-		"correction": "repos liked by me that are contributed to by me and that are forked by me",
-		"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))"
+		"topResult": {
+			"text": "repos liked by me that are contributed to by me and that are forked by me",
+			"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))"
+		}
 	},
 	{
 		"query": "repos liked by me that are contributed to by me and that are forked by me",
-		"correction": false,
-		"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos liked by me that are contributed to by me and that are forked by me",
+			"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-forked(me),repositories-liked(me))"
 		]
 	},
 	{
 		"query": "repos that are liked by me and that are contributed to by me and that are forked by me",
-		"correction": false,
-		"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that are liked by me and that are contributed to by me and that are forked by me",
+			"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-forked(me),repositories-liked(me))",
 			"intersect(repositories(date(today)),repositories-contributed(me),repositories-forked(me),repositories-liked(me))",
@@ -14570,19 +14996,25 @@
 	},
 	{
 		"query": "repos that are liked by me that are contributed to by me and that are forked by me",
-		"correction": "repos that are liked by me and that are contributed to by me and that are forked by me",
-		"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))"
+		"topResult": {
+			"text": "repos that are liked by me and that are contributed to by me and that are forked by me",
+			"semantic": "intersect(repositories-contributed(me),repositories-forked(me),repositories-liked(me))"
+		}
 	},
 	{
 		"query": "repos that are liked by me contributed to by me",
-		"correction": "repos that are liked by me and contributed to by me",
-		"semantic": "intersect(repositories-contributed(me),repositories-liked(me))"
+		"topResult": {
+			"text": "repos that are liked by me and contributed to by me",
+			"semantic": "intersect(repositories-contributed(me),repositories-liked(me))"
+		}
 	},
 	{
 		"query": "repos that are not liked by me and that are not contributed to by me and that are not forked by me",
-		"correction": false,
-		"semantic": "intersect(not(repositories-contributed(me)),not(repositories-forked(me)),not(repositories-liked(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that are not liked by me and that are not contributed to by me and that are not forked by me",
+			"semantic": "intersect(not(repositories-contributed(me)),not(repositories-forked(me)),not(repositories-liked(me)))"
+		},
+		"semantics": [
 			"intersect(not(repositories-contributed(me)),not(repositories-forked(me)),not(repositories-liked(me)))",
 			"intersect(not(repositories-contributed(me)),not(repositories-liked(me)),repositories-forked(me))",
 			"intersect(not(repositories-forked(me)),not(repositories-liked(me)),repositories-contributed(me))",
@@ -14637,30 +15069,37 @@
 	},
 	{
 		"query": "repos not created by me that are liked by me",
-		"correction": false,
-		"semantic": "intersect(not(repositories-created(me)),repositories-liked(me))"
+		"topResult": {
+			"text": "repos not created by me that are liked by me",
+			"semantic": "intersect(not(repositories-created(me)),repositories-liked(me))"
+		}
 	},
 	{
 		"query": "repos not created by me that are not liked by me",
-		"correction": false,
-		"semantic": "intersect(not(repositories-created(me)),not(repositories-liked(me)))"
+		"topResult": {
+			"text": "repos not created by me that are not liked by me",
+			"semantic": "intersect(not(repositories-created(me)),not(repositories-liked(me)))"
+		}
 	},
 	{
 		"query": "repos not written in JavaScript not liked by me",
-		"correction": "repos not written in JavaScript that are not liked by me",
-		"semantic": "intersect(not(repositories-liked(me)),not(repositories-language(18)))",
-		"note": "Unsure if \"that are\" should be inserted."
+		"note": "Unsure if \"that are\" should be inserted.",
+		"topResult": {
+			"text": "repos not written in JavaScript that are not liked by me",
+			"semantic": "intersect(not(repositories-liked(me)),not(repositories-language(18)))"
+		}
 	},
 	{
 		"query": "repos not written in JavaScript that are not liked by me",
-		"correction": false,
-		"semantic": "intersect(not(repositories-liked(me)),not(repositories-language(18)))"
+		"topResult": {
+			"text": "repos not written in JavaScript that are not liked by me",
+			"semantic": "intersect(not(repositories-liked(me)),not(repositories-language(18)))"
+		}
 	},
 	{
 		"query": "repos created today pushed yesterday",
-		"correction": true,
 		"note": "This is assuming \"created [date]\" is treated as passive, thought currently is not.",
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories(date(today)),repositories-pushed(date(yesterday)))",
 			"intersect(repositories(date(today)),repositories-pushed(date-after(yesterday)))",
 			"intersect(repositories(date-after(today)),repositories-pushed(date(yesterday)))",
@@ -14715,10 +15154,12 @@
 	},
 	{
 		"query": "repos I created today",
-		"correction": false,
-		"semantic": "intersect(repositories(date(today)),repositories-created(me))",
 		"note": "Currently edits this, but that might be okay.",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I created today",
+			"semantic": "intersect(repositories(date(today)),repositories-created(me))"
+		},
+		"semantics": [
 			"intersect(repositories(date(today)),repositories-created(me))",
 			"intersect(repositories(date(today)),repositories-liked(me))",
 			"intersect(repositories(date-after(today)),repositories-created(me))",
@@ -14773,8 +15214,7 @@
 	},
 	{
 		"query": "my repos created after last week created last week",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(repositories(date(last-week)),repositories(date-after(last-week)),repositories-created(me))",
 			"intersect(repositories(date-after(last-week)),repositories(date-before(last-week)),repositories-created(me))",
 			"intersect(repositories(date(last-week)),repositories(date-after(last-week)),repositories-created(me),repositories-liked(me))",
@@ -14829,15 +15269,19 @@
 	},
 	{
 		"query": "Danny contributes to",
-		"correction": "repos Danny contributes to",
-		"semantic": "repositories-contributed(0)"
+		"topResult": {
+			"text": "repos Danny contributes to",
+			"semantic": "repositories-contributed(0)"
+		}
 	},
 	{
 		"query": "repos I created I like",
-		"correction": "repos I created that I like",
-		"semantic": "intersect(repositories-created(me),repositories-liked(me))",
 		"note": "Unimplemented.",
-		"suggestions": [
+		"topResult": {
+			"text": "repos I created that I like",
+			"semantic": "intersect(repositories-created(me),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories(date(today)),repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me))",
@@ -14892,21 +15336,27 @@
 	},
 	{
 		"query": "repos that I created I like",
-		"correction": "repos that I created and I like",
-		"semantic": "intersect(repositories-created(me),repositories-liked(me))",
-		"note": "Unimplemented."
+		"note": "Unimplemented.",
+		"topResult": {
+			"text": "repos that I created and I like",
+			"semantic": "intersect(repositories-created(me),repositories-liked(me))"
+		}
 	},
 	{
 		"query": "repos that I created that I like",
-		"correction": "repos that I created and that I like",
-		"semantic": "intersect(repositories-created(me),repositories-liked(me))",
-		"note": "Unimplemented."
+		"note": "Unimplemented.",
+		"topResult": {
+			"text": "repos that I created and that I like",
+			"semantic": "intersect(repositories-created(me),repositories-liked(me))"
+		}
 	},
 	{
 		"query": "repos that I created and I like",
-		"correction": false,
-		"semantic": "intersect(repositories-created(me),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that I created and I like",
+			"semantic": "intersect(repositories-created(me),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me))",
 			"intersect(repositories(date(today)),repositories-created(me),repositories-liked(me))",
@@ -14961,9 +15411,11 @@
 	},
 	{
 		"query": "repos that I created and that I like",
-		"correction": false,
-		"semantic": "intersect(repositories-created(me),repositories-liked(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that I created and that I like",
+			"semantic": "intersect(repositories-created(me),repositories-liked(me))"
+		},
+		"semantics": [
 			"intersect(repositories-created(me),repositories-liked(me))",
 			"intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me))",
 			"intersect(repositories(date(today)),repositories-created(me),repositories-liked(me))",
@@ -15018,52 +15470,58 @@
 	},
 	{
 		"query": "people who I follow Danny follows",
-		"correction": "people who I follow and Danny follows",
-		"semantic": "intersect(users-followed(0),users-followed(me))",
-		"note": "Unimplemented."
+		"note": "Unimplemented.",
+		"topResult": {
+			"text": "people who I follow and Danny follows",
+			"semantic": "intersect(users-followed(0),users-followed(me))"
+		}
 	},
 	{
 		"query": "people who I follow who Danny follows",
-		"correction": "people who I follow and who Danny follows",
-		"semantic": "intersect(users-followed(0),users-followed(me))",
-		"note": "Unimplemented."
+		"note": "Unimplemented.",
+		"topResult": {
+			"text": "people who I follow and who Danny follows",
+			"semantic": "intersect(users-followed(0),users-followed(me))"
+		}
 	},
 	{
 		"query": "my",
-		"correction": true,
 		"note": "Unimplemented.",
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "repos created by creators of node and contributors to my repos",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "my repos I forked that I liked and",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "repos I like to like",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "repos with 02 stars",
-		"correction": "repos with 2 stars",
-		"semantic": "repositories(stars-count(2))"
+		"topResult": {
+			"text": "repos with 2 stars",
+			"semantic": "repositories(stars-count(2))"
+		}
 	},
 	{
 		"query": "repos with 2.0 stars",
-		"correction": "repos with 2 stars",
-		"semantic": "repositories(stars-count(2))"
+		"topResult": {
+			"text": "repos with 2 stars",
+			"semantic": "repositories(stars-count(2))"
+		}
 	},
 	{
 		"query": "repos created by John von Neumann",
-		"correction": false,
-		"semantic": "repositories-created(2)",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created by John von Neumann",
+			"semantic": "repositories-created(2)"
+		},
+		"semantics": [
 			"repositories-created(2)",
 			"intersect(repositories-created(me),repositories-liked(2))",
 			"intersect(repositories-created(2),repositories-liked(me))",
@@ -15118,19 +15576,19 @@
 	},
 	{
 		"query": "people who follow Danny's",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "people who follow Danny's followers'",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "people who follow my followers' followers",
-		"correction": false,
-		"semantic": "followers(followers(followers(me)))",
-		"suggestions": [
+		"topResult": {
+			"text": "people who follow my followers' followers",
+			"semantic": "followers(followers(followers(me)))"
+		},
+		"semantics": [
 			"followers(followers(followers(me)))",
 			"intersect(followers(followers(followers(me))),users-followed(me))",
 			"followers(intersect(followers(followers(me)),users-followed(me)))",
@@ -15157,21 +15615,24 @@
 	},
 	{
 		"query": "people who follow my followers' followers' followers",
-		"correction": false,
-		"semantic": "followers(followers(followers(followers(me))))"
+		"topResult": {
+			"text": "people who follow my followers' followers' followers",
+			"semantic": "followers(followers(followers(followers(me))))"
+		}
 	},
 	{
 		"query": "Aang",
-		"correction": false,
-		"semantic": "1",
-		"suggestions": [
+		"topResult": {
+			"text": "Aang",
+			"semantic": "1"
+		},
+		"semantics": [
 			"1"
 		]
 	},
 	{
 		"query": "Aang Danny's followers",
-		"correction": true,
-		"suggestions": [
+		"semantics": [
 			"intersect(followers(3),users-followed(1))",
 			"intersect(followers(3),followers(me),users-followed(1))",
 			"intersect(followers(3),users-followed(1),users-followed(me))"
@@ -15179,44 +15640,52 @@
 	},
 	{
 		"query": "Aang Danny",
-		"correction": true,
-		"suggestions": []
+		"semantics": []
 	},
 	{
 		"query": "issues having 2 comments",
-		"correction": "issues with 2 comments",
-		"semantic": "issues(comments-count(2))",
-		"note": "Terminal symbol substition with OR."
+		"note": "Terminal symbol substition with OR.",
+		"topResult": {
+			"text": "issues with 2 comments",
+			"semantic": "issues(comments-count(2))"
+		}
 	},
 	{
 		"query": "repos I contribute",
-		"correction": "repos I contribute to",
-		"semantic": "repositories-contributed(me)",
-		"note": "Partial match to multi-token terminal symbol."
+		"note": "Partial match to multi-token terminal symbol.",
+		"topResult": {
+			"text": "repos I contribute to",
+			"semantic": "repositories-contributed(me)"
+		}
 	},
 	{
 		"query": "repos Aang contribute",
-		"correction": "repos Aang contributes to",
-		"semantic": "repositories-contributed(1)",
-		"note": "Partial match to multi-token terminal symbol."
+		"note": "Partial match to multi-token terminal symbol.",
+		"topResult": {
+			"text": "repos Aang contributes to",
+			"semantic": "repositories-contributed(1)"
+		}
 	},
 	{
 		"query": "issues with less than 100 comments",
-		"correction": false,
-		"semantic": "issues(comments-count-under(100))",
-		"note": "Accepted multi-token terminal symbol with OR."
+		"note": "Accepted multi-token terminal symbol with OR.",
+		"topResult": {
+			"text": "issues with less than 100 comments",
+			"semantic": "issues(comments-count-under(100))"
+		}
 	},
 	{
 		"query": "rules I to",
-		"correction": "rules I contribute to",
-		"semantic": "repositories-contributed(me)",
-		"note": "Partial match to multi-token terminal symbol."
+		"note": "Partial match to multi-token terminal symbol.",
+		"topResult": {
+			"text": "rules I contribute to",
+			"semantic": "repositories-contributed(me)"
+		}
 	},
 	{
 		"query": "issues updated after today and before yesterday updated after today",
-		"correction": true,
 		"note": "Regarding the number of maxparams for category semantics, how we imeplement dates, and why not just use a category semantic for everything (e.g., issues(liked(1))). Or, we do not use category semantics for dates.",
-		"suggestions": [
+		"semantics": [
 			"intersect(issues(date-after(today),date-before(yesterday)),issues(date-after(today)))",
 			"intersect(issues(date-after(today)),issues(date-after(today),date-before(yesterday)))",
 			"intersect(issues(date-after(today),date-before(yesterday)),issues(date-after(today)),issues-opened(me))",
@@ -15271,10 +15740,12 @@
 	},
 	{
 		"query": "repos created between 2015 and 2015",
-		"correction": false,
-		"semantic": "repositories(date-interval-end(2015),date-interval-start(2015))",
 		"note": "Allow date ranges with the start bound equal to the end bound.",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created between 2015 and 2015",
+			"semantic": "repositories(date-interval-end(2015),date-interval-start(2015))"
+		},
+		"semantics": [
 			"repositories(date-interval-end(2015),date-interval-start(2015))",
 			"intersect(repositories(date-interval-end(2015),date-interval-start(2015)),repositories-created(me))",
 			"intersect(repositories(date-interval-end(2015),date-interval-start(2015)),repositories-liked(me))",
@@ -15329,10 +15800,12 @@
 	},
 	{
 		"query": "repos created from 2015 to 2015",
-		"correction": false,
-		"semantic": "repositories(date-interval-end(2015),date-interval-start(2015))",
 		"note": "Allow date ranges with the start bound equal to the end bound.",
-		"suggestions": [
+		"topResult": {
+			"text": "repos created from 2015 to 2015",
+			"semantic": "repositories(date-interval-end(2015),date-interval-start(2015))"
+		},
+		"semantics": [
 			"repositories(date-interval-end(2015),date-interval-start(2015))",
 			"intersect(repositories(date-interval-end(2015),date-interval-start(2015)),repositories-created(me))",
 			"intersect(repositories(date-interval-end(2015),date-interval-start(2015)),repositories-liked(me))",
@@ -15387,9 +15860,11 @@
 	},
 	{
 		"query": "repos of my followers",
-		"correction": false,
-		"semantic": "repositories-created(followers(me))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos of my followers",
+			"semantic": "repositories-created(followers(me))"
+		},
+		"semantics": [
 			"repositories-created(followers(me))",
 			"intersect(repositories-created(followers(me)),repositories-liked(me))",
 			"repositories-created(intersect(followers(me),users-followed(me)))",
@@ -15444,14 +15919,18 @@
 	},
 	{
 		"query": "repos of my followers'",
-		"correction": false,
-		"semantic": "repositories-created(followers(me))"
+		"topResult": {
+			"text": "repos of my followers'",
+			"semantic": "repositories-created(followers(me))"
+		}
 	},
 	{
 		"query": "issues updated after today before yesterday",
-		"correction": "issues updated after today and before yesterday",
-		"semantic": "issues(date-after(today),date-before(yesterday))",
-		"suggestions": [
+		"topResult": {
+			"text": "issues updated after today and before yesterday",
+			"semantic": "issues(date-after(today),date-before(yesterday))"
+		},
+		"semantics": [
 			"issues(date-after(today),date-before(yesterday))",
 			"intersect(issues(date-after(today)),issues(date-before(yesterday)))",
 			"intersect(issues(date-after(today),date-before(yesterday)),issues-opened(me))",
@@ -15508,9 +15987,11 @@
 	},
 	{
 		"query": "repos that were not created by creators of repos of mine",
-		"correction": false,
-		"semantic": "not(repositories-created(repository-creators(repositories-created(me))))",
-		"suggestions": [
+		"topResult": {
+			"text": "repos that were not created by creators of repos of mine",
+			"semantic": "not(repositories-created(repository-creators(repositories-created(me))))"
+		},
+		"semantics": [
 			"not(repositories-created(repository-creators(repositories-created(me))))",
 			"repositories-created(repository-creators(repositories-created(me)))",
 			"intersect(not(repositories-created(repository-creators(repositories-created(me)))),repositories-created(me))",
@@ -15565,9 +16046,11 @@
 	},
 	{
 		"query": "issues",
-		"correction": "my issues",
-		"semantic": "issues-opened(me)",
-		"suggestions": [
+		"topResult": {
+			"text": "my issues",
+			"semantic": "issues-opened(me)"
+		},
+		"semantics": [
 			"issues-opened(me)",
 			"issues-assigned(me)",
 			"intersect(issues-assigned(me),issues-opened(me))",
@@ -15609,9 +16092,11 @@
 	},
 	{
 		"query": "creators of repos of openers of my issues who created my pull requests",
-		"correction": false,
-		"semantic": "intersect(pull-request-creators(pull-requests-created(me)),repository-creators(repositories-created(issue-openers(issues-opened(me)))))",
-		"suggestions": [
+		"topResult": {
+			"text": "creators of repos of openers of my issues who created my pull requests",
+			"semantic": "intersect(pull-request-creators(pull-requests-created(me)),repository-creators(repositories-created(issue-openers(issues-opened(me)))))"
+		},
+		"semantics": [
 			"intersect(pull-request-creators(pull-requests-created(me)),repository-creators(repositories-created(issue-openers(issues-opened(me)))))",
 			"repository-creators(repositories-created(intersect(issue-openers(issues-opened(me)),pull-request-creators(pull-requests-created(me)))))",
 			"repository-creators(intersect(repositories-created(intersect(issue-openers(issues-opened(me)),pull-request-creators(pull-requests-created(me)))),repositories-liked(me)))",
