@@ -1195,7 +1195,8 @@
 	},
 	{
 		"query": "my JavaScript repos that are written in JavaScript",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "issues assigned to me I opened and am mentioned in",
@@ -1943,7 +1944,8 @@
 	},
 	{
 		"query": "contributors to my repos and repos of mine",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "likers of my repos",
@@ -5869,7 +5871,13 @@
 	{
 		"query": "women",
 		"correction": false,
-		"semantic": "users-gender(female)"
+		"semantic": "users-gender(female)",
+		"suggestions": [
+			"users-gender(female)",
+			"intersect(users-followed(me),users-gender(female))",
+			"intersect(followers(me),users-gender(female))",
+			"intersect(followers(me),users-followed(me),users-gender(female))"
+		]
 	},
 	{
 		"query": "men I follow",
@@ -6294,17 +6302,20 @@
 	{
 		"query": "people {user} follows",
 		"correction": true,
-		"note": "Cannot use placeholder symbols."
+		"note": "Cannot use placeholder symbols.",
+		"suggestions": []
 	},
 	{
 		"query": "people I and {user} follow",
 		"correction": true,
-		"note": "Cannot use placeholder symbols."
+		"note": "Cannot use placeholder symbols.",
+		"suggestions": []
 	},
 	{
 		"query": "issues with <int> comments",
 		"correction": true,
-		"note": "Cannot use placeholder symbols."
+		"note": "Cannot use placeholder symbols.",
+		"suggestions": []
 	},
 	{
 		"query": "my repos me people who follow my followers have been and",
@@ -6517,7 +6528,8 @@
 	},
 	{
 		"query": "people I have",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "repos I have",
@@ -7206,15 +7218,18 @@
 	},
 	{
 		"query": "people who like",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "people who have",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "people who have been",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "repos that",
@@ -8155,7 +8170,8 @@
 	},
 	{
 		"query": "repos who have liked my repos",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "people who have issues pull requests",
@@ -8561,19 +8577,23 @@
 	{
 		"query": "people who do contributed not to my repos",
 		"correction": true,
-		"note": "Unsure."
+		"note": "Unsure.",
+		"suggestions": []
 	},
 	{
 		"query": "issues with -20 to 34 comments I opened",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "repos created before June 0 2000 and July -2 3000",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "repos created before June 32 1940",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "repos created before June 31 1950",
@@ -10713,11 +10733,13 @@
 	},
 	{
 		"query": "people who like my repos liked by people who follow me that people I follow created",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "people who like my repos that people I follow created",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "my repos Danny created",
@@ -12645,19 +12667,23 @@
 	},
 	{
 		"query": "people who did not like",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "people who like my",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "that mention me",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "that I contributed to",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "people who did not contributed to my repos",
@@ -13338,7 +13364,8 @@
 	},
 	{
 		"query": "people who contributed to issues I opened",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "people I follow",
@@ -15004,19 +15031,23 @@
 	{
 		"query": "my",
 		"correction": true,
-		"note": "Unimplemented."
+		"note": "Unimplemented.",
+		"suggestions": []
 	},
 	{
 		"query": "repos created by creators of node and contributors to my repos",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "my repos I forked that I liked and",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "repos I like to like",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "repos with 02 stars",
@@ -15087,11 +15118,13 @@
 	},
 	{
 		"query": "people who follow Danny's",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "people who follow Danny's followers'",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "people who follow my followers' followers",
@@ -15130,7 +15163,10 @@
 	{
 		"query": "Aang",
 		"correction": false,
-		"semantic": "1"
+		"semantic": "1",
+		"suggestions": [
+			"1"
+		]
 	},
 	{
 		"query": "Aang Danny's followers",
@@ -15143,7 +15179,8 @@
 	},
 	{
 		"query": "Aang Danny",
-		"correction": true
+		"correction": true,
+		"suggestions": []
 	},
 	{
 		"query": "issues having 2 comments",
