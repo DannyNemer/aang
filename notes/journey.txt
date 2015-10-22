@@ -242,4 +242,22 @@
 
 - I continue to grow faster at implementing complex changes affecting many modules, algorithms and data structures, etc.
 
-- How I learned: "The 1910 [Flexner] Report emphasized experience oriented methods of teaching and denigrated the early traditional didactic and mental disciplinary methods. Flexner further stressed the investigative process or inquiry as a method of promoting critical thinking. Through inquiry as a model of reflective thinking the traditional fundamental sciences would be rendered dynamic establishing organic connection to real world experience." ~ Zelenka
+- How I learn: "The 1910 [Flexner] Report emphasized experience oriented methods of teaching and denigrated the early traditional didactic and mental disciplinary methods. Flexner further stressed the investigative process or inquiry as a method of promoting critical thinking. Through inquiry as a model of reflective thinking the traditional fundamental sciences would be rendered dynamic establishing organic connection to real world experience." ~ Zelenka
+
+- There are three potential products: (1) searching users' third-party services (e.g., email, Dropbox, social network accounts), (2) searching highly structured public datasets (e.g., music, places, financial data, people), (3) an API for search as a service.
+- I cannot experiment with the product until I finish the core technology.
+
+- Much time and effort is spent designing and building the system that enables me to build the product: grammar generator and all the rule functions, etc, ambiguity checker, CLI, benchmarker, test suite, etc. It is a product itself. Just as Tesla sees the Gigafactory as a product itself which enables other products. Or Google's infrastructure. Even Apple's processes, i.e., how it operates, is a product of profound work (e.g., Apple University), but its existence is secret.
+
+- Peer pressure, everyone's impression of me, motivates me enormously for everything I do. As it has been my whole life. So true is it now, working on this.
+- My goodness, I must admit, it is driving me mad. Yes, I want to awe all those from my past: the friends who betrayed me, the girls who denied me, the business kids who laughed at me. It has been obsessive, and my memories are painful and chronic. Working on this, alone, non-stop, with no new experiences to occupy my mind, leaves only memories to hijack my attention.
+
+- In actuality, I began focusing on the startup 2.5 months ago. Until then, it was preceded by "but": I am doing X, but continuing to work on the startup. Now it is my focus. No distractions.
+
+- Startups are all about not dieing; i.e., not giving up. That is my skill: working relentlessly, never quitting.
+
+- Winning over people is all about your ability to express yourself and personality. And success is all about winning over people. Hence, the company and brand needs personality and humanism.
+
+- I did not realize this was a startup, so I did not understand that my pains were normal, necessary, and validating.
+
+- This work, and the paramount occupation each day, is the most emotionally taxing endeavor of my life. For months I have been drowning in chronically recurring memories of the past, because my work prevents new experiences from replacing those memories' recency.
