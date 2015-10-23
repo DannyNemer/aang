@@ -1545,7 +1545,7 @@
 	},
 	{
 		"query": "my {left-stop-word} repos",
-		"note": "Stop words.",
+		"description": "Stop words.",
 		"topResult": {
 			"text": "my repos",
 			"semantic": "repositories-created(me)"
@@ -1605,7 +1605,7 @@
 	},
 	{
 		"query": "my {left-stop-word} JavaScript repos",
-		"note": "Stop words.",
+		"description": "Stop words.",
 		"topResult": {
 			"text": "my JavaScript repos",
 			"semantic": "intersect(repositories-created(me),repositories-language(18))"
@@ -1665,7 +1665,7 @@
 	},
 	{
 		"query": "my JavaScript {left-stop-word} repos",
-		"note": "Stop words.",
+		"description": "Stop words.",
 		"topResult": {
 			"text": "my JavaScript repos",
 			"semantic": "intersect(repositories-created(me),repositories-language(18))"
@@ -1725,7 +1725,7 @@
 	},
 	{
 		"query": "my {left-stop-word} JavaScript {left-stop-word} repos",
-		"note": "Stop words.",
+		"description": "Stop words.",
 		"topResult": {
 			"text": "my JavaScript repos",
 			"semantic": "intersect(repositories-created(me),repositories-language(18))"
@@ -1785,7 +1785,7 @@
 	},
 	{
 		"query": "my {left-stop-word} {left-stop-word} repos",
-		"note": "Stop words.",
+		"description": "Stop words.",
 		"topResult": {
 			"text": "my repos",
 			"semantic": "repositories-created(me)"
@@ -2384,11 +2384,11 @@
 	},
 	{
 		"query": "creators of repos I like and pull requests I am mentioned in",
+		"description": "Unsure about semantic.",
 		"topResult": {
 			"text": "creators of repos I like and pull requests I am mentioned in",
 			"semantic": "intersect(creators(repositories-liked(me)),creators(pull-requests-mentioned(me)))"
 		},
-		"note": "Unsure about semantic.",
 		"semantics": [
 			"intersect(pull-request-creators(pull-requests-mentioned(me)),repository-creators(repositories-liked(me)))",
 			"intersect(repository-creators(repositories-liked(me)),users-mentioned(pull-requests-mentioned(me)))",
@@ -2823,7 +2823,7 @@
 	},
 	{
 		"query": "{left-stop-word} open issues that are never assigned to people who {pre-filter-stop-word} follow me",
-		"note": "Stop words.",
+		"description": "Stop words.",
 		"topResult": {
 			"text": "open issues that are assigned to people who follow me",
 			"semantic": "intersect(issues-assigned(followers(me)),issues-state(open))"
@@ -3840,7 +3840,7 @@
 	},
 	{
 		"query": "issues opened by me assigned to me",
-		"note": "Transposition.",
+		"description": "Transposition.",
 		"topResult": {
 			"text": "issues assigned to me opened by me",
 			"semantic": "intersect(issues-assigned(me),issues-opened(me))"
@@ -4037,7 +4037,7 @@
 	},
 	{
 		"query": "issues that are with between 20 comments and 34 comments",
-		"note": "I do not like how this sounds. Might be okay.",
+		"description": "I do not like how this sounds. Might be okay.",
 		"topResult": {
 			"text": "issues that are with between 20 comments and 34 comments",
 			"semantic": "issues(comments-count(20,34))"
@@ -5287,7 +5287,7 @@
 	},
 	{
 		"query": "repos created before June 20 2000 and after this year",
-		"note": "Perhaps prevent this because logically contradictory.",
+		"description": "Perhaps prevent this because logically contradictory.",
 		"topResult": {
 			"text": "repos created before June 20 2000 and after this year",
 			"semantic": "repositories(date-after(this-year),date-before(20,2000,jun))"
@@ -5457,7 +5457,7 @@
 	},
 	{
 		"query": "my GitHub repos liked by my github followers",
-		"note": "Corrects capitalization.",
+		"description": "Corrects capitalization.",
 		"topResult": {
 			"text": "my GitHub repos liked by my GitHub followers",
 			"semantic": "intersect(repositories-created(me),repositories-liked(followers(me)))"
@@ -5576,7 +5576,7 @@
 	},
 	{
 		"query": "my {left-stop-word} followers' repos",
-		"note": "Stop words.",
+		"description": "Stop words.",
 		"topResult": {
 			"text": "my followers' repos",
 			"semantic": "repositories-created(followers(me))"
@@ -5636,7 +5636,7 @@
 	},
 	{
 		"query": "my {left-stop-word} followers' {left-stop-word} repos",
-		"note": "Stop words.",
+		"description": "Stop words.",
 		"topResult": {
 			"text": "my followers' repos",
 			"semantic": "repositories-created(followers(me))"
@@ -5781,7 +5781,7 @@
 	},
 	{
 		"query": "female people",
-		"note": "Perhaps correct to \"females\".",
+		"description": "Perhaps correct to \"females\".",
 		"topResult": {
 			"text": "female people",
 			"semantic": "users-gender(female)"
@@ -6330,7 +6330,7 @@
 	},
 	{
 		"query": "people who are males",
-		"note": "Should this correct to \"people who are male\"?",
+		"description": "Should this correct to \"people who are male\"?",
 		"topResult": {
 			"text": "people who are males",
 			"semantic": "users-gender(male)"
@@ -6703,17 +6703,17 @@
 	},
 	{
 		"query": "people {user} follows",
-		"note": "Cannot use placeholder symbols.",
+		"description": "Cannot use placeholder symbols.",
 		"semantics": []
 	},
 	{
 		"query": "people I and {user} follow",
-		"note": "Cannot use placeholder symbols.",
+		"description": "Cannot use placeholder symbols.",
 		"semantics": []
 	},
 	{
 		"query": "issues with <int> comments",
-		"note": "Cannot use placeholder symbols.",
+		"description": "Cannot use placeholder symbols.",
 		"semantics": []
 	},
 	{
@@ -7483,7 +7483,7 @@
 	},
 	{
 		"query": "repos I did not contribute to",
-		"note": "Maybe only \"have not\".",
+		"description": "Maybe only \"have not\".",
 		"topResult": {
 			"text": "repos I did not contribute to",
 			"semantic": "not(repositories-contributed(me))"
@@ -7543,7 +7543,7 @@
 	},
 	{
 		"query": "repos I do not contribute to",
-		"note": "Unsure.",
+		"description": "Unsure.",
 		"topResult": {
 			"text": "repos I do not contribute to",
 			"semantic": "not(repositories-contributed(me))"
@@ -9413,7 +9413,7 @@
 	},
 	{
 		"query": "people who do contributed not to my repos",
-		"note": "Unsure.",
+		"description": "Unsure.",
 		"semantics": []
 	},
 	{
@@ -9614,7 +9614,7 @@
 	},
 	{
 		"query": "repos I did not like",
-		"note": "I do not know whether to prevent \"repos I did not like\" because \"repos I did not star\" is acceptable.",
+		"description": "I do not know whether to prevent \"repos I did not like\" because \"repos I did not star\" is acceptable.",
 		"semantics": [
 			"not(repositories-liked(me))",
 			"intersect(not(repositories-liked(me)),repositories-created(me))",
@@ -10024,7 +10024,7 @@
 	},
 	{
 		"query": "repos I not have liked",
-		"note": "Add transposition correction?",
+		"description": "Add transposition correction?",
 		"semantics": [
 			"repositories-liked(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
@@ -11216,7 +11216,7 @@
 	},
 	{
 		"query": "repos I not liked",
-		"note": "Unsure.",
+		"description": "Unsure.",
 		"topResult": {
 			"text": "repos I do not like",
 			"semantic": "not(repositories-liked(me))"
@@ -12986,11 +12986,11 @@
 	},
 	{
 		"query": "repos I have not created",
+		"description": "Incorrect because implies the returned repos can be \"created\" in the future.",
 		"topResult": {
 			"text": "repos I did not create",
 			"semantic": "not(repositories-created(me))"
 		},
-		"note": "Incorrect because implies the returned repos can be \"created\" in the future.",
 		"semantics": [
 			"repositories-created(me)",
 			"intersect(not(repositories-liked(me)),repositories-created(me))",
@@ -13553,7 +13553,7 @@
 	},
 	{
 		"query": "people who do not have liked my repos",
-		"note": "Unsure.",
+		"description": "Unsure.",
 		"semantics": [
 			"repository-likers(repositories-created(me))",
 			"intersect(repositories-created(me),repositories-liked(not(followers(me))))",
@@ -13609,7 +13609,7 @@
 	},
 	{
 		"query": "people who do not have opened my issues",
-		"note": "Unsure.",
+		"description": "Unsure.",
 		"semantics": [
 			"issue-openers(issues-opened(me))",
 			"intersect(issue-openers(issues-opened(me)),users-followed(me))",
@@ -13957,7 +13957,7 @@
 	},
 	{
 		"query": "people who did not contributed to my repos",
-		"note": "Unsure.",
+		"description": "Unsure.",
 		"topResult": {
 			"text": "people who do not contribute to my repos",
 			"semantic": "not(repository-contributors(repositories-created(me)))"
@@ -14277,16 +14277,16 @@
 	},
 	{
 		"query": "repos with greater than 20 forks and fewer than 0 forks",
+		"description": "Perhaps prevent this.",
 		"topResult": {
 			"text": "repos with greater than 20 forks and fewer than 0 forks",
 			"semantic": "repositories(forks-count-over(20),forks-count-under(0))"
 		},
-		"note": "Perhaps prevent this.",
 		"semantics": []
 	},
 	{
 		"query": "repos Danny did not fork",
-		"note": "Should this only be \"has not forked\"?",
+		"description": "Should this only be \"has not forked\"?",
 		"topResult": {
 			"text": "repos Danny did not fork",
 			"semantic": "not(repositories-forked(0))"
@@ -14405,7 +14405,7 @@
 	},
 	{
 		"query": "people who do not contribute to my repos",
-		"note": "Perhaps correct to \"people who have not\".",
+		"description": "Perhaps correct to \"people who have not\".",
 		"topResult": {
 			"text": "people who do not contribute to my repos",
 			"semantic": "not(repository-contributors(repositories-created(me)))"
@@ -14819,11 +14819,11 @@
 	},
 	{
 		"query": "contributors of repos I did not contribute to pushed last year",
+		"description": "Unsure about \"do/did not\".",
 		"topResult": {
 			"text": "contributors of repos pushed last year I do not contribute to",
 			"semantic": "repository-contributors(intersect(not(repositories-contributed(me)),repositories-pushed(date(last-year))))"
 		},
-		"note": "Unsure about \"do/did not\".",
 		"semantics": []
 	},
 	{
@@ -15343,7 +15343,7 @@
 	},
 	{
 		"query": "repos that have been created by me",
-		"note": "Perhaps correct to \"repos that were created by me\".",
+		"description": "Perhaps correct to \"repos that were created by me\".",
 		"topResult": {
 			"text": "repos that have been created by me",
 			"semantic": "repositories-created(me)"
@@ -15775,7 +15775,7 @@
 	},
 	{
 		"query": "repos created today liked by me forked by me",
-		"note": "Perhaps \"that are\" or \"and are\" is inserted instead of \"and\".",
+		"description": "Perhaps \"that are\" or \"and are\" is inserted instead of \"and\".",
 		"topResult": {
 			"text": "repos created today and liked by me and forked by me",
 			"semantic": "intersect(repositories(date(today)),repositories-forked(me),repositories-liked(me))"
@@ -15835,7 +15835,7 @@
 	},
 	{
 		"query": "repos created by me forked by me",
-		"note": "Perhaps \"and\" or \"and are\" is inserted instead of \"that are\".",
+		"description": "Perhaps \"and\" or \"and are\" is inserted instead of \"that are\".",
 		"topResult": {
 			"text": "repos created by me that are forked by me",
 			"semantic": "intersect(repositories-created(me),repositories-forked(me))"
@@ -15895,7 +15895,7 @@
 	},
 	{
 		"query": "repos created today liked by me",
-		"note": "Perhaps \"and\" or \"and are\" is inserted instead of \"that are\".",
+		"description": "Perhaps \"and\" or \"and are\" is inserted instead of \"that are\".",
 		"topResult": {
 			"text": "repos created today that are liked by me",
 			"semantic": "intersect(repositories(date(today)),repositories-liked(me))"
@@ -15955,11 +15955,11 @@
 	},
 	{
 		"query": "repos not liked by me not forked by me",
+		"description": "Perhaps \"and\" or \"and are\" is inserted instead of \"that are\".",
 		"topResult": {
 			"text": "repos liked by me that are not forked by me",
 			"semantic": "intersect(not(repositories-forked(me)),repositories-liked(me))"
 		},
-		"note": "Perhaps \"and\" or \"and are\" is inserted instead of \"that are\".",
 		"semantics": [
 			"intersect(not(repositories-forked(me)),not(repositories-liked(me)))",
 			"intersect(not(repositories-liked(me)),repositories-forked(me))",
@@ -16353,11 +16353,11 @@
 	},
 	{
 		"query": "repos not written in JavaScript not liked by me",
+		"description": "Unsure if \"that are\" should be inserted.",
 		"topResult": {
 			"text": "repos not written in JavaScript that are not liked by me",
 			"semantic": "intersect(not(repositories-liked(me)),not(repositories-language(18)))"
 		},
-		"note": "Unsure if \"that are\" should be inserted.",
 		"semantics": [
 			"intersect(not(repositories-language(18)),not(repositories-liked(me)))",
 			"intersect(not(repositories-language(18)),repositories-liked(me))",
@@ -16416,7 +16416,7 @@
 	},
 	{
 		"query": "repos created today pushed yesterday",
-		"note": "This is assuming \"created [date]\" is treated as passive, thought currently is not.",
+		"description": "This is assuming \"created [date]\" is treated as passive, thought currently is not.",
 		"semantics": [
 			"intersect(repositories(date(today)),repositories-pushed(date(yesterday)))",
 			"intersect(repositories(date(today)),repositories-pushed(date-after(yesterday)))",
@@ -16472,7 +16472,7 @@
 	},
 	{
 		"query": "repos I created today",
-		"note": "Currently edits this, but that might be okay.",
+		"description": "Currently edits this, but that might be okay.",
 		"topResult": {
 			"text": "repos I created today",
 			"semantic": "intersect(repositories(date(today)),repositories-created(me))"
@@ -16595,7 +16595,7 @@
 	},
 	{
 		"query": "repos I created I like",
-		"note": "Unimplemented.",
+		"description": "Unimplemented.",
 		"topResult": {
 			"text": "repos I created that I like",
 			"semantic": "intersect(repositories-created(me),repositories-liked(me))"
@@ -16655,20 +16655,20 @@
 	},
 	{
 		"query": "repos that I created I like",
+		"description": "Unimplemented.",
 		"topResult": {
 			"text": "repos that I created and I like",
 			"semantic": "intersect(repositories-created(me),repositories-liked(me))"
 		},
-		"note": "Unimplemented.",
 		"semantics": []
 	},
 	{
 		"query": "repos that I created that I like",
+		"description": "Unimplemented.",
 		"topResult": {
 			"text": "repos that I created and that I like",
 			"semantic": "intersect(repositories-created(me),repositories-liked(me))"
 		},
-		"note": "Unimplemented.",
 		"semantics": []
 	},
 	{
@@ -16791,25 +16791,25 @@
 	},
 	{
 		"query": "people who I follow Danny follows",
+		"description": "Unimplemented.",
 		"topResult": {
 			"text": "people who I follow and Danny follows",
 			"semantic": "intersect(users-followed(0),users-followed(me))"
 		},
-		"note": "Unimplemented.",
 		"semantics": []
 	},
 	{
 		"query": "people who I follow who Danny follows",
+		"description": "Unimplemented.",
 		"topResult": {
 			"text": "people who I follow and who Danny follows",
 			"semantic": "intersect(users-followed(0),users-followed(me))"
 		},
-		"note": "Unimplemented.",
 		"semantics": []
 	},
 	{
 		"query": "my",
-		"note": "Unimplemented.",
+		"description": "Unimplemented.",
 		"semantics": []
 	},
 	{
@@ -17072,20 +17072,20 @@
 	},
 	{
 		"query": "issues having 2 comments",
+		"description": "Terminal symbol substition with OR.",
 		"topResult": {
 			"text": "issues with 2 comments",
 			"semantic": "issues(comments-count(2))"
 		},
-		"note": "Terminal symbol substition with OR.",
 		"semantics": []
 	},
 	{
 		"query": "repos I contribute",
+		"description": "Partial match to multi-token terminal symbol.",
 		"topResult": {
 			"text": "repos I contribute to",
 			"semantic": "repositories-contributed(me)"
 		},
-		"note": "Partial match to multi-token terminal symbol.",
 		"semantics": [
 			"repositories-created(me)",
 			"repositories-liked(me)",
@@ -17141,11 +17141,11 @@
 	},
 	{
 		"query": "repos Aang contribute",
+		"description": "Partial match to multi-token terminal symbol.",
 		"topResult": {
 			"text": "repos Aang contributes to",
 			"semantic": "repositories-contributed(1)"
 		},
-		"note": "Partial match to multi-token terminal symbol.",
 		"semantics": [
 			"repositories-created(1)",
 			"repositories-liked(1)",
@@ -17201,25 +17201,25 @@
 	},
 	{
 		"query": "issues with less than 100 comments",
+		"description": "Accepted multi-token terminal symbol with OR.",
 		"topResult": {
 			"text": "issues with less than 100 comments",
 			"semantic": "issues(comments-count-under(100))"
 		},
-		"note": "Accepted multi-token terminal symbol with OR.",
 		"semantics": []
 	},
 	{
 		"query": "rules I to",
+		"description": "Partial match to multi-token terminal symbol.",
 		"topResult": {
 			"text": "rules I contribute to",
 			"semantic": "repositories-contributed(me)"
 		},
-		"note": "Partial match to multi-token terminal symbol.",
 		"semantics": []
 	},
 	{
 		"query": "issues updated after today and before yesterday updated after today",
-		"note": "Regarding the number of maxparams for category semantics, how we imeplement dates, and why not just use a category semantic for everything (e.g., issues(liked(1))). Or, we do not use category semantics for dates.",
+		"description": "Regarding the number of maxparams for category semantics, how we imeplement dates, and why not just use a category semantic for everything (e.g., issues(liked(1))). Or, we do not use category semantics for dates.",
 		"semantics": [
 			"intersect(issues(date-after(today),date-before(yesterday)),issues(date-after(today)))",
 			"intersect(issues(date-after(today)),issues(date-after(today),date-before(yesterday)))",
@@ -17275,7 +17275,7 @@
 	},
 	{
 		"query": "repos created between 2015 and 2015",
-		"note": "Allow date ranges with the start bound equal to the end bound.",
+		"description": "Allow date ranges with the start bound equal to the end bound.",
 		"topResult": {
 			"text": "repos created between 2015 and 2015",
 			"semantic": "repositories(date-interval-end(2015),date-interval-start(2015))"
@@ -17335,7 +17335,7 @@
 	},
 	{
 		"query": "repos created from 2015 to 2015",
-		"note": "Allow date ranges with the start bound equal to the end bound.",
+		"description": "Allow date ranges with the start bound equal to the end bound.",
 		"topResult": {
 			"text": "repos created from 2015 to 2015",
 			"semantic": "repositories(date-interval-end(2015),date-interval-start(2015))"
