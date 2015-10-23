@@ -5157,8 +5157,8 @@
 			"intersect(repositories(date(today)),repositories(date-after(this-year)),repositories-contributed(me))",
 			"intersect(repositories(date-after(this-week)),repositories(date-after(this-year)))",
 			"intersect(repositories(date-after(this-year)),repositories(date-after(today)),repositories-liked(me))",
-			"intersect(repositories(date(this-week)),repositories(date-after(this-year)),repositories-created(me))",
 			"intersect(repositories(date(this-year)),repositories(date-after(this-week)),repositories-created(me))",
+			"intersect(repositories(date(this-week)),repositories(date-after(this-year)),repositories-created(me))",
 			"intersect(repositories(date-after(this-week)),repositories(date-before(last-year)),repositories-created(me))",
 			"intersect(repositories(date-after(last-week)),repositories(date-before(this-year)),repositories-created(me))",
 			"intersect(repositories(date-after(this-year)),repositories(date-before(last-week)),repositories-created(me))",
@@ -5171,7 +5171,7 @@
 		"query": "repos created between last year and this year",
 		"topResult": {
 			"text": "repos created between last year and this year",
-			"semantic": "repositories(date-interval-end(this-year),date-interval-start(last-year))"
+			"semantic": "repositories(date-interval(date-interval-end(this-year),date-interval-start(last-year)))"
 		},
 		"semantics": [
 			"repositories(date-interval(date-interval-end(this-year),date-interval-start(last-year)))",
@@ -5230,7 +5230,7 @@
 		"query": "repos created from 2012 to 2014",
 		"topResult": {
 			"text": "repos created from 2012 to 2014",
-			"semantic": "repositories(date-interval-end(2014),date-interval-start(2012))"
+			"semantic": "repositories(date-interval(date-interval-end(2014),date-interval-start(2012)))"
 		},
 		"semantics": [
 			"repositories(date-interval(date-interval-end(2014),date-interval-start(2012)))",
@@ -5287,10 +5287,9 @@
 	},
 	{
 		"query": "repos created before June 20 2000 and after this year",
-		"description": "Perhaps prevent this because logically contradictory.",
 		"topResult": {
 			"text": "repos created before June 20 2000 and after this year",
-			"semantic": "repositories(date-after(this-year),date-before(20,2000,jun))"
+			"semantic": "intersect(repositories(date-after(this-year)),repositories(date-before(20,2000,jun)))"
 		},
 		"semantics": [
 			"intersect(repositories(date-after(this-year)),repositories(date-before(20,2000,jun)))",
@@ -16527,7 +16526,7 @@
 			"intersect(repositories(date(today)),repositories(date-after(today)),repositories-created(me),repositories-liked(me))",
 			"intersect(repositories(date-before(today)),repositories-contributed(me),repositories-created(me),repositories-liked(me))",
 			"intersect(repositories(date-after(today)),repositories-contributed(me),repositories-forked(me))",
-			"intersect(repositories(date-interval(date-interval-end(today),date-interval-start(last-week))),repositories-liked(me))"
+			"intersect(repositories(date-interval(date-interval-end(last-week),date-interval-start(today))),repositories-liked(me))"
 		]
 	},
 	{
@@ -16564,8 +16563,8 @@
 			"intersect(repositories(date(last-week)),repositories(date-after(last-week)),repositories(date-after(this-week)),repositories-created(me))",
 			"intersect(repositories(date(last-week)),repositories(date-after(last-week)),repositories(date-after(today)),repositories-created(me),repositories-liked(me))",
 			"intersect(repositories(date-after(last-week)),repositories(date-before(last-week)),repositories-contributed(me),repositories-created(me),repositories-liked(me))",
-			"intersect(repositories(date-after(last-week)),repositories(date-interval(date-interval-end(today),date-interval-start(last-week))),repositories-contributed(me),repositories-created(me))",
 			"intersect(repositories(date-after(last-week)),repositories(date-interval(date-interval-end(last-week),date-interval-start(today))),repositories-contributed(me),repositories-created(me))",
+			"intersect(repositories(date-after(last-week)),repositories(date-interval(date-interval-end(today),date-interval-start(last-week))),repositories-contributed(me),repositories-created(me))",
 			"intersect(repositories(date(last-week)),repositories(date-after(last-week)),repositories-contributed(me),repositories-created(me),repositories-forked(me))",
 			"intersect(repositories(date(last-week)),repositories(date-after(last-week)),repositories(date-after(today)),repositories-contributed(me),repositories-created(me))",
 			"intersect(repositories(date(this-week)),repositories(date-after(last-week)),repositories(date-before(last-week)),repositories-created(me))",
@@ -16576,8 +16575,8 @@
 			"intersect(repositories(date(last-week)),repositories(date-after(today)),repositories(date-before(last-week)),repositories-created(me),repositories-liked(me))",
 			"intersect(repositories(date(last-week)),repositories(date(today)),repositories(date-after(last-week)),repositories-created(me),repositories-forked(me))",
 			"intersect(repositories(date-after(last-week)),repositories(date-interval(date-interval-end(last-week),date-interval-start(last-week))),repositories-created(me),repositories-liked(me))",
-			"intersect(repositories(date(today)),repositories(date-after(last-week)),repositories(date-interval(date-interval-end(today),date-interval-start(last-week))),repositories-created(me))",
 			"intersect(repositories(date(today)),repositories(date-after(last-week)),repositories(date-interval(date-interval-end(last-week),date-interval-start(today))),repositories-created(me))",
+			"intersect(repositories(date(today)),repositories(date-after(last-week)),repositories(date-interval(date-interval-end(today),date-interval-start(last-week))),repositories-created(me))",
 			"intersect(repositories(date(last-week)),repositories(date-after(today)),repositories(date-interval(date-interval-end(today),date-interval-start(last-week))),repositories-created(me))",
 			"intersect(repositories(date(last-week)),repositories(date-after(today)),repositories(date-interval(date-interval-end(last-week),date-interval-start(today))),repositories-created(me))",
 			"intersect(repositories(date(last-week)),repositories(date-after(last-week)),repositories(date-interval(date-interval-end(today),date-interval-start(today))),repositories-created(me))",
@@ -17257,12 +17256,12 @@
 			"intersect(issues(date(today)),issues(date-after(last-week)),issues(date-after(today)),issues(date-after(yesterday)),issues(date-before(today)))",
 			"intersect(issues(date(today)),issues(date(yesterday)),issues(date-after(last-week)),issues(date-after(today)),issues(date-before(today)),issues-opened(me))",
 			"intersect(issues(date-after(last-week)),issues(date-after(today)),issues(date-before(yesterday)),issues(date-interval(date-interval-end(this-week),date-interval-start(today))))",
-			"intersect(issues(date-after(last-week)),issues(date-after(today)),issues(date-before(yesterday)),issues(date-interval(date-interval-end(today),date-interval-start(this-week))))",
 			"intersect(issues(date-after(this-week)),issues(date-after(today)),issues(date-before(yesterday)),issues(date-interval(date-interval-end(today),date-interval-start(last-week))))",
+			"intersect(issues(date-after(last-week)),issues(date-after(today)),issues(date-before(yesterday)),issues(date-interval(date-interval-end(today),date-interval-start(this-week))))",
 			"intersect(issues(date-after(this-week)),issues(date-after(today)),issues(date-before(yesterday)),issues(date-interval(date-interval-end(last-week),date-interval-start(today))))",
 			"intersect(issues(date-after(this-week)),issues(date-after(today)),issues(date-before(today)),issues(date-before(yesterday)),issues-mentioned(me),issues-opened(me))",
-			"intersect(issues(date(last-week)),issues(date(today)),issues(date-after(last-week)),issues(date-after(today)),issues(date-before(yesterday)))",
 			"intersect(issues(date(today)),issues(date(yesterday)),issues(date-after(last-week)),issues(date-after(today)),issues(date-before(last-week)))",
+			"intersect(issues(date(last-week)),issues(date(today)),issues(date-after(last-week)),issues(date-after(today)),issues(date-before(yesterday)))",
 			"intersect(issues(date(today)),issues(date(yesterday)),issues(date-after(this-week)),issues(date-after(today)),issues(date-before(today)))",
 			"intersect(issues(date(today)),issues(date-after(last-week)),issues(date-after(today)),issues(date-before(today)),issues(date-before(yesterday)),issues-opened(me))",
 			"intersect(issues(date(today)),issues(date-after(last-week)),issues(date-after(today)),issues(date-before(yesterday)),issues-assigned(me),issues-mentioned(me))",
@@ -17278,7 +17277,7 @@
 		"description": "Allow date ranges with the start bound equal to the end bound.",
 		"topResult": {
 			"text": "repos created between 2015 and 2015",
-			"semantic": "repositories(date-interval-end(2015),date-interval-start(2015))"
+			"semantic": "repositories(date-interval(date-interval-end(2015),date-interval-start(2015)))"
 		},
 		"semantics": [
 			"repositories(date-interval(date-interval-end(2015),date-interval-start(2015)))",
@@ -17338,7 +17337,7 @@
 		"description": "Allow date ranges with the start bound equal to the end bound.",
 		"topResult": {
 			"text": "repos created from 2015 to 2015",
-			"semantic": "repositories(date-interval-end(2015),date-interval-start(2015))"
+			"semantic": "repositories(date-interval(date-interval-end(2015),date-interval-start(2015)))"
 		},
 		"semantics": [
 			"repositories(date-interval(date-interval-end(2015),date-interval-start(2015)))",
@@ -17464,7 +17463,7 @@
 		"query": "issues updated after today before yesterday",
 		"topResult": {
 			"text": "issues updated after today and before yesterday",
-			"semantic": "issues(date-after(today),date-before(yesterday))"
+			"semantic": "intersect(issues(date-after(today)),issues(date-before(yesterday)))"
 		},
 		"semantics": [
 			"intersect(issues(date-after(today)),issues(date-before(yesterday)))",
@@ -17514,9 +17513,9 @@
 			"intersect(issues(date-after(today)),issues(date-after(yesterday)),issues(date-before(this-week)),issues-opened(me))",
 			"intersect(issues(date-after(this-week)),issues(date-after(today)),issues(date-before(yesterday)),issues-opened(me))",
 			"intersect(issues(date(today)),issues(date-after(this-week)),issues(date-before(yesterday)),issues-opened(me))",
-			"intersect(issues(date(yesterday)),issues(date-after(today)),issues(date-before(today)),issues-mentioned(me))",
 			"intersect(issues(date(today)),issues(date-after(today)),issues(date-before(yesterday)),issues-mentioned(me))",
-			"intersect(issues(date-after(today)),issues(date-before(today)),issues(date-interval(date-interval-end(today),date-interval-start(yesterday))))"
+			"intersect(issues(date(yesterday)),issues(date-after(today)),issues(date-before(today)),issues-mentioned(me))",
+			"intersect(issues(date-after(today)),issues(date-before(today)),issues(date-interval(date-interval-end(yesterday),date-interval-start(today))))"
 		]
 	},
 	{
