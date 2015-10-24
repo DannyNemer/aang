@@ -17240,9 +17240,8 @@
 	},
 	{
 		"query": "repos that I created I like",
-		"description": "Unimplemented.",
 		"topResult": {
-			"text": "repos that I created and I like",
+			"text": "repos that I created that I like",
 			"semantic": "intersect(repositories-created(me),repositories-liked(me))"
 		},
 		"semantics": [
@@ -17300,9 +17299,8 @@
 	},
 	{
 		"query": "repos that I created that I like",
-		"description": "Unimplemented.",
 		"topResult": {
-			"text": "repos that I created and that I like",
+			"text": "repos that I created that I like",
 			"semantic": "intersect(repositories-created(me),repositories-liked(me))"
 		},
 		"semantics": [
@@ -17478,9 +17476,8 @@
 	},
 	{
 		"query": "people who I follow Danny follows",
-		"description": "Unimplemented.",
 		"topResult": {
-			"text": "people who I follow and Danny follows",
+			"text": "people who I follow who Danny follows",
 			"semantic": "intersect(users-followed(0),users-followed(me))"
 		},
 		"semantics": [
@@ -17489,9 +17486,8 @@
 	},
 	{
 		"query": "people who I follow who Danny follows",
-		"description": "Unimplemented.",
 		"topResult": {
-			"text": "people who I follow and who Danny follows",
+			"text": "people who I follow who Danny follows",
 			"semantic": "intersect(users-followed(0),users-followed(me))"
 		},
 		"semantics": [
