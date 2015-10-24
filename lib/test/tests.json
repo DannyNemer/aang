@@ -18627,7 +18627,16 @@
 	},
 	{
 		"query": "people who follow me Danny",
-		"semantics": []
+		"topResult": {
+			"text": "people who follow me and Danny",
+			"semantic": "intersect(followers(0),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(me))",
+			"intersect(followers(me),users-followed(0))",
+			"intersect(followers(0),followers(me),users-followed(me))",
+			"intersect(followers(me),users-followed(0),users-followed(me))"
+		]
 	},
 	{
 		"query": "repos I like I contribute to",
