@@ -21641,5 +21641,9 @@
 			"intersect(repositories(date(last-week)),repositories(date-interval(date-interval-end(today),date-interval-start(today))),repositories-created(0))",
 			"intersect(repositories(date-before(today)),repositories(date-interval(date-interval-end(today),date-interval-start(today))),repositories-created(0))"
 		]
+	},
+	{
+		"query": "followers of",
+		"semantics": []
 	}
 ]
