@@ -20810,5 +20810,18 @@
 			"intersect(repositories-forked(me),repositories-liked(me),repositories-liked(all(user)))",
 			"intersect(repositories(date-after(last-week)),repositories-liked(all(user)))"
 		]
+	},
+	{
+		"query": "people who follow anyone",
+		"topResult": {
+			"text": "people who follow anyone",
+			"semantic": "followers(all(user))"
+		},
+		"semantics": [
+			"followers(all(user))",
+			"intersect(followers(all(user)),users-followed(me))",
+			"intersect(followers(me),followers(all(user)))",
+			"intersect(followers(me),followers(all(user)),users-followed(me))"
+		]
 	}
 ]
