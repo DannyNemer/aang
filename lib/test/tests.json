@@ -17514,7 +17514,7 @@
 		"description": "Unsure if \"that are\" should be inserted.",
 		"topResult": {
 			"text": "repos not written in JavaScript that are not liked by me",
-			"semantic": "intersect(not(repositories-liked(me)),not(repositories-language(19)))"
+			"semantic": "intersect(not(repositories-language(19)),not(repositories-liked(me)))"
 		},
 		"semantics": [
 			"intersect(not(repositories-language(19)),not(repositories-liked(me)))",
@@ -17573,7 +17573,7 @@
 		"query": "repos not written in JavaScript that are not liked by me",
 		"topResult": {
 			"text": "repos not written in JavaScript that are not liked by me",
-			"semantic": "intersect(not(repositories-liked(me)),not(repositories-language(19)))"
+			"semantic": "intersect(not(repositories-language(19)),not(repositories-liked(me)))"
 		},
 		"semantics": [
 			"intersect(not(repositories-language(19)),not(repositories-liked(me)))",
