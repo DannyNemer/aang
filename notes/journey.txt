@@ -263,3 +263,5 @@
 - This work, and the paramount occupation each day, is the most emotionally taxing endeavor of my life. For months I have been drowning in chronically recurring memories of the past, because my work prevents new experiences from replacing those memories' recency.
 
 - Never underestimate the value of removing friction.
+
+- There are often clear and obvious ways to implement features or changes, but I must stop and assess them extraordinarily carefully to consider future features and extensions. It is necessary to ensure a strong foundation and that the system's algorithms are elegant, completely understood, and meticulously designed.
