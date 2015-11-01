@@ -265,3 +265,5 @@
 - Never underestimate the value of removing friction.
 
 - There are often clear and obvious ways to implement features or changes, but I must stop and assess them extraordinarily carefully to consider future features and extensions. It is necessary to ensure a strong foundation and that the system's algorithms are elegant, completely understood, and meticulously designed.
+
+- I put so much effort and care into the documentation of algorithms. I revise them and tweak them over months. The descriptions and explanations are comparable in quality, detail, and precision to computer science or mathematics papers published in journals.
