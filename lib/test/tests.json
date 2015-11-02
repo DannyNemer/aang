@@ -13134,6 +13134,7 @@
 	},
 	{
 		"query": "repos I create",
+		"description": "Check \"create\" is corrected to \"created\".",
 		"topResult": {
 			"text": "repos I created",
 			"semantic": "repositories-created(me)"
@@ -23731,6 +23732,66 @@
 			"not(repository-likers(intersect(repositories(date(today)),repositories-contributed(me),repositories-created(4))))",
 			"intersect(not(repository-contributors(intersect(repositories-created(4),repositories-liked(me)))),users-followed(me))",
 			"not(repository-likers(intersect(repositories(date-after(today)),repositories-created(4),repositories-liked(me))))"
+		]
+	},
+	{
+		"query": "repos Danny creates",
+		"description": "Check \"creates\" is corrected to \"created\".",
+		"topResult": {
+			"text": "repos Danny created",
+			"semantic": "repositories-created(0)"
+		},
+		"semantics": [
+			"repositories-created(0)",
+			"intersect(repositories-created(0),repositories-liked(me))",
+			"intersect(repositories-created(me),repositories-liked(0))",
+			"intersect(repositories-contributed(me),repositories-created(0))",
+			"intersect(repositories-contributed(0),repositories-created(me))",
+			"intersect(repositories(date(today)),repositories-created(0))",
+			"intersect(repositories-created(0),repositories-forked(me))",
+			"intersect(repositories-created(me),repositories-forked(0))",
+			"intersect(repositories(date(today)),repositories-liked(0))",
+			"intersect(repositories(date-after(today)),repositories-created(0))",
+			"intersect(repositories(date(today)),repositories-contributed(0))",
+			"intersect(repositories(date-after(today)),repositories-liked(0))",
+			"intersect(repositories(date(last-week)),repositories-created(0))",
+			"intersect(repositories(date-before(today)),repositories-created(0))",
+			"intersect(repositories(date(today)),repositories-created(me),repositories-liked(0))",
+			"intersect(repositories(date-after(today)),repositories-contributed(0))",
+			"intersect(repositories(date(last-week)),repositories-liked(0))",
+			"intersect(repositories(date-before(today)),repositories-liked(0))",
+			"intersect(repositories(date-after(last-week)),repositories-created(0))",
+			"intersect(repositories(date(today)),repositories-contributed(0),repositories-created(me))",
+			"intersect(repositories(date-after(today)),repositories-created(me),repositories-liked(0))",
+			"intersect(repositories(date(today)),repositories-forked(0))",
+			"intersect(repositories-created(me),repositories-liked(0),repositories-liked(me))",
+			"intersect(repositories(date(last-week)),repositories-contributed(0))",
+			"intersect(repositories(date-before(today)),repositories-contributed(0))",
+			"intersect(repositories(date-after(last-week)),repositories-liked(0))",
+			"intersect(repositories(date(this-week)),repositories-created(0))",
+			"intersect(repositories(date-before(last-week)),repositories-created(0))",
+			"intersect(repositories(date-after(today)),repositories-contributed(0),repositories-created(me))",
+			"intersect(repositories(date(last-week)),repositories-created(me),repositories-liked(0))",
+			"intersect(repositories(date-before(today)),repositories-created(me),repositories-liked(0))",
+			"intersect(repositories(date(today)),repositories-created(0),repositories-liked(me))",
+			"intersect(repositories-contributed(0),repositories-created(me),repositories-liked(me))",
+			"intersect(repositories-contributed(me),repositories-created(me),repositories-liked(0))",
+			"intersect(repositories(date-after(today)),repositories-forked(0))",
+			"intersect(repositories(date-after(last-week)),repositories-contributed(0))",
+			"intersect(repositories(date(today)),repositories-created(me),repositories-forked(0))",
+			"intersect(repositories(date(this-week)),repositories-liked(0))",
+			"intersect(repositories(date-before(last-week)),repositories-liked(0))",
+			"intersect(repositories(date-after(this-week)),repositories-created(0))",
+			"intersect(repositories(date(last-week)),repositories-contributed(0),repositories-created(me))",
+			"intersect(repositories(date-before(today)),repositories-contributed(0),repositories-created(me))",
+			"intersect(repositories(date(today)),repositories-liked(0),repositories-liked(me))",
+			"intersect(repositories(date(today)),repositories-contributed(me),repositories-created(0))",
+			"intersect(repositories-contributed(0),repositories-contributed(me),repositories-created(me))",
+			"intersect(repositories(date-after(last-week)),repositories-created(me),repositories-liked(0))",
+			"intersect(repositories(date-after(today)),repositories-created(0),repositories-liked(me))",
+			"intersect(repositories(date(last-week)),repositories-forked(0))",
+			"intersect(repositories(date-before(today)),repositories-forked(0))",
+			"intersect(repositories(date(this-week)),repositories-contributed(0))"
 		]
 	}
 ]
