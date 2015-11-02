@@ -9814,6 +9814,7 @@
 	},
 	{
 		"query": "people who do not follow me",
+		"description": "Check person-number property is applied to multiple verbs: `[do-term]` and `[follow]`.",
 		"topResult": {
 			"text": "people who do not follow me",
 			"semantic": "not(followers(me))"
@@ -14950,7 +14951,7 @@
 	},
 	{
 		"query": "people who do not contribute to my repos",
-		"description": "Perhaps correct to \"people who have not\".",
+		"description": "Check person-number property is applied to multiple verbs.",
 		"topResult": {
 			"text": "people who do not contribute to my repos",
 			"semantic": "not(repository-contributors(repositories-created(me)))"
@@ -23670,6 +23671,66 @@
 			"intersect(repositories(date(last-week)),repositories-created(me),repositories-liked(me))",
 			"intersect(repositories(date-before(today)),repositories-created(me),repositories-liked(me))",
 			"intersect(not(repositories-liked(me)),repositories(date-after(this-week)),repositories-created(me))"
+		]
+	},
+	{
+		"query": "people who do not like Danny's repos",
+		"description": "Check person-number property is applied to multiple verbs.",
+		"topResult": {
+			"text": "people who do not like Danny's repos",
+			"semantic": "not(repository-likers(repositories-created(4)))"
+		},
+		"semantics": [
+			"not(repository-likers(repositories-created(4)))",
+			"repository-likers(repositories-created(4))",
+			"not(repository-likers(intersect(repositories-created(4),repositories-liked(me))))",
+			"intersect(not(repository-likers(repositories-created(4))),users-followed(me))",
+			"not(repository-likers(intersect(repositories-contributed(me),repositories-created(4))))",
+			"not(repository-creators(intersect(repositories-created(4),repositories-liked(me))))",
+			"not(repository-likers(intersect(repositories(date(today)),repositories-created(4))))",
+			"intersect(repositories-created(4),repositories-liked(not(followers(me))))",
+			"intersect(not(repositories-liked(followers(me))),repositories-created(4))",
+			"intersect(not(repositories-liked(users-followed(me))),repositories-created(4))",
+			"not(repository-likers(intersect(repositories-created(4),repositories-forked(me))))",
+			"not(repository-contributors(intersect(repositories-created(4),repositories-liked(me))))",
+			"repository-likers(intersect(repositories-created(4),repositories-liked(me)))",
+			"not(repository-likers(intersect(repositories(date-after(today)),repositories-created(4))))",
+			"intersect(repository-likers(repositories-created(4)),users-followed(me))",
+			"repository-likers(intersect(repositories-contributed(me),repositories-created(4)))",
+			"not(repository-likers(intersect(repositories(date(last-week)),repositories-created(4))))",
+			"not(repository-likers(intersect(repositories(date-before(today)),repositories-created(4))))",
+			"intersect(not(followers(me)),repository-likers(repositories-created(4)))",
+			"repository-creators(intersect(repositories-created(4),repositories-liked(me)))",
+			"intersect(not(repository-likers(intersect(repositories-created(4),repositories-liked(me)))),users-followed(me))",
+			"not(repository-forkers(intersect(repositories-created(4),repositories-liked(me))))",
+			"repository-likers(intersect(repositories(date(today)),repositories-created(4)))",
+			"not(repository-likers(intersect(repositories(date-after(last-week)),repositories-created(4))))",
+			"not(repository-likers(intersect(repositories-contributed(me),repositories-created(4),repositories-liked(me))))",
+			"intersect(not(repository-likers(intersect(repositories-contributed(me),repositories-created(4)))),users-followed(me))",
+			"intersect(repositories-created(4),repositories-liked(followers(me)))",
+			"intersect(repositories-created(4),repositories-liked(users-followed(me)))",
+			"repository-likers(intersect(repositories-created(4),repositories-forked(me)))",
+			"repository-contributors(intersect(repositories-created(4),repositories-liked(me)))",
+			"intersect(not(repository-creators(intersect(repositories-created(4),repositories-liked(me)))),users-followed(me))",
+			"not(repository-likers(intersect(repositories(date(this-week)),repositories-created(4))))",
+			"repository-likers(intersect(repositories(date-after(today)),repositories-created(4)))",
+			"not(repository-likers(intersect(repositories(date-before(last-week)),repositories-created(4))))",
+			"not(repository-likers(intersect(repositories(date(today)),repositories-created(4),repositories-liked(me))))",
+			"intersect(not(repository-likers(intersect(repositories(date(today)),repositories-created(4)))),users-followed(me))",
+			"not(repository-creators(intersect(repositories-contributed(me),repositories-created(4),repositories-liked(me))))",
+			"intersect(repositories-created(4),repositories-liked(me),repositories-liked(not(followers(me))))",
+			"intersect(not(repositories-liked(followers(me))),repositories-created(4),repositories-liked(me))",
+			"intersect(not(repositories-liked(users-followed(me))),repositories-created(4),repositories-liked(me))",
+			"not(repository-likers(intersect(repositories-created(4),repositories-forked(me),repositories-liked(me))))",
+			"intersect(repositories-created(4),repositories-liked(intersect(not(followers(me)),users-followed(me))))",
+			"intersect(not(repositories-liked(intersect(followers(me),users-followed(me)))),repositories-created(4))",
+			"intersect(not(repository-likers(intersect(repositories-created(4),repositories-forked(me)))),users-followed(me))",
+			"repository-likers(intersect(repositories(date(last-week)),repositories-created(4)))",
+			"repository-likers(intersect(repositories(date-before(today)),repositories-created(4)))",
+			"not(repository-likers(intersect(repositories(date-after(this-week)),repositories-created(4))))",
+			"not(repository-likers(intersect(repositories(date(today)),repositories-contributed(me),repositories-created(4))))",
+			"intersect(not(repository-contributors(intersect(repositories-created(4),repositories-liked(me)))),users-followed(me))",
+			"not(repository-likers(intersect(repositories(date-after(today)),repositories-created(4),repositories-liked(me))))"
 		]
 	}
 ]
