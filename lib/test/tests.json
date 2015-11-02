@@ -24768,5 +24768,54 @@
 			"intersect(repositories(date-before(last-week)),repositories-contributed(me))",
 			"intersect(repositories(date-after(today)),repositories-created(me),repositories-forked(me))"
 		]
+	},
+	{
+		"query": "creators of Node and D3",
+		"description": "Check semantic is accepted.",
+		"topResult": {
+			"text": "creators of Node and D3",
+			"semantic": "intersect(repository-creators(8),repository-creators(9))"
+		},
+		"semantics": [
+			"intersect(repository-creators(8),repository-creators(9))",
+			"intersect(repository-creators(8),repository-creators(9),users-followed(me))",
+			"intersect(followers(me),repository-creators(8),repository-creators(9))",
+			"intersect(repository-creators(8),repository-likers(9))",
+			"intersect(repository-contributors(9),repository-creators(8))",
+			"intersect(repository-creators(8),repository-forkers(9))",
+			"intersect(followers(me),repository-creators(8),repository-creators(9),users-followed(me))",
+			"intersect(repository-creators(8),repository-likers(9),users-followed(me))",
+			"intersect(repository-contributors(9),repository-creators(8),users-followed(me))",
+			"intersect(repository-creators(8),repository-forkers(9),users-followed(me))"
+		]
+	},
+	{
+		"query": "creators of Node or D3",
+		"description": "Check `union()` propagates.",
+		"topResult": {
+			"text": "creators of Node or D3",
+			"semantic": "union(repository-creators(8),repository-creators(9))"
+		},
+		"semantics": [
+			"repository-creators(union(8,9))",
+			"intersect(repository-creators(8),repository-creators(9))",
+			"intersect(repository-creators(8),repository-likers(9))",
+			"intersect(repository-creators(union(8,9)),users-followed(me))",
+			"intersect(followers(me),repository-creators(union(8,9)))",
+			"intersect(repository-contributors(9),repository-creators(8))",
+			"intersect(repository-creators(8),repository-forkers(9))",
+			"intersect(repository-creators(8),repository-creators(9),users-followed(me))",
+			"intersect(repository-creators(8),repository-likers(9),users-followed(me))",
+			"intersect(followers(me),repository-creators(union(8,9)),users-followed(me))",
+			"intersect(repository-contributors(9),repository-creators(8),users-followed(me))",
+			"intersect(followers(me),repository-creators(8),repository-creators(9))",
+			"intersect(repository-creators(8),repository-forkers(9),users-followed(me))",
+			"intersect(followers(me),repository-creators(8),repository-creators(9),users-followed(me))"
+		]
+	},
+	{
+		"query": "people who follow my",
+		"description": "Check for insertions.",
+		"semantics": []
 	}
 ]
