@@ -25400,5 +25400,34 @@
 			"intersect(repositories(date-before(today)),repositories-contributed(me),repositories-created(me),repositories-forked(me))",
 			"intersect(repositories(date(last-week)),repositories(date(today)),repositories-contributed(me))"
 		]
+	},
+	{
+		"query": "people or I follow",
+		"description": "Check deletion of \"or\".",
+		"topResult": {
+			"text": "people I follow",
+			"semantic": "users-followed(me)"
+		},
+		"semantics": [
+			"users-followed(me)",
+			"intersect(followers(me),users-followed(me))"
+		]
+	},
+	{
+		"query": "people and I follow",
+		"description": "Check deletion of \"and\".",
+		"topResult": {
+			"text": "people I follow",
+			"semantic": "users-followed(me)"
+		},
+		"semantics": [
+			"users-followed(me)",
+			"intersect(followers(me),users-followed(me))"
+		]
+	},
+	{
+		"query": "people who follow me and",
+		"description": "Check proper deletion of \"and\".",
+		"semantics": []
 	}
 ]
