@@ -24817,5 +24817,80 @@
 		"query": "people who follow my",
 		"description": "Check for insertions.",
 		"semantics": []
+	},
+	{
+		"query": "my repos",
+		"description": "Check this common query.",
+		"topResult": {
+			"text": "my repos",
+			"semantic": "repositories-created(me)"
+		},
+		"semantics": [
+			"repositories-created(me)",
+			"intersect(repositories-created(me),repositories-liked(me))",
+			"intersect(repositories-contributed(me),repositories-created(me))",
+			"intersect(repositories(date(today)),repositories-created(me))",
+			"intersect(repositories-created(me),repositories-forked(me))",
+			"intersect(repositories(date-after(today)),repositories-created(me))",
+			"intersect(repositories(date(last-week)),repositories-created(me))",
+			"intersect(repositories(date-before(today)),repositories-created(me))",
+			"intersect(repositories(date-after(last-week)),repositories-created(me))",
+			"intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me))",
+			"intersect(repositories(date(this-week)),repositories-created(me))",
+			"intersect(repositories(date-before(last-week)),repositories-created(me))",
+			"intersect(repositories(date(today)),repositories-created(me),repositories-liked(me))",
+			"intersect(repositories-created(me),repositories-forked(me),repositories-liked(me))",
+			"intersect(repositories(date-after(this-week)),repositories-created(me))",
+			"intersect(repositories(date(today)),repositories-contributed(me),repositories-created(me))",
+			"intersect(repositories(date-after(today)),repositories-created(me),repositories-liked(me))",
+			"intersect(repositories-contributed(me),repositories-created(me),repositories-forked(me))",
+			"intersect(repositories(date-after(today)),repositories-contributed(me),repositories-created(me))",
+			"intersect(repositories(date(last-week)),repositories-created(me),repositories-liked(me))",
+			"intersect(repositories(date-before(today)),repositories-created(me),repositories-liked(me))",
+			"intersect(repositories(date(today)),repositories-created(me),repositories-forked(me))",
+			"intersect(repositories(date(last-week)),repositories-contributed(me),repositories-created(me))",
+			"intersect(repositories(date-before(today)),repositories-contributed(me),repositories-created(me))",
+			"intersect(repositories(date-after(last-week)),repositories-created(me),repositories-liked(me))",
+			"intersect(repositories(date-after(today)),repositories-created(me),repositories-forked(me))",
+			"intersect(repositories(date-after(last-week)),repositories-contributed(me),repositories-created(me))",
+			"intersect(repositories(date(this-week)),repositories-created(me),repositories-liked(me))",
+			"intersect(repositories(date-before(last-week)),repositories-created(me),repositories-liked(me))",
+			"intersect(repositories(date(last-week)),repositories-created(me),repositories-forked(me))",
+			"intersect(repositories(date-before(today)),repositories-created(me),repositories-forked(me))",
+			"intersect(repositories(date(this-week)),repositories-contributed(me),repositories-created(me))",
+			"intersect(repositories(date-before(last-week)),repositories-contributed(me),repositories-created(me))",
+			"intersect(repositories(date-after(this-week)),repositories-created(me),repositories-liked(me))",
+			"intersect(repositories(date(today)),repositories(date-after(today)),repositories-created(me))",
+			"intersect(repositories(date-after(last-week)),repositories-created(me),repositories-forked(me))",
+			"intersect(repositories(date-after(this-week)),repositories-contributed(me),repositories-created(me))",
+			"intersect(repositories(date(last-week)),repositories(date(today)),repositories-created(me))",
+			"intersect(repositories(date(today)),repositories(date-before(today)),repositories-created(me))",
+			"intersect(repositories(date(this-week)),repositories-created(me),repositories-forked(me))",
+			"intersect(repositories(date-before(last-week)),repositories-created(me),repositories-forked(me))",
+			"intersect(repositories(date(last-week)),repositories(date-after(today)),repositories-created(me))",
+			"intersect(repositories(date(today)),repositories(date-after(last-week)),repositories-created(me))",
+			"intersect(repositories(date-after(today)),repositories(date-before(today)),repositories-created(me))",
+			"intersect(repositories(date-after(this-week)),repositories-created(me),repositories-forked(me))",
+			"intersect(repositories(date(this-week)),repositories(date(today)),repositories-created(me))",
+			"intersect(repositories(date(last-week)),repositories(date-before(today)),repositories-created(me))",
+			"intersect(repositories(date(today)),repositories(date-before(last-week)),repositories-created(me))",
+			"intersect(repositories(date-after(last-week)),repositories(date-after(today)),repositories-created(me))",
+			"intersect(repositories(date(this-week)),repositories(date-after(today)),repositories-created(me))"
+		]
+	},
+	{
+		"query": "repos my",
+		"description": "Check necessary transposition occurs.",
+		"semantics": []
+	},
+	{
+		"query": "repos of",
+		"description": "Check necessary insertions occur.",
+		"semantics": []
+	},
+	{
+		"query": "repos mine",
+		"description": "Check necessary insertion occurs.",
+		"semantics": []
 	}
 ]
