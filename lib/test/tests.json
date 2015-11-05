@@ -25187,5 +25187,27 @@
 			"intersect(repositories(stars-count-over(1)),repositories-forked(me))",
 			"intersect(repositories(date(this-week)),repositories(forks-count(1)))"
 		]
+	},
+	{
+		"query": "people I follow who follow me",
+		"description": "Needs more suggestions.",
+		"topResult": {
+			"text": "people I follow who follow me",
+			"semantic": "intersect(followers(me),users-followed(me))"
+		},
+		"semantics": [
+			"intersect(followers(me),users-followed(me))"
+		]
+	},
+	{
+		"query": "people who follow me and I follow",
+		"description": "Needs more suggestions.",
+		"topResult": {
+			"text": "people who follow me and I follow",
+			"semantic": "intersect(followers(me),users-followed(me))"
+		},
+		"semantics": [
+			"intersect(followers(me),users-followed(me))"
+		]
 	}
 ]
