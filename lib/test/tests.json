@@ -60,6 +60,7 @@
 	},
 	{
 		"query": "repos created by me and my followers",
+		"description": "Check quality of insertions",
 		"semantics": [
 			"intersect(repositories-created(me),repositories-liked(followers(me)))",
 			"intersect(repositories-created(me),repositories-liked(me),repositories-liked(followers(me)))",
@@ -5893,6 +5894,7 @@
 	},
 	{
 		"query": "Danny's followers' followers",
+		"description": "Check \"followers'\" is accepted.",
 		"topResult": {
 			"text": "Danny's followers' followers",
 			"semantic": "followers(followers(4))"
@@ -24627,7 +24629,7 @@
 	},
 	{
 		"query": "repos do not like",
-		"description": "Check edits work well.",
+		"description": "Check quality of edits.",
 		"topResult": {
 			"text": "repos I do not like",
 			"semantic": "not(repositories-liked(me))"
@@ -24687,7 +24689,7 @@
 	},
 	{
 		"query": "repos did not fork",
-		"description": "Check edits work well.",
+		"description": "Check quality of edits.",
 		"topResult": {
 			"text": "repos I did not fork",
 			"semantic": "not(repositories-forked(me))"
@@ -24747,7 +24749,7 @@
 	},
 	{
 		"query": "repos have not liked",
-		"description": "Check edits work well.",
+		"description": "Check quality of edits.",
 		"topResult": {
 			"text": "repos I have not liked",
 			"semantic": "not(repositories-liked(me))"
@@ -24807,7 +24809,7 @@
 	},
 	{
 		"query": "repos liked Danny",
-		"description": "Check edits work well.",
+		"description": "Check quality of edits.",
 		"semantics": [
 			"repositories-liked(0)",
 			"intersect(repositories-created(me),repositories-liked(0))",
@@ -24863,7 +24865,7 @@
 	},
 	{
 		"query": "people followed me",
-		"description": "Check edits work well.",
+		"description": "Check quality of edits.",
 		"semantics": [
 			"followers(me)",
 			"users-followed(me)",
@@ -24872,7 +24874,7 @@
 	},
 	{
 		"query": "repos have liked",
-		"description": "Check edits work well.",
+		"description": "Check quality of edits.",
 		"semantics": [
 			"repositories-liked(me)",
 			"intersect(repositories-created(me),repositories-liked(me))",
@@ -24928,7 +24930,7 @@
 	},
 	{
 		"query": "repos have contributed to",
-		"description": "Check edits work well.",
+		"description": "Check quality of edits.",
 		"semantics": [
 			"repositories-contributed(me)",
 			"intersect(repositories-contributed(me),repositories-created(me))",
@@ -25570,7 +25572,7 @@
 	},
 	{
 		"query": "repos Danny",
-		"description": "Check insertions work well.",
+		"description": "Check quality of insertions",
 		"semantics": [
 			"repositories-created(0)",
 			"repositories-liked(0)",
