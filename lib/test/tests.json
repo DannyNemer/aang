@@ -25623,5 +25623,15 @@
 			"intersect(repositories(date(last-week)),repositories-created(me),repositories-liked(0))",
 			"intersect(repositories(date-before(today)),repositories-created(me),repositories-liked(0))"
 		]
+	},
+	{
+		"query": "repos I contribute not to",
+		"description": "Check deletions within multi-token terminal symbols.",
+		"semantics": []
+	},
+	{
+		"query": "people who follow John not von Neumann",
+		"description": "Check deletions within multi-token entities.",
+		"semantics": []
 	}
 ]
