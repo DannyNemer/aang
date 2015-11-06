@@ -358,8 +358,8 @@
 			"repositories-liked(followers(repository-likers(repositories-contributed(me))))",
 			"repositories-created(intersect(followers(me),users-followed(repository-likers(repositories-created(me)))))",
 			"repositories-created(intersect(followers(me),followers(repository-likers(repositories-created(me)))))",
-			"intersect(repositories-created(me),repositories-liked(followers(repository-likers(repositories-liked(me)))))",
 			"repositories-liked(followers(repository-likers(intersect(repositories-created(me),repositories-liked(me)))))",
+			"intersect(repositories-created(me),repositories-liked(followers(repository-likers(repositories-liked(me)))))",
 			"intersect(repositories-contributed(followers(repository-likers(repositories-created(me)))),repositories-created(me))",
 			"repositories-created(followers(repository-likers(intersect(repositories-contributed(me),repositories-created(me)))))",
 			"repositories-contributed(followers(repository-likers(repositories-contributed(me))))",
@@ -3012,10 +3012,10 @@
 			"followers(intersect(followers(me),users-mentioned(pull-requests-created(me))))",
 			"intersect(followers(me),followers(users-mentioned(issues-opened(me))))",
 			"followers(intersect(followers(me),users-mentioned(issues-opened(me))))",
-			"followers(intersect(followers(me),users-assigned(pull-requests-created(me))))",
 			"intersect(followers(me),followers(users-assigned(pull-requests-created(me))))",
-			"followers(intersect(followers(me),users-assigned(issues-opened(me))))",
+			"followers(intersect(followers(me),users-assigned(pull-requests-created(me))))",
 			"intersect(followers(me),followers(users-assigned(issues-opened(me))))",
+			"followers(intersect(followers(me),users-assigned(issues-opened(me))))",
 			"intersect(followers(me),users-followed(followers(me)),users-mentioned(pull-requests-created(me)))",
 			"intersect(followers(me),users-followed(followers(me)),users-mentioned(issues-opened(me)))",
 			"intersect(followers(me),followers(users-followed(me)),repository-creators(repositories-created(me)))",
@@ -3660,8 +3660,8 @@
 			"intersect(followers(intersect(followers(me),followers(followers(me)))),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))",
 			"intersect(followers(followers(me)),followers(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))))",
 			"followers(intersect(followers(me),followers(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me)))))))))))",
-			"followers(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))),users-followed(followers(me))))))",
 			"intersect(followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))),users-followed(followers(me)))))",
+			"followers(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))),users-followed(followers(me))))))",
 			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(me),repositories-liked(intersect(followers(me),users-followed(me))))))))",
 			"intersect(followers(followers(me)),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me)))))))))))",
 			"followers(intersect(followers(me),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me))))))))))))",
@@ -3669,8 +3669,8 @@
 			"intersect(followers(followers(me)),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))))))))",
 			"followers(intersect(followers(me),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me)))))))))))",
 			"intersect(followers(intersect(followers(me),users-followed(followers(me)))),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))))))",
-			"followers(intersect(followers(me),users-followed(intersect(followers(me),followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me)))))))))))",
 			"intersect(followers(followers(me)),users-followed(intersect(followers(me),followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))))",
+			"followers(intersect(followers(me),users-followed(intersect(followers(me),followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me)))))))))))",
 			"followers(intersect(followers(me),users-followed(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me)))))))))",
 			"intersect(followers(followers(me)),users-followed(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))",
 			"intersect(followers(me),followers(followers(me)),followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))),users-followed(me))",
@@ -3679,27 +3679,28 @@
 			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-contributed(intersect(followers(me),users-followed(me))),repositories-created(followers(me)),repositories-liked(me))))))",
 			"followers(intersect(followers(me),users-followed(intersect(followers(me),followers(followers(me)),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me)))))))))",
 			"intersect(followers(followers(me)),users-followed(intersect(followers(me),followers(followers(me)),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))",
-			"intersect(followers(intersect(followers(me),followers(followers(me)))),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))))))",
-			"followers(intersect(followers(me),followers(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me))))))))))))",
-			"intersect(followers(followers(me)),followers(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))))))))",
 			"intersect(followers(followers(me)),followers(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me)))))))))))",
+			"followers(intersect(followers(me),followers(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me))))))))))))",
 			"intersect(followers(intersect(followers(me),followers(followers(me)))),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me)))))))))",
+			"intersect(followers(followers(me)),followers(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))))))))",
 			"followers(intersect(followers(me),followers(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me)))))))))))",
+			"intersect(followers(intersect(followers(me),followers(followers(me)))),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))))))",
 			"followers(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me)))))),users-followed(followers(me))))))",
 			"intersect(followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me)))))),users-followed(followers(me)))))",
 			"followers(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))),users-followed(followers(me))))))",
 			"intersect(followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))),users-followed(followers(me)))))",
 			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories(date(today)),repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))",
-			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me),repositories-liked(followers(intersect(followers(me),users-followed(me)))))))))",
 			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))))))",
+			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(me),repositories-liked(followers(intersect(followers(me),users-followed(me)))))))))",
 			"followers(intersect(followers(me),users-followed(intersect(followers(me),followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me))))))))))))",
-			"intersect(followers(followers(me)),users-followed(intersect(followers(me),followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me)))))))))))",
 			"followers(intersect(followers(me),users-followed(intersect(followers(me),followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me)))))))))))",
+			"intersect(followers(followers(me)),users-followed(intersect(followers(me),followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me)))))))))))",
 			"intersect(followers(followers(me)),users-followed(intersect(followers(me),followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))))))))",
 			"followers(intersect(followers(me),users-followed(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me))))))))))",
 			"intersect(followers(followers(me)),users-followed(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me)))))))))",
 			"followers(intersect(followers(me),users-followed(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me)))))))))",
 			"intersect(followers(followers(me)),users-followed(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))))))",
+			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),followers(followers(me)),users-followed(me))))))))",
 			"intersect(followers(me),followers(followers(me)),followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me)))))))),users-followed(me))",
 			"intersect(followers(me),followers(followers(me)),followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))))),users-followed(me))",
 			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-forked(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))",
@@ -3716,24 +3717,22 @@
 			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories(date(today)),repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me))))))))",
 			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-forked(me),repositories-liked(intersect(followers(me),users-followed(me))))))))",
 			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-forked(intersect(followers(me),users-followed(me))),repositories-liked(me))))))",
-			"followers(intersect(followers(me),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),users-followed(intersect(followers(me),users-followed(me)))))))))))))",
 			"intersect(followers(followers(me)),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),users-followed(intersect(followers(me),users-followed(me))))))))))))",
+			"followers(intersect(followers(me),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),users-followed(intersect(followers(me),users-followed(me)))))))))))))",
 			"intersect(followers(intersect(followers(me),users-followed(followers(me)))),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),users-followed(intersect(followers(me),users-followed(me))))))))))",
 			"intersect(followers(me),users-followed(followers(me)),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))))",
 			"intersect(followers(me),users-followed(intersect(followers(me),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))))))",
 			"intersect(followers(me),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))),users-followed(followers(me)))))))",
-			"intersect(followers(followers(me)),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),users-followed(me),users-followed(followers(me)))))))))))",
 			"followers(intersect(followers(me),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),users-followed(me),users-followed(followers(me))))))))))))",
+			"intersect(followers(followers(me)),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),users-followed(me),users-followed(followers(me)))))))))))",
 			"intersect(followers(intersect(followers(me),users-followed(followers(me)))),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),users-followed(me),users-followed(followers(me)))))))))",
-			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),followers(followers(me)),users-followed(me))))))))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))))))",
 			"intersect(followers(intersect(followers(me),users-followed(followers(me)))),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),followers(intersect(followers(me),users-followed(me))))))))))",
 			"intersect(followers(followers(me)),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),followers(intersect(followers(me),users-followed(me))))))))))))",
 			"followers(intersect(followers(me),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(me),followers(intersect(followers(me),users-followed(me)))))))))))))",
-			"intersect(followers(me),followers(intersect(followers(me),users-followed(intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))))))",
 			"intersect(followers(me),users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))),users-followed(intersect(followers(me),users-followed(followers(me)))))",
 			"intersect(followers(me),users-followed(intersect(followers(me),users-followed(intersect(followers(me),followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))))))))))",
-			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))),repository-creators(repositories-contributed(me)))))",
-			"intersect(followers(me),users-followed(followers(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))),users-followed(followers(me))))))"
+			"intersect(followers(me),followers(followers(me)),users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me))))),repository-creators(repositories-contributed(me)))))"
 		]
 	},
 	{
@@ -7030,6 +7029,7 @@
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories(date(today)),repositories-created(followers(me)),repositories-liked(intersect(followers(me),users-followed(me)))))))",
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(followers(intersect(followers(me),users-followed(me)))),repositories-created(me),repositories-liked(me)))))",
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(intersect(followers(followers(me)),users-followed(me))),repositories-created(me),repositories-liked(me)))))",
+			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(me),repositories-liked(intersect(followers(me),followers(followers(me)),users-followed(me)))))))",
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(followers(me)),repositories-forked(intersect(followers(me),users-followed(me))),repositories-liked(me)))))",
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me))))))))",
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-contributed(me),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me)))))))",
@@ -7037,7 +7037,6 @@
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories(date(today)),repositories-created(me),repositories-liked(followers(intersect(followers(me),users-followed(me))))))))",
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories(date(today)),repositories-created(me),repositories-liked(intersect(followers(followers(me)),users-followed(me)))))))",
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(followers(me)),repositories-forked(me),repositories-liked(intersect(followers(me),users-followed(me)))))))",
-			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(me),repositories-liked(intersect(followers(me),followers(followers(me)),users-followed(me)))))))",
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(me),repositories-liked(me),repositories-liked(intersect(followers(me),users-followed(intersect(followers(me),users-followed(me)))))))))",
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(me),repositories-liked(me),repositories-liked(intersect(followers(me),users-followed(me),users-followed(followers(me))))))))",
 			"users-followed(intersect(followers(me),repository-creators(intersect(repositories-created(me),repositories-forked(followers(intersect(followers(me),users-followed(me)))),repositories-liked(me)))))",
@@ -9479,8 +9478,8 @@
 			"intersect(issues-mentioned(intersect(followers(me),users-assigned(pull-requests-created(me)),users-followed(repository-likers(repositories-contributed(repository-creators(8)))))),issues-opened(me))",
 			"intersect(issues-assigned(me),issues-opened(me),not(issues-mentioned(intersect(followers(repository-creators(repositories-contributed(repository-creators(8)))),users-assigned(pull-requests-created(me))))))",
 			"intersect(issues-assigned(intersect(followers(repository-likers(repositories-contributed(repository-creators(8)))),users-assigned(not(pull-requests-mentioned(me))))),issues-opened(me))",
-			"intersect(issues-opened(me),not(issues-mentioned(intersect(followers(repository-creators(intersect(repositories-contributed(me),repositories-liked(repository-creators(8))))),users-assigned(pull-requests-created(me))))))",
 			"intersect(issues-opened(me),not(issues-mentioned(intersect(followers(repository-likers(intersect(repositories-contributed(me),repositories-created(repository-creators(8))))),users-assigned(pull-requests-created(me))))))",
+			"intersect(issues-opened(me),not(issues-mentioned(intersect(followers(repository-creators(intersect(repositories-contributed(me),repositories-liked(repository-creators(8))))),users-assigned(pull-requests-created(me))))))",
 			"intersect(issues-opened(me),not(issues-mentioned(intersect(followers(me),pull-request-creators(pull-requests-assigned(repository-creators(repositories-contributed(repository-creators(8)))))))))",
 			"intersect(issues-opened(me),not(issues-mentioned(intersect(followers(repository-forkers(intersect(repositories-contributed(repository-creators(8)),repositories-created(me)))),users-assigned(pull-requests-created(me))))))",
 			"intersect(issues-assigned(intersect(followers(repository-creators(repositories-contributed(repository-creators(8)))),users-assigned(pull-requests-mentioned(me)))),issues-opened(me))",
@@ -9496,8 +9495,8 @@
 			"intersect(issues-opened(me),not(issues-mentioned(intersect(followers(repository-creators(intersect(repositories-contributed(repository-creators(8)),repositories-liked(me)))),users-assigned(pull-requests-created(me))))))",
 			"intersect(issues-mentioned(intersect(followers(me),users-assigned(pull-requests-created(me)),users-followed(repository-contributors(repositories-contributed(repository-creators(8)))))),issues-opened(me))",
 			"intersect(issues-assigned(intersect(followers(repository-contributors(repositories-contributed(repository-creators(8)))),users-assigned(not(pull-requests-mentioned(me))))),issues-opened(me))",
-			"intersect(issues-opened(me),not(issues-mentioned(intersect(followers(repository-contributors(intersect(repositories-contributed(me),repositories-created(repository-creators(8))))),users-assigned(pull-requests-created(me))))))",
 			"intersect(issues-opened(me),not(issues-mentioned(intersect(followers(repository-creators(intersect(repositories-contributed(me),repositories-contributed(repository-creators(8))))),users-assigned(pull-requests-created(me))))))",
+			"intersect(issues-opened(me),not(issues-mentioned(intersect(followers(repository-contributors(intersect(repositories-contributed(me),repositories-created(repository-creators(8))))),users-assigned(pull-requests-created(me))))))",
 			"intersect(issues-assigned(me),issues-mentioned(intersect(followers(repository-creators(repositories-contributed(repository-creators(8)))),users-assigned(pull-requests-created(me)))),issues-opened(me))",
 			"intersect(issues-opened(me),not(issues-mentioned(intersect(followers(me),users-mentioned(pull-requests-assigned(repository-creators(repositories-contributed(repository-creators(8)))))))))",
 			"intersect(issues-assigned(intersect(followers(repository-likers(repositories-contributed(repository-creators(8)))),users-assigned(pull-requests-mentioned(me)))),issues-opened(me))",
@@ -25635,5 +25634,556 @@
 		"query": "people who follow John not von Neumann",
 		"description": "Check deletions within multi-token entities.",
 		"semantics": []
+	},
+	{
+		"query": "followers I and Danny share",
+		"description": "Check \"share\" queries.",
+		"topResult": {
+			"text": "followers I and Danny share",
+			"semantic": "intersect(followers(0),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(me))",
+			"intersect(followers(0),followers(me),users-followed(me))",
+			"followers(intersect(followers(0),followers(me)))",
+			"intersect(followers(0),followers(followers(me)))",
+			"followers(intersect(followers(me),users-followed(0),users-followed(me)))",
+			"intersect(followers(me),users-followed(intersect(followers(0),followers(me))))",
+			"intersect(followers(0),followers(intersect(followers(me),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(0),followers(me))))",
+			"intersect(followers(intersect(followers(0),followers(me))),users-followed(me))",
+			"followers(intersect(followers(0),followers(me),users-followed(me)))",
+			"intersect(followers(0),followers(me),followers(followers(me)))",
+			"intersect(followers(0),followers(followers(me)),users-followed(me))",
+			"followers(intersect(followers(me),users-followed(0)))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(0),users-followed(me))))",
+			"intersect(followers(0),followers(me),followers(intersect(followers(me),users-followed(me))))",
+			"intersect(followers(me),users-followed(intersect(followers(0),followers(me),users-followed(me))))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(0),followers(me))))",
+			"intersect(followers(intersect(followers(me),users-followed(0),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(0),followers(me))),users-followed(me))",
+			"intersect(followers(0),followers(intersect(followers(me),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(0),followers(me),users-followed(me))))",
+			"intersect(followers(intersect(followers(0),followers(me),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(0))))",
+			"intersect(followers(intersect(followers(me),users-followed(0))),users-followed(me))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(0),followers(me),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(0),followers(me),users-followed(me))),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I and Danny shares",
+		"description": "Check conjugation of \"shares\" -> \"share\".",
+		"topResult": {
+			"text": "followers I and Danny share",
+			"semantic": "intersect(followers(0),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(me))",
+			"intersect(followers(0),followers(me),users-followed(me))",
+			"followers(intersect(followers(0),followers(me)))",
+			"intersect(followers(0),followers(followers(me)))",
+			"followers(intersect(followers(me),users-followed(0),users-followed(me)))",
+			"intersect(followers(me),users-followed(intersect(followers(0),followers(me))))",
+			"intersect(followers(0),followers(intersect(followers(me),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(0),followers(me))))",
+			"intersect(followers(intersect(followers(0),followers(me))),users-followed(me))",
+			"followers(intersect(followers(0),followers(me),users-followed(me)))",
+			"intersect(followers(0),followers(me),followers(followers(me)))",
+			"intersect(followers(0),followers(followers(me)),users-followed(me))",
+			"followers(intersect(followers(me),users-followed(0)))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(0),users-followed(me))))",
+			"intersect(followers(0),followers(me),followers(intersect(followers(me),users-followed(me))))",
+			"intersect(followers(me),users-followed(intersect(followers(0),followers(me),users-followed(me))))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(0),followers(me))))",
+			"intersect(followers(intersect(followers(me),users-followed(0),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(0),followers(me))),users-followed(me))",
+			"intersect(followers(0),followers(intersect(followers(me),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(0),followers(me),users-followed(me))))",
+			"intersect(followers(intersect(followers(0),followers(me),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(0))))",
+			"intersect(followers(intersect(followers(me),users-followed(0))),users-followed(me))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(0),followers(me),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(0),followers(me),users-followed(me))),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers my followers and I share",
+		"description": "Check \"share\".",
+		"topResult": {
+			"text": "followers my followers and I share",
+			"semantic": "intersect(followers(me),followers(followers(me)))"
+		},
+		"semantics": [
+			"intersect(followers(me),followers(followers(me)))",
+			"intersect(followers(me),followers(followers(me)),users-followed(me))",
+			"followers(intersect(followers(me),users-followed(me)))",
+			"intersect(followers(me),followers(followers(followers(me))))",
+			"followers(intersect(followers(me),followers(followers(me))))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(me))))",
+			"followers(intersect(followers(me),users-followed(me),users-followed(followers(me))))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(followers(me)))))",
+			"intersect(followers(me),users-followed(intersect(followers(me),followers(followers(me)))))",
+			"intersect(followers(me),followers(intersect(followers(me),followers(followers(me)))))",
+			"intersect(followers(intersect(followers(me),users-followed(me))),users-followed(me))",
+			"intersect(followers(intersect(followers(me),followers(followers(me)))),users-followed(me))",
+			"followers(intersect(followers(me),followers(followers(me)),users-followed(me)))",
+			"intersect(followers(me),followers(followers(followers(me))),users-followed(me))",
+			"followers(followers(intersect(followers(me),users-followed(me))))",
+			"followers(intersect(followers(followers(me)),users-followed(me)))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(me))),users-followed(me))",
+			"followers(intersect(followers(me),users-followed(followers(me))))",
+			"intersect(followers(me),users-followed(followers(followers(me))))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(me),users-followed(followers(me)))))",
+			"intersect(followers(me),users-followed(intersect(followers(me),followers(followers(me)),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(followers(me)))),users-followed(me))",
+			"intersect(followers(intersect(followers(me),users-followed(me),users-followed(followers(me)))),users-followed(me))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(me),followers(followers(me)))))",
+			"intersect(followers(me),followers(intersect(followers(me),followers(followers(me)),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(me),followers(followers(me)))),users-followed(me))",
+			"followers(intersect(followers(me),users-followed(intersect(followers(me),users-followed(me)))))",
+			"intersect(followers(me),users-followed(followers(intersect(followers(me),users-followed(me)))))",
+			"intersect(followers(me),followers(followers(intersect(followers(me),users-followed(me)))))",
+			"followers(intersect(followers(me),followers(intersect(followers(me),users-followed(me)))))",
+			"intersect(followers(intersect(followers(me),followers(followers(me)),users-followed(me))),users-followed(me))",
+			"intersect(followers(followers(intersect(followers(me),users-followed(me)))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(followers(me)),users-followed(me))))",
+			"followers(intersect(followers(intersect(followers(me),users-followed(me))),users-followed(me)))",
+			"intersect(followers(intersect(followers(followers(me)),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),users-followed(intersect(followers(followers(me)),users-followed(me))))",
+			"intersect(followers(me),users-followed(me),users-followed(followers(followers(me))))",
+			"intersect(followers(intersect(followers(me),users-followed(followers(me)))),users-followed(me))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(me),followers(followers(me)),users-followed(me))))",
+			"intersect(followers(me),users-followed(intersect(followers(me),followers(intersect(followers(me),users-followed(me))))))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(intersect(followers(me),users-followed(me))))))",
+			"intersect(followers(me),users-followed(me),users-followed(followers(intersect(followers(me),users-followed(me)))))",
+			"intersect(followers(me),users-followed(intersect(followers(intersect(followers(me),users-followed(me))),users-followed(me))))",
+			"intersect(followers(intersect(followers(me),users-followed(intersect(followers(me),users-followed(me))))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(me),followers(intersect(followers(me),users-followed(me))))))",
+			"intersect(followers(me),followers(intersect(followers(intersect(followers(me),users-followed(me))),users-followed(me))))",
+			"intersect(followers(intersect(followers(me),followers(intersect(followers(me),users-followed(me))))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(me),users-followed(followers(me)))),users-followed(me))",
+			"followers(intersect(followers(me),users-followed(me),users-followed(intersect(followers(me),users-followed(me)))))",
+			"intersect(followers(me),followers(intersect(followers(me),followers(followers(me)),users-followed(me))),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I share with Danny",
+		"description": "Check \"share\".",
+		"topResult": {
+			"text": "followers I share with Danny",
+			"semantic": "intersect(followers(0),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(me))",
+			"intersect(followers(0),followers(me),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I share with me",
+		"description": "Check semantically illegal input is rejected.",
+		"semantics": []
+	},
+	{
+		"query": "followers I shares with Danny",
+		"description": "Check conjugation of \"shares\" -> \"share\".",
+		"topResult": {
+			"text": "followers I share with Danny",
+			"semantic": "intersect(followers(0),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(me))",
+			"intersect(followers(0),followers(me),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers Danny shares with me",
+		"description": "Check conjugation of \"shares\".",
+		"topResult": {
+			"text": "followers Danny shares with me",
+			"semantic": "intersect(followers(0),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(me))",
+			"intersect(followers(0),followers(me),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I and Danny share with Aang",
+		"description": "Check \"share\".",
+		"topResult": {
+			"text": "followers I and Danny share with Aang",
+			"semantic": "intersect(followers(0),followers(1),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(1),followers(me))",
+			"intersect(followers(0),followers(1),followers(me),users-followed(me))",
+			"intersect(followers(1),followers(intersect(followers(0),followers(me))))",
+			"intersect(followers(1),followers(me),followers(intersect(followers(0),followers(me))))",
+			"intersect(followers(1),followers(intersect(followers(0),followers(me))),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I and Danny share with Aang and John von Neumann's followers",
+		"description": "Check \"share\".",
+		"topResult": {
+			"text": "followers I and Danny share with Aang and John von Neumann's followers",
+			"semantic": "intersect(followers(0),followers(1),followers(me),followers(followers(6)))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(1),followers(me),followers(followers(6)))",
+			"intersect(followers(0),followers(1),followers(6),followers(me))",
+			"intersect(followers(0),followers(1),followers(me),followers(intersect(followers(6),users-followed(me))))",
+			"intersect(followers(0),followers(1),followers(me),followers(intersect(followers(6),followers(me))))",
+			"intersect(followers(0),followers(1),followers(me),followers(followers(6)),users-followed(me))",
+			"intersect(followers(0),followers(1),followers(me),users-followed(followers(6)))",
+			"intersect(followers(6),users-followed(intersect(followers(0),followers(1),followers(me))))",
+			"intersect(followers(0),followers(me),followers(intersect(followers(6),users-followed(1))))",
+			"intersect(followers(0),followers(1),followers(6),followers(me),users-followed(me))",
+			"intersect(followers(0),followers(1),followers(me),followers(intersect(followers(6),followers(me),users-followed(me))))",
+			"intersect(followers(0),followers(1),followers(me),followers(intersect(followers(6),users-followed(me))),users-followed(me))",
+			"intersect(followers(0),followers(1),followers(me),followers(intersect(followers(6),followers(me))),users-followed(me))",
+			"intersect(followers(0),followers(1),followers(me),users-followed(intersect(followers(6),users-followed(me))))",
+			"intersect(followers(0),followers(1),followers(me),users-followed(intersect(followers(6),followers(me))))",
+			"intersect(followers(1),followers(followers(6)),followers(intersect(followers(0),followers(me))))",
+			"intersect(followers(6),followers(me),users-followed(intersect(followers(0),followers(1),followers(me))))",
+			"intersect(followers(0),followers(me),followers(intersect(followers(6),followers(me),users-followed(1))))",
+			"intersect(followers(6),users-followed(me),users-followed(intersect(followers(0),followers(1),followers(me))))",
+			"intersect(followers(0),followers(me),followers(intersect(followers(6),users-followed(1))),users-followed(me))",
+			"intersect(followers(0),followers(me),followers(intersect(followers(6),users-followed(1),users-followed(me))))",
+			"intersect(followers(0),followers(1),followers(me),followers(intersect(followers(6),followers(me),users-followed(me))),users-followed(me))",
+			"intersect(followers(1),followers(6),followers(intersect(followers(0),followers(me))))",
+			"intersect(followers(0),followers(1),followers(me),users-followed(intersect(followers(6),followers(me),users-followed(me))))",
+			"intersect(followers(1),followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),users-followed(me))))",
+			"intersect(followers(1),followers(me),followers(followers(6)),followers(intersect(followers(0),followers(me))))",
+			"intersect(followers(1),followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),followers(me))))",
+			"intersect(followers(1),followers(followers(6)),followers(intersect(followers(0),followers(me))),users-followed(me))",
+			"intersect(followers(1),followers(intersect(followers(0),followers(me))),users-followed(followers(6)))",
+			"intersect(followers(0),followers(me),followers(intersect(followers(6),followers(me),users-followed(1))),users-followed(me))",
+			"intersect(followers(0),followers(me),followers(intersect(followers(6),users-followed(1),users-followed(me))),users-followed(me))",
+			"intersect(followers(6),users-followed(intersect(followers(1),followers(intersect(followers(0),followers(me))))))",
+			"intersect(followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),users-followed(1))))",
+			"intersect(followers(6),followers(me),users-followed(me),users-followed(intersect(followers(0),followers(1),followers(me))))",
+			"intersect(followers(0),followers(me),followers(intersect(followers(6),followers(me),users-followed(1),users-followed(me))))",
+			"intersect(followers(1),followers(6),followers(intersect(followers(0),followers(me))),users-followed(me))",
+			"intersect(followers(1),followers(me),followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),users-followed(me))))",
+			"intersect(followers(1),followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),followers(me),users-followed(me))))",
+			"intersect(followers(1),followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),users-followed(me))),users-followed(me))",
+			"intersect(followers(1),followers(me),followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),followers(me))))",
+			"intersect(followers(1),followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),followers(me))),users-followed(me))",
+			"intersect(followers(1),followers(intersect(followers(0),followers(me))),users-followed(intersect(followers(6),users-followed(me))))",
+			"intersect(followers(1),followers(intersect(followers(0),followers(me))),users-followed(intersect(followers(6),followers(me))))",
+			"intersect(followers(6),followers(me),users-followed(intersect(followers(1),followers(intersect(followers(0),followers(me))))))",
+			"intersect(followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),followers(me),users-followed(1))))",
+			"intersect(followers(me),followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),users-followed(1))))",
+			"intersect(followers(6),users-followed(me),users-followed(intersect(followers(1),followers(intersect(followers(0),followers(me))))))",
+			"intersect(followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),users-followed(1))),users-followed(me))",
+			"intersect(followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),users-followed(1),users-followed(me))))",
+			"intersect(followers(0),followers(me),followers(intersect(followers(6),followers(me),users-followed(1),users-followed(me))),users-followed(me))",
+			"intersect(followers(1),followers(me),followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),followers(me),users-followed(me))))",
+			"intersect(followers(1),followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),followers(me),users-followed(me))),users-followed(me))",
+			"intersect(followers(1),followers(intersect(followers(0),followers(me))),users-followed(intersect(followers(6),followers(me),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),followers(me),users-followed(1))))",
+			"intersect(followers(me),followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),users-followed(1),users-followed(me))))",
+			"intersect(followers(intersect(followers(0),followers(me))),followers(intersect(followers(6),followers(me),users-followed(1))),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I and Danny share with Danny",
+		"description": "Check semantically illegal input is rejected.",
+		"semantics": [
+			"intersect(followers(0),followers(intersect(followers(0),followers(me))))",
+			"intersect(followers(0),followers(me),followers(intersect(followers(0),followers(me))))",
+			"intersect(followers(0),followers(intersect(followers(0),followers(me))),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I and Aang have in common",
+		"description": "Check \"have in common\".",
+		"topResult": {
+			"text": "followers I and Aang have in common",
+			"semantic": "intersect(followers(1),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(1),followers(me))",
+			"intersect(followers(1),followers(me),users-followed(me))",
+			"followers(intersect(followers(1),followers(me)))",
+			"intersect(followers(1),followers(followers(me)))",
+			"followers(intersect(followers(me),users-followed(1),users-followed(me)))",
+			"intersect(followers(me),users-followed(intersect(followers(1),followers(me))))",
+			"intersect(followers(1),followers(intersect(followers(me),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(1),followers(me))))",
+			"intersect(followers(intersect(followers(1),followers(me))),users-followed(me))",
+			"followers(intersect(followers(1),followers(me),users-followed(me)))",
+			"intersect(followers(1),followers(me),followers(followers(me)))",
+			"intersect(followers(1),followers(followers(me)),users-followed(me))",
+			"followers(intersect(followers(me),users-followed(1)))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(1),users-followed(me))))",
+			"intersect(followers(1),followers(me),followers(intersect(followers(me),users-followed(me))))",
+			"intersect(followers(me),users-followed(intersect(followers(1),followers(me),users-followed(me))))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(1),followers(me))))",
+			"intersect(followers(intersect(followers(me),users-followed(1),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(1),followers(me))),users-followed(me))",
+			"intersect(followers(1),followers(intersect(followers(me),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(1),followers(me),users-followed(me))))",
+			"intersect(followers(intersect(followers(1),followers(me),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(1))))",
+			"intersect(followers(intersect(followers(me),users-followed(1))),users-followed(me))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(1),followers(me),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(1),followers(me),users-followed(me))),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I and Aang had in common",
+		"description": "Check \"had\" conjugates to \"have\".",
+		"topResult": {
+			"text": "followers I and Aang have in common",
+			"semantic": "intersect(followers(1),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(1),followers(me))",
+			"intersect(followers(1),followers(me),users-followed(me))",
+			"followers(intersect(followers(1),followers(me)))",
+			"intersect(followers(1),followers(followers(me)))",
+			"followers(intersect(followers(me),users-followed(1),users-followed(me)))",
+			"intersect(followers(me),users-followed(intersect(followers(1),followers(me))))",
+			"intersect(followers(1),followers(intersect(followers(me),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(1),followers(me))))",
+			"intersect(followers(intersect(followers(1),followers(me))),users-followed(me))",
+			"followers(intersect(followers(1),followers(me),users-followed(me)))",
+			"intersect(followers(1),followers(me),followers(followers(me)))",
+			"intersect(followers(1),followers(followers(me)),users-followed(me))",
+			"followers(intersect(followers(me),users-followed(1)))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(1),users-followed(me))))",
+			"intersect(followers(1),followers(me),followers(intersect(followers(me),users-followed(me))))",
+			"intersect(followers(me),users-followed(intersect(followers(1),followers(me),users-followed(me))))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(1),followers(me))))",
+			"intersect(followers(intersect(followers(me),users-followed(1),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(1),followers(me))),users-followed(me))",
+			"intersect(followers(1),followers(intersect(followers(me),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(1),followers(me),users-followed(me))))",
+			"intersect(followers(intersect(followers(1),followers(me),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(1))))",
+			"intersect(followers(intersect(followers(me),users-followed(1))),users-followed(me))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(1),followers(me),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(1),followers(me),users-followed(me))),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I have in common",
+		"description": "Check quality of insertions.",
+		"semantics": [
+			"followers(followers(me))",
+			"followers(intersect(followers(me),users-followed(me)))",
+			"intersect(followers(me),followers(followers(me)))",
+			"intersect(followers(followers(me)),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(me))))",
+			"intersect(followers(intersect(followers(me),users-followed(me))),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I share",
+		"description": "Check quality of insertions.",
+		"semantics": [
+			"followers(followers(me))",
+			"followers(intersect(followers(me),users-followed(me)))",
+			"intersect(followers(me),followers(followers(me)))",
+			"intersect(followers(followers(me)),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(me))))",
+			"intersect(followers(intersect(followers(me),users-followed(me))),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I share with",
+		"description": "Check quality of insertions.",
+		"semantics": []
+	},
+	{
+		"query": "followers my followers share",
+		"description": "Check \"share\".",
+		"topResult": {
+			"text": "followers my followers share",
+			"semantic": "followers(followers(me))"
+		},
+		"semantics": [
+			"followers(followers(me))",
+			"intersect(followers(me),followers(followers(me)))",
+			"intersect(followers(followers(me)),users-followed(me))",
+			"followers(followers(followers(me)))",
+			"intersect(followers(me),followers(followers(me)),users-followed(me))",
+			"followers(intersect(followers(me),users-followed(followers(me))))",
+			"intersect(followers(me),users-followed(followers(followers(me))))",
+			"followers(intersect(followers(me),followers(followers(me))))",
+			"intersect(followers(me),followers(followers(followers(me))))",
+			"intersect(followers(followers(followers(me))),users-followed(me))",
+			"followers(intersect(followers(followers(me)),users-followed(me)))",
+			"intersect(followers(me),users-followed(intersect(followers(me),followers(followers(me)))))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(followers(me)))))",
+			"intersect(followers(me),users-followed(intersect(followers(followers(me)),users-followed(me))))",
+			"intersect(followers(intersect(followers(me),users-followed(followers(me)))),users-followed(me))",
+			"intersect(followers(me),users-followed(me),users-followed(followers(followers(me))))",
+			"intersect(followers(me),followers(intersect(followers(me),followers(followers(me)))))",
+			"intersect(followers(me),followers(intersect(followers(followers(me)),users-followed(me))))",
+			"intersect(followers(intersect(followers(me),followers(followers(me)))),users-followed(me))",
+			"followers(intersect(followers(me),users-followed(me),users-followed(followers(me))))",
+			"intersect(followers(me),followers(followers(followers(me))),users-followed(me))",
+			"intersect(followers(intersect(followers(followers(me)),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(me),followers(followers(me)))))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(followers(me)),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(me),users-followed(followers(me)))))",
+			"intersect(followers(intersect(followers(me),users-followed(me),users-followed(followers(me)))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(me),followers(followers(me)))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(followers(me)),users-followed(me))),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers Danny has in common with",
+		"description": "Check quality of insertions.",
+		"topResult": {
+			"text": "followers Danny has in common with me",
+			"semantic": "intersect(followers(0),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(me))"
+		]
+	},
+	{
+		"query": "followers I share Danny",
+		"description": "Check insertion of \"with\".",
+		"topResult": {
+			"text": "followers I share with Danny",
+			"semantic": "intersect(followers(0),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(me))",
+			"intersect(followers(0),followers(me),users-followed(me))",
+			"intersect(followers(0),followers(followers(me)))",
+			"intersect(followers(followers(me)),users-followed(0))",
+			"intersect(followers(0),followers(intersect(followers(me),users-followed(me))))",
+			"intersect(followers(intersect(followers(me),users-followed(me))),users-followed(0))"
+		]
+	},
+	{
+		"query": "followers I with Danny",
+		"description": "Check insertion of \"share\".",
+		"topResult": {
+			"text": "followers I share with Danny",
+			"semantic": "intersect(followers(0),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(me))",
+			"intersect(followers(0),followers(me),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I and Danny",
+		"description": "Check quality of insertions.",
+		"semantics": [
+			"intersect(followers(0),followers(me))",
+			"intersect(followers(me),users-followed(0),users-followed(me))",
+			"intersect(followers(0),followers(me),users-followed(me))",
+			"intersect(followers(me),users-followed(0))"
+		]
+	},
+	{
+		"query": "followers I Danny",
+		"description": "Check quality of insertions.",
+		"semantics": [
+			"intersect(followers(me),users-followed(0))",
+			"intersect(followers(0),followers(me))",
+			"intersect(followers(0),followers(me),users-followed(me))",
+			"intersect(followers(me),users-followed(0),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers I and Danny with Aang",
+		"description": "Check insertion of \"share\".",
+		"topResult": {
+			"text": "followers I and Danny share with Aang",
+			"semantic": "intersect(followers(0),followers(1),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(1),followers(me))",
+			"intersect(followers(0),followers(1),followers(me),users-followed(me))"
+		]
+	},
+	{
+		"query": "I and Danny share",
+		"description": "Check insertion of \"followers\".",
+		"topResult": {
+			"text": "followers I and Danny share",
+			"semantic": "intersect(followers(0),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(me))",
+			"intersect(followers(0),followers(me),users-followed(me))"
+		]
+	},
+	{
+		"query": "followers Danny and Aang with",
+		"description": "Check insertion of \"share\".",
+		"topResult": {
+			"text": "followers Danny and Aang share with me",
+			"semantic": "intersect(followers(0),followers(1),followers(me))"
+		},
+		"semantics": [
+			"intersect(followers(0),followers(1),followers(me))"
+		]
+	},
+	{
+		"query": "followers people who contribute to Node share",
+		"description": "Check \"share\".",
+		"topResult": {
+			"text": "followers people who contribute to Node share",
+			"semantic": "followers(repository-contributors(8))"
+		},
+		"semantics": [
+			"followers(repository-contributors(8))",
+			"intersect(followers(me),followers(repository-contributors(8)))",
+			"intersect(followers(repository-contributors(8)),users-followed(me))",
+			"followers(followers(repository-contributors(8)))",
+			"intersect(followers(me),followers(repository-contributors(8)),users-followed(me))",
+			"followers(intersect(followers(me),users-followed(repository-contributors(8))))",
+			"intersect(followers(me),users-followed(followers(repository-contributors(8))))",
+			"followers(intersect(followers(me),followers(repository-contributors(8))))",
+			"intersect(followers(me),followers(followers(repository-contributors(8))))",
+			"followers(intersect(followers(me),repository-contributors(8),users-followed(all(user))))",
+			"followers(intersect(repository-contributors(8),users-followed(followers(me))))",
+			"intersect(followers(followers(repository-contributors(8))),users-followed(me))",
+			"followers(intersect(followers(repository-contributors(8)),users-followed(me)))",
+			"followers(intersect(followers(me),repository-contributors(8)))",
+			"followers(intersect(followers(me),followers(all(user)),repository-contributors(8)))",
+			"intersect(followers(me),users-followed(intersect(followers(me),followers(repository-contributors(8)))))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(repository-contributors(8)))))",
+			"intersect(followers(me),users-followed(intersect(followers(repository-contributors(8)),users-followed(me))))",
+			"intersect(followers(intersect(followers(me),users-followed(repository-contributors(8)))),users-followed(me))",
+			"intersect(followers(me),users-followed(me),users-followed(followers(repository-contributors(8))))",
+			"intersect(followers(me),followers(intersect(followers(me),followers(repository-contributors(8)))))",
+			"intersect(followers(me),followers(intersect(followers(repository-contributors(8)),users-followed(me))))",
+			"intersect(followers(intersect(followers(me),followers(repository-contributors(8)))),users-followed(me))",
+			"followers(intersect(followers(me),users-followed(me),users-followed(repository-contributors(8))))",
+			"intersect(followers(me),followers(intersect(followers(me),repository-contributors(8),users-followed(all(user)))))",
+			"intersect(followers(intersect(followers(me),repository-contributors(8),users-followed(all(user)))),users-followed(me))",
+			"followers(intersect(followers(me),repository-contributors(8),users-followed(me),users-followed(all(user))))",
+			"intersect(followers(me),followers(intersect(repository-contributors(8),users-followed(followers(me)))))",
+			"intersect(followers(intersect(repository-contributors(8),users-followed(followers(me)))),users-followed(me))",
+			"intersect(followers(me),followers(followers(repository-contributors(8))),users-followed(me))",
+			"intersect(followers(intersect(followers(repository-contributors(8)),users-followed(me))),users-followed(me))",
+			"followers(intersect(repository-contributors(8),users-followed(me),users-followed(followers(me))))",
+			"intersect(followers(me),followers(intersect(followers(me),repository-contributors(8))))",
+			"intersect(followers(intersect(followers(me),repository-contributors(8))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(me),followers(all(user)),repository-contributors(8))))",
+			"intersect(followers(intersect(followers(me),followers(all(user)),repository-contributors(8))),users-followed(me))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(me),followers(repository-contributors(8)))))",
+			"intersect(followers(me),users-followed(me),users-followed(intersect(followers(repository-contributors(8)),users-followed(me))))",
+			"intersect(followers(me),followers(intersect(followers(me),users-followed(me),users-followed(repository-contributors(8)))))",
+			"intersect(followers(intersect(followers(me),users-followed(me),users-followed(repository-contributors(8)))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(me),repository-contributors(8),users-followed(me),users-followed(all(user)))))",
+			"intersect(followers(intersect(followers(me),repository-contributors(8),users-followed(me),users-followed(all(user)))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(me),followers(repository-contributors(8)))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(followers(repository-contributors(8)),users-followed(me))),users-followed(me))",
+			"intersect(followers(me),followers(intersect(repository-contributors(8),users-followed(me),users-followed(followers(me)))))",
+			"intersect(followers(intersect(repository-contributors(8),users-followed(me),users-followed(followers(me)))),users-followed(me))"
+		]
 	}
 ]
