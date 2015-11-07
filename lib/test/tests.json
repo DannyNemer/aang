@@ -60,7 +60,7 @@
 	},
 	{
 		"query": "repos created by me and my followers",
-		"description": "Check quality of insertions",
+		"description": "Check quality of insertions.",
 		"semantics": [
 			"intersect(repositories-created(me),repositories-liked(followers(me)))",
 			"intersect(repositories-created(me),repositories-liked(me),repositories-liked(followers(me)))",
@@ -25563,7 +25563,7 @@
 	},
 	{
 		"query": "repos Danny",
-		"description": "Check quality of insertions",
+		"description": "Check quality of insertions.",
 		"semantics": [
 			"repositories-created(0)",
 			"repositories-liked(0)",
@@ -26298,5 +26298,106 @@
 		"query": "me",
 		"description": "Check produces results.",
 		"semantics": []
+	},
+	{
+		"query": "people who like Node",
+		"description": "Needs more suggestions.",
+		"topResult": {
+			"text": "people who like Node",
+			"semantic": "repository-likers(8)"
+		},
+		"semantics": [
+			"repository-likers(8)"
+		]
+	},
+	{
+		"query": "Node",
+		"description": "Check \"likers\" is inserted.",
+		"topResult": {
+			"text": "Node",
+			"semantic": "8"
+		},
+		"semantics": [
+			"8",
+			"repository-likers(8)",
+			"intersect(repository-likers(8),users-followed(me))",
+			"intersect(followers(me),repository-likers(8))",
+			"intersect(followers(me),repository-likers(8),users-followed(me))"
+		]
+	},
+	{
+		"query": "likers",
+		"description": "Needs entity suggestions.",
+		"semantics": []
+	},
+	{
+		"query": "likers Node",
+		"description": "Check \"of\" is inserted.",
+		"topResult": {
+			"text": "likers of Node",
+			"semantic": "repository-likers(8)"
+		},
+		"semantics": [
+			"repository-likers(8)",
+			"intersect(repository-likers(8),users-followed(me))",
+			"intersect(followers(me),repository-likers(8))",
+			"intersect(followers(me),repository-likers(8),users-followed(me))"
+		]
+	},
+	{
+		"query": "of Node",
+		"description": "Check quality of insertions.",
+		"semantics": [
+			"repositories-created(repository-likers(8))",
+			"pull-requests-created(repository-likers(8))",
+			"issues-opened(repository-likers(8))",
+			"intersect(repositories-created(repository-likers(8)),repositories-liked(me))",
+			"repositories-created(intersect(repository-likers(8),users-followed(me)))",
+			"pull-requests-created(intersect(repository-likers(8),users-followed(me)))",
+			"issues-opened(intersect(repository-likers(8),users-followed(me)))",
+			"repositories-created(intersect(followers(me),repository-likers(8)))",
+			"pull-requests-created(intersect(followers(me),repository-likers(8)))",
+			"issues-opened(intersect(followers(me),repository-likers(8)))",
+			"intersect(pull-requests-assigned(me),pull-requests-created(repository-likers(8)))",
+			"intersect(issues-assigned(me),issues-opened(repository-likers(8)))",
+			"intersect(repositories-contributed(me),repositories-created(repository-likers(8)))",
+			"intersect(repositories(date(today)),repositories-created(repository-likers(8)))",
+			"intersect(repositories-created(repository-likers(8)),repositories-forked(me))",
+			"intersect(pull-requests-created(repository-likers(8)),pull-requests-mentioned(me))",
+			"intersect(issues-mentioned(me),issues-opened(repository-likers(8)))",
+			"intersect(repositories(date-before(today)),repositories-created(repository-likers(8)))",
+			"intersect(repositories(date(last-week)),repositories-created(repository-likers(8)))",
+			"intersect(repositories(date-after(today)),repositories-created(repository-likers(8)))",
+			"intersect(repositories-created(intersect(repository-likers(8),users-followed(me))),repositories-liked(me))",
+			"intersect(repositories-created(intersect(followers(me),repository-likers(8))),repositories-liked(me))",
+			"repositories-created(intersect(followers(me),repository-likers(8),users-followed(me)))",
+			"pull-requests-created(intersect(followers(me),repository-likers(8),users-followed(me)))",
+			"intersect(repositories(date-before(last-week)),repositories-created(repository-likers(8)))",
+			"issues-opened(intersect(followers(me),repository-likers(8),users-followed(me)))",
+			"intersect(issues(date(today)),issues-opened(repository-likers(8)))",
+			"intersect(repositories-contributed(me),repositories-created(repository-likers(8)),repositories-liked(me))",
+			"intersect(pull-requests-assigned(me),pull-requests-created(intersect(repository-likers(8),users-followed(me))))",
+			"intersect(issues-assigned(me),issues-opened(intersect(repository-likers(8),users-followed(me))))",
+			"intersect(repositories-contributed(me),repositories-created(intersect(repository-likers(8),users-followed(me))))",
+			"intersect(pull-requests-assigned(me),pull-requests-created(intersect(followers(me),repository-likers(8))))",
+			"intersect(issues-assigned(me),issues-opened(intersect(followers(me),repository-likers(8))))",
+			"intersect(repositories-contributed(me),repositories-created(intersect(followers(me),repository-likers(8))))",
+			"intersect(repositories(date(this-week)),repositories-created(repository-likers(8)))",
+			"intersect(repositories(date-after(last-week)),repositories-created(repository-likers(8)))",
+			"intersect(issues(date-before(today)),issues-opened(repository-likers(8)))",
+			"intersect(repositories(date(today)),repositories-created(repository-likers(8)),repositories-liked(me))",
+			"intersect(repositories(date(today)),repositories-created(intersect(repository-likers(8),users-followed(me))))",
+			"intersect(repositories(date(today)),repositories-created(intersect(followers(me),repository-likers(8))))",
+			"intersect(repositories-created(repository-likers(8)),repositories-forked(me),repositories-liked(me))",
+			"intersect(repositories-created(intersect(repository-likers(8),users-followed(me))),repositories-forked(me))",
+			"intersect(repositories(date-before(this-week)),repositories-created(repository-likers(8)))",
+			"intersect(issues(date(last-week)),issues-opened(repository-likers(8)))",
+			"intersect(issues(date-after(today)),issues-opened(repository-likers(8)))",
+			"intersect(pull-requests-created(intersect(repository-likers(8),users-followed(me))),pull-requests-mentioned(me))",
+			"intersect(issues-mentioned(me),issues-opened(intersect(repository-likers(8),users-followed(me))))",
+			"intersect(repositories-created(intersect(followers(me),repository-likers(8))),repositories-forked(me))",
+			"intersect(repositories(date(today)),repositories-contributed(me),repositories-created(repository-likers(8)))",
+			"intersect(pull-requests-created(intersect(followers(me),repository-likers(8))),pull-requests-mentioned(me))"
+		]
 	}
 ]
