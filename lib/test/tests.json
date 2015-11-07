@@ -26293,5 +26293,10 @@
 			"intersect(repositories(date(last-week)),repositories(date-after(today)),repositories(date-before(yesterday)),repositories-created(me))",
 			"intersect(repositories(date(yesterday)),repositories(date-after(last-week)),repositories(date-before(today)),repositories-created(me))"
 		]
+	},
+	{
+		"query": "me",
+		"description": "Check produces results.",
+		"semantics": []
 	}
 ]
