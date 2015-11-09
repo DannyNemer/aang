@@ -267,3 +267,15 @@
 - There are often clear and obvious ways to implement features or changes, but I must stop and assess them extraordinarily carefully to consider future features and extensions. It is necessary to ensure a strong foundation and that the system's algorithms are elegant, completely understood, and meticulously designed.
 
 - I put so much effort and care into the documentation of algorithms. I revise them and tweak them over months. The descriptions and explanations are comparable in quality, detail, and precision to computer science or mathematics papers published in journals.
+
+- Idea: whatever implementation we try, make it free for consumers and charge for businesses. Or, make a consumer version that does not even require an account.
+
+- Principle: no settings/preferences of any kind. It should always work, instantly, with no need, room, or desire for configuration.
+
+- Important distinction: this will be multiple orders easier, faster, adaptable, and accessible than any related tool.
+
+- My code is some of the most beautiful code you will ever see. Variable names, abstractions, module design, and comments, comments, and comments are all refined over and over toward perfection.
+
+- The system embodies the following excerpts from Paul Graham's "Hackers and Painters":
+	- Empathy is probably the single most important difference between a good hacker and a great one. Some hackers are quite smart, but when it comes to empathy are practically solipsists. It's hard for such people to design great software [5], because they can't see things from the user's point of view.
+	- Part of what software has to do is explain itself. So to write good software you have to understand how little users understand. They're going to walk up to the software with no preparation, and it had better do what they guess it will, because they're not going to read the manual.
