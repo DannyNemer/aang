@@ -279,3 +279,5 @@
 - The system embodies the following excerpts from Paul Graham's "Hackers and Painters":
 	- Empathy is probably the single most important difference between a good hacker and a great one. Some hackers are quite smart, but when it comes to empathy are practically solipsists. It's hard for such people to design great software [5], because they can't see things from the user's point of view.
 	- Part of what software has to do is explain itself. So to write good software you have to understand how little users understand. They're going to walk up to the software with no preparation, and it had better do what they guess it will, because they're not going to read the manual.
+
+- I love when completing a large, complex program, I can sit back and admire its beauty like a beautiful drawing. You are aware of the process, from the beginning sketches to the final refinements.
