@@ -281,3 +281,8 @@
 	- Part of what software has to do is explain itself. So to write good software you have to understand how little users understand. They're going to walk up to the software with no preparation, and it had better do what they guess it will, because they're not going to read the manual.
 
 - I love when completing a large, complex program, I can sit back and admire its beauty like a beautiful drawing. You are aware of the process, from the beginning sketches to the final refinements.
+
+- Important tot think about this point from Ben Thompson:
+	- The fundamental nature of the Internet makes monetizing infinitely reproducible intellectual property akin to selling ice to an Eskimo: it can be done, but it better be some really darn incredible ice, and even then the market is limited. A far more attainable and sustainable strategy is to instead focus on monetizing complements to said intellectual property, resulting in an outcome where everyone wins: intellectual property consumers, intellectual property copiers, and above all intellectual property creators.
+- Stripe's complement is scale.
+- I cannot be a pure software service. At first I might be able to, but from the beginning must be working toward a complement.
