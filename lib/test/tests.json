@@ -31556,5 +31556,37 @@
 			"intersect(repositories(date(this-week)),repositories-forked(followers(me)))",
 			"intersect(repositories(date-before(last-week)),repositories-contributed(me))"
 		]
+	},
+	{
+		"query": "people who follow her",
+		"description": "Check substitution of \"her\" -> \"me\".",
+		"topResult": {
+			"text": "people who follow me",
+			"semantic": "followers(me)"
+		},
+		"semantics": [
+			"followers(me)",
+			"users-followed(me)",
+			"intersect(followers(me),users-followed(me))",
+			"intersect(followers(me),users-followed(me),users-followed(followers(me)))"
+		]
+	},
+	{
+		"query": "people I'll follow",
+		"description": "Check substitution of \"I'll\" -> \"I\".",
+		"topResult": {
+			"text": "people I follow",
+			"semantic": "users-followed(me)"
+		},
+		"semantics": [
+			"users-followed(me)",
+			"intersect(followers(me),users-followed(me))",
+			"intersect(followers(followers(me)),users-followed(me))",
+			"intersect(users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(me),followers(followers(me)))",
+			"intersect(followers(me),users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(followers(me)),users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(me),users-followed(followers(me)))"
+		]
 	}
 ]
