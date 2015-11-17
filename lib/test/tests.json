@@ -31803,5 +31803,46 @@
 			"intersect(followers(me),users-followed(me),users-followed(followers(me)))",
 			"intersect(followers(followers(me)),users-followed(me),users-followed(followers(me)))"
 		]
+	},
+	{
+		"query": "people follow",
+		"description": "Check insertion of \"I\".",
+		"topResult": {
+			"text": "people I follow",
+			"semantic": "users-followed(me)"
+		},
+		"semantics": [
+			"users-followed(me)",
+			"followers(me)",
+			"followers(followers(me))",
+			"users-followed(followers(me))",
+			"intersect(followers(me),users-followed(me))",
+			"intersect(followers(followers(me)),users-followed(me))",
+			"intersect(users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(me),users-followed(followers(me)))",
+			"intersect(followers(followers(me)),users-followed(followers(me)))",
+			"intersect(followers(me),users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(followers(me)),users-followed(me),users-followed(followers(me)))"
+		]
+	},
+	{
+		"query": "people followed I follow",
+		"description": "Check quality of insertions.",
+		"semantics": [
+			"intersect(followers(me),users-followed(me))",
+			"intersect(followers(followers(me)),users-followed(me))",
+			"intersect(followers(me),followers(followers(me)))",
+			"intersect(users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(me),users-followed(followers(me)))",
+			"intersect(followers(me),followers(followers(me)),users-followed(me))",
+			"intersect(followers(me),users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(followers(me)),users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(me),followers(followers(me)),users-followed(me),users-followed(followers(me)))"
+		]
+	},
+	{
+		"query": "people followed by follow",
+		"description": "Check quality of insertions.",
+		"semantics": []
 	}
 ]
