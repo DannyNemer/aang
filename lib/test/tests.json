@@ -31879,5 +31879,40 @@
 			"intersect(followers(followers(me)),users-followed(me),users-followed(followers(me)))",
 			"intersect(followers(me),followers(followers(me)),users-followed(me))"
 		]
+	},
+	{
+		"query": "people likers",
+		"description": "Check quality of insertions.",
+		"semantics": []
+	},
+	{
+		"query": "people contribute to my issues",
+		"description": "Check quality of edits.",
+		"semantics": []
+	},
+	{
+		"query": "repos creators",
+		"description": "Check quality of edits.",
+		"semantics": []
+	},
+	{
+		"query": "the creators of Node",
+		"description": "Check deletion of \"the\".",
+		"topResult": {
+			"text": "creators of Node",
+			"semantic": "repository-creators(12)"
+		},
+		"semantics": [
+			"repository-creators(12)",
+			"intersect(repository-creators(12),users-followed(me))",
+			"intersect(followers(me),repository-creators(12))",
+			"intersect(followers(followers(me)),repository-creators(12))",
+			"intersect(repository-creators(12),users-followed(followers(me)))",
+			"intersect(followers(me),repository-creators(12),users-followed(me))",
+			"intersect(followers(followers(me)),repository-creators(12),users-followed(me))",
+			"intersect(followers(me),repository-creators(12),users-followed(followers(me)))",
+			"intersect(repository-creators(12),users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(followers(me)),repository-creators(12),users-followed(followers(me)))"
+		]
 	}
 ]
