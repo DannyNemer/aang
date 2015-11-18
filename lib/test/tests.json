@@ -31844,5 +31844,40 @@
 		"query": "people followed by follow",
 		"description": "Check quality of insertions.",
 		"semantics": []
+	},
+	{
+		"query": "issues with >10 comments",
+		"description": "Check \">10\" is split to \"> 10\".",
+		"topResult": {
+			"text": "issues with > 10 comments",
+			"semantic": "issues(comments-count-over(10))"
+		},
+		"semantics": []
+	},
+	{
+		"query": "issues with <10 comments",
+		"description": "Check \"<10\" is split to \"< 10\".",
+		"topResult": {
+			"text": "issues with < 10 comments",
+			"semantic": "issues(comments-count-under(10))"
+		},
+		"semantics": []
+	},
+	{
+		"query": "people I have gotten follow",
+		"description": "Check stop-word \"have gotten\".",
+		"topResult": {
+			"text": "people I follow",
+			"semantic": "users-followed(me)"
+		},
+		"semantics": [
+			"users-followed(me)",
+			"intersect(followers(me),users-followed(me))",
+			"intersect(followers(followers(me)),users-followed(me))",
+			"intersect(users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(me),users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(followers(me)),users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(me),followers(followers(me)),users-followed(me))"
+		]
 	}
 ]
