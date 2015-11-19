@@ -31914,5 +31914,40 @@
 			"intersect(repository-creators(12),users-followed(me),users-followed(followers(me)))",
 			"intersect(followers(followers(me)),repository-creators(12),users-followed(followers(me)))"
 		]
+	},
+	{
+		"query": "people I liked to follow",
+		"description": "Need to prevent the ambiguity creating insertion of \"have|has|had\" in [pre-verb-stop-word] -> \"have|has|had liked to\".",
+		"topResult": {
+			"text": "people I follow",
+			"semantic": "users-followed(me)"
+		},
+		"semantics": [
+			"users-followed(me)",
+			"intersect(followers(me),users-followed(me))",
+			"intersect(followers(followers(me)),users-followed(me))",
+			"intersect(users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(me),users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(followers(me)),users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(me),followers(followers(me)),users-followed(me))"
+		]
+	},
+	{
+		"query": "people I been subscribing to",
+		"description": "Check insertion of \"have|has|had\" in substitution \"have|has|had been subscribing to\" -> \"subscribe to\".",
+		"topResult": {
+			"text": "people I subscribe to",
+			"semantic": "users-followed(me)"
+		},
+		"semantics": [
+			"users-followed(me)",
+			"intersect(users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(me),users-followed(me))",
+			"intersect(followers(followers(me)),users-followed(me))",
+			"intersect(followers(me),users-followed(followers(me)))",
+			"intersect(followers(me),followers(followers(me)))",
+			"intersect(followers(me),users-followed(me),users-followed(followers(me)))",
+			"intersect(followers(followers(me)),users-followed(me),users-followed(followers(me)))"
+		]
 	}
 ]
