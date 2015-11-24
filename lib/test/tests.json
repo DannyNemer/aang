@@ -37114,5 +37114,10 @@
 			"intersect(repositories(date-before(this-week)),repositories-type(source))",
 			"repositories(date-before(today))"
 		]
+	},
+	{
+		"query": "repos that are mine",
+		"description": "Check quality of edits.",
+		"semantics": []
 	}
 ]
