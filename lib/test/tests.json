@@ -7520,7 +7520,7 @@
 		"query": "contributors to my repos or repos I like or Danny likes",
 		"topResult": {
 			"text": "contributors to my repos or repos I like or Danny likes",
-			"semantic": "repository-contributors(union(repositories-created(me),union(repositories-liked(0),repositories-liked(me))))"
+			"semantic": "union(repository-contributors(repositories-created(me)),repository-contributors(union(repositories-liked(0),repositories-liked(me))))"
 		},
 		"semantics": [
 			"repository-contributors(union(repositories-created(me),union(repositories-liked(0),repositories-liked(me))))",
@@ -24767,7 +24767,7 @@
 		"description": "Check correct person-number conjugation.",
 		"topResult": {
 			"text": "people people Danny or I follow follow",
-			"semantic": "users-followed(users-followed(union(0,me)))"
+			"semantic": "users-followed(union(users-followed(0),users-followed(me)))"
 		},
 		"semantics": [
 			"users-followed(users-followed(union(0,me)))",
