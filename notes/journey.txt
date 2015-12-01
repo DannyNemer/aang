@@ -305,3 +305,7 @@
 - Need to make a product that becomes a part of people's daily lives, in the way really successful companies always have to.
 
 - The emotional difference between "hitting your head against the wall" and successfully solving challenges and progressing is that of hopelessness and rapture.
+
+- One of the many goals is Turing completeness.
+
+- The amount of detail and depth that had to be explored to achieve support for unions was gargantuan. Dozens of components are designed in this intricate system, in far-from-obvious ways, to successfully operate together perfectly.
