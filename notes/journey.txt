@@ -309,3 +309,4 @@
 - One of the many goals is Turing completeness.
 
 - The amount of detail and depth that had to be explored to achieve support for unions was gargantuan. Dozens of components are designed in this intricate system, in far-from-obvious ways, to successfully operate together perfectly.
+- The intricacy of this system's numerous moving parts is awesome.
