@@ -310,3 +310,13 @@
 
 - The amount of detail and depth that had to be explored to achieve support for unions was gargantuan. Dozens of components are designed in this intricate system, in far-from-obvious ways, to successfully operate together perfectly.
 - The intricacy of this system's numerous moving parts is awesome.
+
+- There is an additional challenge beyond the technical challenge. The challenge of living the life and enduring the stress of the work to cultivate and maintain a mental state essential for tackling the technical challenge. Id est, how to maintain confidence and interest, yet not despair or falter upon roadblocks.
+
+- Must deliver a superior experience beginning at the high end and work down market until I have aggregated consumer, thereby gaining leverage over suppliers and the potential to make outsized profits.
+
+- If this becomes a service, can begin by personally and manually creating the grammars for my customers. ("Do things that don't scale.")
+
+- My work's quality is far better than the most well funded organizations with teams of experienced, well-payed designers, engineers, and management. Without a doubt, the quality of my work and the user experience trumps everything else.
+
+- Need to build a product that becomes a part of users' daily lives in the way really successful companies always have to.
