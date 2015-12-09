@@ -320,3 +320,5 @@
 - My work's quality is far better than the most well funded organizations with teams of experienced, well-payed designers, engineers, and management. Without a doubt, the quality of my work and the user experience trumps everything else.
 
 - Need to build a product that becomes a part of users' daily lives in the way really successful companies always have to.
+
+- I recall examining several CS papers and books on pushdown automata, LR(k) parsing, graph search, etc. I recall watching obscure talks and emailing authors of papers (for which I received no responses).
