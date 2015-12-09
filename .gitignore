@@ -1,4 +1,3 @@
-*.json
-!*tests.json
+/lib/grammar.json
 /notes/ignore
 /out/
