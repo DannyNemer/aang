@@ -324,3 +324,5 @@
 - I recall examining several CS papers and books on pushdown automata, LR(k) parsing, graph search, etc. I recall watching obscure talks and emailing authors of papers (for which I received no responses).
 
 - This system is enormously beyond achieving the intended results. It is beyond seemingly working properly. Rather, it is striving for perfection. It will be a solid foundation that we can have confidence is absolutely correct and handles every edge case. Small parts, such as person-number agreement conjugation, we *know* we cracked as the correct solution. As if every aspect has a mathematically correct implementation we need to solve.
+
+- By perfecting before launch, we can work on edge cases that could not be addressed otherwise. We can perfect a foundation to enable moving faster later. Our product will be much better, and at a state competitors will not be able to match because they too will not have the necessary time and incentives.
