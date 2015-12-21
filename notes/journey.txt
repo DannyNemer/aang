@@ -326,3 +326,5 @@
 - This system is enormously beyond achieving the intended results. It is beyond seemingly working properly. Rather, it is striving for perfection. It will be a solid foundation that we can have confidence is absolutely correct and handles every edge case. Small parts, such as person-number agreement conjugation, we *know* we cracked as the correct solution. As if every aspect has a mathematically correct implementation we need to solve.
 
 - By perfecting before launch, we can work on edge cases that could not be addressed otherwise. We can perfect a foundation to enable moving faster later. Our product will be much better, and at a state competitors will not be able to match because they too will not have the necessary time and incentives.
+
+- Fantastic search interfaces are a great deal of work. A UI Yelp, Product Hunt, et. al. needs is an enormous amount of work. However, Dropbox, Box, and others would also need full-text search.
