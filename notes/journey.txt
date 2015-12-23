@@ -328,3 +328,7 @@
 - By perfecting before launch, we can work on edge cases that could not be addressed otherwise. We can perfect a foundation to enable moving faster later. Our product will be much better, and at a state competitors will not be able to match because they too will not have the necessary time and incentives.
 
 - Fantastic search interfaces are a great deal of work. A UI Yelp, Product Hunt, et. al. needs is an enormous amount of work. However, Dropbox, Box, and others would also need full-text search.
+
+- Launch with Twitter support. People could use it, however little utility it offers. It is fun. I even want it on a weekly basis (when looking for specific tweets)!
+- Jack says, "I love Twitter search. Enables me to quickly see what people are saying in the world about any topic, event, person, or brand. And we have an interesting way to bubble up trends which goes into a fast search."
+- Jack would appreciate it.
