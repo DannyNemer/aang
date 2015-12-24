@@ -332,3 +332,11 @@
 - Launch with Twitter support. People could use it, however little utility it offers. It is fun. I even want it on a weekly basis (when looking for specific tweets)!
 - Jack says, "I love Twitter search. Enables me to quickly see what people are saying in the world about any topic, event, person, or brand. And we have an interesting way to bubble up trends which goes into a fast search."
 - Jack would appreciate it.
+
+- Startup discussion rarely ever focus on product design. Yet, that is all that matters. I have the willingness, fire, eye, and desire for perfection to question the fundamental assumptions, restart entirely multiple times, and make an incredible product.
+
+- IMPORTANT: This product does not force adjustments of behavior.
+- It completely pushes technology into the background.
+
+- Uses rounded corners in the interface, which must be soft.
+- Avoid tangency breaks.
