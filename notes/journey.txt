@@ -340,3 +340,5 @@
 
 - Uses rounded corners in the interface, which must be soft.
 - Avoid tangency breaks.
+
+- My solution to unions, amongst many features, is absolutely incredible. It required much time and many, many, many trials. The solution is far from straightforward, though not too complex. No company, startup or large corporation, affords users the time and freedom to arrive at such solutions. Hence, my advantage.
