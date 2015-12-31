@@ -342,3 +342,7 @@
 - Avoid tangency breaks.
 
 - My solution to unions, amongst many features, is absolutely incredible. It required much time and many, many, many trials. The solution is far from straightforward, though not too complex. No company, startup or large corporation, affords users the time and freedom to arrive at such solutions. Hence, my advantage.
+
+- Bret Victor's work that relates to my intentions: pervasively direct-manipulation interfaces (where users do their thing by moving and gesturing with meaningful objects, instead of relying on verb buttons and other indirect controls), new forms of creative tools, and new ways of learning information.
+
+- Must continuously write blog posts when in production. I write well. It will build the brand, my name recognition, and significantly catalyze recruitment. Giving away secrets and insight is the necessary cost.
