@@ -4,9 +4,7 @@
 	"devDependencies": {
 		"chalk": "^1.1.1",
 		"diff": "^2.2.1",
-		"lodash.camelcase": "^3.0.1",
 		"lodash.isequal": "^3.0.4",
-		"lodash.kebabcase": "^3.0.1",
 		"progress": "^1.1.8",
 		"readline-sync": "^1.2.21",
 		"yargs": "^3.31.0"
