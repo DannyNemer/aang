@@ -346,3 +346,5 @@
 - Bret Victor's work that relates to my intentions: pervasively direct-manipulation interfaces (where users do their thing by moving and gesturing with meaningful objects, instead of relying on verb buttons and other indirect controls), new forms of creative tools, and new ways of learning information.
 
 - Must continuously write blog posts when in production. I write well. It will build the brand, my name recognition, and significantly catalyze recruitment. Giving away secrets and insight is the necessary cost.
+
+- The challenge of parsing anaphora is not determining the antecedent, because when ambiguity presents multiple possibilities, statistics can clearly indicate the most likely (e.g., c-commands, recency). My challenge is determining which forms are acceptable and which I must correct - a challenge that most NLP, which only seek semantic translation, need not address.
