@@ -54,7 +54,7 @@
 
 - So much of business is just about doing the best work. Anything else is laziness, cutting corners, and this is easy to spot.
 
-- You were once of the best business minds, but lost it slightly without meaningful reading. The rest of the startup community reads all of the news, which you have recently taken too much to. Return to your previous greatness. Reaffirm why you cannot work for anyone, and must work alone. You, are one of the greats.
+- You were once of the best business minds, but lost it slightly without meaningful reading. The rest of the startup community reads all of the news, which you have recently taken too much to. Return to your previous greatness. Reaffirm why you can not work for anyone, and must work alone. You, are one of the greats.
 
 - "It's a product that couldn't exist without invention across many disciplines. (A full-size keyboard is) the most familiar, comfortable, and accurate typing platform." ~ Ive on MacBook
 - Much language in the video applies here: "Deliberite", "Percision"
@@ -76,7 +76,7 @@
 
 - We had this idea to improve performance by removing conjugation operations on all instances except objective case, which can only be done at run time. This required making additional terminal rules that recognized the all the same terminal symbols, but accepted symbols specific to the case the rule is designed for. For example, '[like-past]' which recognizes the same terminal symbols as '[like]' but only accepts "liked". This, however, increased parse time.
 - Then had this idea to decrease K-best search time by combining 1-1 rules in the parse forest before traversing the forest. This did not bear much improvement.
-- Then we needed to change a rule for a specific semantic, replace '[of-poss-users+]' with '[of-poss-users]'. However, this significantly increased parse time. This demonstrated that there are certain rules that dramatically increase parse time, and I cannot determine which.
+- Then we needed to change a rule for a specific semantic, replace '[of-poss-users+]' with '[of-poss-users]'. However, this significantly increased parse time. This demonstrated that there are certain rules that dramatically increase parse time, and I can not determine which.
 - Then, we also discovered that there are additional insertion edits we can make that can dramatically slow parse time, yet the same k-best rules are created without these edits. Hence, there should be a way to do parsing differently, to not work toward these trees that never bear.
 - But, this optimization should come last. Work on the other stuff should be first.
 
@@ -188,7 +188,7 @@
 - Problem: Any startup would use AWS. It is an essential cost. Any startup would use Stripe. It is just % cut of your revenue. But, this search as a service is just a unessential additional expense. No software/service has ever struggled yet with average keyword based search.
 - The only possible customers are well established tech services (Product Hunt, GitHub, Box, several security services selling to the enterprise) who would use this for their large and well developed software. They would use it to make their customers additionally happy and add extra value to their product.
 - But, you look at Dropbox doing much work to add extra features for their enterprise customers (administrative controls, etc).
-- Second big problem: Many of these customers, if not all, would require full-text search: searching Dropbox documents, searching GitHub code, etc. My program cannot do that, because it means it would need your database. (That, or I open source the software that you run on your servers, and I charge for support services like many database companies do.)
+- Second big problem: Many of these customers, if not all, would require full-text search: searching Dropbox documents, searching GitHub code, etc. My program can not do that, because it means it would need your database. (That, or I open source the software that you run on your servers, and I charge for support services like many database companies do.)
 
 - I absolutely love Patrick Crowley. He reminds me of Mark Benioff. He is so kind, honest, giving, caring, smart, confident. He is humble and appears incredibly in control. I am so thankful I met him.
 
@@ -245,7 +245,7 @@
 - How I learn: "The 1910 [Flexner] Report emphasized experience oriented methods of teaching and denigrated the early traditional didactic and mental disciplinary methods. Flexner further stressed the investigative process or inquiry as a method of promoting critical thinking. Through inquiry as a model of reflective thinking the traditional fundamental sciences would be rendered dynamic establishing organic connection to real world experience." ~ Zelenka
 
 - There are three potential products: (1) searching users' third-party services (e.g., email, Dropbox, social network accounts), (2) searching highly structured public datasets (e.g., music, places, financial data, people), (3) an API for search as a service.
-- I cannot experiment with the product until I finish the core technology.
+- I can not experiment with the product until I finish the core technology.
 
 - Much time and effort is spent designing and building the system that enables me to build the product: grammar generator and all the rule functions, etc, ambiguity checker, CLI, benchmarker, test suite, etc. It is a product itself. Just as Tesla sees the Gigafactory as a product itself which enables other products. Or Google's infrastructure. Even Apple's processes, i.e., how it operates, is a product of profound work (e.g., Apple University), but its existence is secret.
 
@@ -285,7 +285,7 @@
 - Important tot think about this point from Ben Thompson:
 	- The fundamental nature of the Internet makes monetizing infinitely reproducible intellectual property akin to selling ice to an Eskimo: it can be done, but it better be some really darn incredible ice, and even then the market is limited. A far more attainable and sustainable strategy is to instead focus on monetizing complements to said intellectual property, resulting in an outcome where everyone wins: intellectual property consumers, intellectual property copiers, and above all intellectual property creators.
 - Stripe's complement is scale.
-- I cannot be a pure software service. At first I might be able to, but from the beginning must be working toward a complement.
+- I can not be a pure software service. At first I might be able to, but from the beginning must be working toward a complement.
 
 - I long believed I would go to SV. I was not excited about it, but simply thought it was the logical step. I wanted to be around those I admire, and see the companies I admire, but still lacked a natural desire to go. Largely, I don't want to be another 20-something male programmer talking about startups. That is everyone there.
 - Then I realized, how about NYC? It is amazing, diverse, cold. It is amazing. The arts. Theater. So so so so much culture. I am actually excited about it, and I don't know why. I never was excited about SV. I have never been to SV, though I just don't have desire to go there.
@@ -348,3 +348,7 @@
 - Must continuously write blog posts when in production. I write well. It will build the brand, my name recognition, and significantly catalyze recruitment. Giving away secrets and insight is the necessary cost.
 
 - The challenge of parsing anaphora is not determining the antecedent, because when ambiguity presents multiple possibilities, statistics can clearly indicate the most likely (e.g., c-commands, recency). My challenge is determining which forms are acceptable and which I must correct - a challenge that most NLP, which only seek semantic translation, need not address.
+
+- I can not share the process of building this. I can not share how long it required. It is a strategy, and details of the process indicate the scope of the technical solution. I can not indicate how amazing it is, or how beautiful it is underneath, because I can not reveal its power. I can not reveal that within the company of myself, there exists this amazing machine that produces work of incredible quality even when no one will see. The processes must remain secret. (Apple never details its process (e.g., ANPP), and denies its existence, which often includes how long the company has worked on something.)
+
+- If I quit, there will be psychological damage. I will unconsciously believe I can not do anything immensely difficult, ambitious, or risky again. Just as the PayPal mafia were taught that if they worked hard enough, they can succeed, I will be taught that if I worked hard enough I will still fail.
