@@ -354,3 +354,5 @@
 - If I quit, there will be psychological damage. I will unconsciously believe I can not do anything immensely difficult, ambitious, or risky again. Just as the PayPal mafia were taught that if they worked hard enough, they can succeed, I will be taught that if I worked hard enough I will still fail.
 
 - There are enormous, detailed computational linguistic papers about anaphora resolution. This is exactly what I implemented as a mere subset of what my system achieves. Ergo, these papers demonstrate my system's size, scope, power, technological value, and the great difficulty and ambition of my goal.
+
+- It is frustrating and disheartening to spend days inspecting possible edge cases, building complex mental models in your head, only to find that any solution to these edge cases creates a greater overhead than the edge cases themselves. I.e., checking for the edge case is worse than letting the edge case occur. Though, this process is necessary.
