@@ -356,3 +356,5 @@
 - There are enormous, detailed computational linguistic papers about anaphora resolution. This is exactly what I implemented as a mere subset of what my system achieves. Ergo, these papers demonstrate my system's size, scope, power, technological value, and the great difficulty and ambition of my goal.
 
 - It is frustrating and disheartening to spend days inspecting possible edge cases, building complex mental models in your head, only to find that any solution to these edge cases creates a greater overhead than the edge cases themselves. I.e., checking for the edge case is worse than letting the edge case occur. Though, this process is necessary.
+
+- Potential mission: Computers and technological tools remain too difficult to use for the vast majority of people. We makes tasks an order of magnitude easier. We focus on specialized, technical tasks, not consumer, though our work makes these tasks that were difficult for professionals and impossible for consumers easy for both and thereby accessible to and enabling of a far larger audience. Our work removes entire areas of concern (simplifying by automating parts).
