@@ -358,3 +358,6 @@
 - It is frustrating and disheartening to spend days inspecting possible edge cases, building complex mental models in your head, only to find that any solution to these edge cases creates a greater overhead than the edge cases themselves. I.e., checking for the edge case is worse than letting the edge case occur. Though, this process is necessary.
 
 - Potential mission: Computers and technological tools remain too difficult to use for the vast majority of people. We makes tasks an order of magnitude easier. We focus on specialized, technical tasks, not consumer, though our work makes these tasks that were difficult for professionals and impossible for consumers easy for both and thereby accessible to and enabling of a far larger audience. Our work removes entire areas of concern (simplifying by automating parts).
+
+- Silly name idea: "vertex". The product handles edge cases so well, rigorously, and meticulously (especially so when considering documentation), that it embodies the intersection of all edges. Though, this name is unmemorable.
+- Best to use a unique word. Do not adopt existing words. Like the novelty of "Cumberbatch".
