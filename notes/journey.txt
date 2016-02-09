@@ -361,3 +361,9 @@
 
 - Silly name idea: "vertex". The product handles edge cases so well, rigorously, and meticulously (especially so when considering documentation), that it embodies the intersection of all edges. Though, this name is unmemorable.
 - Best to use a unique word. Do not adopt existing words. Like the novelty of "Cumberbatch".
+
+- Must directly, specifically enumerate values. The following is by David Sacks upon replacing Parker Conrad as Zenefits CEO:
+	Effective immediately, this company's values are:
+	#1 Operate with integrity.
+	#2 Put the customer first.
+	#3 Make this a great place to work for employees.
