@@ -367,3 +367,16 @@
 	#1 Operate with integrity.
 	#2 Put the customer first.
 	#3 Make this a great place to work for employees.
+
+- Hours spent documenting, formalizing, and articulating logic and algorithms to prove complex work. Demonstrates the enormous difficulty to solve problems in the system.
+- This note is prompted by the formal grammatical and linguistic explanations of the logic of the meaningless clause insertions and their detection. It was enormously difficult to solve and formalize. The explanation (i.e., documentation) was necessary as its articulation proves the logic's accuracy, which grammar implementations (i.e., tests) can not as confidently and rigorously confirm. This final description required 4 hours to prove. The challenge was more about linguistic theory and grammar than algorithms, and is certainly not computer science.
+
+- Paul Graham on Leonardo da Vinci: His most impressive work, to me, is his drawings. They're clearly made more as a way of studying the world than producing something beautiful. And yet they can hold their own with any work of art ever made. No one else, before or since, was that good when no one was looking.
+- My work is of the highest quality, and no one sees it. The comments and explanations are refined over and over. The APIs are refined over and over. As are consistent style, syntax, and naming conventions, commit messages and descriptions, documentation, project structure, and even styling of console messages. Moreover, the enormous number of test cases, the scrutinization over extremely obscure edge cases, and the detailed comments of it all.
+- My work and language is of publishable quality, and no one is looking.
+- So much work is done to ensure I have the *right* solution, not just the solution that works for every example/input I can conjure. Formal proofs. The rigor of my analysis and documentation improves my understanding and helps me catch problems, as one would in a physics proof.
+- Without such scrutinization, I could not have the confidence to know that I *solved* something and can move on assured it is correct. It is necessary for the foundation.
+- I am not comparing myself to Leonardo. I am, amid this long and painful process, referencing history to find my work's virtues and instill confidence in myself to continue when there are no external assurances.
+
+- I spent 13 hours trying to solve an algorithm which I *know* to be solvable. It is the calculation of path heuristics in the parse forest for occurrences of recursive unary reductions, which yields interdependent heuristic estimates. It is so hard, but failing for so long demoralized me. It kills my spirit in a way that cannot be healed by rest. I need to document the problem, not solve it, and move on.
+- As I have long said, "burnt out" is mental, not a physical deprivation of cognitive resources. It is easier to work harder + longer when you are succeeding than to work less when you are not growing/progressing.
