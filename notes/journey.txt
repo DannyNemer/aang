@@ -380,3 +380,5 @@
 
 - I spent 13 hours trying to solve an algorithm which I *know* to be solvable. It is the calculation of path heuristics in the parse forest for occurrences of recursive unary reductions, which yields interdependent heuristic estimates. It is so hard, but failing for so long demoralized me. It kills my spirit in a way that cannot be healed by rest. I need to document the problem, not solve it, and move on.
 - As I have long said, "burnt out" is mental, not a physical deprivation of cognitive resources. It is easier to work harder + longer when you are succeeding than to work less when you are not growing/progressing.
+
+- This is killing me.
