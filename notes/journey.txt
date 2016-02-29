@@ -382,3 +382,8 @@
 - As I have long said, "burnt out" is mental, not a physical deprivation of cognitive resources. It is easier to work harder + longer when you are succeeding than to work less when you are not growing/progressing.
 
 - This is killing me.
+
+- I want to build two things:
+	1. A service to integrate my NLP and Search as a Service into their site. E.g., Product Hunt.
+	2. A free site to search public data using my NLP. E.g., CrunchBase, music data, structured wiki data.
+- #2 advertises #1.
