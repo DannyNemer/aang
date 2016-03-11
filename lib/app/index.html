@@ -13,12 +13,16 @@
 		display: flex;
 	}
 
-	#queryField {
+	#query {
 		width: 100%;
 	}
 
-	#kField {
+	#k {
 		width: 50px;
+	}
+
+	#message {
+		color: red;
 	}
 
 	#selectedResult {
@@ -32,104 +36,116 @@
 </head>
 <body>
 <div id='inputContainer'>
-	<input id="queryField" autocomplete="off">
-	<input id="kField" type="number" min="1" value="7" autocomplete="off">
+	<input id="query" autocomplete="off">
+	<input id="k" type="number" min="1" value="7" autocomplete="off">
 </div>
-<div id="messageContainer"></div>
+<div id="message"></div>
 <div id="parseResultsContainer"></div>
 <script>
-var queryField = document.getElementById('queryField')
-var kField = document.getElementById('kField')
+var queryField = document.getElementById('query')
+var kField = document.getElementById('k')
 var parseResultsContainer = document.getElementById('parseResultsContainer')
 
+// Focus query field upon page load.
 queryField.focus()
 
 /**
- * Listens for input in query or k field.
+ * Sends query to server upon input in query and k fields.
  */
 queryField.oninput = kField.oninput = function () {
 	var query = queryField.value.trim()
 	if (query) {
 		sendQuery(query)
 	} else {
-		emptyParseResultsContainer()
+		clearParseResults()
 	}
 }
 
 /**
- * [onkeydown description]
+ * Handles parse result navigation via keys in the query input field:
+ * - The `up` and `down` keys navigate the selected result.
+ * - The `tab` key replaces the query input field text with the selected result's display text.
  */
 queryField.onkeydown = function (e) {
 	// TAB
 	if (e.which === 9) {
-		e.preventDefault() // Prevent switching focused input fields
+		// Prevent switching focused input field.
+		e.preventDefault()
 
+		// Replace query input field text with the selected result's display text.
 		var selectedResult = document.getElementById('selectedResult')
-		var querySuggestion = selectedResult.childNodes[0].textContent
-		queryField.value = querySuggestion
-		sendQuery(querySuggestion)
+		var selectedResultDisplayText = selectedResult.childNodes[0].textContent
+		queryField.value = selectedResultDisplayText
+		sendQuery(selectedResultDisplayText)
 	}
 
 	// UP
 	else if (e.which === 38) {
-		// Prevent moving cursor
+		// Prevent moving cursor in input field.
 		e.preventDefault()
+		// Select previous result.
 		moveParseResultSelection(-1)
 	}
 
 	// DOWN
 	else if (e.which === 40) {
-		// Prevent moving cursor
+		// Prevent moving cursor in input field.
 		e.preventDefault()
+		// Select next result.
 		moveParseResultSelection(1)
 	}
 }
 
 /**
- * [moveParseResultSelection description]
+ * Moves selection of parse result by `indexChange`. If `indexChange` is positive, the selection moves down, negative up.
  *
- * @param {number} indexChange [description]
+ * @param {number} indexChange The index change of the selected parse result.
  */
 function moveParseResultSelection(indexChange) {
+	// De-select current selection.
 	var selectedResult = document.getElementById('selectedResult')
 	selectedResult.id = ''
 
+	// Get index of current selection.
 	var parseResultNodes = Array.from(parseResultsContainer.childNodes)
 	var idx = parseResultNodes.indexOf(selectedResult)
 
+	// Update selected result index.
 	var parseResultNodesLen = parseResultNodes.length
 	idx = (idx + indexChange) % parseResultNodesLen
 	if (idx < 0) {
 		idx += parseResultNodesLen
 	}
 
+	// Highlight new selected result.
 	parseResultNodes[idx].id = 'selectedResult'
 }
 
 
 /**
- * Sends `query` to the server for parsing and display the results upon return.
+ * Sends `query` to the server for parsing and displays the results upon return.
  *
  * @param {string} query The query to parse.
  */
 function sendQuery(query) {
 	var request = new XMLHttpRequest()
 
-	// Define function before sending request
+	// Define function before sending request.
 	request.onload = function () {
 		if (request.status >= 200 && request.status < 400) {
-			// Success!
 			var data = JSON.parse(request.responseText)
 			loadParseResults(data)
 		} else {
-			// We reached our target server, but it returned an error
+			updateMessage('Server request returned error with status:', request.status)
 		}
 	}
 
+	// Handle request error.
 	request.onerror = function () {
-		// There was a connection error of some sort
+		updateMessage('XMLHttpRequest error occurred during parse request.')
 	}
 
+	// Send `query` to server for parsing.
 	request.open('POST', '/parse', true)
 	request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
 	request.send(JSON.stringify({
@@ -139,101 +155,101 @@ function sendQuery(query) {
 }
 
 /**
- * [loadParseResults description]
+ * Loads and displays parse results returned by a parse request.
  *
- * @param {Object} parseResults [description]
+ * @param {Object} parseResults The data returned by a parse request.
  */
 function loadParseResults(parseResults) {
-	emptyParseResultsContainer()
+	clearParseResults()
 
-	loadParseResultsMessage(parseResults)
+	loadParseMessage(parseResults)
 
 	var trees = parseResults.trees
 	if (trees) {
-		loadParseResultsTrees(trees)
+		loadParseTrees(trees)
 	}
 }
 
 /**
- * [loadParseResultsTrees description]
+ * Displays `trees`.
  *
- * @param {Object[]} trees [description]
+ * @param {Object[]} trees The parse trees returned by the parse request.
  */
-function loadParseResultsTrees(trees) {
-	trees.forEach(function (tree, i) {
-		var div = parseResultsContainer.appendChild(document.createElement('div'))
-		div.className = 'tree'
+function loadParseTrees(trees) {
+	for (var t = 0, treesLen = trees.length; t < treesLen; ++t) {
+		var tree = trees[t]
+		var treeDiv = parseResultsContainer.appendChild(document.createElement('div'))
 
-		var textSpan = div.appendChild(document.createElement('span'))
-		textSpan.textContent = tree.text
-
-		var costSpan = div.appendChild(document.createElement('span'))
-		costSpan.textContent = ' - ' + tree.cost.toFixed(7)
-
-		if (i === 0) {
-			div.id = 'selectedResult'
+		// Select first result.
+		if (t === 0) {
+			treeDiv.id = 'selectedResult'
 		}
 
-		addSemantic(div, tree.semanticStr)
+		// Add tree display text and parsing cost.
+		treeDiv.textContent = tree.text + ' - ' + tree.cost.toFixed(7)
 
-		if (tree.disambiguation) {
-			tree.disambiguation.forEach(function (semanticStr) {
-				addSemantic(div, semanticStr)
-			})
+		// Add semantic.
+		appendSemanticStr(tree.semanticStr, treeDiv)
+
+		// Add disambiguated semantics.
+		var disambigStrs = tree.disambiguation
+		if (disambigStrs) {
+			for (var s = 0, disambigStrsLen = disambigStrs.length; s < disambigStrsLen; ++s) {
+				appendSemanticStr(disambigStrs[s], treeDiv)
+			}
 		}
 
-		div.appendChild(document.createElement('br'))
-	})
+		// Add blank line.
+		treeDiv.appendChild(document.createElement('br'))
+	}
 }
 
 /**
- * [addSemantic description]
+ * Appends `semanticStr` within a div to `parentDiv`
  *
- * @param {[type]} div [description]
- * @param {string} semanticStr [description]
+ * @param {string} semanticStr The semantic string to display.
+ * @param {Object} parentDiv The parent div to append `semanticStr`.
  */
-function addSemantic(div, semanticStr) {
-	var semanticDiv = div.appendChild(document.createElement('div'))
+function appendSemanticStr(semanticStr, parentDiv) {
+	var semanticDiv = parentDiv.appendChild(document.createElement('div'))
 	semanticDiv.className = 'semantic'
-	semanticDiv.innerText = semanticStr
+	semanticDiv.textContent = semanticStr
 }
 
 /**
- * [loadParseResultsMessage description]
+ * Displays the message, if any, returned by the parse request.
  *
- * @param {Object} parseResults [description]
+ * @param {Object} parseResults The object with the message to display, returned by the parse request.
  */
-function loadParseResultsMessage(parseResults) {
+function loadParseMessage(parseResults) {
 	var trees = parseResults.trees
 	if (!trees) {
-		addMessage('Error: Failed to reach start node.')
+		updateMessage('Error: Failed to reach start node.')
 	} else if (trees.length === 0) {
-		// Never occurs because marking all tokens as deletable enables avoiding semantically illegal parses.
-		addMessage('Error: Failed to find legal parse trees.')
+		updateMessage('Error: Failed to find legal parse trees.')
 	} else if (parseResults.failedInitStartSym) {
-		// Print this error separate from failing to reach the start node on the final parse (because otherwise would be redundant).
-		addMessage('Warning: Failed to reach start node on initial parse.')
+		updateMessage('Warning: Failed to reach start node on initial parse.')
 	} else if (parseResults.failedInitLegalTrees) {
-		addMessage('Warning: Failed to find legal parse trees on initial parse.')
+		updateMessage('Warning: Failed to find legal parse trees on initial parse.')
 	}
 }
 
 /**
- * [addMessage description]
+ * Displays `message` on the page above parse results.
  *
- * @param {string} message [description]
+ * @param {string} message The message to display.
  */
-function addMessage(message) {
-	var textSpan = parseResultsContainer.appendChild(document.createElement('span'))
-	textSpan.textContent = message
-	parseResultsContainer.appendChild(document.createElement('br'))
-	parseResultsContainer.appendChild(document.createElement('br'))
+function updateMessage(message) {
+	var messageContainer = document.getElementById('message')
+	messageContainer.textContent = message
 }
 
 /**
- * Removes previous parse results.
+ * Removes the previous parse results and message, if any.
  */
-function emptyParseResultsContainer() {
+function clearParseResults() {
+	updateMessage('')
+
 	while (parseResultsContainer.firstChild) {
 		parseResultsContainer.removeChild(parseResultsContainer.firstChild)
 	}
