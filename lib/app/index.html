@@ -1,0 +1,243 @@
+<head>
+<meta name="viewport" content="initial-scale=1">
+<style>
+	input {
+		font-size: 18pt;
+	}
+
+	input:focus {
+		outline: none;
+	}
+
+	#inputContainer {
+		display: flex;
+	}
+
+	#queryField {
+		width: 100%;
+	}
+
+	#kField {
+		width: 50px;
+	}
+
+	#selectedResult {
+		background-color: lightsteelblue;
+	}
+
+	.semantic {
+		font-family: monospace;
+	}
+</style>
+</head>
+<body>
+<div id='inputContainer'>
+	<input id="queryField" autocomplete="off">
+	<input id="kField" type="number" min="1" value="7" autocomplete="off">
+</div>
+<div id="messageContainer"></div>
+<div id="parseResultsContainer"></div>
+<script>
+var queryField = document.getElementById('queryField')
+var kField = document.getElementById('kField')
+var parseResultsContainer = document.getElementById('parseResultsContainer')
+
+queryField.focus()
+
+/**
+ * Listens for input in query or k field.
+ */
+queryField.oninput = kField.oninput = function () {
+	var query = queryField.value.trim()
+	if (query) {
+		sendQuery(query)
+	} else {
+		emptyParseResultsContainer()
+	}
+}
+
+/**
+ * [onkeydown description]
+ */
+queryField.onkeydown = function (e) {
+	// TAB
+	if (e.which === 9) {
+		e.preventDefault() // Prevent switching focused input fields
+
+		var selectedResult = document.getElementById('selectedResult')
+		var querySuggestion = selectedResult.childNodes[0].textContent
+		queryField.value = querySuggestion
+		sendQuery(querySuggestion)
+	}
+
+	// UP
+	else if (e.which === 38) {
+		// Prevent moving cursor
+		e.preventDefault()
+		moveParseResultSelection(-1)
+	}
+
+	// DOWN
+	else if (e.which === 40) {
+		// Prevent moving cursor
+		e.preventDefault()
+		moveParseResultSelection(1)
+	}
+}
+
+/**
+ * [moveParseResultSelection description]
+ *
+ * @param {number} indexChange [description]
+ */
+function moveParseResultSelection(indexChange) {
+	var selectedResult = document.getElementById('selectedResult')
+	selectedResult.id = ''
+
+	var parseResultNodes = Array.from(parseResultsContainer.childNodes)
+	var idx = parseResultNodes.indexOf(selectedResult)
+
+	var parseResultNodesLen = parseResultNodes.length
+	idx = (idx + indexChange) % parseResultNodesLen
+	if (idx < 0) {
+		idx += parseResultNodesLen
+	}
+
+	parseResultNodes[idx].id = 'selectedResult'
+}
+
+
+/**
+ * Sends `query` to the server for parsing and display the results upon return.
+ *
+ * @param {string} query The query to parse.
+ */
+function sendQuery(query) {
+	var request = new XMLHttpRequest()
+
+	// Define function before sending request
+	request.onload = function () {
+		if (request.status >= 200 && request.status < 400) {
+			// Success!
+			var data = JSON.parse(request.responseText)
+			loadParseResults(data)
+		} else {
+			// We reached our target server, but it returned an error
+		}
+	}
+
+	request.onerror = function () {
+		// There was a connection error of some sort
+	}
+
+	request.open('POST', '/parse', true)
+	request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+	request.send(JSON.stringify({
+		query: query,
+		k: kField.value,
+	}))
+}
+
+/**
+ * [loadParseResults description]
+ *
+ * @param {Object} parseResults [description]
+ */
+function loadParseResults(parseResults) {
+	emptyParseResultsContainer()
+
+	loadParseResultsMessage(parseResults)
+
+	var trees = parseResults.trees
+	if (trees) {
+		loadParseResultsTrees(trees)
+	}
+}
+
+/**
+ * [loadParseResultsTrees description]
+ *
+ * @param {Object[]} trees [description]
+ */
+function loadParseResultsTrees(trees) {
+	trees.forEach(function (tree, i) {
+		var div = parseResultsContainer.appendChild(document.createElement('div'))
+		div.className = 'tree'
+
+		var textSpan = div.appendChild(document.createElement('span'))
+		textSpan.textContent = tree.text
+
+		var costSpan = div.appendChild(document.createElement('span'))
+		costSpan.textContent = ' - ' + tree.cost.toFixed(7)
+
+		if (i === 0) {
+			div.id = 'selectedResult'
+		}
+
+		addSemantic(div, tree.semanticStr)
+
+		if (tree.disambiguation) {
+			tree.disambiguation.forEach(function (semanticStr) {
+				addSemantic(div, semanticStr)
+			})
+		}
+
+		div.appendChild(document.createElement('br'))
+	})
+}
+
+/**
+ * [addSemantic description]
+ *
+ * @param {[type]} div [description]
+ * @param {string} semanticStr [description]
+ */
+function addSemantic(div, semanticStr) {
+	var semanticDiv = div.appendChild(document.createElement('div'))
+	semanticDiv.className = 'semantic'
+	semanticDiv.innerText = semanticStr
+}
+
+/**
+ * [loadParseResultsMessage description]
+ *
+ * @param {Object} parseResults [description]
+ */
+function loadParseResultsMessage(parseResults) {
+	var trees = parseResults.trees
+	if (!trees) {
+		addMessage('Error: Failed to reach start node.')
+	} else if (trees.length === 0) {
+		// Never occurs because marking all tokens as deletable enables avoiding semantically illegal parses.
+		addMessage('Error: Failed to find legal parse trees.')
+	} else if (parseResults.failedInitStartSym) {
+		// Print this error separate from failing to reach the start node on the final parse (because otherwise would be redundant).
+		addMessage('Warning: Failed to reach start node on initial parse.')
+	} else if (parseResults.failedInitLegalTrees) {
+		addMessage('Warning: Failed to find legal parse trees on initial parse.')
+	}
+}
+
+/**
+ * [addMessage description]
+ *
+ * @param {string} message [description]
+ */
+function addMessage(message) {
+	var textSpan = parseResultsContainer.appendChild(document.createElement('span'))
+	textSpan.textContent = message
+	parseResultsContainer.appendChild(document.createElement('br'))
+	parseResultsContainer.appendChild(document.createElement('br'))
+}
+
+/**
+ * Removes previous parse results.
+ */
+function emptyParseResultsContainer() {
+	while (parseResultsContainer.firstChild) {
+		parseResultsContainer.removeChild(parseResultsContainer.firstChild)
+	}
+}
+
+</script>
+</body>
