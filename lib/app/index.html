@@ -55,7 +55,7 @@ queryField.focus()
 queryField.oninput = kField.oninput = function () {
 	var query = queryField.value.trim()
 	if (query) {
-		sendQuery(query)
+		parseQuery(query)
 	} else {
 		clearParseResults()
 	}
@@ -76,7 +76,7 @@ queryField.onkeydown = function (e) {
 		var selectedResult = document.getElementById('selectedResult')
 		var selectedResultDisplayText = selectedResult.childNodes[0].textContent
 		queryField.value = selectedResultDisplayText
-		sendQuery(selectedResultDisplayText)
+		parseQuery(selectedResultDisplayText)
 	}
 
 	// UP
@@ -127,7 +127,7 @@ function moveParseResultSelection(indexChange) {
  *
  * @param {string} query The query to parse.
  */
-function sendQuery(query) {
+function parseQuery(query) {
 	var request = new XMLHttpRequest()
 
 	// Define function before sending request.
