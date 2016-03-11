@@ -46,6 +46,9 @@ var queryField = document.getElementById('query')
 var kField = document.getElementById('k')
 var parseResultsContainer = document.getElementById('parseResults')
 
+// Load and parse previous query from last session, if any.
+loadPrevQuery()
+
 // Focus query field upon page load.
 queryField.focus()
 
@@ -56,6 +59,9 @@ queryField.oninput = kField.oninput = function () {
 	var query = queryField.value.trim()
 	if (query) {
 		parseQuery(query)
+
+		// Save query for restoring session.
+		localStorage.setItem('prevQuery', query)
 	} else {
 		clearParseResults()
 	}
@@ -255,5 +261,17 @@ function clearParseResults() {
 	}
 }
 
+/**
+ * Loads and parses the previous query stored in `localStorage` from last session, if any.
+ *
+ * Invoked upon loading page.
+ */
+function loadPrevQuery() {
+	var prevQuery = localStorage.getItem('prevQuery')
+	if (prevQuery) {
+		queryField.value = prevQuery
+		parseQuery(prevQuery)
+	}
+}
 </script>
 </body>
