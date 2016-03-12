@@ -142,13 +142,13 @@ function parseQuery(query) {
 			var data = JSON.parse(request.responseText)
 			loadParseResults(data)
 		} else {
-			updateMessage('Server request returned error with status:', request.status)
+			updateMessage('Error: Server request returned error with status:', request.status)
 		}
 	}
 
 	// Handle request error.
 	request.onerror = function () {
-		updateMessage('XMLHttpRequest error occurred during parse request.')
+		updateMessage('Error: XMLHttpRequest error occurred during parse request.')
 	}
 
 	// Send `query` to server for parsing.
