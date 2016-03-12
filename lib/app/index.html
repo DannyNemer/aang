@@ -191,8 +191,13 @@ function loadParseTrees(trees) {
 			treeDiv.id = 'selectedResult'
 		}
 
-		// Add tree display text and parsing cost.
-		treeDiv.textContent = tree.text + ' - ' + tree.cost.toFixed(7)
+		// Add tree display text.
+		var textSpan = treeDiv.appendChild(document.createElement('span'))
+		textSpan.textContent = tree.text
+
+		// Add tree parsing cost.
+		var costSpan = treeDiv.appendChild(document.createElement('span'))
+		costSpan.textContent = ' - ' + tree.cost.toFixed(7)
 
 		// Add semantic.
 		appendSemanticStr(tree.semanticStr, treeDiv)
