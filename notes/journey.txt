@@ -390,3 +390,5 @@
 
 - We will be to NLP and search what Stripe is for payments.
 - Ben Thompson on Stripe and AWS: It makes a tremendous amount of sense for online businesses to focus on what they do best and leave common elements to dedicated service providers. The most famous example of this is AWS: by operating at scale the cloud service provider offers better pricing that has infinitely more flexibility than anything any one company can build on its own. Stripe is in the same class: dealing with payments is a messy convoluted mess, but it’s the same messy convoluted mess for everyone. The economic rationale for letting one company deal with it on behalf of everyone is very compelling, and that applies equally to the minutiae of opening a business: why should every business solve the exact same problem on their own, effectively repeating the work done by millions of other small businesses? Let one company handle it at scale, leaving businesses to focus on what they do next.
+
+- Again, examine Apple's marketing language, and especially their promotional videos. Their copy is incredibly well done, and will be useful for both speaking and marketing material.
