@@ -105,7 +105,7 @@ queryField.onkeydown = function (e) {
 /**
  * Moves selection of parse result by `indexChange`. If `indexChange` is positive, the selection moves down, negative up.
  *
- * @param {number} indexChange The index change of the selected parse result.
+ * @param {number} indexChange The selected parse result index change.
  */
 function moveParseResultSelection(indexChange) {
 	// De-select current selection.
@@ -136,7 +136,7 @@ function moveParseResultSelection(indexChange) {
 function parseQuery(query) {
 	var request = new XMLHttpRequest()
 
-	// Define function before sending request.
+	// Define `onload` method before sending request.
 	request.onload = function () {
 		if (request.status >= 200 && request.status < 400) {
 			var data = JSON.parse(request.responseText)
