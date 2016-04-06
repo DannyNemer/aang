@@ -394,3 +394,10 @@
 - Again, examine Apple's marketing language, and especially their promotional videos. Their copy is incredibly well done, and will be useful for both speaking and marketing material.
 
 - Performance is a feature. My system is the fastest by far (possibly 10x faster because of the grammar and every component of the parsing system), has the most precise understanding of user input, supports complex queries that other systems can not, such as nested queries, unions, negations, and anaphora, supports auto-complete, supports k-best, corrects incorrect semantics, corrects grammar, and can create an NLI for any use case, such as commands ala Siri and DB search.
+
+- Simple pitch:
+	1. Problem: Computers and software is still too difficult to use. Many tasks too slow.
+	2. Solution: NLP makes many tasks much easier, faster, and more accessible. An API for developers to easily create custom NLP interfaces in their services.
+		(a) Example users: Instacart (cheap gluten-free food), Product Hunt, LinkedIn, Tanium
+	3. Effect: Increase conversions and usage.
+	4. Value: Scale. Just as Stripe handles currencies, banks, transfers, etc., mine handles every edge case, always incredibly fast, perfect, scales from simple queries, to commands, to complex structured object search, and more (conjugation, k-best, Turing complete logic, etc).
