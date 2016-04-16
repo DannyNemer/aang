@@ -401,3 +401,5 @@
 		(a) Example users: Instacart (cheap gluten-free food), Product Hunt, LinkedIn, Tanium
 	3. Effect: Increase conversions and usage.
 	4. Value: Scale. Just as Stripe handles currencies, banks, transfers, etc., mine handles every edge case, always incredibly fast, perfect, scales from simple queries, to commands, to complex structured object search, and more (conjugation, k-best, Turing complete logic, etc).
+
+- Integrate fun, personality, and whimsy into design and language/copy.
