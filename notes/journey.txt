@@ -408,3 +408,6 @@
 	- Rules (or any kind of imperative approach, including plain script/program) are kind of the opposite. The good thing with rules is, you can have a demo working after you write two rules. As long as you follow the script carefully, your bot will work and your audience will be impressed. But as you discover new “paths” in the dialog, you'll add more and more rules, until one day everything collapses. You're doomed by the curse of combinatorics. Any new rule conflicts with old rules that you totally forgot the reason for. Your bot cannot improve anymore.
 - They are saying it become too difficult to manage. They say, "you totally forgot the reason for" a design change.
 - Well, not true for my work at all. Given my incredible documentation, and enormous care in the organization and design of the APIs, components, etc., I prove they are wrong. If you work hard enough, and produce software of great enough quality, you can achieve it.
+
+- I am always upset when I see an innocent user troubled by buggy or poor software. Old PCs, the OS X update prompt that can not be closed, iCloud sub-optimally configured (e.g., not syncing photos, not forwarding text messages), still syncing iTunes library manually (instead of iTunes Match), using old Major version of OS X or iOS, etc.
+- My software will work perfectly, obviously, intuitively, with no loading of any sort.
