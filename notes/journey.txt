@@ -411,3 +411,6 @@
 
 - I am always upset when I see an innocent user troubled by buggy or poor software. Old PCs, the OS X update prompt that can not be closed, iCloud sub-optimally configured (e.g., not syncing photos, not forwarding text messages), still syncing iTunes library manually (instead of iTunes Match), using old Major version of OS X or iOS, etc.
 - My software will work perfectly, obviously, intuitively, with no loading of any sort.
+
+- I told a kind, fellow coder I was making an NLP platform and NLI generator. He responded he did not know there was a JavaScript NLP library; he assumed I would use Python (which has libraries likes NLTK). I told him I am not using a library, that my work is all algorithms and data structures I am developing myself, and might as well be in pseudocode.
+- It never crossed my mind to clarify that I was not using external libraries because I am building all of it. This is *the* NLP.
