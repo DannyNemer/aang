@@ -414,3 +414,7 @@
 
 - I told a kind, fellow coder I was making an NLP platform and NLI generator. He responded he did not know there was a JavaScript NLP library; he assumed I would use Python (which has libraries likes NLTK). I told him I am not using a library, that my work is all algorithms and data structures I am developing myself, and might as well be in pseudocode.
 - It never crossed my mind to clarify that I was not using external libraries because I am building all of it. This is *the* NLP.
+
+- Technology does not enable a business to succeed. My technology is not unique or profound. The value of the business is the technology's scale. The scope of input you can accept, and the types of interfaces you can create, the ease with which to do it, without sacrificing any speed, accuracy, precision, or features (e.g., auto-completion, k-best, conjugation). The scale is the API that accompanies the grammar, which requires our meticulous design and documentation.
+
+- I underestimated the value of auto-completion intrinsic in k-best. Siri can not auto-complete.
