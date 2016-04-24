@@ -424,3 +424,5 @@
 - Me now: No, deep learning is not going to work (at least for >5 years) for many reasons. I have a shot.
 
 - Bots remain a popular tech topic this month. I can expand my system for such NLP. Of course, NLP is only part of a bot system.
+
+- Need heavy branding and distinct visual features that users recognize when they return to the site.
