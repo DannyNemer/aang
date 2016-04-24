@@ -418,3 +418,9 @@
 - Technology does not enable a business to succeed. My technology is not unique or profound. The value of the business is the technology's scale. The scope of input you can accept, and the types of interfaces you can create, the ease with which to do it, without sacrificing any speed, accuracy, precision, or features (e.g., auto-completion, k-best, conjugation). The scale is the API that accompanies the grammar, which requires our meticulous design and documentation.
 
 - I underestimated the value of auto-completion intrinsic in k-best. Siri can not auto-complete.
+
+- Me last week: NLP is the hottest topic in tech, and I have the best NLP in the world. I am amazing.
+- Me this week: NLP still hottest topic, but deep learning (neural nets) is its future. I wasted a year. I am a failure.
+- Me now: No, deep learning is not going to work (at least for >5 years) for many reasons. I have a shot.
+
+- Bots remain a popular tech topic this month. I can expand my system for such NLP. Of course, NLP is only part of a bot system.
