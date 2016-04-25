@@ -426,3 +426,7 @@
 - Bots remain a popular tech topic this month. I can expand my system for such NLP. Of course, NLP is only part of a bot system.
 
 - Need heavy branding and distinct visual features that users recognize when they return to the site.
+
+- I am obsessed with word vectors. I anticipate similar excitement when I study using deep learning for NLP.
+- Hence, version 1 uses my grammar + parser for a platform to easily build NLI interfaces that are powerful + versatile (i.e., build various interfaces: bots/commands, search queries), accurate + precise (understanding of user input), fast (i.e., instant), robust (i.e., understand ill-formed input), and feature-full (e.g., conjugation, k-best, anaphora, boolean logic, nested statements).
+- Version 2 uses deep learning based on essential data from version 1 usage.
