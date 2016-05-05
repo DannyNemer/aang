@@ -443,3 +443,6 @@
 - I am enormously excited about word vectors and neural networks. Clearly, a vector space representation is ideal and vastly preferable to a grammar because it can much more precisely capture the notions of similarity and the fuzziness of language.
 - Concerns: I think a word vector NN can not be used to generate the k-best results (i.e., only the top result) nor auto-complete (i.e., it expects input to be complete).
 - I am still ecstatic about word vectors, and want desperately to read everything about them, develop an NN that can map vectors to semantic representations, and test various training data.
+
+- I can not imagine anyone who would the proposed version of Aang: a developer SaaS to easily build powerful, fast, accurate NLIs.
+- I suppose now I must use it to build a name for myself, and meet people.
