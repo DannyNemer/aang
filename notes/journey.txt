@@ -446,3 +446,12 @@
 
 - I can not imagine anyone who would the proposed version of Aang: a developer SaaS to easily build powerful, fast, accurate NLIs.
 - I suppose now I must use it to build a name for myself, and meet people.
+
+- To demonstrate Aang's power, and acquire large customers, I will host demos of NL search interfaces with custom grammars for several popular services: GitHub, Twitter, ProductHunt, Dropbox, LinkedIn.
+- These demos will get the attention of these companies, as their employees will see the work is already done! They will salivate over the feature seemingly being a-flip-of-a-switch away.
+- The demos will also shame these companies with the knowledge that their implementation is inferior, and that the defaming comparison is available to their users. "Look how indisputably better it is! It's right there. Just integrate it!"
+	- This NLI encompasses all the features of any current search interface (i.e., entity search), with more.
+
+- The NLI is particularly attractive to services with business customers who do advanced search: recruiters on LinkedIn, marketers on Twitter.
+
+- There will be a free tier. The value is its ease of configuration and immense power. The potential customers must see this value before purchase.
