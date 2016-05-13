@@ -456,4 +456,6 @@
 
 - There will be a free tier. The value is its ease of configuration and immense power. The potential customers must see this value before purchase.
 
-- This system is incredible as an API suite for configuring, designing, and building grammars. It checks every possible error, grammar definition, ambiguity, etc, and provides helpful error messages. Every algorithm, data strucutre, function, property, etc, is documented and explained with prose fit for a published paper.
+- This system is incredible as an API suite for configuring, designing, and building grammars. It checks every possible error, grammar definition, ambiguity, etc, and provides helpful error messages. Every algorithm, data structure, function, property, etc, is documented and explained with prose fit for a published paper.
+
+- I must work much faster. My work has been absolutely pathetic.
