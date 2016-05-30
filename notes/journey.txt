@@ -462,3 +462,5 @@
 
 - Google Maps could not have envisioned Uber, but Uber can not exist without it. Similarly true, but less so, for Twilio and Braintree.
 - You can not envision what others will build with your API.
+
+- When explaining my work to others, I genuinely do not care to convince them or convey its potential. If my work will be successful, it does not matter they believe that ex post or ex ante.
