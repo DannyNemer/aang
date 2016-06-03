@@ -464,3 +464,11 @@
 - You can not envision what others will build with your API.
 
 - When explaining my work to others, I genuinely do not care to convince them or convey its potential. If my work will be successful, it does not matter they believe that ex post or ex ante.
+
+- Pricing will be aggressive, and never lowered. Price(s) will be high.
+
+- Quote from Ben Thompson of IaaS:
+	- To put it another way, Twilio, Stripe, and even AWS are bets on the idea that Software is Eating the World to the extent that mucking around with global communications networks is not worth whatever slight cost savings you might gain from forgoing Twilio’s margins — that your developers’ time is better spent building differentiation than it is redoing what Twilio has already done.
+	- Personally, I find this IPO and this company fascinating: I have long been on record that the experience matters when it comes the consumer market, and that not understanding that fact has led many brilliant minds astray (Christensen did not account for user experience in his consumer market evaluation); Twilio, like Stripe, and even like AWS, is a bet that that applies to developers as well.
+
+- I am so stressed. For years, I have thought, "No would ever use this, it is useless". Now, with Amazon Alexa, Facebook Messenger bots, the rise of deep learning popularity, Siri API, Google Assistant, and more, NLP has become the most popular tech topic over the past 2 months. People predict NLP, voice assistant, and conversational UI it is the next great interface since the multi-touch smartphone. So much pressure.
