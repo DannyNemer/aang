@@ -472,3 +472,9 @@
 	- Personally, I find this IPO and this company fascinating: I have long been on record that the experience matters when it comes the consumer market, and that not understanding that fact has led many brilliant minds astray (Christensen did not account for user experience in his consumer market evaluation); Twilio, like Stripe, and even like AWS, is a bet that that applies to developers as well.
 
 - I am so stressed. For years, I have thought, "No would ever use this, it is useless". Now, with Amazon Alexa, Facebook Messenger bots, the rise of deep learning popularity, Siri API, Google Assistant, and more, NLP has become the most popular tech topic over the past 2 months. People predict NLP, voice assistant, and conversational UI it is the next great interface since the multi-touch smartphone. So much pressure.
+
+- The following excerpt is how Bezos arrived at the idea for AWS. Applies to any API service for development primitives:
+	- If Amazon wanted to stimulate creativity among its developers, it shouldn’t try to guess what kind of services they might want; such guesses would be based on patterns of the past. Instead, it should be creating primitives — the building blocks of computing — and then getting out of the way.
+
+- I will not launch with a GUI to build NLU interfaces. It is too much work. Instead, I will manually build the grammars for each individual customer, just as Stripe began by manually filling out the bank paperwork for their initial customers/users.
+- I will even make complete demos for specific services, like Product Hunt, and host them on the site. Then, the people at Product Hunt will see the work already complete, as if they can instantly and significantly improve their product with a simple integration.
