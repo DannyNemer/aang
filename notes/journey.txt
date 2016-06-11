@@ -478,3 +478,7 @@
 
 - I will not launch with a GUI to build NLU interfaces. It is too much work. Instead, I will manually build the grammars for each individual customer, just as Stripe began by manually filling out the bank paperwork for their initial customers/users.
 - I will even make complete demos for specific services, like Product Hunt, and host them on the site. Then, the people at Product Hunt will see the work already complete, as if they can instantly and significantly improve their product with a simple integration.
+
+- For years in university, I told no one of a large project. No one. I also never shared my post-graduation plans ("I do not share my plans") nor my ambitions. In senior year, and significantly so in the last semester, I explained I had a large project.
+- People did not understand why the project was taking so long. I would explain how I expected to finish it "months ago" and have "only about month more of work".
+- Now, with NLP having become a valued tech and much-discussed interest in the community, it is reasonable that my work has taken so long. It is not that I am slow, rather that it is *that* ambitious. I am not making an "app", I am making the foundations of a lasting corporation, culture, and service.
