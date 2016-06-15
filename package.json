@@ -10,7 +10,7 @@
     "cliui": "^3.2.0",
     "diff": "^2.2.3",
     "progress": "^1.1.8",
-    "readline-sync": "^1.4.1",
+    "readline-sync": "^1.4.4",
     "yargs": "^3.32.0"
   },
   "scripts": {
