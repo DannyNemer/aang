@@ -487,3 +487,5 @@
 
 - I still can not get over the obvious product design, marketing, strategy, UI mistakes people make. Over and over, and so obvious.
 - I will be the best.
+
+- There is so much to do. Creating the robust building blocks, abstract data types, for natural language. All of the possible queries, qeury segments, input forms, words, et cetera. Enables easily and precisely defining the types of qeuries to support.
