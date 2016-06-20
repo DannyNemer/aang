@@ -489,3 +489,5 @@
 - I will be the best.
 
 - There is so much to do. Creating the robust building blocks, abstract data types, for natural language. All of the possible queries, qeury segments, input forms, words, et cetera. Enables easily and precisely defining the types of qeuries to support.
+
+- I feel sick when pondering the time and life I have lost, with only failure to show.
