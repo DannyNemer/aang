@@ -488,6 +488,8 @@
 - I still can not get over the obvious product design, marketing, strategy, UI mistakes people make. Over and over, and so obvious.
 - I will be the best.
 
-- There is so much to do. Creating the robust building blocks, abstract data types, for natural language. All of the possible queries, qeury segments, input forms, words, et cetera. Enables easily and precisely defining the types of qeuries to support.
+- There is so much to do. Creating the robust building blocks, abstract data types, for natural language. All of the possible queries, query segments, input forms, words, et cetera. Enables easily and precisely defining the types of queries to support.
 
 - I feel sick when pondering the time and life I have lost, with only failure to show.
+
+- Twitter paid $150 million for Magic Pony: an AI startup in London, with NN tech, and only 11 people. Perchance, a fantasy of mine while day dreaming and sleep deprived.
