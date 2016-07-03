@@ -499,8 +499,15 @@
 - There will be a demo site to garner interest, following, support, and offers, available while I build the interface for developers to create their own NLIs (incredibly easy and better than any proprietary NLI any company builds themselves).
 - The demo site will have a functional interface for Twitter, GitHub, and Product Hunt. I do not expect much use, but having a functional interface as opposed to one that just shows text + semantic results will be far more popular.
 - I also need a non-search based demo to demonstrate the power and versatility: conversation-agent.
-	- After implementing everything in the grammar generator and parser, the only necessary work would be designing the grammar, which is relatively easy: "schedule apointment X at time Y at location Z", "order Uber", "play music by X"
+	- After implementing everything in the grammar generator and parser, the only necessary work would be designing the grammar, which is relatively easy: "schedule appointment X at time Y at location Z", "order Uber", "play music by X"
 	– Such queries are identical to search-based with a leading command!
 		- "music by X" -> "play" + "music by X"
-		- "apointments at time Y" -> "schedule" + "apointments at time Y"
+		- "appointments at time Y" -> "schedule" + "appointments at time Y"
 		- Awesome!
+
+- It is unbelievable difficult to design a comprehensive, consistent API with multiple levels of abstraction to model the components of language. A design that lend sufficient precision and specificity, yet easy, to represent any component. Enormously stressful and frustrating.
+
+- I want to build a demo website, with functional version for a conversational agent like Siri, and Twitter, GitHub, and Product Hunt. Then, "coming soon", while I work on the API and models of language components.
+- The website will be awesome, and unique, because I have complete creative control and have no need to "sell" my product. It is good enough to not need convincing. I am too independent to default to common marketing and promotional pages.
+	- "Easily build the greatest NLI ever for anything. Or, don't. Life is short." There might be backlash for that, but I'm having fun!
+	- That is exactly what Hotz would do. Comma.ai has T-shirts saying, "we're going to be so rich".
