@@ -1,6 +1,12 @@
 <head>
 <meta name="viewport" content="initial-scale=1">
 <style>
+	#appContainer {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
 	input {
 		font-size: 18pt;
 	}
@@ -27,6 +33,8 @@
 	}
 
 	#parseResults {
+		height: 100%;
+		overflow: auto;
 		font-family: sans-serif;
 	}
 
@@ -40,12 +48,14 @@
 </style>
 </head>
 <body>
-<div id='inputContainer'>
-	<input id="query" autocomplete="off">
-	<input id="k" type="number" min="1" value="7" autocomplete="off">
+<div id='appContainer'>
+	<div id='inputContainer'>
+		<input id="query" autocomplete="off">
+		<input id="k" type="number" min="1" value="30" autocomplete="off">
+	</div>
+	<div id="message"></div>
+	<div id="parseResults"></div>
 </div>
-<div id="message"></div>
-<div id="parseResults"></div>
 <script>
 var queryField = document.getElementById('query')
 var kField = document.getElementById('k')
