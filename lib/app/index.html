@@ -50,7 +50,7 @@
 <body>
 <div id='appContainer'>
 	<div id='inputContainer'>
-		<input id="query" autocomplete="off">
+		<input id="query" autocomplete="off" autofocus>
 		<input id="k" type="number" min="1" value="30" autocomplete="off">
 	</div>
 	<div id="message"></div>
@@ -63,9 +63,6 @@ var parseResultsContainer = document.getElementById('parseResults')
 
 // Load and parse previous query from last session, if any.
 loadPrevQuery()
-
-// Focus query field upon page load.
-queryField.focus()
 
 /**
  * Sends query to server upon input in query and k fields.
