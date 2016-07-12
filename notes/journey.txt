@@ -513,3 +513,6 @@
 	- That is exactly what Hotz would do. Comma.ai has T-shirts saying, "we're going to be so rich".
 
 - I am so sick of this. At university, there are times when I would work for 10 hours straight on this. When I had pressing school work, yet still worked on this. Now, I can not work for an hour without wanting to quit. I need more external motivations to force me into the rhythm.
+
+- There is so much to do. So much to fix to create a comprehensive, cohesive, expandable, scalable API design for creating a grammar. Like designing a programming language.
+- I might need to share a demo of the parser side to foster external motivation.
