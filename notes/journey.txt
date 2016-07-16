@@ -516,3 +516,42 @@
 
 - There is so much to do. So much to fix to create a comprehensive, cohesive, expandable, scalable API design for creating a grammar. Like designing a programming language.
 - I might need to share a demo of the parser side to foster external motivation.
+
+- Paul Graham on Viaweb's technical advantage of using Lisp:
+	- Our secret weapon was similar. We wrote our software in a weird AI language, with a bizarre syntax full of parentheses. For years it had annoyed me to hear Lisp described that way. But now it worked to our advantage. In business, there is nothing more valuable than a technical advantage your competitors don't understand. In business, as in war, surprise is worth as much as force.
+- My technical advantage is my incredible system design. Incredible, meticulous documentation. No one can come close because no other company is *organized* to enable their engineers to be this meticulous. Without such an incredible design, you can not build such a strong, scalable foundation. The soaring code quality is unmatchable, and competitors' organizational structure prohibit them from building such a system. A system that requires patience, time, and can not be easily split amongst teams because of its interconnectedness and intricacy.
+
+- Graham continues:
+	- And so, I'm a little embarrassed to say, I never said anything publicly about Lisp while we were working on Viaweb. We never mentioned it to the press, and if you searched for Lisp on our Web site, all you'd find were the titles of two books in my bio. This was no accident. A startup should give its competitors as little information as possible. If they didn't know what language our software was written in, or didn't care, I wanted to keep it that way.
+- No one will know this competitive advantage of mine. They can try to build a comparable system, and will never know how far they remain from completion, just as I did not know. But, I had the independence, drive, and perfectionism (both in demand and detection) to achieve it.
+- However, Graham noted:
+	Robert Morris says that I didn't need to be secretive, because even if our competitors had known we were using Lisp, they wouldn't have understood why: "If they were that smart they'd already be programming in Lisp."
+
+- I listened to an interview with Marc Andreessen and Ben Horowitz. They explained how even touch interfaces with direct manipulation are unnatural. That AI will enable new interfaces like "natural language".
+- They talked about an AWS for AI.
+- They said Amazon was strong in the space because of Echo, and yet Amazon had no prior domain competency, like me!
+
+- Aang would be *the* perfect acquisition for Amazon. Will enable their "intent" developers to build far, far better 3rd-party integrations.
+
+- Aang is superior in its processing speed, in its ability to quickly define new queries (via grammar), in its stable foundation for future expansion, for precision of understanding (nested queries), for its features (boolean operators, anaphora), for its grammar correction, for its k-best.
+- Superior everywhere.
+
+- I have of late lost my inner fire to enter flow while developing. That is the current struggle. I can see much potential, yet am apathetic. Hopefully, a few days off will help.
+
+- I could not be in a better position! For years, I beat myself up over how no one would want what I was building. I felt horrible. And yet, look at its value.
+- I am actually doing a startup with good tech! Perhaps, I could have seen myself making the *best* productivity software (like Slack). The *best*. Because I see all deficiencies. I know how to design it to be amazing, easy, intuitive, beautiful, fast, powerful, obvious. But, the value is not tech - just amazing product, taste, and patience.
+- Well, in both cases, others could not compete because the value is the quality. Quality is high because I push myself more, I can do enormous amounts alone, I have patience and dedication to account for foundations and designing with future expansion in mind.
+- All of my time in the library, alone. Non-stop, focused.
+- I am 1/10th, at least, the level of George Hotz. Likely 1/20th. I am certain there are at least 20k more other engineers as significantly superior to me, in everything from UI design, OS, databases, servers, distributed systems, algorithms, compression, networks, electrical engineers, processors, memory, and so, so much more. Hence, I just work harder to produce great products. And, I've improved a lot and will continue to. Compounding skills. Compounding intelligence.
+
+- I really could not have wished to be in a better position than I am now. I could not have chosen anything better. I could not have built anything better - only started earlier. I wanted to build a natural language search interface ever since I saw Phil Schiller introduce "boolean search" for Mail on OS X (e.g., "from X, to Y, subject Z").
+
+- I have been wanting to share a demo of Aang, just the front end, with people in the industry.
+	- E.g., Alex Maccaw of Clearbit (and company), which develops APIs to access data ideal for Aang. They even use Elasticsearch!
+- My hope is their interest will provide the external pressure and motivation I need to continue. I know my body and mind are capable, but I have been progressing so slowly for so long.
+- Back at university, I made enormous progress when procrastinating on an assignment. Or even when I had an exam within hours. I had an enormous lust to code. "Just 5 minutes to wake ourself, then study". Now, I have no enthusiasm.
+	- Well, I feel better than I did two days ago. Hopefully, a few days away helps.
+
+- However, this is not deep learning. Ideally, deep learning would handle far more varied input, and would never need manual scaling (to support more queries).
+- Though, deep learning is not nearly ready to support such a complete solution. Still requires defining the semantics to extract from the text.
+- Though, a startup developing Aang is the ideal organization to develop the deep learning successor. This startup would be able to both employ and attract the best scientists and engineers in the specific field of NLU.
