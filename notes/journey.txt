@@ -555,3 +555,11 @@
 - However, this is not deep learning. Ideally, deep learning would handle far more varied input, and would never need manual scaling (to support more queries).
 - Though, deep learning is not nearly ready to support such a complete solution. Still requires defining the semantics to extract from the text.
 - Though, a startup developing Aang is the ideal organization to develop the deep learning successor. This startup would be able to both employ and attract the best scientists and engineers in the specific field of NLU.
+
+- My stress has begun to sensitize my gag reflex.
+
+- Large, daunting tasks overwhelm me with stress, preventing me from working.
+- I previously thought my advantage was I am a single person with an incredible work ethic:
+	- A team could not complete this project because it is too intricate and interconnected to split.
+	- A single person without the work ethic could not complete this project because it requires an enormous amount of time, patience, and willingness to discard enormous amounts of work.
+- Yet, I now appear to lack both. I can not keep the immense, complex system in my head, and I lack the resolve to tackle the daunting problems.
