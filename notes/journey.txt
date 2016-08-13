@@ -567,4 +567,8 @@
 - Must never forget the hell I went through building this. Severe solitary isolation. Depression. Anxiety. No friends for 13 months. Cursed and tormented by past memories that involuntarily surfaced in my mind every 15 minutes, because I had no new experiences with which to occupy my mind. There are stretches of months for which I have no memory. Torture.
 - Though, I never remember main. I remember noting the pain's existence, but I can not recall the agony.
 
-- Never tell anyone any details of the project. Must develop habbit of sharing nothing.
+- Never tell anyone any details of the project. Must develop habit of sharing nothing.
+
+- There have been so many horrible weeks and months throughout this process. Where I simply can not work on this any more, despite having more confidence than ever of its potential and value.
+
+- When implement a new feature, it amazing how many separate modules and components I must extend because of the intricacy and complexity of the system. It would be incredibly difficult to have a team of separate people design such an interdependent system for which ability to abstract is severely limited.
