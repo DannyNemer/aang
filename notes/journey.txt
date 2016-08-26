@@ -574,3 +574,8 @@
 - When implement a new feature, it amazing how many separate modules and components I must extend because of the intricacy and complexity of the system. It would be incredibly difficult to have a team of separate people design such an interdependent system for which ability to abstract is severely limited.
 
 - My system enables recursion, a significant component of Chomsky's Universal Grammar. Neither Siri nor Alexa have this. Hound does.
+
+- I believe my entire system can be implemented with deep learning: auto-completion (adjacent term generation), semantic tree mapping, and possibly grammatical conjugation.
+- I am unsure of much.
+	- E.g., restricting results to those the system specifically supports. Perhaps via manual analysis of semantic results.
+- Would integrate several separate DL techs in their infancy, including sufficiently training the word vectors. Current implementations are nowhere as precise: recursion, anaphora, negation, operators, conjugation.
