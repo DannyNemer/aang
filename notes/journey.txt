@@ -572,3 +572,5 @@
 - There have been so many horrible weeks and months throughout this process. Where I simply can not work on this any more, despite having more confidence than ever of its potential and value.
 
 - When implement a new feature, it amazing how many separate modules and components I must extend because of the intricacy and complexity of the system. It would be incredibly difficult to have a team of separate people design such an interdependent system for which ability to abstract is severely limited.
+
+- My system enables recursion, a significant component of Chomsky's Universal Grammar. Neither Siri nor Alexa have this. Hound does.
