@@ -579,3 +579,8 @@
 - I am unsure of much.
 	- E.g., restricting results to those the system specifically supports. Perhaps via manual analysis of semantic results.
 - Would integrate several separate DL techs in their infancy, including sufficiently training the word vectors. Current implementations are nowhere as precise: recursion, anaphora, negation, operators, conjugation.
+
+- Deep learning for NLU in Siri:
+	- The second Siri component Cue mentioned was natural language understanding. Siri began using ML to understand user intent in November 2014, and released a version with deeper learning a year later. As it had with speech recognition, machine learning improved the experience — especially in interpreting commands more flexibly. As an example, Cue pulls out his iPhone and invokes Siri. “Send Jane twenty dollars with Square Cash,” he says. The screen displays a screen reflecting his request. Then he tries again, using a little different language. “Shoot twenty bucks to my wife.” Same result.
+- My system *could* do that, but not easily in many languages. The deep learning might simple detect synonyms and then continue to use a grammar. Though, we know this possible with vectors.
+- Still, unsettling. I want Aang to end so I can move on to what's next.
