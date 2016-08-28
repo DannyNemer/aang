@@ -584,3 +584,7 @@
 	- The second Siri component Cue mentioned was natural language understanding. Siri began using ML to understand user intent in November 2014, and released a version with deeper learning a year later. As it had with speech recognition, machine learning improved the experience — especially in interpreting commands more flexibly. As an example, Cue pulls out his iPhone and invokes Siri. “Send Jane twenty dollars with Square Cash,” he says. The screen displays a screen reflecting his request. Then he tries again, using a little different language. “Shoot twenty bucks to my wife.” Same result.
 - My system *could* do that, but not easily in many languages. The deep learning might simple detect synonyms and then continue to use a grammar. Though, we know this possible with vectors.
 - Still, unsettling. I want Aang to end so I can move on to what's next.
+
+- I am now studying to learn if Aang is possible via deep learning: parse tree generation, semantic tree generation, grammar conjugation, etc.
+- I do not think Viv uses DL, because they demonstrated complex recursion to dinstinguish from Siri, which likely began as a manual parser. Also, they emphasized "10 ms".
+- If possible via DL, even if as precise, accurate, and fast, what is the difference? It would catch more edge cases, will scale far easier, and might support additional languages more easily.
