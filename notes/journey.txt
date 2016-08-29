@@ -595,3 +595,12 @@
 - The best case scenario is we recreate Aang entirely in deep learning and discard all current work.
 - We failed enormously, but all work is a sunk cost. We can catch up.
 - And, in the process, become a leading deep learning expert, like George Hotz.
+
+- If we remove transposition edits, we can afford to always add deletables for every token, but using appropriate costs for each recognized terminal symbols (e.g., prepositions, auxiliary verb) instead of always the same cost. Then, no re-parsing.
+
+- This began as automating human-computer interaction with NLU as a faster interface, abstracting/relieving direct manipulation.
+- Then, it was automating grammar generation with the creation of a powerful and thorough language/API for creating the grammar.
+- Is it next about automating the design and creation of the grammar generator (with DL)?
+
+- Deep learning semantic role labeling is not yet powerful enough. Certainly can not support my precision: recursion, anaphora, grammar conjugation across complex nesting, operators, etc.
+- But, those advanced features are the extreme and minority use cases. When DL improves, it will grow to support such features. If my mind can correctly parse these queries, then so can NNs.
