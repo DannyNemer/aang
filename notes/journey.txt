@@ -591,3 +591,7 @@
 
 - I have existential uncertainties about Aang. Can it be accomplished with DL. If so, should I startover and do DL? If I am stopping, should I build this at all?
 - I still want to launch what I built, to show people. I want a website with demos showing its power. Do I?
+
+- The best case scenario is we recreate Aang entirely in deep learning and discard all current work.
+- We failed enormously, but all work is a sunk cost. We can catch up.
+- And, in the process, become a leading deep learning expert, like George Hotz.
