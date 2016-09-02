@@ -609,3 +609,5 @@
 	- SRL can be trained only with the sentence approach network, due to long-range dependencies related to the verb predicate. We thus also trained all four tasks using the sentence approach network. In both cases, all models share the lookup table parameters. The parameters of the first linear layers were shared in the window approach case, and the first the convolution layer parameters were shared in the sentence approach networks.
 
 - It must be true that all is possible with DL.
+
+- Crazy that people credit Amazon for leading in AI voice assistants, when their own neural networks are voice-to-text.
