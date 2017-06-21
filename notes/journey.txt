@@ -611,3 +611,31 @@
 - It must be true that all is possible with DL.
 
 - Crazy that people credit Amazon for leading in AI voice assistants, when their own neural networks are voice-to-text.
+
+- Have not touched this in 5 weeks. I am trying to study Deep Learning. I have grown completely apathetic. Life, of course, is a struggle and I've lost inspiration.
+- Samsung acquired Viv, the AI assistant created by Siri founders after 4 years of work, which uses a recursive grammar like Aang.
+- Yet, Google Assistant is fantastic and I am certain nearly entirely DL.
+
+- After my work on Aang, a gargantuan effort, much larger than a PhD thesis, which I began with no knowledge, learned and mastered it all, and discarded hundreds of hours of work many times, I now know I have what it takes to make a world-changing scientific discovery on the order of the Turing machine or a fundamental theoretical physics solution. I understand that such efforts result from many years of continuous labor, not pure genius.
+
+- I am confident Viv uses a recursive CFG grammar and parser, which is how it handles complex queries:
+	- "Will it be warmer than 70 degrees near the Golden Gate Bridge after 5PM the day after tomorrow?"
+	- "Send Adam 20 bucks for the drinks last night"
+	- "Send my mom some flowers for her birthday"
+	- "Get me a nice room in Palm Springs for Labor Day Weekend"
+	- "I need a ride for six people from my office to Madison Square garden"
+- Though, Viv must use DL-backed language models for entity recognition and term matching (synonyms, etc), as Aang would.
+- I am confident their touted "dynamic program" Viv builds for each query is just the semantic tree.
+- I wager Samsung acquired Viv for $1B+ (price unreported). Given Viv is a 40-person team, building for 4 years, the reported multitude of interested parties, value afforded to the team as "Siri creators", and the outrageous prices of recent AI acquisitions. This in spite of Viv not being DL, but I doubt Samsung cares because their primary motivation is to counter Google Assistant's exclusivity with the Pixel. Plus, Viv's position of strength in negotiations is further lent credence by Viv securing terms to continue operating independently as subsidiary, and their tech is not even exclusive to Samsung devices (Samsung devices will have Viv built-in, while Viv is also available to 3rd-parties to integrate Viv like Alexa).
+- When Viv Co talks about their system's scalability, I believe they are referring to the grammar's extensibility.
+
+- I am confident Google Assistant uses DL, and can never support queries such as Viv. Though, those queries are rare edge cases.
+- Google Assistant is backed by Google Search's NLP to answer factual queries.
+- The most complex query I found it could answer is "age of the wife of the president of US". And anaphoric follow-up queries: "Who is her husband?"
+- Though, portions must integrate basic parsing: schedule X, play song Y, remind me Z.
+
+- I believe my DL system is possible via unsupervised learning. Word embeddings can learn their definition via text within which they appear: wiki corpus. An arduous process of guess-and-check such that the definitions agree with each of its instances. Also true for semantic representations.
+
+- Again. I built an incredible system for NLU. There is so, so, so, so much there. Extremely fast, scalable, precise, powerful (recursive, anaphoric, grammatically correct, etc), stable, thoroughly developed (handling of edge cases). This area is one of the most important areas in tech today: Apple, Amazon, Microsoft, Google, and Samsung are all battling here. Google says they are now and AI company instead of a search company, and that their assistant will replace search. This area of natural language understanding has been my fascinating for many years, and my focus for over 3 years. I built one of the best systems in the world. Just look at the documentation and explanation of everything from the linguistics, semantic representations, graph theory, automata theory, and more. It is incredible. The system itself, irrespective of what it does, is very well designed and modularized. I know the future, however, is an unsupervised word embedding without a user-defined grammar.
+
+- Build a niche product: quality (where my skills triumph) is most important and price is secondary.
