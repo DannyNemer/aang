@@ -116,23 +116,23 @@ Note: Using this separate method to create a terminal rule set for only a verb's
 
 The returned `NSymbol` instances have the following properties:
 1. `TenseVerbSet.noTense`
-    - `name`: `options.symbolName` if defined, else the concatenation of the prefix 'verb-' with the infinitive verb form, `options.verbFormsTermSet.pl`.
-    - `isTermSequence`: `true`. Enables nesting within term sequences and flattening in `flattenTermSequence`.
-    - `termSequenceType`: 'verb'.
-    - `defaultText`: The conjugative `text` object for the verb forms for both tenses, identical to that which `verbTermSet.newVerb()` uses.
+	- `name`: `options.symbolName` if defined, else the concatenation of the prefix 'verb-' with the infinitive verb form, `options.verbFormsTermSet.pl`.
+	- `isTermSequence`: `true`. Enables nesting within term sequences and flattening in `flattenTermSequence`.
+	- `termSequenceType`: 'verb'.
+	- `defaultText`: The conjugative `text` object for the verb forms for both tenses, identical to that which `verbTermSet.newVerb()` uses.
 2. `TenseVerbSet.present`
-    - `name`: The concatenation of `TenseVerbSet.noTense.name` with the suffix '-present'.
-    - `isTermSequence`: `true`. Enables nesting within term sequences and flattening in `flattenTermSequence`.
-    - `isTermSet`: `true`. Specifies every rule is a single-token terminal rule with the same `text` value.
-    - `termSequenceType`: 'verb-present'.
-    - `defaultText`: The conjugative `text` object for the present tense verb forms.
-    - `insertionCost`: `options.insertionCost`, if defined.
+	- `name`: The concatenation of `TenseVerbSet.noTense.name` with the suffix '-present'.
+	- `isTermSequence`: `true`. Enables nesting within term sequences and flattening in `flattenTermSequence`.
+	- `isTermSet`: `true`. Specifies every rule is a single-token terminal rule with the same `text` value.
+	- `termSequenceType`: 'verb-present'.
+	- `defaultText`: The conjugative `text` object for the present tense verb forms.
+	- `insertionCost`: `options.insertionCost`, if defined.
 3. `TenseVerbSet.past`
-    - `name`: The concatenation of `TenseVerbSet.noTense.name` with the suffix '-past'.
-    - `isTermSequence`: `true`. Enables nesting within term sequences and flattening in `flattenTermSequence`.
-    - `isTermSet`: `true`. Specifies every rule is a single-token terminal rule with the same `text` value.
-    - `termSequenceType`: 'verb-past'.
-    - `defaultText`: The invariable `text` string for the past tense verb for
+	- `name`: The concatenation of `TenseVerbSet.noTense.name` with the suffix '-past'.
+	- `isTermSequence`: `true`. Enables nesting within term sequences and flattening in `flattenTermSequence`.
+	- `isTermSet`: `true`. Specifies every rule is a single-token terminal rule with the same `text` value.
+	- `termSequenceType`: 'verb-past'.
+	- `defaultText`: The invariable `text` string for the past tense verb for
 
 #### Arguments
 - `options` *(Object)*: The options object.
