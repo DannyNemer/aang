@@ -140,6 +140,22 @@ If a solution were implemented, the grammar generator will only forbid recursive
 
 In addition, support for recursive nodes will enable `pfsearch` to process indefinitely until halted, though it will continue to discard paths for producing duplicate semantics after using every possible variation the insertions enable. This requires extending `pfsearch` with the yet-to-implement exit timer for input queries that do not produce `k` unique, complete parse trees (e.g., unavoidably semantically illegal input queries that require reparsing with additional deletions).
 
+# `grammar`
+
+## `Category`
+
+### `Category(options)`
+The `Category` constructor, which adds several base symbols and rules for a new database object category to the grammar.
+
+#### Arugments
+- `options` *(Object)*: The options object.
+- `options.nameSg` *(string)*: The singular form of the category's name.
+- `options.namePl` *(string)*: The plural form of the category's name.
+- `[options.isPerson]` *(boolean)*: Specify the category is person. This is used for relative pronouns (i.e., "that" vs. "who").
+- `options.headNoun` *(NSymbol)*: The term sequence of type 'noun' for the category head.
+- `[options.possSemantic]` *(Object[])*: The semantic that returns instances of this `Category` that the specified users own/possess.
+- `[options.entities]` *((Object|string)[])*: The entities with which to create an associated entity category. Defined as either strings or objects with properties `display` (string) and `names` (`string[]`) for entities with multiple names (e.g., "JavaScript", "JS").
+
 # `termSequence`
 
 ## `verbTermSet`
