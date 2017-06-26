@@ -1,5 +1,7 @@
 {
   "name": "aang",
+  "description": "A natural language understanding system.",
+  "author": "Danny Nemer",
   "private": true,
   "dependencies": {
     "elasticsearch": "^11.0.1",
@@ -17,5 +19,9 @@
     "benchmark": "node ./lib/benchmark/benchmark.js",
     "build": "node ./lib/grammar/buildGrammar.js --output=./lib/grammar.json",
     "test": "node ./lib/test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DannyNemer/aang.git"
   }
 }
