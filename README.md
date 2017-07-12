@@ -2,10 +2,6 @@
 
 Aang is an extensive, sophisticated natural language understanding (NLU) system built from scratch. Designed to enable developers to easily create custom, full-featured, fast, robust, and precise natural language interfaces (e.g., virtual assistants, chatbots, and natural language search engines) to integrate with their products.
 
-See [`/doc/`](https://github.com/DannyNemer/aang/tree/master/doc) for work-in-progress documentation.
-
-See over 100,000 words of extensive, excellent, existing documentation throughout the source files in [`/lib/`](https://github.com/DannyNemer/aang/tree/master/lib).
-
 ### System summary:
 1. **Natural language API**
 	- First, a developer parameterizes types of objects, entities, actions, attributes, relationships, etc., that they want their interface to understand, as well as names for semantic functions they can recognize from the parser's output.
@@ -42,6 +38,10 @@ Such a short explanation inadequately describes the breadth and sophistication o
 - Outputs *k*-best parse trees, semantic trees, and display-text for the input
 - Semantic/logical validation (no semantic contradictions, duplicates, etc.)
 - Disambiguation (identifies parses that are semantically identical yet textually distinguishable, and textually identical parses that are semantically distinguishable)
+
+See [`/doc/`](https://github.com/DannyNemer/aang/tree/master/doc) for work-in-progress documentation.
+
+See over 100,000 words of extensive, excellent, existing documentation throughout the source files in [`/lib/`](https://github.com/DannyNemer/aang/tree/master/lib).
 
 ### Linguistic framework:
 My system internally uses an extensive linguistic framework I designed that models fundamental linguistic components and structures at different levels of abstraction. With this framework, the system enables developers to simply parameterize the types of objects, entities, relationships, and attributes they want their natural language interface to understand. From that parametrization, the system generates a grammar that handles the variations of phrasing (and ill-formed input), which the system's parser uses to run the natural language interface. For example, internally there are fundamental word objects, from which verbs types are defined, from which auxiliary verbs are defined, with which verb phrases are defined, with which sets of verb phrases are created for a simple parameterization. Please note this description is sparse and omits accounts of the system's automated processes, thorough checks (e.g., tests to avoid ambiguity, semantically contradictory statements, grammatical conjugation errors), semantic pairings, grammatical attributes, and more.
