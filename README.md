@@ -6,14 +6,34 @@ See [`/doc/`](https://github.com/DannyNemer/aang/tree/master/doc) for work-in-pr
 
 See over 100,000 words of extensive, excellent, existing documentation throughout the source files in [`/lib/`](https://github.com/DannyNemer/aang/tree/master/lib).
 
-### Summary of the system:
+### System summary:
+1. **Natural language API**
+	- First, a developer parameterizes types of objects, entities, actions, attributes, relationships, etc., that they want their interface to understand, as well as names for semantic functions they can recognize from the parser's output.
+	- The system uses a natural language API that allows developers to easily design custom natural language interfaces (NLIs) with these simple parameterizations.
+	- Internally, uses a linguistic framework that models fundamental linguistic components and structures at different levels of abstraction, with which the NLIs are constructed. Modeled as integrable building blocks to easily support new phrasings, new forms of grammatical conjugation, and new semantic structures.
+	- Integrates a semantic framework that serves as a lambda calculus representation of meaning within the grammar
+2. **Grammar generator**
+	- A context-free grammar (CFG) integrates the linguistic framework with the natural language API.
+	- Outputs a CFGs that automatically supports various phrasing according to the parametrization, including support for grammatical conjugation, associated semantic functions, lexical and morphological analysis, and ill-formed input (i.e., insertions, deletion, substitutions, and transpositions).
+	- The generator also performs extensive checks for errors, ambiguity, illogical semantics, grammatical errors, and more.
+3. **Parser**
+	-	Using the CFGs designed with the API, the parser outputs the k-best parse trees, semantic trees, and grammatically conjugated display-text for the given textual input.
+	- First compiles a state-transition table from the CFG that the parser uses as a precompiled LR(*k*) parsing table.
+	- Upon receiving input, the parser matches terminal symbols/phrases that integrates lexical analysis, morphological analysis, and entity recognition.
+	- From the matched terminal symbols, a shift-reduce parser generates a dense parse forest of multiple potential parse trees.
+	- An A* graph-search algorithm efficiently traverses the dense parse forests and calculates cost heuristics.
+	- A parse forest search algorithm efficiently finds the *k*-best unique and semantically valid parse trees.
+	- Each parse tree has an associated semantic tree (which maps to a lambda calculus semantic representation) and grammatically correct display-text (even if the input is ill-formed).
+	- This process requires ~20 ms on average.
+4. **Miscellaneous**
+	- Includes eight command line interfaces (CLIs) for developing, debugging, testing, and benchmarking the system, its NLU interfaces, grammars, and parsers.
+	- Includes a suite of test that checks for ambiguity (grammatical, semantic, and textual), grammatical conjugation errors, ill-formed semantic structures, inefficiently design grammatical structures, and more to ensure optimal performance of the NLIs.
+	- 6,500+ git commits, 2,000+ test cases, 250+ unique error messages, 100,000+ words of technical documentation, and the highest code quality. (4,000+ hours of work.)
 
-1. First, a developer parameterizes types of objects, entities, actions, attributes, relationships, etc., that they want their interface to understand, as well as names for semantic functions they can recognize from the parser's output.
-2. The generator outputs a context-free grammar (CFG) that supports varying phrasing according to the parametrization, including support for grammatical conjugation, associated semantic functions, and ill-formed input. The generator also performs extensive checks for errors, ambiguity, illogical semantics, grammatical errors, and more.
-3. The parser generates a state-transition table from the grammar. Upon receiving input, the parser matches terminal symbols/phrases and performs entity recognition. Then, the parser generates a dense parse forest and performs an A* search on the forest to output the *k*-best, semantically and textually unique parse trees that match the input. Each parse tree has an associated semantic tree (which maps to a lambda calculus semantic representation) and grammatically correct display-text (even if the input is ill-formed). This process requires ~20 ms on average.
+Such a short explanation inadequately describes the breadth and sophistication of the system. But, the following are a few notable advancements over existing NLIs (e.g., Siri, Alexa):
 
-Such a short explanation inadequately describes the breadth and sophistication of the system. But, the following are a few notable features:
-
+- Faster parsing
+- More precise understanding (i.e., more complex semantic representations)
 - Supports (infinitely) recursive grammar/statements (nested clauses)
 - Recognizes and corrects ill-formed input
 - Grammatical conjugation/correction
