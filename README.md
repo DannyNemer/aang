@@ -9,26 +9,26 @@ See over 100,000 words of extensive, excellent, existing documentation throughou
 ### System summary:
 1. **Natural language API**
 	- First, a developer parameterizes types of objects, entities, actions, attributes, relationships, etc., that they want their interface to understand, as well as names for semantic functions they can recognize from the parser's output.
-	- The system uses a natural language API that allows developers to easily design custom natural language interfaces (NLIs) with these simple parameterizations.
-	- Internally, uses a linguistic framework that models fundamental linguistic components and structures at different levels of abstraction, with which the NLIs are constructed. Modeled as integrable building blocks to easily support new grammatical structures and components, new phrasings, new forms of grammatical conjugation, and new semantic structures.
-	- Integrates a semantic framework that serves as a lambda calculus representation of meaning within the grammar
+	- The system uses a [natural language API](https://github.com/DannyNemer/aang/blob/master/lib/grammar/rules/Category.js) that allows developers to easily design custom natural language interfaces (NLIs) with these simple parameterizations.
+	- Internally, uses a [linguistic framework](https://github.com/DannyNemer/aang/blob/master/lib/grammar/NSymbol.js) that models [fundamental linguistic components](https://github.com/DannyNemer/aang/blob/master/lib/grammar/termSequence/termSequence.js) and structures at different levels of abstraction, with which the NLIs are constructed. Modeled as integrable building blocks to easily support new [grammatical structures and components](https://github.com/DannyNemer/aang/blob/master/lib/grammar/termSequence/verbTermSet.js), new phrasings, new forms of grammatical conjugation, and new semantic structures.
+	- Integrates a [semantic framework](https://github.com/DannyNemer/aang/blob/master/lib/grammar/semantic.js) that serves as a lambda calculus representation of meaning within the grammar
 2. **Grammar generator**
-	- A context-free grammar (CFG) generator integrates the linguistic framework with the natural language API.
-	- Outputs a CFG that automatically supports various phrasing according to the parametrization, including support for grammatical conjugation, associated semantic functions, lexical and morphological analysis, and ill-formed input (i.e., insertions, deletion, substitutions, and transpositions).
-	- The generator also performs extensive checks for errors, ambiguity, illogical semantics, grammatical errors, and more.
+	- A context-free grammar (CFG) [generator](https://github.com/DannyNemer/aang/blob/master/lib/grammar/grammar.js) integrates the linguistic framework with the natural language API.
+	- Outputs a CFG that automatically supports various phrasing according to the parametrization, including support for grammatical conjugation, associated semantic functions, lexical and morphological analysis, and [ill-formed input](https://github.com/DannyNemer/aang/blob/master/lib/grammar/createInsertionRules.js) (i.e., insertions, deletion, substitutions, and transpositions).
+	- The generator also performs extensive checks for errors, [ambiguity](https://github.com/DannyNemer/aang/blob/master/lib/ambig/ambiguityCheck.js), [illogical semantics](https://github.com/DannyNemer/aang/blob/master/lib/grammar/semanticChecks.js), grammatical errors, and more.
 3. **Parser**
 	-	Using the CFGs designed with the API, the parser outputs the k-best parse trees, semantic trees, and grammatically conjugated display-text for the given textual input.
-	- First compiles a state-transition table from the CFG that the parser uses as a precompiled LR(*k*) parsing table.
-	- Upon receiving input, the parser matches terminal symbols/phrases that integrates lexical analysis, morphological analysis, and entity recognition.
-	- From the matched terminal symbols, the shift-reduce parser generates a dense parse forest of multiple potential parse trees.
-	- An A* graph-search algorithm efficiently traverses the dense parse forests and calculates cost heuristics.
-	- A parse forest search algorithm efficiently finds the *k*-best unique and semantically valid parse trees.
-	- Each parse tree has an associated semantic tree (which maps to a lambda calculus semantic representation) and grammatically correct display-text (even if the input is ill-formed).
+	- First compiles a [state-transition table](https://github.com/DannyNemer/aang/blob/master/lib/parse/StateTable.js) from the CFG that the parser uses as a precompiled LR(*k*) parsing table.
+	- Upon receiving input, the parser [matches terminal symbols/phrases](https://github.com/DannyNemer/aang/blob/master/lib/parse/matchTerminalRules.js) that integrates lexical analysis, morphological analysis, and entity recognition.
+	- From the matched terminal symbols, the [shift-reduce parser](https://github.com/DannyNemer/aang/blob/master/lib/parse/Parser.js) generates a dense parse forest of multiple potential parse trees.
+	- An A* graph-search algorithm efficiently [traverses the dense parse forests and calculates cost heuristics](https://github.com/DannyNemer/aang/blob/master/lib/parse/calcHeuristicCosts.js).
+	- A [parse forest search algorithm](https://github.com/DannyNemer/aang/blob/master/lib/parse/pfsearch.js) efficiently finds the *k*-best unique and semantically valid parse trees.
+	- Each parse tree has an associated semantic tree (which maps to a lambda calculus semantic representation) and [grammatically correct display-text](https://github.com/DannyNemer/aang/blob/master/lib/parse/conjugateText.js) (even if the input is ill-formed).
 	- This process requires ~20 ms on average.
 4. **Miscellaneous**
-	- Includes eight command line interfaces (CLIs) for developing, debugging, testing, and benchmarking the system, its NLU interfaces, grammars, and parsers.
-	- Includes a suite of tests that check for ambiguity (grammatical, semantic, and textual), grammatical conjugation errors, ill-formed semantic structures, inefficiently designed grammatical structures, and more to ensure optimal performance of the NLIs.
-	- 6,500+ git commits, 2,000+ test cases, 250+ unique error messages, 100,000+ words of technical documentation, and the highest code quality. (4,000+ hours of work.)
+	- Includes eight command line interfaces (CLIs) for developing, [debugging](https://github.com/DannyNemer/aang/blob/master/lib/cli/cli.js), [testing](https://github.com/DannyNemer/aang/blob/master/lib/test/test.js), and [benchmarking](https://github.com/DannyNemer/aang/blob/master/lib/benchmark/benchmark.js) the system, its NLU interfaces, grammars, and parsers.
+	- Includes a suite of tests that check for ambiguity (grammatical, semantic, and textual), [grammatical conjugation errors, ill-formed semantic structures](https://github.com/DannyNemer/aang/blob/master/lib/parse/checkParseTree.js), [inefficiently designed grammatical structures](https://github.com/DannyNemer/aang/blob/master/lib/grammar/checkGrammar.js), and more to ensure optimal performance of the NLIs.
+	- 6,500+ git commits, [2,000+ test cases](https://github.com/DannyNemer/aang/tree/master/lib/test), 250+ unique error messages, 100,000+ words of technical documentation, and the highest code quality. (4,000+ hours of work.)
 
 Such a short explanation inadequately describes the breadth and sophistication of the system. But, the following are a few notable advancements over existing NLIs (e.g., Siri, Alexa):
 
