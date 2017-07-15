@@ -52,7 +52,7 @@ I modeled this framework as integrable building blocks to easily support new phr
 ### Deep learning and NLU:
 As described above, I view natural language understanding (NLU) as the process of taking arbitrary input, of arbitrary size with or without context, and outputting a cross-linguistically consistent semantic representation (e.g., a lambda calculus representation). One of the primary reasons I paused this project's development is because I believe the core of my system will soon be possible, and eventually superior, with deep learning, obsoleting most of my work.
 
-Below I describe how deep learning can achieve the components that comprise this NLU process. I refer to Google's [SyntaxNet](https://github.com/tensorflow/models/tree/master/syntaxnet) in most of the descriptions because SyntaxNet is the most complete, accurate, well-documented, and open source implementation of these deep learning approaches; other papers have documented similar findings.
+Below I describe how deep learning can achieve the components that comprise this NLU process. I refer to Google's [SyntaxNet](https://github.com/tensorflow/models/tree/master/syntaxnet) in most of the descriptions because SyntaxNet is the most complete, accurate, well-documented, and open-source implementation of these deep learning approaches; other papers have documented similar findings.
 
 1. **Text segmentation (word boundary identification)**
 
@@ -60,7 +60,7 @@ Below I describe how deep learning can achieve the components that comprise this
 
 2. **Entity recognition**
 
-	Identifying entities (e.g., a name of a city, restaurant, person) can be incredibly computationally intensive if forced to search every input n-gram in every possible index of entities (e.g., indices of cities, restaurants, people). Ergo, it is best to use pre-trained [language models](https://en.wikipedia.org/wiki/Language_model) to determine the probabilistic likelihood of the n-th term belonging to a particular entity category based on the previous *n* terms in input. For example, a trained language model can identify that the next term in "people who live in ..." has a high likelihood of appearing in location-related indices (e.g., cities, countries), and will avoid searching low-probability entity categories (of which there could be dozens; e.g., people, book/film names). Applying ML to entity recognition is not new and was a planned component of my system that I never reached.
+	Identifying entities (e.g., a name of a city, restaurant, person) can be incredibly computationally intensive if forced to search every input *n*-gram in every possible index of entities (e.g., indices of cities, restaurants, people). Ergo, it is best to use pre-trained [language models](https://en.wikipedia.org/wiki/Language_model) to determine the probabilistic likelihood of the *n*th term belonging to a particular entity category based on the previous *n* terms in input. For example, a trained language model can identify that the next term in "people who live in ..." has a high likelihood of appearing in location-related indices (e.g., cities, countries), and will avoid searching low-probability entity categories (of which there could be dozens; e.g., people, book/film names). Applying ML to entity recognition is not new and was a planned component of my system that I never reached.
 
 3. **Morphological analysis**
 
