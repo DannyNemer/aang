@@ -1,3 +1,5 @@
+***Note**: This documentation is temporary and incomplete as I evaluate the best method to present the material. See over 100,000 words of extensive, excellent, existing documentation throughout the source files in [`/lib/`](https://github.com/DannyNemer/aang/tree/master/lib).*
+
 # `cli`
 	Usage
 	  node cli [options]
