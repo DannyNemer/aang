@@ -46,6 +46,8 @@ Such a short explanation inadequately describes the breadth and sophistication o
 - Semantic/logical validation (no semantic contradictions, duplicates, etc.)
 - Disambiguation (identifies parses that are semantically identical yet textually distinguishable, and textually identical parses that are semantically distinguishable)
 
+### Examples:
+
 ### Documentation:
 See [`/doc/`](https://github.com/DannyNemer/aang/tree/master/doc) for documentation that is temporary and  incomplete while I evaluate the best method to present the material.
 
