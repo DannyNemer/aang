@@ -27,6 +27,8 @@ Aang is an extensive, sophisticated natural language understanding (NLU) system 
 	- Includes a suite of tests that check for ambiguity (grammatical, semantic, and textual), [grammatical conjugation errors, ill-formed semantic structures](https://github.com/DannyNemer/aang/blob/master/lib/parse/checkParseTree.js), [inefficiently designed grammatical structures](https://github.com/DannyNemer/aang/blob/master/lib/grammar/checkGrammar.js), and more to ensure optimal performance of the NLIs.
 	- 6,500+ git commits, [2,000+ test cases](https://github.com/DannyNemer/aang/tree/master/lib/test), 250+ unique error messages, 100,000+ words of technical documentation, and the highest code quality. (4,000+ hours of work.)
 
+While the above architecture appears straightforward, the design and development was anything but. Implementing this system was a seemingly Sisyphean task: multiple times, hundreds of hours of work had to be discarded to discover the superior, scalable, and successful approaches and models. No component, design, data structure, or algorithm was obvious, and each is the product of multiple revisions. The system's substantial, meticulous documentation demonstrates the rigorous design process that was necessary to solve its technical hurdles.
+
 Such a short explanation inadequately describes the breadth and sophistication of the system. But, the following are a few notable advancements over existing NLIs (e.g., Siri, Alexa):
 
 - Faster parsing
