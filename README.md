@@ -2,6 +2,8 @@
 
 Aang is an extensive, sophisticated natural language understanding (NLU) system built from scratch. Designed to enable developers to easily create custom, full-featured, fast, robust, and precise natural language interfaces (e.g., virtual assistants, chatbots, and natural language search engines) to integrate with their products.
 
+*"Developing the first 90% of an AI system is easier than the final 10%."* ~ An enervate developer.
+
 ### System summary:
 1. **Natural language API**
 	- First, a developer parameterizes types of objects, entities, actions, attributes, relationships, etc., that they want their interface to understand, as well as names for semantic functions they can recognize from the parser's output.
@@ -29,7 +31,7 @@ Aang is an extensive, sophisticated natural language understanding (NLU) system 
 
 While the above architecture appears straightforward, its design and development was anything but. Implementing this system was a seemingly Sisyphean task: multiple times, hundreds of hours of work had to be discarded to discover the superior, scalable, and successful approaches. No component, design, data structure, or algorithm was obvious, and each is the product of testing numerous models. The system's substantial, meticulous documentation demonstrates the rigorous design process that was necessary to solve its technical hurdles.
 
-The system was diligently designed as modular to reliably support any and all future extensions and expansions. This is not a prototype, but rather the foundation for a scaled system that implements various custom NLIs, each serving tens of thousands of requests per second, and handles the obscurest of edge cases. (Pay mind to the adage: developing the first 90% of an AI system is easier than the final 10%.) Modularity governs the design, from the natural language API to the internal linguistic framework to the succession of steps that comprise the parsing process to the detailed, redundant tests. *Even my test suite has a test suite.*
+The system was diligently designed as modular to reliably support any and all future extensions and expansions. This is not a prototype, but rather the foundation for a scaled system that implements various custom NLIs, each serving tens of thousands of requests per second, and handles the obscurest of edge cases. Modularity governs the design, from the natural language API to the internal linguistic framework to the succession of steps that comprise the parsing process to the detailed, redundant tests. *Even my test suite has a test suite.*
 
 Such a short explanation inadequately describes the breadth and sophistication of the system. But, the following are a few notable advancements over existing NLIs (e.g., Siri, Alexa):
 
