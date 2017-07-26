@@ -56,13 +56,13 @@ See [`/doc/`](https://github.com/DannyNemer/aang/tree/master/doc) for documentat
 
 See over 100,000 words of extensive, excellent, existing documentation throughout the source files in [`/lib/`](https://github.com/DannyNemer/aang/tree/master/lib).
 
-See this early [**paper for this system**](https://github.com/DannyNemer/aang/blob/master/doc/original%20paper/paper.pdf), though note it is out-of-date and should not be referenced. The system has advanced far beyond and diverged from the contents of this original paper. Nowadays, however, a fancy LaTeX "white paper" impresses many regardless of the work's merit, so I offer it here as tribute.
+See this early [**paper for the system**](https://github.com/DannyNemer/aang/blob/master/doc/original%20paper/paper.pdf), though note it is out-of-date and should not be referenced. The system has advanced far beyond and diverged from the contents of this original paper. Nowadays, however, a fancy LaTeX "white paper" impresses many regardless of the work's merit, so I offer it here as tribute.
 - Separately, LaTeX fans may enjoy seeing this paper's intricate, text-based figures constructed entirely in LaTeX: the parse tree, CFG, state table, etc.
 - As is, given the sophistication and originality of the algorithms and data structures I designed throughout the system, there are several discrete components that each warrant their own (academic) paper:
 	- [Ambiguity detection for CFGs](https://github.com/DannyNemer/aang/tree/master/lib/ambig)
 	- [Calculating graph-search heuristics for a cyclic graph generated from recursive CFGs](https://github.com/DannyNemer/aang/blob/master/lib/parse/calcHeuristicCosts.js#L222)
 	- [An MDP state-transition parse table generated from CFGs](https://github.com/DannyNemer/aang/blob/master/lib/parse/StateTable.js)
-	- [A shift-reduce parser that uses a single dense graph (i.e., parse forest) with packed nodes to conserve memory](https://github.com/DannyNemer/aang/blob/master/lib/parse/Parser.js)
+	- [A shift-reduce parser that uses a single dense graph (i.e., parse forest) with memory-efficient packed nodes](https://github.com/DannyNemer/aang/blob/master/lib/parse/Parser.js)
 	- [Efficient A* search for parse forests with simultaneous semantic validation, text conjugation, and terminal sequence merging](https://github.com/DannyNemer/aang/blob/master/lib/parse/pfsearch.js)
 	- [Flattening parse forests (prior search) by merging terminal symbol sequences](https://github.com/DannyNemer/aang/blob/master/lib/parse/flattenTermSequence.js) ([and disambiguating as necessary](https://github.com/DannyNemer/aang/blob/master/lib/parse/flattenTermSequence.js#L789))
 
