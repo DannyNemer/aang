@@ -28,10 +28,10 @@
  *                        times.
  */
 
-var util = require('../util/util')
+var util = require('../lib/util/util')
 
-var tests = require('../test/tests.json')
-var testUtil = require('../test/testUtil')
+var tests = require('../lib/test/tests.json')
+var testUtil = require('../lib/test/testUtil')
 
 var yargs = require('yargs')
 var argv = yargs
@@ -89,7 +89,7 @@ var argv = yargs
 // For each `<tag>` passed as a command line argument, only parse test queries with that tag. If none, parse the entire test suite. If `<tag>` is unrecognized, exit the process with error code `1`.
 tests = filterTestsByTagArgs(argv, tests)
 
-var parse = require('../parse/parseExported')
+var parse = require('../lib/parse/parseExported')
 
 var k = argv.k
 var numRuns = argv.numRuns

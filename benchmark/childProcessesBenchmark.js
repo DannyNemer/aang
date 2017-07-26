@@ -24,7 +24,7 @@
  *   -h, --help       Display this screen.                                         [boolean]
  */
 
-var util = require('../util/util')
+var util = require('../lib/util/util')
 var yargs = require('yargs')
 
 var argv = yargs
@@ -79,7 +79,7 @@ var argv = yargs
 
 var childProcess = require('child_process')
 
-var tests = require('../test/tests.json')
+var tests = require('../lib/test/tests.json')
 var testsLen = argv.numTests ? Math.min(argv.numTests, tests.length) : tests.length
 var testIndex = 0
 var totalTime = 0
