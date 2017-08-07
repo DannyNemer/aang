@@ -142,6 +142,7 @@ var paths = (function () {
 		testOut: outDir + 'test',
 		testSmallOut: outDir + 'test_small',
 		testQuietOut: outDir + 'test_quiet',
+		benchmark: '../benchmark/benchmark.js',
 		buildGrammar: '../lib/grammar/buildGrammar.js',
 		grammar: '../lib/grammar.json',
 		grammarOld: outDir + 'grammar_old.json',
@@ -235,7 +236,7 @@ rl.addCommands({
 	description: 'Benchmark the duration of parsing the test suite.',
 	func: function benchmark() {
 		// Pass all arguments to the command line program.
-		rl.spawnAsyncProcess('node', [ '../benchmark/benchmark.js' ].concat(Array.prototype.slice.call(arguments)))
+		rl.spawnAsyncProcess('node', [ paths.benchmark ].concat(Array.prototype.slice.call(arguments)))
 	},
 }, {
 	name: 'buildGrammar',
