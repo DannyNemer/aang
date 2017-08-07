@@ -93,6 +93,28 @@ var path = require('path')
 // Instantiates a readline `Interface`.
 var rl = require('./readlineAsync')
 
+// File paths.
+var paths = (function () {
+	var outDir = '../out/'
+
+	return {
+		parse: '../lib/parse/parse.js',
+		outDir: outDir,
+		test: '../test/test.js',
+		testOut: outDir + 'test',
+		testSmallOut: outDir + 'test_small',
+		testQuietOut: outDir + 'test_quiet',
+		benchmark: '../benchmark/benchmark.js',
+		buildGrammar: '../lib/grammar/buildGrammar.js',
+		grammar: '../lib/grammar.json',
+		grammarOld: outDir + 'grammar_old.json',
+		ambigCheck: '../lib/ambig/ambiguityCheck.js',
+		ambigCheckOut: outDir + 'ambig',
+		printStateTable: '../lib/parse/printStateTable.js',
+		stateTableOut: outDir + 'st',
+	}
+}())
+
 // Parse settings.
 var parseOpts = {
 	k: 7,
@@ -113,7 +135,7 @@ var parseOpts = {
 // Send input not recognized as a command to `parse`.
 rl.onLine(function (query) {
 	this.spawnAsyncProcess('node', [
-		'../lib/parse/parse.js',
+		paths.parse,
 		// Enclose with quotes to support `parse` invocation within a `zsh` shell.
 		'"' + query + '"',
 		'--k=' + parseOpts.k,
@@ -131,27 +153,6 @@ rl.onLine(function (query) {
 		'--parse-forest-graph=' + parseOpts.forestGraph,
 	])
 })
-
-// Output file paths.
-var paths = (function () {
-	var outDir = '../out/'
-
-	return {
-		outDir: outDir,
-		test: '../test/test.js',
-		testOut: outDir + 'test',
-		testSmallOut: outDir + 'test_small',
-		testQuietOut: outDir + 'test_quiet',
-		benchmark: '../benchmark/benchmark.js',
-		buildGrammar: '../lib/grammar/buildGrammar.js',
-		grammar: '../lib/grammar.json',
-		grammarOld: outDir + 'grammar_old.json',
-		ambigCheck: '../lib/ambig/ambiguityCheck.js',
-		ambigCheckOut: outDir + 'ambig',
-		printStateTable: '../lib/parse/printStateTable.js',
-		stateTableOut: outDir + 'st',
-	}
-}())
 
 // Color RLI prompt character green if there are unarchived grammar changes.
 updateRLIPrompt(rl)
