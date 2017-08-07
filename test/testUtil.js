@@ -2,7 +2,7 @@
  * Utility functions for the test suite.
  */
 
-var util = require('../lib/util/util')
+var util = require('../util/util')
 var cliui = require('cliui')
 var testSuiteTags = require('./testTags')
 

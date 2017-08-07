@@ -17,7 +17,7 @@
  *   -h, --help     Display this screen.                                  [boolean]
  */
 
-var util = require('../lib/util/util')
+var util = require('../util/util')
 var yargs = require('yargs')
 
 var argv = yargs

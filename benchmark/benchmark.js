@@ -28,7 +28,7 @@
  *                        times.
  */
 
-var util = require('../lib/util/util')
+var util = require('../util/util')
 
 var tests = require('../test/tests.json')
 var testUtil = require('../test/testUtil')

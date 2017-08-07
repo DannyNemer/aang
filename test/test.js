@@ -44,7 +44,7 @@
  *                        print the parse results.
  */
 
-var util = require('../lib/util/util')
+var util = require('../util/util')
 
 // Modify stack trace format to stylize output when printing.
 util.prettifyStackTrace()

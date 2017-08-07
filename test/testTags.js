@@ -1,4 +1,4 @@
-var util = require('../lib/util/util')
+var util = require('../util/util')
 
 
 /**
