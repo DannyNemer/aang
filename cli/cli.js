@@ -44,7 +44,7 @@
  *   -h, --help  Display this screen.                                     [boolean]
  */
 
-var util = require('../../util/util')
+var util = require('../util/util')
 var yargs = require('yargs')
 
 var argv = yargs
@@ -113,7 +113,7 @@ var parseOpts = {
 // Send input not recognized as a command to `parse`.
 rl.onLine(function (query) {
 	this.spawnAsyncProcess('node', [
-		'../parse/parse.js',
+		'../lib/parse/parse.js',
 		// Enclose with quotes to support `parse` invocation within a `zsh` shell.
 		'"' + query + '"',
 		'--k=' + parseOpts.k,
@@ -134,20 +134,20 @@ rl.onLine(function (query) {
 
 // Output file paths.
 var paths = (function () {
-	var outDir = '../../out/'
+	var outDir = '../out/'
 
 	return {
 		outDir: outDir,
-		test: '../../test/test.js',
+		test: '../test/test.js',
 		testOut: outDir + 'test',
 		testSmallOut: outDir + 'test_small',
 		testQuietOut: outDir + 'test_quiet',
-		buildGrammar: '../grammar/buildGrammar.js',
-		grammar: '../grammar.json',
+		buildGrammar: '../lib/grammar/buildGrammar.js',
+		grammar: '../lib/grammar.json',
 		grammarOld: outDir + 'grammar_old.json',
-		ambigCheck: '../ambig/ambiguityCheck.js',
+		ambigCheck: '../lib/ambig/ambiguityCheck.js',
 		ambigCheckOut: outDir + 'ambig',
-		printStateTable: '../parse/printStateTable.js',
+		printStateTable: '../lib/parse/printStateTable.js',
 		stateTableOut: outDir + 'st',
 	}
 }())
@@ -235,7 +235,7 @@ rl.addCommands({
 	description: 'Benchmark the duration of parsing the test suite.',
 	func: function benchmark() {
 		// Pass all arguments to the command line program.
-		rl.spawnAsyncProcess('node', [ '../../benchmark/benchmark.js' ].concat(Array.prototype.slice.call(arguments)))
+		rl.spawnAsyncProcess('node', [ '../benchmark/benchmark.js' ].concat(Array.prototype.slice.call(arguments)))
 	},
 }, {
 	name: 'buildGrammar',
