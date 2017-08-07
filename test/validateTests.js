@@ -2,7 +2,7 @@
  * Checks for ill-formed and duplicate tests in the test suite. If found, exits process with error code `1`.
  */
 
-var util = require('../util/util')
+var util = require('../lib/util/util')
 
 
 // The file path of the test suite for error reporting.

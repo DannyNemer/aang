@@ -4,7 +4,7 @@
  * This file currently contains very few test cases. Will be expanded with rules from 'ambiguityTests.js'.
  */
 
-var g = require('./grammar')
+var g = require('../lib/grammar/grammar')
 
 var x = g.newSymbol('x').addRule({ isTerminal: true, rhs: 'x' })
 var y = g.newSymbol('y').addRule({ isTerminal: true, rhs: 'y' })

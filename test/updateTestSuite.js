@@ -17,7 +17,7 @@
  *   -h, --help     Display this screen.                                  [boolean]
  */
 
-var util = require('../util/util')
+var util = require('../lib/util/util')
 var yargs = require('yargs')
 
 var argv = yargs
@@ -47,7 +47,7 @@ var argv = yargs
 	.argv
 
 var readlineSync = require('readline-sync')
-var parse = require('../parse/parseExported')
+var parse = require('../lib/parse/parseExported')
 
 var testsFilePath = './tests.json'
 var tests = require(testsFilePath)

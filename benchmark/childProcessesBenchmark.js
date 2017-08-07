@@ -79,7 +79,7 @@ var argv = yargs
 
 var childProcess = require('child_process')
 
-var tests = require('../lib/test/tests.json')
+var tests = require('../test/tests.json')
 var testsLen = argv.numTests ? Math.min(argv.numTests, tests.length) : tests.length
 var testIndex = 0
 var totalTime = 0

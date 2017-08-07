@@ -44,7 +44,7 @@
  *                        print the parse results.
  */
 
-var util = require('../util/util')
+var util = require('../lib/util/util')
 
 // Modify stack trace format to stylize output when printing.
 util.prettifyStackTrace()
@@ -197,12 +197,12 @@ require('./validateTests')
 // For each `<tag>` passed as a command line argument, only run tests with that tag. If none, parse the entire test suite. If `<tag>` is unrecognized, exit the process with error code `1`.
 tests = filterTestsByTagArgs(argv, tests)
 
-var StateTable = require('../parse/StateTable')
-var Parser = require('../parse/Parser')
-var printParseResults = require('../parse/printParseResults')
+var StateTable = require('../lib/parse/StateTable')
+var Parser = require('../lib/parse/Parser')
+var printParseResults = require('../lib/parse/printParseResults')
 
 // Generate a `StateTable` from the grammar and instantiate a `Parser`.
-var stateTable = new StateTable(require('../grammar.json'))
+var stateTable = new StateTable(require('../lib/grammar.json'))
 var parser = new Parser(stateTable)
 
 // Specify every test produce output.

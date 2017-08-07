@@ -30,8 +30,8 @@
 
 var util = require('../lib/util/util')
 
-var tests = require('../lib/test/tests.json')
-var testUtil = require('../lib/test/testUtil')
+var tests = require('../test/tests.json')
+var testUtil = require('../test/testUtil')
 
 var yargs = require('yargs')
 var argv = yargs
