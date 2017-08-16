@@ -52,7 +52,7 @@ The system was diligently designed as modular to reliably support any and all fu
 ### Examples:
 
 ### Documentation:
-See [`/doc/`](https://github.com/DannyNemer/aang/tree/master/doc) for documentation that is temporary and  incomplete while I evaluate the best method to present the material.
+See [`/doc/`](https://github.com/DannyNemer/aang/tree/master/doc) for documentation that is temporary and incomplete while I evaluate the best method to present the material.
 
 See over 100,000 words of extensive, excellent, existing documentation throughout the source files in [`/lib/`](https://github.com/DannyNemer/aang/tree/master/lib).
 
