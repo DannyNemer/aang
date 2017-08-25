@@ -50,6 +50,10 @@ While the above architecture appears straightforward, its design and development
 The system was diligently designed as modular to reliably support any and all future extensions and expansions. This is not a prototype, but rather the foundation for a scaled system that implements various custom NLIs, each serving tens of thousands of requests per second, and handles the obscurest of edge cases. Modularity governs the design, from the natural language API to the internal linguistic framework to the succession of steps that comprise the parsing process to the detailed, redundant tests. *Even my test suite has a test suite.*
 
 ### Examples:
+The following are examples of natural language queries/interfaces that can be designed with the system. It displays the input text and the corresponding output text (with any corrections) and associated semantic. Below, the examples cover the domain of natural language search queries to best show the complexity the system understands. Queries for virtual assistants are nearly identical (the same, just with a prepended command operation: "create a…", "what are…", "show me…"). Queries in a conversational UI are even simpler.
+
+For these examples, I created an NLI for searching GitHub repositories, users, pull requests, etc.
+![alt text](https://raw.githubusercontent.com/DannyNemer/aang/master/doc/img/example1.jpg "optional text")
 
 ### Documentation:
 See [`/doc/`](https://github.com/DannyNemer/aang/tree/master/doc) for documentation that is temporary and incomplete while I evaluate the best method to present the material.
