@@ -53,6 +53,8 @@ The system was diligently designed as modular to reliably support any and all fu
 The following are examples of natural language queries/interfaces that can be designed with the system. It displays the input text and the corresponding output text (with any corrections) and associated semantic. Below, the examples cover the domain of natural language search queries to best show the complexity the system understands. Queries for virtual assistants are nearly identical (the same, just with a prepended command operation: "create a…", "what are…", "show me…"). Queries in a conversational UI are even simpler.
 
 For these examples, I created an NLI for searching GitHub repositories, users, pull requests, etc.
+
+An example of outputting the *k*-best matches (display-text and semantic) for the input text:
 ![alt text](https://raw.githubusercontent.com/DannyNemer/aang/master/doc/img/example1.jpg "optional text")
 
 ### Documentation:
