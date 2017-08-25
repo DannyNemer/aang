@@ -57,6 +57,9 @@ For these examples, I created an NLI for searching GitHub repositories, users, p
 An example of outputting the *k*-best matches (display-text and semantic) for the input text:
 ![alt text](https://raw.githubusercontent.com/DannyNemer/aang/master/doc/img/example1.jpg "optional text")
 
+An example of the parse tree generated for the input query. This example uses a simple query and only outputs the first result (i.e., exact match) because otherwise the parse tree would be too large to display here:
+![alt text](https://raw.githubusercontent.com/DannyNemer/aang/master/doc/img/example2.jpg "optional text")
+
 ### Documentation:
 See [`/doc/`](https://github.com/DannyNemer/aang/tree/master/doc) for documentation that is temporary and incomplete while I evaluate the best method to present the material.
 
