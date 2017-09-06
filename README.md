@@ -56,10 +56,10 @@ The examples below cover the domain of natural language search queries to best s
 
 For these examples, I created an NLI for searching the structured data of Git repositories and GitHub: forks, pull requests, repositories, users, etc.
 
-An example of outputting the *k*-best matches (display-text and semantic) for the input text:
+1. An example of outputting the *k*-best matches (display-text and semantic) for the input text:
 ![alt text](https://raw.githubusercontent.com/DannyNemer/aang/master/doc/img/example1.jpg "optional text")
 
-An example of the parse tree generated for the input query. This example uses a simple query and only outputs the first result (i.e., exact match) because otherwise the parse tree would be too large to display here:
+2. An example of the parse tree generated for the input query. This example uses a simple query and only outputs the first result (i.e., exact match) because otherwise the parse tree would be too large to display here:
 ![alt text](https://raw.githubusercontent.com/DannyNemer/aang/master/doc/img/example2.jpg "optional text")
 
 ### Documentation:
