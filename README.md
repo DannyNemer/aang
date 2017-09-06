@@ -50,9 +50,11 @@ While the above architecture appears straightforward, its design and development
 The system was diligently designed as modular to reliably support any and all future extensions and expansions. This is not a prototype, but rather the foundation for a scaled system that implements various custom NLIs, each serving tens of thousands of requests per second, and handles the obscurest of edge cases. Modularity governs the design, from the natural language API to the internal linguistic framework to the succession of steps that comprise the parsing process to the detailed, redundant tests. *Even my test suite has a test suite.*
 
 ### Examples:
-The following are examples of natural language queries/interfaces that can be designed with the system. It displays the input text and the corresponding output text (with any corrections) and associated semantic. Below, the examples cover the domain of natural language search queries to best show the complexity the system understands. Queries for virtual assistants are nearly identical (the same, just with a prepended command operation: "create a…", "what are…", "show me…"). Queries in a conversational UI are even simpler.
+The following are examples of natural language queries/interfaces that can you can design with this system. Each example is the [CLI](https://github.com/DannyNemer/aang/blob/master/cli/cli.js) output with the input text and the corresponding output text (with any corrections) and associated semantic.
 
-For these examples, I created an NLI for searching GitHub repositories, users, pull requests, etc.
+The examples below cover the domain of natural language search queries to best show the complexity this system (i.e., aang) can understand. Queries for virtual assistants are structured nearly identically to search queries (just with a prepended command phrase: `"create a [calendar event at ...]"`, `"what are [restauraunts in ...]"`, `"show me [people who ...]"`). Queries in a conversational UI are even simpler.
+
+For these examples, I created an NLI for searching the structured data of Git repositories and GitHub: forks, pull requests, repositories, users, etc.
 
 An example of outputting the *k*-best matches (display-text and semantic) for the input text:
 ![alt text](https://raw.githubusercontent.com/DannyNemer/aang/master/doc/img/example1.jpg "optional text")
