@@ -62,6 +62,9 @@ For these examples, I created an NLI for searching the structured data of Git re
 2. An example of the parse tree generated for the input query. This example uses a simple query and only outputs the first result (i.e., exact match) because otherwise the parse tree would be too large to display here:
 ![alt text](https://raw.githubusercontent.com/DannyNemer/aang/master/doc/img/example2.jpg "optional text")
 
+3. An example of a complex parse with boolean operators and the resultant semantic: "and" (intersection), "or" (union), "not" (negation). Note the entity resolution of "John von Neumann" (`{user}` category) and "Node.js" (`{repository}`) to their corresponding entity ids.
+![alt text](https://raw.githubusercontent.com/DannyNemer/aang/master/doc/img/example3.jpg "optional text")
+
 ### Documentation:
 See [`/doc/`](https://github.com/DannyNemer/aang/tree/master/doc) for documentation that is temporary and incomplete while I evaluate the best method to present the material.
 
