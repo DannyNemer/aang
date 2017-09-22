@@ -68,6 +68,9 @@ For these examples, I created an NLI for searching the structured data of Git re
 4. A succession of simple queries demonstrating grammatical conjugation correction. (In the output below, the second of the two display-texts is the actual system output. The CLI re-prints the input query for to diff against the actual output to highlight the corrections the system made.) (In these examples, the system is only outputting the first parse tree (*k=1*) for brevity.)
 ![alt text](https://raw.githubusercontent.com/DannyNemer/aang/master/doc/img/example4.jpg "optional text")
 
+5. Several examples demonstrating anaphora resolution.
+![alt text](https://raw.githubusercontent.com/DannyNemer/aang/master/doc/img/example5.jpg "optional text")
+
 ### Documentation:
 See [`/doc/`](https://github.com/DannyNemer/aang/tree/master/doc) for documentation that is temporary and incomplete while I evaluate the best method to present the material.
 
