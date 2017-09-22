@@ -52,7 +52,7 @@ The system was diligently designed as modular to reliably support any and all fu
 ### Examples:
 The following are examples of natural language queries/interfaces that can you can design with this system. Each example is the [CLI](https://github.com/DannyNemer/aang/blob/master/cli/cli.js) output with the input text and the corresponding output text (with any corrections) and associated semantic.
 
-The examples below cover the domain of natural language search queries to best show the complexity this system (i.e., aang) can understand. Queries for virtual assistants are structured nearly identically to search queries (just with a prepended command phrase: `"create a [calendar event at ...]"`, `"what are [restauraunts in ...]"`, `"show me [people who ...]"`). Queries in a conversational UI are even simpler.
+The examples below cover the domain of natural language search queries to best show the complexity this system (i.e., aang) can understand. Queries for virtual assistants are structured nearly identically to search queries (just with a prepended command phrase: `"create a [calendar event at ...]"`, `"what are [restaurants in ...]"`, `"show me [people who ...]"`). Queries in a conversational UI are even simpler.
 
 For these examples, I created an NLI for searching the structured data of Git repositories and GitHub: forks, pull requests, repositories, users, etc.
 
