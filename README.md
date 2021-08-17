@@ -10,6 +10,12 @@ The design and architecture are formidable, the code quality is supreme, and the
 
 *"Developing the first 90% of an AI system is easier than the final 10%."* ~ An enervated developer.
 
+**Usage** ([see more](#cli)):
+
+```shell
+yarn cli
+```
+
 ## System Summary
 
 1. **Natural language API**
@@ -81,7 +87,7 @@ My system internally uses an extensive linguistic framework I designed that mode
 
 I modeled this framework as integrable building blocks to easily support new phrasings that benefit from the aforementioned tests, support new forms of grammatical conjugation and semantic structures, and eventually support extensions to different languages. Again, this is a simplified explanation that insufficiently conveys the system's scope. The system's goal, of course, is to produce natural language interfaces that accurately and quickly map any and all potential phrasings (including ill-formed) to their semantic representations. (Note: This model and approach is not ideal. I believe deep learning will soon exceed this and similar methods in robustness, scalability, and accuracy/precision, which is primarily why I paused development of Aang.)
 
-## Usage
+## CLI
 
 The command line interface for Aang:
 
