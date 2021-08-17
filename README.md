@@ -53,29 +53,6 @@ While the above architecture appears straightforward, its design and development
 
 The system was diligently designed as modular to reliably support any and all future extensions and expansions. This is not a prototype, but rather the foundation for a scaled system that implements various custom NLIs, each serving tens of thousands of requests per second, and handles the obscurest of edge cases. Modularity governs the design, from the natural language API to the internal linguistic framework to the succession of steps that comprise the parsing process to the detailed, redundant tests. *Even my test suite has a test suite.*
 
-### Examples
-
-The following are examples of natural language queries/interfaces that can you can design with this system. Each example is the [CLI](cli/cli.js) output with the input text and the corresponding output text (with any corrections) and associated semantic.
-
-The examples below cover the domain of natural language search queries to best show the complexity this system (i.e., aang) can understand. Queries for virtual assistants are structured nearly identically to search queries (just with a prepended command phrase: `"create a [calendar event at ...]"`, `"what are [restaurants in ...]"`, `"show me [people who ...]"`). Queries in a conversational UI are even simpler.
-
-For these examples, I created an NLI for searching the structured data of Git repositories and GitHub: forks, pull requests, repositories, users, etc.
-
-1. An example of outputting the *k*-best matches (display-text and semantic) for the input text:
-![alt text](doc/img/example1.jpg)
-
-1. An example of the parse tree generated for the input query. This example uses a simple query and only outputs the first result (i.e., exact match) because otherwise the parse tree would be too large to display here:
-![alt text](doc/img/example2.jpg)
-
-1. An example of a complex parse with boolean operators and the resultant semantic: "and" (intersection), "or" (union), "not" (negation). Note the entity resolution of "John von Neumann" (`{user}` category) and "Node.js" (`{repository}`) to their corresponding entity ids.
-![alt text](doc/img/example3.jpg)
-
-1. A succession of simple queries demonstrating grammatical conjugation correction. (In the output below, the second of the two display-texts is the actual system output. The CLI re-prints the input query for to diff against the actual output to highlight the corrections the system made.) (In these examples, the system is only outputting the first parse tree (*k=1*) for brevity.)
-![alt text](doc/img/example4.jpg)
-
-1. Several examples demonstrating anaphora resolution.
-![alt text](doc/img/example5.jpg)
-
 ### Documentation
 
 See [`doc/`](doc/) for documentation that is temporary and incomplete while I evaluate the best method to present the material.
@@ -102,6 +79,29 @@ See this early [**paper for the system**](doc/original%20paper/paper.pdf) and [i
 My system internally uses an extensive linguistic framework I designed that models fundamental linguistic components and structures at different levels of abstraction. With this framework, the system enables developers to simply parameterize the types of objects, entities, relationships, and attributes they want their natural language interface to understand. From that parametrization, the system generates a grammar that handles the variations of phrasing (and ill-formed input), which the system's parser uses to run the natural language interface. For example, internally there are fundamental word objects, from which verbs types are defined, from which auxiliary verbs are defined, with which verb phrases are defined, with which sets of verb phrases are created for a simple parameterization. Please note this description is sparse and omits accounts of the system's automated processes, thorough checks (e.g., tests to avoid ambiguity, semantically contradictory statements, grammatical conjugation errors), semantic pairings, grammatical attributes, and more.
 
 I modeled this framework as integrable building blocks to easily support new phrasings that benefit from the aforementioned tests, support new forms of grammatical conjugation and semantic structures, and eventually support extensions to different languages. Again, this is a simplified explanation that insufficiently conveys the system's scope. The system's goal, of course, is to produce natural language interfaces that accurately and quickly map any and all potential phrasings (including ill-formed) to their semantic representations. (Note: This model and approach is not ideal. I believe deep learning will soon exceed this and similar methods in robustness, scalability, and accuracy/precision, which is primarily why I paused development of Aang.)
+
+### Examples
+
+The following are examples of natural language queries/interfaces that can you can design with this system. Each example is the [CLI](cli/cli.js) output with the input text and the corresponding output text (with any corrections) and associated semantic.
+
+The examples below cover the domain of natural language search queries to best show the complexity this system (i.e., aang) can understand. Queries for virtual assistants are structured nearly identically to search queries (just with a prepended command phrase: `"create a [calendar event at ...]"`, `"what are [restaurants in ...]"`, `"show me [people who ...]"`). Queries in a conversational UI are even simpler.
+
+For these examples, I created an NLI for searching the structured data of Git repositories and GitHub: forks, pull requests, repositories, users, etc.
+
+1. An example of outputting the *k*-best matches (display-text and semantic) for the input text:
+![alt text](doc/img/example1.jpg)
+
+1. An example of the parse tree generated for the input query. This example uses a simple query and only outputs the first result (i.e., exact match) because otherwise the parse tree would be too large to display here:
+![alt text](doc/img/example2.jpg)
+
+1. An example of a complex parse with boolean operators and the resultant semantic: "and" (intersection), "or" (union), "not" (negation). Note the entity resolution of "John von Neumann" (`{user}` category) and "Node.js" (`{repository}`) to their corresponding entity ids.
+![alt text](doc/img/example3.jpg)
+
+1. A succession of simple queries demonstrating grammatical conjugation correction. (In the output below, the second of the two display-texts is the actual system output. The CLI re-prints the input query for to diff against the actual output to highlight the corrections the system made.) (In these examples, the system is only outputting the first parse tree (*k=1*) for brevity.)
+![alt text](doc/img/example4.jpg)
+
+1. Several examples demonstrating anaphora resolution.
+![alt text](doc/img/example5.jpg)
 
 ### Deep learning and NLU
 
