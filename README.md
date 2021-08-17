@@ -94,6 +94,8 @@ See this early [**paper for the system**](doc/original%20paper/paper.pdf) and [i
   - [Efficient A* search for parse forests with simultaneous semantic validation, text conjugation, and terminal sequence merging](lib/parse/pfsearch.js)
   - [Flattening parse forests (prior search) by merging terminal symbol sequences](lib/parse/flattenTermSequence.js) ([and disambiguating as necessary](lib/parse/flattenTermSequence.js#L789))
   - [Anaphora resolution, which remains a problem throughout linguistics](lib/parse/resolveAnaphora.js)
+  - [Semantic reduction](lib/parse/semanticReduction.js)
+  - [Parsing union operations in semantic trees](lib/grammar/semantic.js#L1216-L1554)
 
 ### Linguistic Framework
 
