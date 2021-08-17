@@ -78,7 +78,7 @@ See [`/doc/`](https://github.com/DannyNemer/aang/tree/master/doc) for documentat
 
 See over 100,000 words of extensive, excellent, existing documentation throughout the source files in [`/lib/`](https://github.com/DannyNemer/aang/tree/master/lib).
 
-See this early [**paper for the system**](https://github.com/DannyNemer/aang/blob/master/doc/original%20paper/paper.pdf), though note it is out-of-date and should not be referenced. The system has advanced far beyond and diverged from the contents of this original paper. Nowadays, however, a fancy LaTeX "white paper" impresses many regardless of the work's merit, so I offer it here as tribute.
+See this early [**paper for the system**](https://github.com/DannyNemer/aang/blob/master/doc/original%20paper/paper.pdf) and [its proposal](doc/original%20paper/proposal.pdf), though note it is out-of-date and should not be referenced. The system has advanced far beyond and diverged from the contents of this original paper. Nowadays, however, a fancy LaTeX "white paper" impresses many regardless of the work's merit, so I offer it here as tribute.
 - Separately, LaTeX fans may enjoy seeing this paper's intricate, text-based figures constructed entirely in LaTeX: the parse tree, CFG, state table, etc.
 - As is, given the sophistication and originality of the algorithms and data structures I designed throughout the system, there are several discrete components that each warrant their own (academic) paper:
 	- [Ambiguity detection for CFGs](https://github.com/DannyNemer/aang/tree/master/lib/ambig)
