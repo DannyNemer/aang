@@ -1,5 +1,7 @@
 # aang
 
+*DEPRECRATED as of June 2017*
+
 <img alt="Aang" width="170" align="right" src="https://raw.githubusercontent.com/DannyNemer/aang/master/doc/img/logo.jpg"/>
 
 Aang is an extensive, scalable, sophisticated natural language understanding (NLU) system built from scratch. Designed to enable developers to easily create custom, full-featured, fast, robust, and precise natural language interfaces (e.g., virtual assistants, chatbots, and natural language search engines) to integrate with their products.
