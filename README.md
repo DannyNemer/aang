@@ -32,7 +32,7 @@ The design and architecture are formidable, the code quality is supreme, and the
 4. **Miscellaneous**
     - Includes eight command line interfaces (CLIs) for developing, [debugging](cli/cli.js), [testing](test/test.js), and [benchmarking](benchmark/benchmark.js) the system, its NLU interfaces, grammars, and parsers.
     - Includes a suite of tests that check for ambiguity (grammatical, semantic, and textual), [grammatical conjugation errors, ill-formed semantic structures](lib/parse/checkParseTree.js), [inefficiently designed grammatical structures](lib/grammar/checkGrammar.js), and more to ensure optimal performance of the NLIs.
-    - 6,500+ git commits, [2,000+ unit tests](test/), 250+ unique error messages, **100,000+ words of technical documentation**, and the highest code quality. (4,000+ hours of work.)
+    - 6,500+ git commits, [2,000+ unit tests](test/), 250+ unique error messages, **50,000+ lines of technical documentation**, and the highest code quality. (4,000+ hours of work.)
 
 Such a short explanation inadequately describes the breadth and sophistication of the system. But, the following are a few notable advancements over existing NLIs (e.g., Siri, Alexa):
 
@@ -55,24 +55,23 @@ The system was diligently designed as modular to reliably support any and all fu
 
 ### Documentation
 
-See [`doc/`](doc/) for documentation that is temporary and incomplete while I evaluate the best method to present the material.
-
-See over 100,000 words of extensive, excellent, existing documentation throughout the source files in [`lib/`](lib/).
+See over 50,000+ lines of extensive, meticulous, existing documentation throughout the source files in [`lib/`](lib/).
 
 See this early [**paper for the system**](doc/original%20paper/paper.pdf) and [its proposal](doc/original%20paper/proposal.pdf), though note it is out-of-date and should not be referenced. The system has advanced far beyond and diverged from the contents of this original paper. Nowadays, however, a fancy LaTeX "white paper" impresses many regardless of the work's merit, so I offer it here as tribute.
 
 - Separately, LaTeX fans may enjoy seeing this paper's intricate, text-based figures constructed entirely in LaTeX: the parse tree, CFG, state table, etc.
-- As is, given the sophistication and originality of the algorithms and data structures I designed throughout the system, there are several discrete components that each warrant their own (academic) paper:
 
-  - [Ambiguity detection for CFGs](lib/ambig/)
-  - [Calculating graph-search heuristics for a cyclic graph generated from recursive CFGs](lib/parse/calcHeuristicCosts.js#L222)
-  - [An MDP state-transition parse table generated from CFGs](lib/parse/StateTable.js)
-  - [A shift-reduce parser that uses a single dense graph (i.e., parse forest) with memory-efficient packed nodes](lib/parse/Parser.js)
-  - [Efficient A* search for parse forests with simultaneous semantic validation, text conjugation, and terminal sequence merging](lib/parse/pfsearch.js)
-  - [Flattening parse forests (prior search) by merging terminal symbol sequences](lib/parse/flattenTermSequence.js) ([and disambiguating as necessary](lib/parse/flattenTermSequence.js#L789))
-  - [Anaphora resolution, which remains a problem throughout linguistics](lib/parse/resolveAnaphora.js)
-  - [Semantic reduction](lib/parse/semanticReduction.js)
-  - [Parsing union operations in semantic trees](lib/grammar/semantic.js#L1216-L1554)
+As is, given the sophistication and originality of the algorithms and data structures I designed throughout the system, there are several discrete components that each warrant their own (academic) paper:
+
+- [Ambiguity detection for CFGs](lib/ambig/)
+- [Calculating graph-search heuristics for a cyclic graph generated from recursive CFGs](lib/parse/calcHeuristicCosts.js#L222)
+- [An MDP state-transition parse table generated from CFGs](lib/parse/StateTable.js)
+- [A shift-reduce parser that uses a single dense graph (i.e., parse forest) with memory-efficient packed nodes](lib/parse/Parser.js)
+- [Efficient A* search for parse forests with simultaneous semantic validation, text conjugation, and terminal sequence merging](lib/parse/pfsearch.js)
+- [Flattening parse forests (prior search) by merging terminal symbol sequences](lib/parse/flattenTermSequence.js) ([and disambiguating as necessary](lib/parse/flattenTermSequence.js#L789))
+- [Anaphora resolution, which remains a problem throughout linguistics](lib/parse/resolveAnaphora.js)
+- [Semantic reduction](lib/parse/semanticReduction.js)
+- [Parsing union operations in semantic trees](lib/grammar/semantic.js#L1216-L1554)
 
 ### Linguistic Framework
 
