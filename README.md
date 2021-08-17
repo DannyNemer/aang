@@ -10,7 +10,7 @@ The design and architecture are formidable, the code quality is supreme, and the
 
 *"Developing the first 90% of an AI system is easier than the final 10%."* ~ An enervated developer.
 
-### System Summary
+## System Summary
 
 1. **Natural language API**
     - First, a developer parameterizes types of objects, entities, actions, attributes, relationships, etc., that they want their interface to understand, as well as names for semantic functions they can recognize from the parser's output.
@@ -49,13 +49,13 @@ Such a short explanation inadequately describes the breadth and sophistication o
 - Semantic/logical validation (no semantic contradictions, duplicates, etc.)
 - Disambiguation (identifies parses that are semantically identical yet textually distinguishable, and textually identical parses that are semantically distinguishable)
 
-### Testimonial
+## Testimonial
 
 While the above architecture appears straightforward, its design and development was anything but. Implementing this system was a seemingly Sisyphean task: multiple times, hundreds of hours of work had to be discarded to discover the superior, scalable, and successful approaches. No component, design, data structure, or algorithm was obvious, and each is the product of testing numerous models. The system's substantial, meticulous documentation demonstrates the rigorous design process that was necessary to solve its technical hurdles.
 
 The system was diligently designed as modular to reliably support any and all future extensions and expansions. This is not a prototype, but rather the foundation for a scaled system that implements various custom NLIs, each serving tens of thousands of requests per second, and handles the obscurest of edge cases. Modularity governs the design, from the natural language API to the internal linguistic framework to the succession of steps that comprise the parsing process to the detailed, redundant tests. *Even my test suite has a test suite.*
 
-### Documentation
+## Documentation
 
 See over 50,000+ lines of extensive, meticulous, existing documentation throughout the source files in [`lib/`](lib/).
 
@@ -75,13 +75,13 @@ As is, given the sophistication and originality of the algorithms and data struc
 - [Semantic reduction](lib/parse/semanticReduction.js)
 - [Parsing union operations in semantic trees](lib/grammar/semantic.js#L1216-L1554)
 
-### Linguistic Framework
+## Linguistic Framework
 
 My system internally uses an extensive linguistic framework I designed that models fundamental linguistic components and structures at different levels of abstraction. With this framework, the system enables developers to simply parameterize the types of objects, entities, relationships, and attributes they want their natural language interface to understand. From that parametrization, the system generates a grammar that handles the variations of phrasing (and ill-formed input), which the system's parser uses to run the natural language interface. For example, internally there are fundamental word objects, from which verbs types are defined, from which auxiliary verbs are defined, with which verb phrases are defined, with which sets of verb phrases are created for a simple parameterization. Please note this description is sparse and omits accounts of the system's automated processes, thorough checks (e.g., tests to avoid ambiguity, semantically contradictory statements, grammatical conjugation errors), semantic pairings, grammatical attributes, and more.
 
 I modeled this framework as integrable building blocks to easily support new phrasings that benefit from the aforementioned tests, support new forms of grammatical conjugation and semantic structures, and eventually support extensions to different languages. Again, this is a simplified explanation that insufficiently conveys the system's scope. The system's goal, of course, is to produce natural language interfaces that accurately and quickly map any and all potential phrasings (including ill-formed) to their semantic representations. (Note: This model and approach is not ideal. I believe deep learning will soon exceed this and similar methods in robustness, scalability, and accuracy/precision, which is primarily why I paused development of Aang.)
 
-### Usage
+## Usage
 
 The command line interface for Aang:
 
@@ -97,7 +97,7 @@ node cli/cli.js
 
 Then just type queries! Try `my open PRs assigned to me`. See [examples](#examples) below for me.
 
-#### Programs
+### Programs
 
 The CLI contains the following built-in programs:
 
@@ -135,7 +135,7 @@ changes to modules outside the CLI, allows the user to kill any process (with
 `^C`) without exiting the CLI, and improves benchmark result consistency by
 mitigating the impact of process caches.
 
-### Examples
+## Examples
 
 The following are examples of natural language queries/interfaces that can you can design with this system. Each example is the [CLI](cli/cli.js) output with the input text and the corresponding output text (with any corrections) and associated semantic.
 
@@ -158,7 +158,7 @@ For these examples, I created an NLI for searching the structured data of Git re
 1. Several examples demonstrating anaphora resolution.
 ![alt text](doc/img/example5.jpg)
 
-### Deep learning and NLU
+## Deep learning and NLU
 
 As described above, I view natural language understanding (NLU) as the process of taking arbitrary textual input (including voice-to-text transcriptions), of arbitrary size with or without context, and **outputting a cross-linguistically consistent semantic representation** (e.g., a [lambda calculus representation](https://en.wikipedia.org/wiki/Lambda_calculus)). One of the primary reasons I paused this project's development is because I believe the core of my system will soon be possible, and eventually superior, with deep learning, obsoleting most of my work.
 
