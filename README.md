@@ -81,6 +81,60 @@ My system internally uses an extensive linguistic framework I designed that mode
 
 I modeled this framework as integrable building blocks to easily support new phrasings that benefit from the aforementioned tests, support new forms of grammatical conjugation and semantic structures, and eventually support extensions to different languages. Again, this is a simplified explanation that insufficiently conveys the system's scope. The system's goal, of course, is to produce natural language interfaces that accurately and quickly map any and all potential phrasings (including ill-formed) to their semantic representations. (Note: This model and approach is not ideal. I believe deep learning will soon exceed this and similar methods in robustness, scalability, and accuracy/precision, which is primarily why I paused development of Aang.)
 
+### Usage
+
+The command line interface for Aang:
+
+```shell
+yarn cli
+```
+
+If you do not have `yarn` installed:
+
+```shell
+node cli/cli.js
+```
+
+Then just type queries! Try `my open PRs assigned to me`. See [examples](#examples) below for me.
+
+#### Programs
+
+The CLI contains the following built-in programs:
+
+- `[query]` - Parses the provided query and outputs the k-best parse trees.
+
+- `.test` - Parses the suite of test queries and checks output conforms to
+the test's specifications.
+
+- `.benchmark` - Benchmarks the duration of parsing the queries in the test
+suite.
+
+- `.buildGrammar` - Generates and outputs the grammar containing the grammar
+rules, semantics, entities, and deletables, for use with the parser.
+
+- `.ambiguityCheck` - Finds and prints instances of ambiguity in the grammar.
+
+- `.stateTable` - Prints the state table generated from the grammar.
+
+- `.archive*` - Saves output of program *. Includes: `.archiveTest`,
+`.archiveTestSmall`, `.archiveTestQuiet`, `.archiveGrammar`,
+`.archiveAmbigCheck`, `.archiveStateTable`, `.archiveAll`.
+
+- `.restoreGrammar` - Copies the last output of `.archiveGrammar` to the
+`.buildGrammar` output path.
+
+- `.diff*` - Compares last archived output of program * to current output of
+the same program. Includes: `.diffTest`, `.diffTestSmall`, `.diffTestQuiet`,
+`.diffGrammar`, `.diffAmbigCheck`, `.diffStateTable`.
+
+Enables configuration of CLI environment variables which are passed as options
+when executing the above programs.
+
+Each program is spawn as a child process. This automatically enables any
+changes to modules outside the CLI, allows the user to kill any process (with
+`^C`) without exiting the CLI, and improves benchmark result consistency by
+mitigating the impact of process caches.
+
 ### Examples
 
 The following are examples of natural language queries/interfaces that can you can design with this system. Each example is the [CLI](cli/cli.js) output with the input text and the corresponding output text (with any corrections) and associated semantic.

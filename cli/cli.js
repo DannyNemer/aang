@@ -3,10 +3,10 @@
  *   node cli [options]
  *
  * Description
- *   The command line interface for aang.
+ *   The command line interface for Aang.
  *
  *   Contains the following built-in programs:
- *    • [query] - Parses the provided query and outputs the k-best parse trees.
+ *    • `[query]` - Parses the provided query and outputs the k-best parse trees.
  *
  *    • `.test` - Parses the suite of test queries and checks output conforms to
  *    the test's specifications.
@@ -29,7 +29,7 @@
  *    `.buildGrammar` output path.
  *
  *    • `.diff*` - Compares last archived output of program * to current output of
- *    the same program. Includes: `.diffTest`, `.diffTestSmall, `.diffTestQuiet`,
+ *    the same program. Includes: `.diffTest`, `.diffTestSmall`, `.diffTestQuiet`,
  *    `.diffGrammar`, `.diffAmbigCheck`, `.diffStateTable`.
  *
  *   Enables configuration of CLI environment variables which are passed as options
@@ -53,10 +53,10 @@ var argv = yargs
 		'  node $0 [options]',
 		'',
 		util.colors.bold('Description'),
-		'  The command line interface for aang.',
+		'  The command line interface for Aang.',
 		'',
 		'  Contains the following built-in programs:',
-		'   • [query] - Parses the provided query and outputs the k-best parse trees.',
+		'   • `[query]` - Parses the provided query and outputs the k-best parse trees.',
 		'',
 		'   • `.test` - Parses the suite of test queries and checks output conforms to the test\'s specifications.',
 		'',
@@ -72,7 +72,7 @@ var argv = yargs
 		'',
 		'   • `.restoreGrammar` - Copies the last output of `.archiveGrammar` to the `.buildGrammar` output path.',
 		'',
-		'   • `.diff*` - Compares last archived output of program * to current output of the same program. Includes: `.diffTest`, `.diffTestSmall, `.diffTestQuiet`, `.diffGrammar`, `.diffAmbigCheck`, `.diffStateTable`.',
+		'   • `.diff*` - Compares last archived output of program * to current output of the same program. Includes: `.diffTest`, `.diffTestSmall`, `.diffTestQuiet`, `.diffGrammar`, `.diffAmbigCheck`, `.diffStateTable`.',
 		'',
 		'  Enables configuration of CLI environment variables which are passed as options when executing the above programs.',
 		'',
@@ -95,22 +95,22 @@ var rl = require('./readlineAsync')
 
 // File paths.
 var paths = (function () {
-	var outDir = '../out/'
+	var outDir = './out/'
 
 	return {
-		parse: '../lib/parse/parse.js',
+		parse: './lib/parse/parse.js',
 		outDir: outDir,
-		test: '../test/test.js',
+		test: './test/test.js',
 		testOut: outDir + 'test',
 		testSmallOut: outDir + 'test_small',
 		testQuietOut: outDir + 'test_quiet',
-		benchmark: '../benchmark/benchmark.js',
-		buildGrammar: '../lib/grammar/buildGrammar.js',
-		grammar: '../lib/grammar.json',
+		benchmark: './benchmark/benchmark.js',
+		buildGrammar: './lib/grammar/buildGrammar.js',
+		grammar: './lib/grammar.json',
 		grammarOld: outDir + 'grammar_old.json',
-		ambigCheck: '../lib/ambig/ambiguityCheck.js',
+		ambigCheck: './lib/ambig/ambiguityCheck.js',
 		ambigCheckOut: outDir + 'ambig',
-		printStateTable: '../lib/parse/printStateTable.js',
+		printStateTable: './lib/parse/printStateTable.js',
 		stateTableOut: outDir + 'st',
 	}
 }())

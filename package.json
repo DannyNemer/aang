@@ -18,7 +18,8 @@
   "scripts": {
     "benchmark": "node ./lib/benchmark/benchmark.js",
     "build": "node ./lib/grammar/buildGrammar.js --output=./lib/grammar.json",
-    "test": "node ./lib/test/test.js"
+    "test": "node ./lib/test/test.js",
+    "cli": "node ./cli/cli.js"
   },
   "repository": {
     "type": "git",
