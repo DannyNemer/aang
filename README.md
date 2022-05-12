@@ -6,10 +6,6 @@
 
 Aang is an extensive, scalable, sophisticated natural language understanding (NLU) system built from scratch. Designed to enable developers to easily create custom, full-featured, fast, robust, and precise natural language interfaces (e.g., virtual assistants, chatbots, and natural language search engines) to integrate with their products.
 
-The design and architecture are formidable, the code quality is supreme, and the documentation is fit for publication.
-
-*"Developing the first 90% of an AI system is easier than the final 10%."* ~ An enervated developer.
-
 **Usage** ([see more](#cli)):
 
 ```shell
